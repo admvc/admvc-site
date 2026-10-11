@@ -1,0 +1,38 @@
+{
+    "name": "ADMVC Cloud",
+    "short_name": "ADMVC",
+    "description": "Plataforma de gestao para igrejas — escalas, mural, cantina e mais.",
+    "start_url": "/membros/dashboard",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#0b0d0c",
+    "theme_color": "#3f6b4f",
+    "categories": ["productivity", "lifestyle"],
+    "prefer_related_applications": false,
+    "icons": [
+        { "src": "/images/logo_admvc.png", "sizes": "192x192", "type": "image/png" },
+        { "src": "/images/logo_admvc.png", "sizes": "512x512", "type": "image/png" },
+        { "src": "/images/logo_admvc.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ],
+    "shortcuts": [
+        {
+            "name": "Dashboard",
+            "short_name": "Home",
+            "url": "/membros/dashboard",
+            "icons": [{ "src": "/images/logo_admvc.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Mural de Avisos",
+            "short_name": "Mural",
+            "url": "/membros/mural",
+            "icons": [{ "src": "/images/logo_admvc.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Menu Cantina",
+            "short_name": "Cantina",
+            "url": "/cantina/menu-local",
+            "icons": [{ "src": "/images/logo_admvc.png", "sizes": "192x192" }]
+        }
+    ]
+}

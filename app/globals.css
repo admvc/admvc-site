@@ -1,0 +1,215 @@
+/* app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media print {
+
+  /* Esconde menus, headers, botões e rodapés */
+  nav,
+  button,
+  form,
+  header,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Ajusta o container principal para ocupar a folha toda */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Força que o bloco financeiro seja visível e bem formatado */
+  #meu-financeiro,
+  #secao-extrato {
+    display: block !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Adiciona um título de documento que só aparece no PDF */
+  body::before {
+    content: "RELATÓRIO FINANCEIRO DE MEMBRO - ADMVC";
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 30px;
+  }
+
+  /* Garante que as cores apareçam no PDF */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Esconde os botões de navegação na hora de imprimir */
+  footer,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Garante que o fundo do cabeçalho apareça na impressão */
+  header {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* Tokens (dark + figueira predominante + verdes complementares) */
+:root {
+  --bg: #0b0d0c;
+  --bg2: #121514;
+  --border: #1e2321;
+
+  --fg: #e6efea;
+  --muted: #b8cfc4;
+  --muted2: #7e948a;
+
+  --g-figueira: #3f6b4f;
+  --g-deep: #2e4f3a;
+  --g-soft: #7fae93;
+
+  /* RGB channels para Tailwind opacity (bg-figueira/10 etc.) */
+  --figueira-rgb: 63, 107, 79;
+  --soft-rgb: 127, 174, 147;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+/* Safe area — protege conteudo do notch e home indicator */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* QR Scanner */
+#qr-reader video {
+  object-fit: cover;
+}
+
+@layer utilities {
+  .bg-bg {
+    background-color: var(--bg);
+  }
+
+  .bg-bg2 {
+    background-color: var(--bg2);
+  }
+
+  .text-fg {
+    color: var(--fg);
+  }
+
+  .text-muted {
+    color: var(--muted);
+  }
+
+  .text-muted2 {
+    color: var(--muted2);
+  }
+
+  .border-soft {
+    border-color: var(--border);
+  }
+
+  .text-figueira {
+    color: var(--g-figueira);
+  }
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition;
+  @apply focus:outline-none focus:ring-2;
+  --tw-ring-color: var(--g-soft);
+}
+
+.btn-primary {
+  background: var(--g-figueira);
+  color: #f4fff9;
+}
+
+.btn-primary:hover {
+  background: var(--g-deep);
+}
+
+.btn-ghost {
+  @apply border;
+  border-color: var(--border);
+  color: var(--fg);
+}
+
+.btn-ghost:hover {
+  background: rgba(63, 107, 79, 0.12);
+}
+
+/* MODO PRIVACIDADE FINANCEIRA */
+.valor-dinheiro {
+  transition: all 0.3s ease;
+}
+
+.modo-privacidade .valor-dinheiro {
+  filter: blur(6px);
+  opacity: 0.5;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Details colapsáveis — removido forçar abertura no desktop */
+/* Agenda e aniversários ficam colapsados em todas as telas */
+@media (min-width: 99999px) {
+  /* Regra desactivada — manter colapsado */
+  details.collapsible-mobile > summary ~ * {
+    display: block !important;
+  }
+}
+
+/* Range slider grande para palco mobile */
+input[type="range"].accent-emerald-500 {
+  height: 24px;
+}
+input[type="range"].accent-emerald-500::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+}
+input[type="range"].accent-emerald-500::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #10b981;
+  margin-top: -11px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+input[type="range"].accent-emerald-500::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+}
+input[type="range"].accent-emerald-500::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #10b981;
+  border: none;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+/* POS Fullscreen Mode — esconde header do membro */
+.pos-fullscreen header,
+.pos-fullscreen .pos-fullscreen-hide {
+  display: none !important;
+}
+
+/* Scrollbar invisivel para nav horizontal */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

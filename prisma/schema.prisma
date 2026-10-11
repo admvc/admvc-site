@@ -1,0 +1,1902 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Escolaridade {
+  id      Int      @id @default(autoincrement())
+  nome    String   @unique
+  membros Membro[]
+
+  @@map("escolaridades")
+}
+
+model Cargo {
+  id      Int      @id @default(autoincrement())
+  nome    String   @unique
+  membros Membro[] @relation("CargoToMembro")
+}
+
+model Musica {
+  id          String             @id @default(uuid())
+  titulo      String
+  artista     String?
+  bpm         Int?
+  tom         String? // Tom original da musica (Ex: "G", "Am", "F#")
+  link_video  String? // YouTube
+  link_letra  String? // letras.mus.br, letras.com
+  link_cifra  String? // cifraclub.com.br, ultimate-guitar.com
+  link_audio  String? // Spotify, SoundCloud, YouTube Music
+  cifra_interna String? // Cifra com acordes no formato [Am]letra[G]letra
+  holyrics_id String?            @unique
+  eventos     RepertorioEvento[]
+
+  @@map("musicas")
+}
+
+model Tenant {
+  id                       Int                       @id @default(autoincrement())
+  slug                     String                    @unique
+  nome                     String
+  plano                    String                    @default("FREE")
+  modulos_custom           Json?                     // Override de módulos activos (array de strings). Se null, usa os do plano.
+  status                   String                    @default("ATIVO") // ATIVO, INATIVO, SUSPENSO, TRIAL
+  ultimo_acesso            DateTime?                 // Data do ultimo login de qualquer membro
+  plano_inicio             DateTime?                 // Inicio do plano actual
+  plano_fim                DateTime?                 // Fim do plano (null = sem expiracao)
+  valor_mensal             Float?                    // Valor do plano em EUR
+  onboarding_completo      Boolean                   @default(false)
+  onboarding_checklist     Json?                     // { membros: false, departamentos: false, escalas: false }
+  cor_primaria             String                    @default("#3F6B4F")
+  cor_secundaria           String                    @default("#7FAE93")
+  cor_fundo                String                    @default("#0b0d0c")
+  logo_url                 String?
+  // Configuracoes de midia
+  holyrics_url             String?                   // Ex: http://192.168.1.100:8090
+  holyrics_token           String?
+  x32_ip                   String?                   // Ex: 192.168.1.50
+  x32_port                 Int?                      @default(10023)
+  lumikit_url              String?                   // Ex: http://192.168.1.60:5000
+  lumikit_cenas            Json?                     // { scenes: [...], dimmers: [...] }
+  x32_cenas                Json?                     // { scenes: [...] } — Presets Mesa de Som via Holyrics
+  regioes_custom           Json?                     // Array de strings com regioes customizadas
+  // Redes Sociais
+  youtube_channel_id       String?                   // ID do canal YouTube (ex: UCxxxxx)
+  instagram_handle         String?                   // Handle Instagram sem @ (ex: igrejaxyz)
+  // Integracao Permanecer
+  curso_permanecer_id      String?                   // ID do curso EBD usado como Permanecer
+  // Configuracoes Loyverse (cantina)
+  loyverse_token           String?                   // Access Token Loyverse — exclusivo por igreja
+  createdAt                DateTime                  @default(now())
+  agendas                  Agenda[]
+  avisosMural              AvisoMural[]
+  compromissos             Compromisso[]
+  congregacoes             Congregacao[]
+  contribuicoes            Contribuicao[]
+  departamentos            Departamento[]
+  encontros                EncontroGrupo[]
+  escalas                  Escala[]
+  etapasObra               EtapaObra[]
+  eventos                  Evento[]
+  familias                 Familia[]
+  funcoesDepto             FuncaoDepartamento[]
+  grupos                   Grupo[]
+  integrantesDepto         IntegranteDepartamento[]
+  lancamentosFinanceiros   LancamentoFinanceiro[]
+  objetivosFinanceiros     ObjetivoFinanceiro[]
+  pedidosCantina           PedidoSaldoCantina[]
+  projetosObra             ProjetoObra[]
+  repertorios              RepertorioEvento[]
+  rifas                    Rifa[]
+  rifaNumeros              RifaNumero[]
+  acompanhamentos          AcompanhamentoVisitante[]
+  membros                  Membro[]
+  visitantes               Visitante[]
+  indisponibilidadeMembros IndisponibilidadeMembro[]
+  mensagemEventos          MensagemEvento[]
+  audit_logs               AuditLog[]
+  itemInventarios          ItemInventario[]
+  movimentosInventario     MovimentoInventario[]
+  sermoes                  Sermao[]
+  escolasBiblicas          EscolaBiblica[]
+  cursosEBD                CursoEBD[]
+  turmasEBD                TurmaEBD[]
+  matriculasEBD            MatriculaEBD[]
+  atividadesEBD            AtividadeEBD[]
+  notasEBD                 NotaEBD[]
+  interessesCurso          InteresseCurso[]
+  interessesDepartamento   InteresseDepartamento[]
+  boleiasOfertas           BoleiaOferta[]
+  boleiasReservas          BoleiaReserva[]
+  boleiasTracking          BoleiaTracking[]
+  produtosCantina          ProdutoCantina[]
+  categoriasCantina        CategoriaCantina[]
+  saldosCantina            SaldoCantina[]
+  transacoesCantina        TransacaoCantina[]
+  fiadosCantina            FiadoCantina[]
+  despesasCantina          DespesaCantina[]
+  turnosCantina            TurnoCantina[]
+  preEncomendas            PreEncomendaCantina[]
+  cardapios                CardapioCantina[]
+  itensAssistencia         ItemAssistenciaSocial[]
+  movimentosAssistencia    MovimentoAssistencia[]
+  tiposCesta               TipoCesta[]
+  entregasCesta            EntregaCesta[]
+  fundosFinanceiros        FundoFinanceiro[]
+  categoriasOrcamento      CategoriaOrcamento[]
+  despesasFinanceiras      DespesaFinanceira[]
+  orcamentos               Orcamento[]
+  transferencias           TransferenciaFundo[]
+  recibosFiscais           ReciboFiscal[]
+  donativosOnline          DonativoOnline[]
+  pledges                  Pledge[]
+  contasBancarias          ContaBancaria[]
+  movimentosBancarios      MovimentoBancario[]
+}
+
+model Congregacao {
+  id            Int                    @id @default(autoincrement())
+  nome          String
+  cidade        String
+  endereco      String
+  codigo_postal String?
+  distrito      String?
+  pais          String?                @default("Portugal")
+  latitude      Float?
+  longitude     Float?
+  pastor        String?                // Nome do pastor responsavel
+  co_pastor     String?                // Co-pastor ou auxiliar
+  telefone      String?
+  email         String?
+  tenant_id     Int
+  createdAt     DateTime               @default(now())
+  tenant              Tenant                 @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  departamentos       Departamento[]
+  grupos              Grupo[]
+  financas            LancamentoFinanceiro[]
+  membros             Membro[]
+  eventos             Evento[]
+  escalas             Escala[]
+  repertorios         RepertorioEvento[]
+  indisponibilidades  IndisponibilidadeMembro[]
+  mensagensEvento     MensagemEvento[]
+  itensInventario     ItemInventario[]
+  movimentosInventario MovimentoInventario[]
+  sermoes             Sermao[]
+  escolasBiblicas     EscolaBiblica[]
+  cursosEBD           CursoEBD[]
+  turmasEBD           TurmaEBD[]
+}
+
+model Membro {
+  id                         Int                       @id @default(autoincrement())
+  first_name                 String
+  last_name                  String
+  email                      String                    @unique
+  password                   String?
+  avatar_file                String?
+  birthdate                  DateTime?
+  gender                     String?
+  marital_status             String?
+  nationality                String?
+  tax_id                     String?
+  id_card_number             String?
+  profession                 String?
+  lang                       String?                   @default("Português")
+  father_name                String?
+  mother_name                String?
+  phone_1                    String?
+  phone_2                    String?
+  address_1                  String?
+  address_2                  String?
+  address_number             String?
+  postal_code                String?
+  id_city                    String?
+  state                      String?
+  country                    String?                   @default("Portugal")
+  baptism_status             String?                   @default("Não Batizado")
+  baptism_date               DateTime?
+  church_role                String?                   @default("Membro")
+  ministry                   String?                   @default("Geral")
+  entry_date                 DateTime?                 @default(now())
+  is_active                  Boolean                   @default(true)
+  notes                      String?
+  previous_church            String?
+  created_at                 DateTime                  @default(now())
+  updated_at                 DateTime                  @updatedAt
+  status                     String                    @default("PENDENTE")
+  data_admissao              DateTime?
+  aprovado_por               String?
+  spouse_name                String?
+  spouse_christian           Boolean?                  @default(false)
+  wedding_date               DateTime?
+  has_children               Boolean?                  @default(false)
+  children_number            Int?                      @default(0)
+  familia_id                 Int?
+  parentesco                 String?
+  is_family_admin            Boolean                   @default(false)
+  ultimo_login               DateTime?
+  push_subscription          Json?
+  ip_assinatura              String?
+  data_aceite                DateTime?
+  termo_aceite               Boolean                   @default(false)
+  role                       Role                      @default(USER)
+  loyverse_id                String?                   @unique
+  conversion_date            DateTime?
+  escolaridade_id            Int?
+  congregacao_id             Int?
+  gdpr_aceite                Boolean                   @default(false)
+  gdpr_data_assinatura       DateTime?
+  gdpr_validade              DateTime?
+  neighborhood               String?
+  permanecer_aceite          Boolean                   @default(false)
+  permanecer_data_assinatura DateTime?
+  permanecer_validade        DateTime?
+  tenant_id                  Int
+  agenda_dono                Agenda?                   @relation("DonoAgenda")
+  avisoMurals                AvisoMural[]
+  contribuicoes              Contribuicao[]
+  departamentos_liderados    Departamento[]            @relation("LiderDepartamento")
+  escalas                    Escala[]
+  ministerios                IntegranteDepartamento[]
+  objetivos_financeiros      ObjetivoFinanceiro[]
+  pedidoSaldoCantinas        PedidoSaldoCantina[]
+  rifa_numeros               RifaNumero[]
+  companhamentos_visitantes  AcompanhamentoVisitante[]
+  visitantes_responsavel     Visitante[]               @relation("ResponsavelVisitante")
+  congregacao                Congregacao?              @relation(fields: [congregacao_id], references: [id])
+  escolaridade               Escolaridade?             @relation(fields: [escolaridade_id], references: [id])
+  familia                    Familia?                  @relation(fields: [familia_id], references: [id])
+  tenant                     Tenant                    @relation(fields: [tenant_id], references: [id])
+  cargos                     Cargo[]                   @relation("CargoToMembro")
+  compromissos               Compromisso[]             @relation("CompromissoMembros")
+  agendas_geridas            Agenda[]                  @relation("GestoresAgenda")
+  lider_de_grupo             Grupo[]                   @relation("LideresGrupo")
+  grupos                     Grupo[]                   @relation("MembrosGrupo")
+  encontros_assistidos       EncontroGrupo[]           @relation("MembrosPresentes")
+  indisponibilidadeMembros   IndisponibilidadeMembro[]
+  mensagemEventos            MensagemEvento[]
+  itemInventarios            ItemInventario[]
+  sermoes                    Sermao[]                    @relation("PregadorSermao")
+  aulasEBD                   EscolaBiblica[]             @relation("ProfessorEBD")
+  presencasEBD               PresencaEBD[]
+  turmasEBD                  TurmaEBD[]                  @relation("ProfessorTurmaEBD")
+  matriculasEBD              MatriculaEBD[]              @relation("MatriculaEBD")
+  notasEBD                   NotaEBD[]                   @relation("NotaEBD")
+  cursosAprovados            CursoEBD[]                  @relation("AprovadorCurso")
+  cursosCriados              CursoEBD[]                  @relation("CriadorCurso")
+  interessesCurso            InteresseCurso[]            @relation("InteresseCurso")
+  interessesAprovados        InteresseCurso[]            @relation("AprovadorInteresse")
+  boleiasOferecidas          BoleiaOferta[]              @relation("MotoristaOferta")
+  boleiasReservadas          BoleiaReserva[]             @relation("PassageiroReserva")
+  boleiasTracking            BoleiaTracking[]            @relation("TrackingBoleia")
+  saldoCantina               SaldoCantina?
+  transacoesCantina          TransacaoCantina[]
+  fiadosCantina              FiadoCantina[]
+  turnosCantina              TurnoCantina[]             @relation("OperadorTurno")
+  preEncomendas              PreEncomendaCantina[]
+  recibosFiscais             ReciboFiscal[]
+  pledges                    Pledge[]
+  qr_code                    String?                    @unique  // Codigo QR unico para identificacao rapida
+  visitante_id               Int?                       // Referencia ao visitante original (conversao automatica)
+  interessesDepartamento     InteresseDepartamento[]    @relation("MembroInteresse")
+
+  @@index([tenant_id])
+  @@map("membros")
+}
+
+model Familia {
+  id         Int      @id @default(autoincrement())
+  surname    String
+  created_at DateTime @default(now())
+  tenant_id  Int
+  tenant     Tenant   @relation(fields: [tenant_id], references: [id])
+  members    Membro[]
+
+  @@index([tenant_id])
+}
+
+model Departamento {
+  id               Int                      @id @default(autoincrement())
+  nome             String
+  descricao        String?
+  lider_id         Int?
+  compromissoId    Int?
+  congregacaoId    Int?
+  is_global        Boolean                  @default(false)
+  foto_url         String?
+  tenant_id        Int
+  avisoMurals      AvisoMural[]
+  congregacao      Congregacao?             @relation(fields: [congregacaoId], references: [id])
+  lider            Membro?                  @relation("LiderDepartamento", fields: [lider_id], references: [id])
+  tenant           Tenant                   @relation(fields: [tenant_id], references: [id])
+  escalas          Escala[]
+  funcoes          FuncaoDepartamento[]
+  grupos           Grupo[]
+  integrantes      IntegranteDepartamento[]
+  compromissos     Compromisso[]            @relation("CompromissoDepartamentos")
+  itens_inventario ItemInventario[]
+  interesses       InteresseDepartamento[] @relation("InteresseDepartamento")
+
+  @@unique([nome, tenant_id, congregacaoId])
+  @@index([tenant_id])
+}
+
+model IntegranteDepartamento {
+  id                 Int                 @id @default(autoincrement())
+  membro_id          Int
+  departamento_id    Int
+  data_entrada       DateTime            @default(now())
+  pode_gerir_escalas Boolean             @default(false)
+  turno              String?             // MANHA, TARDE, NOITE — permite mesmo membro em 2 departamentos com horarios diferentes
+  tenant_id          Int
+  funcoes            FuncaoSelecionada[]
+  departamento       Departamento        @relation(fields: [departamento_id], references: [id], onDelete: Cascade)
+  membro             Membro              @relation(fields: [membro_id], references: [id], onDelete: Cascade)
+  tenant             Tenant              @relation(fields: [tenant_id], references: [id])
+
+  @@unique([membro_id, departamento_id, turno])
+  @@index([tenant_id])
+}
+
+model InteresseDepartamento {
+  id              Int          @id @default(autoincrement())
+  membro_id       Int
+  departamento_id Int
+  mensagem        String?
+  status          String       @default("PENDENTE") // PENDENTE | APROVADO | REJEITADO
+  criado_em       DateTime     @default(now())
+  tenant_id       Int
+  membro          Membro       @relation("MembroInteresse", fields: [membro_id], references: [id], onDelete: Cascade)
+  departamento    Departamento @relation("InteresseDepartamento", fields: [departamento_id], references: [id], onDelete: Cascade)
+  tenant          Tenant       @relation(fields: [tenant_id], references: [id])
+
+  @@unique([membro_id, departamento_id])
+  @@index([tenant_id])
+}
+
+model FuncaoSelecionada {
+  id                         Int                    @id @default(autoincrement())
+  integrante_departamento_id Int
+  funcao_id                  Int
+  funcao                     FuncaoDepartamento     @relation(fields: [funcao_id], references: [id])
+  integrante                 IntegranteDepartamento @relation(fields: [integrante_departamento_id], references: [id], onDelete: Cascade)
+}
+
+model Grupo {
+  id              Int              @id @default(autoincrement())
+  nome            String
+  data_abertura   DateTime         @default(now())
+  dia_semana      String
+  horario         String
+  perfil          String?
+  categoria       String?
+  descricao       String?
+  endereco        String
+  numero          String?
+  bairro          String
+  cidade          String
+  estado          String
+  pais            String           @default("Portugal")
+  departamento_id Int?
+  compromissoId   Int?
+  congregacaoId   Int?
+  tenant_id       Int
+  latitude        Float?
+  longitude       Float?
+  regiao          String? // Ex: "Norte", "Centro", "Sul", "Online"
+  publico         Boolean          @default(false) // aparece no site público?
+  avisoMurals     AvisoMural[]
+  encontros       EncontroGrupo[]
+  congregacao     Congregacao?     @relation(fields: [congregacaoId], references: [id])
+  departamento    Departamento?    @relation(fields: [departamento_id], references: [id])
+  tenant          Tenant           @relation(fields: [tenant_id], references: [id])
+  compromissos    Compromisso[]    @relation("CompromissoGrupos")
+  lideres         Membro[]         @relation("LideresGrupo")
+  membros         Membro[]         @relation("MembrosGrupo")
+  itemInventarios ItemInventario[]
+
+  @@index([tenant_id])
+}
+
+model EncontroGrupo {
+  id        Int      @id @default(autoincrement())
+  tenant_id Int
+  grupo_id  Int
+  data      DateTime
+  tema      String
+  foto_url  String?
+  criado_em DateTime @default(now())
+  grupo     Grupo    @relation(fields: [grupo_id], references: [id], onDelete: Cascade)
+  tenant    Tenant   @relation(fields: [tenant_id], references: [id])
+  presentes Membro[] @relation("MembrosPresentes")
+  latitude  Float?
+  longitude Float?
+  regiao    String? // Ex: "Norte", "Centro", "Sul", "Online"
+  publico   Boolean  @default(false) // aparece no site público?
+
+  @@index([tenant_id])
+}
+
+model Evento {
+  id             Int                @id @default(autoincrement())
+  nome           String
+  data           DateTime
+  descricao      String?
+  tipo           String             @default("CULTO_REGULAR") // CULTO_REGULAR, CULTO_ESPECIAL, CULTO_RUA, CONVIVIO, REUNIAO, FORMACAO, MISSAO, OUTRO
+  criado_em      DateTime           @default(now())
+  atualizado_em  DateTime           @updatedAt
+  tenant_id      Int
+  congregacao_id Int?
+  escalas        Escala[]
+  tenant         Tenant             @relation(fields: [tenant_id], references: [id])
+  congregacao    Congregacao?       @relation(fields: [congregacao_id], references: [id])
+  repertorio     RepertorioEvento[]
+  mensagemEvento MensagemEvento?
+  sermoes        Sermao[]
+  boleias        BoleiaOferta[]
+  preEncomendas  PreEncomendaCantina[]
+  cardapio       CardapioCantina?
+
+  @@index([tenant_id])
+}
+
+model Escala {
+  id              Int                 @id @default(autoincrement())
+  funcao          String
+  confirmado      Boolean             @default(false)
+  horario         String?
+  criado_em       DateTime            @default(now())
+  evento_id       Int
+  departamento_id Int
+  membro_id       Int
+  tenant_id       Int
+  congregacao_id  Int?
+  funcao_id       Int?
+  departamento    Departamento        @relation(fields: [departamento_id], references: [id], onDelete: Cascade)
+  evento          Evento              @relation(fields: [evento_id], references: [id], onDelete: Cascade)
+  funcao_ref      FuncaoDepartamento? @relation(fields: [funcao_id], references: [id])
+  membro          Membro              @relation(fields: [membro_id], references: [id], onDelete: Cascade)
+  tenant          Tenant              @relation(fields: [tenant_id], references: [id])
+  congregacao     Congregacao?        @relation(fields: [congregacao_id], references: [id])
+  motivo_recusa   String?
+
+  @@unique([evento_id, membro_id, funcao_id])
+  @@index([tenant_id])
+}
+
+model FuncaoDepartamento {
+  id                 Int                 @id @default(autoincrement())
+  nome               String
+  departamento_id    Int
+  tenant_id          Int
+  escalas            Escala[]
+  departamento       Departamento        @relation(fields: [departamento_id], references: [id], onDelete: Cascade)
+  tenant             Tenant              @relation(fields: [tenant_id], references: [id])
+  funcaoSelecionadas FuncaoSelecionada[]
+
+  @@unique([nome, departamento_id])
+  @@index([tenant_id])
+}
+
+model ObjetivoFinanceiro {
+  id             Int                    @id @default(autoincrement())
+  nome           String
+  valor_mensal   Float
+  parcelas_total Int
+  parcelas_pagas Int                    @default(0)
+  data_pagamento Int
+  membro_id      Int
+  status         String                 @default("ATIVO")
+  createdAt      DateTime               @default(now())
+  tenant_id      Int
+  lancamentos    LancamentoFinanceiro[]
+  membro         Membro                 @relation(fields: [membro_id], references: [id])
+  tenant         Tenant                 @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+}
+
+model LancamentoFinanceiro {
+  id                Int                @id @default(autoincrement())
+  objetivo_id       Int
+  valor_pago        Float
+  data_recebimento  DateTime           @default(now())
+  forma_pagamento   String
+  comprovante_url   String?
+  registrado_por_id Int
+  congregacaoId     Int?
+  fundo_id          Int?
+  tenant_id         Int
+  congregacao       Congregacao?       @relation(fields: [congregacaoId], references: [id])
+  objetivo          ObjetivoFinanceiro @relation(fields: [objetivo_id], references: [id])
+  fundo             FundoFinanceiro?   @relation(fields: [fundo_id], references: [id])
+  tenant            Tenant             @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([fundo_id])
+}
+
+model Rifa {
+  id                Int          @id @default(autoincrement())
+  nome              String
+  premio            String
+  valor_numero      Float
+  total_numeros     Int
+  data_sorteio      DateTime?
+  status            String       @default("ATIVA")
+  createdAt         DateTime     @default(now())
+  numero_sorteado   Int?
+  numero_sorteado_2 Int?
+  numero_sorteado_3 Int?
+  tenant_id         Int
+  tenant            Tenant       @relation(fields: [tenant_id], references: [id])
+  numeros_vendidos  RifaNumero[]
+
+  @@index([tenant_id])
+}
+
+model RifaNumero {
+  id           Int      @id @default(autoincrement())
+  numero       Int
+  rifa_id      Int
+  membro_id    Int?
+  nome_externo String?
+  pago         Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  tenant_id    Int
+  membro       Membro?  @relation(fields: [membro_id], references: [id])
+  rifa         Rifa     @relation(fields: [rifa_id], references: [id], onDelete: Cascade)
+  tenant       Tenant   @relation(fields: [tenant_id], references: [id])
+
+  @@unique([rifa_id, numero])
+  @@index([tenant_id])
+}
+
+model PedidoSaldoCantina {
+  id              Int      @id @default(autoincrement())
+  membro_id       Int
+  valor           Float
+  forma_pagamento String
+  status          String   @default("PENDENTE")
+  createdAt       DateTime @default(now())
+  tenant_id       Int
+  membro          Membro   @relation(fields: [membro_id], references: [id])
+  tenant          Tenant   @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+}
+
+model Contribuicao {
+  id         Int              @id @default(autoincrement())
+  membro_id  Int
+  tipo       String
+  valor      Float
+  data       DateTime         @default(now())
+  metodo     String?
+  observacao String?
+  fundo_id   Int?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  tenant_id  Int
+  membro     Membro           @relation(fields: [membro_id], references: [id], onDelete: Cascade)
+  fundo      FundoFinanceiro? @relation(fields: [fundo_id], references: [id])
+  tenant     Tenant           @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([fundo_id])
+}
+
+model Visitante {
+  id                   Int                       @id @default(autoincrement())
+  nome                 String
+  telefone             String
+  pedido_oracao        String?
+  data_primeira_visita DateTime                  @default(now())
+  data_ultima_visita   DateTime                  @default(now())
+  quantidade_visitas   Int                       @default(1)
+  status               String                    @default("NOVO")
+  email                String?
+  responsavel_id       Int?
+  proximo_contacto     DateTime?
+  origem               String?
+  notas_lider          String?
+  prioridade           String                    @default("NORMAL")
+  tenant_id            Int
+  acompanhamentos      AcompanhamentoVisitante[]
+  responsavel          Membro?                   @relation("ResponsavelVisitante", fields: [responsavel_id], references: [id])
+  tenant               Tenant                    @relation(fields: [tenant_id], references: [id])
+  compromissos         Compromisso[]             @relation("CompromissoVisitantes")
+
+  @@index([tenant_id])
+  @@index([responsavel_id])
+  @@map("visitantes")
+}
+
+model AcompanhamentoVisitante {
+  id              Int       @id @default(autoincrement())
+  visitante_id    Int
+  membro_id       Int
+  tipo_contacto   String
+  observacoes     String?
+  data_contacto   DateTime  @default(now())
+  tipo_evento     String    @default("CONTACTO")
+  status_anterior String?
+  status_novo     String?
+  tenant_id       Int
+  membro          Membro    @relation(fields: [membro_id], references: [id])
+  tenant          Tenant    @relation(fields: [tenant_id], references: [id])
+  visitante       Visitante @relation(fields: [visitante_id], references: [id], onDelete: Cascade)
+
+  @@index([tenant_id])
+  @@index([visitante_id])
+  @@map("acompanhamento_visitantes")
+}
+
+model ProjetoObra {
+  id            String      @id @default(cuid())
+  titulo        String
+  descricao     String
+  objetivoFinal Float
+  videoUrl      String?
+  tenant_id     Int
+  etapas        EtapaObra[]
+  tenant        Tenant      @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+}
+
+model EtapaObra {
+  id              String      @id @default(cuid())
+  projeto_obra_id String
+  nome            String
+  alvo            Float
+  atual           Float       @default(0)
+  ordem           Int         @default(0)
+  tenant_id       Int
+  projeto         ProjetoObra @relation(fields: [projeto_obra_id], references: [id], onDelete: Cascade)
+  tenant          Tenant      @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+}
+
+model AvisoMural {
+  id              String        @id @default(cuid())
+  texto           String
+  createdAt       DateTime      @default(now())
+  autor_id        Int
+  departamento_id Int?
+  grupo_id        Int?
+  tenant_id       Int
+  autor           Membro        @relation(fields: [autor_id], references: [id], onDelete: Cascade)
+  departamento    Departamento? @relation(fields: [departamento_id], references: [id], onDelete: Cascade)
+  grupo           Grupo?        @relation(fields: [grupo_id], references: [id], onDelete: Cascade)
+  tenant          Tenant        @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+}
+
+model Agenda {
+  id                     Int           @id @default(autoincrement())
+  tenant_id              Int
+  slug                   String        @unique
+  nome                   String
+  is_publica             Boolean       @default(true)
+  dono_id                Int           @unique
+  criado_em              DateTime      @default(now())
+  horarios_disponiveis   Json?         // [{ dia_semana: 0-6, hora_inicio: "09:00", hora_fim: "12:00" }]
+  dono                   Membro        @relation("DonoAgenda", fields: [dono_id], references: [id], onDelete: Cascade)
+  tenant                 Tenant        @relation(fields: [tenant_id], references: [id])
+  compromissos           Compromisso[]
+  gestores               Membro[]      @relation("GestoresAgenda")
+
+  @@index([tenant_id])
+}
+
+model Compromisso {
+  id            Int            @id @default(autoincrement())
+  tenant_id     Int
+  titulo        String
+  categoria     String
+  data_inicio   DateTime
+  data_fim      DateTime
+  observacoes   String?
+  status        String         @default("AGENDADO")
+  agenda_id     Int
+  externos      String?
+  criado_em     DateTime       @default(now())
+  atualizado_em DateTime       @updatedAt
+  agenda        Agenda         @relation(fields: [agenda_id], references: [id], onDelete: Cascade)
+  tenant        Tenant         @relation(fields: [tenant_id], references: [id])
+  departamentos Departamento[] @relation("CompromissoDepartamentos")
+  grupos        Grupo[]        @relation("CompromissoGrupos")
+  membros       Membro[]       @relation("CompromissoMembros")
+  visitantes    Visitante[]    @relation("CompromissoVisitantes")
+
+  @@index([tenant_id])
+}
+
+model RepertorioEvento {
+  id         String @id @default(uuid())
+  tenant_id      Int
+  congregacao_id Int?
+  evento_id      Int
+  musica_id      String
+  tom_tocado     String
+  ordem          Int
+  evento         Evento       @relation(fields: [evento_id], references: [id])
+  musica         Musica       @relation(fields: [musica_id], references: [id])
+  tenant         Tenant       @relation(fields: [tenant_id], references: [id])
+  congregacao    Congregacao? @relation(fields: [congregacao_id], references: [id])
+
+  @@unique([evento_id, musica_id])
+  @@index([tenant_id])
+}
+
+model Sermao {
+  id                  String          @id @default(uuid())
+  titulo              String
+  texto_corpo         String?         // HTML com marcadores coloridos e refs
+  referencias_biblicas Json?          // [{livro, capitulo, versiculo_inicio, versiculo_fim, texto}]
+  notas_privadas      String?
+  tags                Json?           // ["fé", "oração", ...]
+  publicado           Boolean         @default(false)
+  partilhado_whatsapp Boolean         @default(false)
+  data_pregacao       DateTime
+  pregador_id         Int
+  evento_id           Int?
+  congregacao_id      Int?
+  tenant_id           Int
+  created_at          DateTime        @default(now())
+  updated_at          DateTime        @updatedAt
+  pregador            Membro          @relation("PregadorSermao", fields: [pregador_id], references: [id])
+  evento              Evento?         @relation(fields: [evento_id], references: [id])
+  congregacao         Congregacao?    @relation(fields: [congregacao_id], references: [id])
+  tenant              Tenant          @relation(fields: [tenant_id], references: [id])
+  escolasBiblicas     EscolaBiblica[]
+
+  @@index([tenant_id])
+  @@index([pregador_id])
+}
+
+model EscolaBiblica {
+  id                  String          @id @default(uuid())
+  titulo              String
+  tema                String?
+  data                DateTime
+  link_aula           String?         // URL Teams, YouTube, Zoom, etc.
+  conteudo            String?         // Conteudo detalhado da aula
+  material_apoio      String?         // Texto livre, links, etc.
+  perguntas_discussao Json?           // ["pergunta 1", "pergunta 2", ...]
+  professor_id        Int
+  sermao_id           String?         // Sermão base (opcional)
+  turma_id            String?         // Turma a que pertence (opcional)
+  congregacao_id      Int?
+  tenant_id           Int
+  created_at          DateTime        @default(now())
+  professor           Membro          @relation("ProfessorEBD", fields: [professor_id], references: [id])
+  sermao              Sermao?         @relation(fields: [sermao_id], references: [id])
+  turma               TurmaEBD?       @relation(fields: [turma_id], references: [id])
+  congregacao         Congregacao?    @relation(fields: [congregacao_id], references: [id])
+  tenant              Tenant          @relation(fields: [tenant_id], references: [id])
+  presencas           PresencaEBD[]
+
+  @@index([tenant_id])
+  @@index([turma_id])
+}
+
+model PresencaEBD {
+  id                  Int             @id @default(autoincrement())
+  escola_biblica_id   String
+  membro_id           Int
+  presente            Boolean         @default(true)
+  justificativa       String?         // motivo da falta (doenca, viagem, etc.)
+  escolaBiblica       EscolaBiblica   @relation(fields: [escola_biblica_id], references: [id], onDelete: Cascade)
+  membro              Membro          @relation(fields: [membro_id], references: [id])
+
+  @@unique([escola_biblica_id, membro_id])
+}
+
+model InteresseCurso {
+  id              Int              @id @default(autoincrement())
+  curso_id        String
+  membro_id       Int
+  mensagem        String?          // "Tenho interesse, sou do louvor"
+  status          StatusInteresse  @default(PENDENTE)
+  created_at      DateTime         @default(now())
+  aprovado_em     DateTime?
+  aprovado_por_id Int?
+  turma_id        String?          // Turma atribuida ao aprovar
+  tenant_id       Int
+  curso           CursoEBD         @relation(fields: [curso_id], references: [id], onDelete: Cascade)
+  membro          Membro           @relation("InteresseCurso", fields: [membro_id], references: [id])
+  aprovado_por    Membro?          @relation("AprovadorInteresse", fields: [aprovado_por_id], references: [id])
+  tenant          Tenant           @relation(fields: [tenant_id], references: [id])
+
+  @@unique([curso_id, membro_id])
+  @@index([tenant_id])
+  @@index([curso_id, status])
+  @@map("interesses_curso")
+}
+
+enum StatusInteresse {
+  PENDENTE
+  APROVADO
+  REJEITADO
+}
+
+// ── ESCOLA BÍBLICA DOMINICAL — Cursos e Turmas ──────────────────────────────
+
+model CursoEBD {
+  id              String          @id @default(uuid())
+  titulo          String          // "Frutos do Espírito" ou "Fotografia para Midia"
+  descricao       String?
+  ementa          String?         // Conteúdo programático completo
+  categoria       CategoriaCurso  @default(EBD)
+  trimestre       Int?            // 1, 2, 3, 4 (opcional para cursos livres)
+  ano             Int             // 2026
+  data_inicio     DateTime
+  data_fim        DateTime
+  carga_horaria   Int?            // horas totais (para diploma)
+  vagas_maximas   Int?            // Limite de inscritos (null = ilimitado)
+  material_ref    String?         // "Revista CPAD - Adultos T2/2026"
+  nota_minima     Float           @default(7.0)
+  presenca_minima Float           @default(75.0) // percentual
+  status          StatusCurso     @default(PLANEADO)
+
+  // Curso externo
+  is_externo        Boolean       @default(false)
+  link_externo      String?       // URL para info/inscricao externa
+  responsavel_nome  String?       // Contacto do responsavel
+  responsavel_tel   String?
+
+  // Restricao de inscricao
+  tipo_inscricao    TipoInscricao @default(LIVRE)
+  departamento_ids  Json?         // [1, 5] — se tipo = DEPARTAMENTO
+  grupo_ids         Json?         // [2, 3] — se tipo = GRUPO
+
+  // Workflow de aprovacao
+  aprovado                 Boolean   @default(false)
+  aprovado_por_id          Int?
+  aprovado_em              DateTime?
+  data_abertura_inscricoes DateTime? // Abre inscricoes automaticamente nesta data/hora
+  criado_por_id            Int?
+
+  congregacao_id  Int?
+  tenant_id       Int
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
+  turmas          TurmaEBD[]
+  interesses      InteresseCurso[]
+  congregacao     Congregacao?    @relation(fields: [congregacao_id], references: [id])
+  tenant          Tenant          @relation(fields: [tenant_id], references: [id])
+  aprovado_por    Membro?         @relation("AprovadorCurso", fields: [aprovado_por_id], references: [id])
+  criado_por      Membro?         @relation("CriadorCurso", fields: [criado_por_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([ano])
+  @@index([categoria])
+  @@index([aprovado])
+  @@map("cursos_ebd")
+}
+
+model TurmaEBD {
+  id              String            @id @default(uuid())
+  nome            String            // "Adultos", "Jovens", "Criancas"
+  faixa_etaria    String?           // "18-35 anos"
+  curso_id        String
+  congregacao_id  Int?
+  tenant_id       Int
+  created_at      DateTime          @default(now())
+  curso           CursoEBD          @relation(fields: [curso_id], references: [id], onDelete: Cascade)
+  professores     Membro[]          @relation("ProfessorTurmaEBD")
+  congregacao     Congregacao?      @relation(fields: [congregacao_id], references: [id])
+  tenant          Tenant            @relation(fields: [tenant_id], references: [id])
+  matriculas      MatriculaEBD[]
+  aulas           EscolaBiblica[]
+  atividades      AtividadeEBD[]
+
+  @@index([tenant_id])
+  @@index([curso_id])
+  @@map("turmas_ebd")
+}
+
+model MatriculaEBD {
+  id              Int               @id @default(autoincrement())
+  turma_id        String
+  membro_id       Int
+  data_matricula  DateTime          @default(now())
+  status          StatusMatricula   @default(ATIVA)
+  nota_final      Float?
+  percentual_presenca Float?
+  aprovado        Boolean?
+  tenant_id       Int
+  turma           TurmaEBD          @relation(fields: [turma_id], references: [id], onDelete: Cascade)
+  membro          Membro            @relation("MatriculaEBD", fields: [membro_id], references: [id])
+  tenant          Tenant            @relation(fields: [tenant_id], references: [id])
+
+  @@unique([turma_id, membro_id])
+  @@index([tenant_id])
+  @@map("matriculas_ebd")
+}
+
+model AtividadeEBD {
+  id              String            @id @default(uuid())
+  titulo          String            // "Exercicio Licao 3"
+  tipo            TipoAtividade     @default(EXERCICIO)
+  descricao       String?
+  perguntas       Json?             // [{id, texto, tipo: ESCRITA|MULTIPLA|VERDADEIRO_FALSO, opcoes?, correta?}]
+  data_entrega    DateTime?
+  peso            Float             @default(1.0)
+  nota_maxima     Float             @default(10.0)
+  turma_id        String
+  tenant_id       Int
+  created_at      DateTime          @default(now())
+  turma           TurmaEBD          @relation(fields: [turma_id], references: [id], onDelete: Cascade)
+  tenant          Tenant            @relation(fields: [tenant_id], references: [id])
+  notas           NotaEBD[]
+
+  @@index([tenant_id])
+  @@index([turma_id])
+  @@map("atividades_ebd")
+}
+
+model NotaEBD {
+  id              Int               @id @default(autoincrement())
+  atividade_id    String
+  membro_id       Int
+  nota            Float?
+  entregue        Boolean           @default(false)
+  respostas       Json?             // [{pergunta_id, resposta}] — respostas do aluno
+  observacao      String?
+  tenant_id       Int
+  created_at      DateTime          @default(now())
+  atividade       AtividadeEBD      @relation(fields: [atividade_id], references: [id], onDelete: Cascade)
+  membro          Membro            @relation("NotaEBD", fields: [membro_id], references: [id])
+  tenant          Tenant            @relation(fields: [tenant_id], references: [id])
+
+  @@unique([atividade_id, membro_id])
+  @@index([tenant_id])
+  @@map("notas_ebd")
+}
+
+enum TipoInscricao {
+  LIVRE         // Qualquer membro pode inscrever-se
+  DEPARTAMENTO  // Apenas membros de departamentos especificos
+  GRUPO         // Apenas membros de grupos especificos
+}
+
+enum CategoriaCurso {
+  EBD           // Escola Biblica Dominical (trimestral)
+  LIVRE         // Musica, Fotografia, Informatica, etc.
+  DISCIPULADO   // Novos Convertidos, Batismo, Membresia
+  SEMINARIO     // Teologia, Hermeneutica, Homiletica
+}
+
+enum StatusCurso {
+  PLANEADO
+  EM_CURSO
+  CONCLUIDO
+  CANCELADO
+}
+
+enum StatusMatricula {
+  ATIVA
+  TRANCADA
+  CONCLUIDA
+  DESISTENTE
+}
+
+enum TipoAtividade {
+  EXERCICIO
+  PROVA
+  TRABALHO
+  PARTICIPACAO
+}
+
+enum Role {
+  USER
+  LEADER
+  ADMIN
+  CONGREGATION_ADMIN
+  FINANCE
+  MANAGER
+}
+
+// ── SUPER ADMIN (Plataforma SaaS — independente dos tenants) ────────────────
+model SuperAdmin {
+  id        Int              @id @default(autoincrement())
+  email     String           @unique
+  password  String
+  nome      String
+  role      String           @default("ADMIN") // ADMIN, VIEWER, SUPPORT
+  is_active Boolean          @default(true)
+  criado_em DateTime         @default(now())
+  logs      SuperAdminLog[]
+
+  @@map("super_admins")
+}
+
+model SuperAdminLog {
+  id          Int        @id @default(autoincrement())
+  sa_id       Int
+  acao        String     // LOGIN, CRIAR_IGREJA, ALTERAR_PLANO, IMPERSONAR, etc.
+  detalhes    String?
+  ip          String?
+  criado_em   DateTime   @default(now())
+  sa          SuperAdmin @relation(fields: [sa_id], references: [id])
+
+  @@index([sa_id])
+  @@index([criado_em])
+  @@map("super_admin_logs")
+}
+
+model AvisoPlataforma {
+  id          Int      @id @default(autoincrement())
+  titulo      String
+  mensagem    String
+  tipo        String   @default("INFO") // INFO, ALERTA, MANUTENCAO, NOVIDADE
+  tenant_id   Int?     // null = todas as igrejas
+  lido        Boolean  @default(false)
+  criado_em   DateTime @default(now())
+
+  @@index([tenant_id])
+  @@map("avisos_plataforma")
+}
+
+model PlanoHistorico {
+  id            Int      @id @default(autoincrement())
+  tenant_id     Int
+  plano_anterior String
+  plano_novo    String
+  motivo        String?
+  alterado_por  String?  // email do SA que alterou
+  criado_em     DateTime @default(now())
+
+  @@index([tenant_id])
+  @@map("plano_historico")
+}
+
+// NOVOS
+
+// PATCH: schema.prisma
+// Adiciona o model IndisponibilidadeMembro
+
+model IndisponibilidadeMembro {
+  id          Int       @id @default(autoincrement())
+  tenant_id      Int
+  congregacao_id Int?
+  membro_id      Int
+  tipo           String // 'DIA_SEMANA' | 'DATA_ESPECIFICA' | 'INTERVALO'
+  dia_semana  Int? // 0=Dom, 1=Seg, ..., 6=Sáb (para DIA_SEMANA)
+  data_inicio DateTime? // para DATA_ESPECIFICA e INTERVALO
+  data_fim    DateTime? // para INTERVALO (null em DATA_ESPECIFICA)
+  hora_inicio String? // ex: "08:00" — indisponível ANTES desta hora
+  hora_fim    String? // ex: "18:00" — indisponível DEPOIS desta hora
+  motivo      String?
+  criado_em   DateTime  @default(now())
+
+  membro      Membro       @relation(fields: [membro_id], references: [id], onDelete: Cascade)
+  tenant      Tenant       @relation(fields: [tenant_id], references: [id])
+  congregacao Congregacao?  @relation(fields: [congregacao_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([membro_id])
+  @@map("indisponibilidades_membro")
+}
+
+// No model Membro, adicionar:
+// indisponibilidades IndisponibilidadeMembro[]
+
+// Após editar o schema, correr:
+// npx prisma migrate dev --name add_indisponibilidade_membro
+
+model MensagemEvento {
+  id             Int      @id @default(autoincrement())
+  tenant_id      Int
+  congregacao_id Int?
+  evento_id      Int      @unique // um evento tem uma mensagem
+  pregador_id    Int?
+  titulo         String?
+  texto_biblico  String? // ex: "João 3:16"
+  tema           String?
+  notas          String? // esboço livre
+  criado_em      DateTime @default(now())
+  atualizado_em  DateTime @updatedAt
+
+  evento      Evento       @relation(fields: [evento_id], references: [id], onDelete: Cascade)
+  pregador    Membro?      @relation(fields: [pregador_id], references: [id])
+  tenant      Tenant       @relation(fields: [tenant_id], references: [id])
+  congregacao Congregacao?  @relation(fields: [congregacao_id], references: [id])
+
+  @@index([tenant_id])
+  @@map("mensagens_evento")
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  tenant_id   Int
+  actor_id    Int? // quem executou a accao (admin/membro logado)
+  actor_nome  String? // nome snapshot (para manter historico se membro for apagado)
+  alvo_id     Int? // sobre quem recaiu a accao
+  alvo_nome   String? // nome snapshot do alvo
+  alvo_tipo   String? // 'MEMBRO' | 'FAMILIA' | 'ESCALA' | 'FINANCEIRO' | 'SISTEMA'
+  acao        String // 'CRIAR' | 'EDITAR' | 'APAGAR' | 'LOGIN' | 'LOGOUT' | 'EXPORT' | 'VINCULAR' | 'DESASSOCIAR'
+  categoria   String // 'MEMBROS' | 'FAMILIAS' | 'ESCALAS' | 'FINANCEIRO' | 'ACESSO' | 'DOCUMENTOS'
+  descricao   String? // texto legivel: "Alterou email de Joao Silva de X para Y"
+  dados_antes String? // JSON snapshot antes da alteracao (campos alterados)
+  dados_apos  String? // JSON snapshot apos a alteracao
+  ip          String?
+  user_agent  String?
+  hash        String?  // SHA-256 truncado — integridade do registo
+  criado_em   DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([actor_id])
+  @@index([alvo_id])
+  @@index([acao])
+  @@index([categoria])
+  @@index([criado_em])
+  @@map("audit_logs")
+}
+
+enum InventarioCategoria {
+  ELETRONICO // equipamentos AV, microfones, computadores
+  INSTRUMENTO // guitarras, teclados, baterias
+  MOVEL // mesas, cadeiras, armários
+  VEICULO // carros, vans da igreja
+  FERRAMENTA // ferramentas de manutenção
+  VESTUARIO // roupas, fardamentos
+  LIVRO // bíblias, materiais didáticos
+  CONSUMIVEL // material de escritório, limpeza
+  OUTRO
+}
+
+enum InventarioEstado {
+  OTIMO // novo ou como novo
+  BOM // uso normal, sem danos
+  REGULAR // desgaste visível mas funcional
+  DANIFICADO // precisa de reparação
+  INUTILIZAVEL // fora de uso
+}
+
+enum MovimentoTipo {
+  ENTRADA // novo item adicionado
+  SAIDA // item retirado/descartado
+  EMPRESTIMO // saiu temporariamente
+  DEVOLUCAO // voltou de empréstimo
+  MANUTENCAO // entrou em manutenção
+  RETORNO_MANUTENCAO // voltou da manutenção
+  TRANSFERENCIA // mudou de dono/local
+  AJUSTE // correcção de stock
+}
+
+// ── MODEL PRINCIPAL ───────────────────────────────────────────────────────────
+
+model ItemInventario {
+  id                Int                 @id @default(autoincrement())
+  tenant_id         Int
+  congregacao_id    Int?
+  nome              String
+  descricao         String?
+  categoria         InventarioCategoria @default(OUTRO)
+  estado            InventarioEstado    @default(BOM)
+  numero_serie      String?
+  codigo_patrimonio String?             @unique // código interno da igreja
+  marca             String?
+  modelo            String?
+  cor               String?
+
+  // Estoque
+  quantidade_total      Int @default(1)
+  quantidade_disponivel Int @default(1)
+
+  // Aquisição
+  data_aquisicao  DateTime?
+  valor_aquisicao Float?
+  fornecedor      String?
+  nota_fiscal     String?
+
+  // Garantia
+  tem_garantia      Boolean   @default(false)
+  garantia_validade DateTime?
+  garantia_info     String? // nome da assistência, contrato, etc.
+
+  // Localização física
+  localizacao String? // ex: "Sala de Louvor", "Armazém"
+
+  // Foto
+  foto_url String?
+
+  // Dono — pode ser departamento, grupo ou membro (apenas um)
+  dono_tipo            String? // "DEPARTAMENTO" | "GRUPO" | "MEMBRO" | "IGREJA"
+  dono_departamento_id Int?
+  dono_grupo_id        Int?
+  dono_membro_id       Int?
+
+  // Metadados
+  ativo      Boolean  @default(true)
+  notas      String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relações
+  tenant            Tenant                @relation(fields: [tenant_id], references: [id])
+  congregacao       Congregacao?          @relation(fields: [congregacao_id], references: [id])
+  dono_departamento Departamento?         @relation(fields: [dono_departamento_id], references: [id])
+  dono_grupo        Grupo?                @relation(fields: [dono_grupo_id], references: [id])
+  dono_membro       Membro?               @relation(fields: [dono_membro_id], references: [id])
+  movimentos        MovimentoInventario[]
+
+  @@index([tenant_id])
+  @@index([categoria])
+  @@index([dono_departamento_id])
+  @@index([dono_grupo_id])
+  @@index([dono_membro_id])
+  @@map("inventario_itens")
+}
+
+// ── MOVIMENTOS / HISTÓRICO ────────────────────────────────────────────────────
+
+model MovimentoInventario {
+  id                    Int           @id @default(autoincrement())
+  tenant_id             Int
+  congregacao_id        Int?
+  item_id               Int
+  tipo                  MovimentoTipo
+  quantidade            Int           @default(1)
+  data                  DateTime      @default(now())
+  responsavel           String? // nome ou ID de quem fez a movimentação
+  destino               String? // para empréstimos: nome/local de destino
+  data_retorno_prevista DateTime? // para empréstimos
+  data_retorno_real     DateTime? // quando voltou
+  observacao            String?
+  created_at            DateTime      @default(now())
+
+  item        ItemInventario @relation(fields: [item_id], references: [id], onDelete: Cascade)
+  tenant      Tenant         @relation(fields: [tenant_id], references: [id])
+  congregacao Congregacao?   @relation(fields: [congregacao_id], references: [id])
+
+  @@index([item_id])
+  @@index([tenant_id])
+  @@map("inventario_movimentos")
+}
+
+// ── BOLEIA SOLIDARIA ─────────────────────────────────────────────────────────
+
+model BoleiaOferta {
+  id                Int              @id @default(autoincrement())
+  tenant_id         Int
+  motorista_id      Int
+  evento_id         Int?
+  data_hora_saida   DateTime
+  endereco_partida  String
+  zona_partida      String?          // Bairro/zona visivel na listagem (privacidade)
+  latitude          Float?
+  longitude         Float?
+  vagas_total       Int
+  nota              String?
+  recorrente        Boolean          @default(false)  // Repetir semanalmente
+  status            String           @default("ATIVA") // ATIVA, CANCELADA, CONCLUIDA
+  criado_em         DateTime         @default(now())
+
+  tenant            Tenant           @relation(fields: [tenant_id], references: [id])
+  motorista         Membro           @relation("MotoristaOferta", fields: [motorista_id], references: [id])
+  evento            Evento?          @relation(fields: [evento_id], references: [id])
+  reservas          BoleiaReserva[]
+  tracking          BoleiaTracking[]
+
+  @@index([tenant_id])
+  @@index([motorista_id])
+  @@index([evento_id])
+  @@index([data_hora_saida])
+  @@map("boleia_ofertas")
+}
+
+model BoleiaReserva {
+  id              Int            @id @default(autoincrement())
+  tenant_id       Int
+  oferta_id       Int
+  passageiro_id   Int
+  status          String         @default("CONFIRMADA") // CONFIRMADA, CANCELADA
+  agradecimento   Boolean        @default(false) // Passageiro agradeceu ao motorista
+  latitude        Float?         // Localizacao do passageiro ao reservar
+  longitude       Float?
+  criado_em       DateTime       @default(now())
+
+  tenant          Tenant         @relation(fields: [tenant_id], references: [id])
+  oferta          BoleiaOferta   @relation(fields: [oferta_id], references: [id], onDelete: Cascade)
+  passageiro      Membro         @relation("PassageiroReserva", fields: [passageiro_id], references: [id])
+
+  @@unique([oferta_id, passageiro_id])
+  @@index([tenant_id])
+  @@index([passageiro_id])
+  @@map("boleia_reservas")
+}
+
+model BoleiaTracking {
+  id              Int            @id @default(autoincrement())
+  tenant_id       Int
+  oferta_id       Int
+  membro_id       Int
+  papel           String         // MOTORISTA, PASSAGEIRO
+  latitude        Float
+  longitude       Float
+  ativo           Boolean        @default(true)
+  atualizado_em   DateTime       @default(now()) @updatedAt
+
+  tenant          Tenant         @relation(fields: [tenant_id], references: [id])
+  oferta          BoleiaOferta   @relation(fields: [oferta_id], references: [id], onDelete: Cascade)
+  membro          Membro         @relation("TrackingBoleia", fields: [membro_id], references: [id])
+
+  @@unique([oferta_id, membro_id])
+  @@index([tenant_id])
+  @@index([oferta_id, ativo])
+  @@map("boleia_tracking")
+}
+
+// ── SISTEMA DE VENDAS INTERNO (Cantina) ──────────────────────────────────────
+
+model CategoriaCantina {
+  id          Int               @id @default(autoincrement())
+  tenant_id   Int
+  nome        String
+  ordem       Int               @default(0)    // Para ordenar no menu
+  ativa       Boolean           @default(true)
+  criado_em   DateTime          @default(now())
+
+  tenant      Tenant            @relation(fields: [tenant_id], references: [id])
+  produtos    ProdutoCantina[]
+
+  @@unique([tenant_id, nome])
+  @@index([tenant_id])
+  @@map("cantina_categorias")
+}
+
+model ProdutoCantina {
+  id              Int                @id @default(autoincrement())
+  tenant_id       Int
+  categoria_id    Int?
+  nome            String
+  preco           Float
+  custo           Float?            // Custo de aquisicao (para calculo de margem P&L)
+  imagem_url      String?
+  stock           Int                @default(0)
+  stock_minimo    Int                @default(0)     // Alerta quando stock <= stock_minimo
+  controla_stock  Boolean            @default(true)
+  disponivel      Boolean            @default(true)  // Visivel no menu/POS
+  promocoes       Json?              // [{ quantidade: 2, preco_total: 5.00 }]
+  criado_em       DateTime           @default(now())
+  atualizado_em   DateTime           @updatedAt
+
+  tenant          Tenant             @relation(fields: [tenant_id], references: [id])
+  categoria       CategoriaCantina?  @relation(fields: [categoria_id], references: [id])
+  itensTransacao  ItemTransacaoCantina[]
+  itensEncomenda  ItemPreEncomenda[]
+  itensCardapio   CardapioItem[]
+
+  @@index([tenant_id])
+  @@index([categoria_id])
+  @@map("cantina_produtos")
+}
+
+model SaldoCantina {
+  id              Int      @id @default(autoincrement())
+  tenant_id       Int
+  membro_id       Int      @unique   // 1 saldo por membro
+  saldo           Float    @default(0)
+  limite_diario   Float?             // null = sem limite
+  limite_semanal  Float?             // null = sem limite
+  atualizado      DateTime @updatedAt
+
+  tenant      Tenant   @relation(fields: [tenant_id], references: [id])
+  membro      Membro   @relation(fields: [membro_id], references: [id])
+
+  @@index([tenant_id])
+  @@map("cantina_saldos")
+}
+
+model TransacaoCantina {
+  id            Int                    @id @default(autoincrement())
+  tenant_id     Int
+  membro_id     Int?                   // Null = venda avulsa (nao-membro)
+  tipo          String                 // RECARGA, CONSUMO, ESTORNO
+  valor         Float                  // Positivo para recarga, negativo para consumo
+  saldo_apos    Float                  // Saldo apos esta transacao
+  descricao     String?
+  forma_pagamento String              @default("CREDITOS") // CREDITOS, DINHEIRO, MBWAY, TRANSFERENCIA
+  operador_id   Int?                   // Quem operou (admin/operador do POS)
+  turno_id      Int?                   // Turno em que a venda foi feita
+  criado_em     DateTime               @default(now())
+
+  tenant        Tenant                 @relation(fields: [tenant_id], references: [id])
+  membro        Membro?                @relation(fields: [membro_id], references: [id])
+  turno         TurnoCantina?          @relation(fields: [turno_id], references: [id])
+  itens         ItemTransacaoCantina[]
+  pagamentos    PagamentoTransacao[]
+
+  @@index([tenant_id])
+  @@index([membro_id])
+  @@index([turno_id])
+  @@index([criado_em])
+  @@map("cantina_transacoes")
+}
+
+model ItemTransacaoCantina {
+  id              Int                @id @default(autoincrement())
+  transacao_id    Int
+  produto_id      Int
+  quantidade      Int
+  preco_unitario  Float
+
+  transacao       TransacaoCantina   @relation(fields: [transacao_id], references: [id], onDelete: Cascade)
+  produto         ProdutoCantina     @relation(fields: [produto_id], references: [id])
+
+  @@index([transacao_id])
+  @@map("cantina_itens_transacao")
+}
+
+model PagamentoTransacao {
+  id              Int              @id @default(autoincrement())
+  transacao_id    Int
+  forma_pagamento String           // CREDITOS, DINHEIRO, MBWAY, TRANSFERENCIA
+  valor           Float
+
+  transacao       TransacaoCantina @relation(fields: [transacao_id], references: [id], onDelete: Cascade)
+
+  @@index([transacao_id])
+  @@map("cantina_pagamentos")
+}
+
+model DespesaCantina {
+  id              Int      @id @default(autoincrement())
+  tenant_id       Int
+  descricao       String
+  valor           Float
+  data            DateTime @default(now())
+  categoria       String?
+  fornecedor      String?
+  comprovante_url String?
+  submetido_por   Int
+  aprovado_por    Int?
+  status          String   @default("PENDENTE")
+  observacao      String?
+  criado_em       DateTime @default(now())
+
+  tenant          Tenant   @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([status])
+  @@map("cantina_despesas")
+}
+
+model TurnoCantina {
+  id                    Int                  @id @default(autoincrement())
+  tenant_id             Int
+  operador_id           Int
+  abertura_em           DateTime             @default(now())
+  fecho_em              DateTime?
+  valor_inicial         Float                @default(0)   // Dinheiro no caixa ao abrir
+  valor_final_esperado  Float?                              // Calculado pelo sistema ao fechar
+  valor_final_real      Float?                              // Declarado pelo operador
+  diferenca             Float?                              // Real - Esperado
+  observacao            String?
+  status                String               @default("ABERTO") // ABERTO, FECHADO
+
+  tenant                Tenant               @relation(fields: [tenant_id], references: [id])
+  operador              Membro               @relation("OperadorTurno", fields: [operador_id], references: [id])
+  transacoes            TransacaoCantina[]
+
+  @@index([tenant_id])
+  @@index([operador_id])
+  @@map("cantina_turnos")
+}
+
+model FiadoCantina {
+  id              Int      @id @default(autoincrement())
+  tenant_id       Int
+  membro_id       Int
+  valor_devido    Float
+  transacao_id    Int?     // Referencia a transacao que gerou a divida
+  descricao       String?
+  status          String   @default("PENDENTE") // PENDENTE, LIQUIDADO
+  criado_em       DateTime @default(now())
+  liquidado_em    DateTime?
+
+  tenant          Tenant   @relation(fields: [tenant_id], references: [id])
+  membro          Membro   @relation(fields: [membro_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([membro_id])
+  @@map("cantina_fiados")
+}
+
+// ── PRE-ENCOMENDAS (Cantina) ─────────────────────────────────────────────────
+
+model PreEncomendaCantina {
+  id            Int                      @id @default(autoincrement())
+  tenant_id     Int
+  membro_id     Int
+  evento_id     Int
+  total         Float
+  pago          Boolean                  @default(false)  // true se saldo ja foi debitado
+  status        String                   @default("PENDENTE") // PENDENTE, CONFIRMADA, ENTREGUE, CANCELADA
+  criado_em     DateTime                 @default(now())
+  entregue_em   DateTime?
+  cancelado_em  DateTime?
+
+  tenant        Tenant                   @relation(fields: [tenant_id], references: [id])
+  membro        Membro                   @relation(fields: [membro_id], references: [id])
+  evento        Evento                   @relation(fields: [evento_id], references: [id])
+  itens         ItemPreEncomenda[]
+
+  @@index([tenant_id])
+  @@index([membro_id])
+  @@index([evento_id])
+  @@map("cantina_pre_encomendas")
+}
+
+model ItemPreEncomenda {
+  id              Int                  @id @default(autoincrement())
+  encomenda_id    Int
+  produto_id      Int
+  quantidade      Int
+  preco_unitario  Float
+
+  encomenda       PreEncomendaCantina  @relation(fields: [encomenda_id], references: [id], onDelete: Cascade)
+  produto         ProdutoCantina       @relation(fields: [produto_id], references: [id])
+
+  @@index([encomenda_id])
+  @@map("cantina_itens_pre_encomenda")
+}
+
+// ── CARDAPIO DO DIA (Cantina) ────────────────────────────────────────────────
+
+model CardapioCantina {
+  id          Int            @id @default(autoincrement())
+  tenant_id   Int
+  evento_id   Int            @unique  // 1 cardapio por evento
+  nome        String?                 // Ex: "Menu Domingo Especial"
+  criado_em   DateTime       @default(now())
+
+  tenant      Tenant         @relation(fields: [tenant_id], references: [id])
+  evento      Evento         @relation(fields: [evento_id], references: [id])
+  itens       CardapioItem[]
+
+  @@index([tenant_id])
+  @@map("cantina_cardapios")
+}
+
+model CardapioItem {
+  id                    Int              @id @default(autoincrement())
+  cardapio_id           Int
+  produto_id            Int
+  preco_especial        Float?           // Preco diferente para este evento (null = preco normal)
+  quantidade_disponivel Int?             // Limite de encomendas (null = sem limite)
+
+  cardapio        CardapioCantina  @relation(fields: [cardapio_id], references: [id], onDelete: Cascade)
+  produto         ProdutoCantina   @relation(fields: [produto_id], references: [id])
+
+  @@unique([cardapio_id, produto_id])
+  @@index([cardapio_id])
+  @@map("cantina_cardapio_itens")
+}
+
+// ── ASSISTENCIA SOCIAL ───────────────────────────────────────────────────────
+
+model ItemAssistenciaSocial {
+  id          Int                      @id @default(autoincrement())
+  tenant_id   Int
+  nome        String
+  categoria   String                   // ALIMENTO, HIGIENE, VESTUARIO, OUTRO
+  unidade     String                   @default("unidade") // unidade, kg, litro, peca
+  stock       Int                      @default(0)
+  stock_minimo Int                     @default(0)
+  criado_em   DateTime                 @default(now())
+
+  tenant      Tenant                   @relation(fields: [tenant_id], references: [id])
+  movimentos  MovimentoAssistencia[]
+  itensCesta  ItemCesta[]
+
+  @@index([tenant_id])
+  @@map("assistencia_itens")
+}
+
+model MovimentoAssistencia {
+  id              Int                    @id @default(autoincrement())
+  tenant_id       Int
+  item_id         Int
+  tipo            String                 // DOACAO_RECEBIDA, ENTREGA_FAMILIA, ENTREGA_ENTIDADE, REPASSE_CANTINA
+  quantidade      Int
+  destinatario    String?                // Nome da familia/entidade que recebeu
+  observacao      String?
+  registrado_por  Int?                   // Membro que registou
+  criado_em       DateTime               @default(now())
+
+  tenant          Tenant                 @relation(fields: [tenant_id], references: [id])
+  item            ItemAssistenciaSocial  @relation(fields: [item_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([item_id])
+  @@map("assistencia_movimentos")
+}
+
+// ── CESTAS BASICAS ───────────────────────────────────────────────────────────
+
+model TipoCesta {
+  id          Int                @id @default(autoincrement())
+  tenant_id   Int
+  nome        String             // Ex: "Cesta Basica Padrao", "Kit Higiene"
+  descricao   String?
+  ativo       Boolean            @default(true)
+  criado_em   DateTime           @default(now())
+
+  tenant      Tenant             @relation(fields: [tenant_id], references: [id])
+  itens       ItemCesta[]
+  entregas    EntregaCesta[]
+
+  @@index([tenant_id])
+  @@map("assistencia_tipos_cesta")
+}
+
+model ItemCesta {
+  id              Int                    @id @default(autoincrement())
+  tipo_cesta_id   Int
+  item_id         Int
+  quantidade      Int                    @default(1)
+
+  tipoCesta       TipoCesta              @relation(fields: [tipo_cesta_id], references: [id], onDelete: Cascade)
+  item            ItemAssistenciaSocial  @relation(fields: [item_id], references: [id], onDelete: Cascade)
+
+  @@unique([tipo_cesta_id, item_id])
+  @@map("assistencia_itens_cesta")
+}
+
+model EntregaCesta {
+  id              Int                @id @default(autoincrement())
+  tenant_id       Int
+  tipo_cesta_id   Int
+  destinatario    String             // Nome da familia/pessoa
+  observacao       String?
+  entregue_por    Int?               // Membro que entregou
+  criado_em       DateTime           @default(now())
+
+  tenant          Tenant             @relation(fields: [tenant_id], references: [id])
+  tipoCesta       TipoCesta          @relation(fields: [tipo_cesta_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([tipo_cesta_id])
+  @@map("assistencia_entregas_cesta")
+}
+
+// ── GESTAO FINANCEIRA — FUNDOS, DESPESAS, ORCAMENTO ──────────────────────────
+
+model FundoFinanceiro {
+  id              Int                    @id @default(autoincrement())
+  tenant_id       Int
+  nome            String                 // Ex: "Fundo Geral", "Construcao", "Missoes"
+  descricao       String?
+  tipo            String                 @default("CUSTOM") // GERAL, CONSTRUCAO, MISSOES, SOCIAL, CANTINA, CUSTOM
+  restrito        Boolean                @default(false) // true = dinheiro so pode ser usado para este fim
+  saldo_atual     Float                  @default(0)
+  ativo           Boolean                @default(true)
+  alerta_orcamento_percentagem Int       @default(80) // Limiar % para alerta de orcamento
+  criado_em       DateTime               @default(now())
+
+  tenant          Tenant                 @relation(fields: [tenant_id], references: [id])
+  contribuicoes   Contribuicao[]
+  lancamentos     LancamentoFinanceiro[]
+  despesas        DespesaFinanceira[]
+  orcamentos      Orcamento[]
+  categoriasOrcamento CategoriaOrcamento[]
+  transferenciasOrigem  TransferenciaFundo[] @relation("FundoOrigem")
+  transferenciasDestino TransferenciaFundo[] @relation("FundoDestino")
+  donativosOnline       DonativoOnline[]
+  pledges               Pledge[]
+
+  @@unique([tenant_id, nome])
+  @@index([tenant_id])
+  @@map("financeiro_fundos")
+}
+
+model CategoriaOrcamento {
+  id          Int               @id @default(autoincrement())
+  tenant_id   Int
+  fundo_id    Int
+  nome        String            // Ex: "Aluguer", "Eletricidade", "Material"
+  criado_em   DateTime          @default(now())
+
+  tenant      Tenant            @relation(fields: [tenant_id], references: [id])
+  fundo       FundoFinanceiro   @relation(fields: [fundo_id], references: [id])
+  despesas    DespesaFinanceira[]
+  orcamentos  Orcamento[]
+
+  @@unique([fundo_id, nome])
+  @@index([tenant_id])
+  @@map("financeiro_categorias_orcamento")
+}
+
+model DespesaFinanceira {
+  id              Int                @id @default(autoincrement())
+  tenant_id       Int
+  fundo_id        Int
+  categoria_id    Int?
+  descricao       String
+  valor           Float
+  data            DateTime           @default(now())
+  forma_pagamento String?
+  fornecedor      String?
+  comprovante_url String?
+  submetido_por   Int                // Membro que submeteu
+  aprovado_por    Int?               // Membro que aprovou
+  status          String             @default("PENDENTE") // PENDENTE, APROVADA, REJEITADA, PAGA
+  observacao      String?
+  criado_em       DateTime           @default(now())
+
+  tenant          Tenant             @relation(fields: [tenant_id], references: [id])
+  fundo           FundoFinanceiro    @relation(fields: [fundo_id], references: [id])
+  categoria       CategoriaOrcamento? @relation(fields: [categoria_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([fundo_id])
+  @@index([status])
+  @@map("financeiro_despesas")
+}
+
+model Orcamento {
+  id              Int                @id @default(autoincrement())
+  tenant_id       Int
+  fundo_id        Int
+  categoria_id    Int
+  ano             Int
+  mes             Int?               // null = orcamento anual
+  valor_previsto  Float
+  criado_em       DateTime           @default(now())
+
+  tenant          Tenant             @relation(fields: [tenant_id], references: [id])
+  fundo           FundoFinanceiro    @relation(fields: [fundo_id], references: [id])
+  categoria       CategoriaOrcamento @relation(fields: [categoria_id], references: [id])
+
+  @@unique([fundo_id, categoria_id, ano, mes])
+  @@index([tenant_id])
+  @@map("financeiro_orcamentos")
+}
+
+model TransferenciaFundo {
+  id              Int              @id @default(autoincrement())
+  tenant_id       Int
+  fundo_origem_id Int
+  fundo_destino_id Int
+  valor           Float
+  motivo          String
+  aprovado_por    Int?
+  status          String           @default("PENDENTE") // PENDENTE, APROVADA, REJEITADA
+  criado_em       DateTime         @default(now())
+
+  tenant          Tenant           @relation(fields: [tenant_id], references: [id])
+  fundoOrigem     FundoFinanceiro  @relation("FundoOrigem", fields: [fundo_origem_id], references: [id])
+  fundoDestino    FundoFinanceiro  @relation("FundoDestino", fields: [fundo_destino_id], references: [id])
+
+  @@index([tenant_id])
+  @@map("financeiro_transferencias")
+}
+
+// ── RECIBOS FISCAIS (IRS) ────────────────────────────────────────────────────
+
+model ReciboFiscal {
+  id              Int      @id @default(autoincrement())
+  tenant_id       Int
+  membro_id       Int
+  ano             Int
+  valor_total     Float    // Soma das contribuicoes dedutiveis no ano
+  numero_recibo   String?  // Numero sequencial do recibo
+  emitido_em      DateTime @default(now())
+  dados_igreja    Json?    // { nif, nome, morada } snapshot no momento da emissao
+  dados_membro    Json?    // { nif, nome, morada } snapshot no momento da emissao
+
+  tenant          Tenant   @relation(fields: [tenant_id], references: [id])
+  membro          Membro   @relation(fields: [membro_id], references: [id])
+
+  @@unique([tenant_id, membro_id, ano])
+  @@index([tenant_id])
+  @@map("financeiro_recibos")
+}
+
+// ── DONATIVOS ONLINE ─────────────────────────────────────────────────────────
+
+model DonativoOnline {
+  id              Int              @id @default(autoincrement())
+  tenant_id       Int
+  fundo_id        Int?
+  nome_doador     String           // Nome do doador (pode nao ser membro)
+  email_doador    String?
+  nif_doador      String?
+  valor           Float
+  forma_pagamento String           // MBWAY, TRANSFERENCIA, MULTIBANCO
+  referencia      String?          // Referencia unica de pagamento
+  recorrente      Boolean          @default(false) // true = donativo mensal
+  anonimo         Boolean          @default(false)
+  mensagem        String?
+  status          String           @default("PENDENTE") // PENDENTE, CONFIRMADO, CANCELADO
+  confirmado_em   DateTime?
+  criado_em       DateTime         @default(now())
+
+  tenant          Tenant           @relation(fields: [tenant_id], references: [id])
+  fundo           FundoFinanceiro? @relation(fields: [fundo_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([status])
+  @@map("financeiro_donativos_online")
+}
+
+// ── PLEDGES (PROMESSAS DE CONTRIBUICAO) ──────────────────────────────────────
+
+model Pledge {
+  id              Int              @id @default(autoincrement())
+  tenant_id       Int
+  membro_id       Int
+  fundo_id        Int?
+  valor_mensal    Float
+  duracao_meses   Int              // Quantos meses se compromete
+  data_inicio     DateTime
+  meses_cumpridos Int              @default(0)
+  valor_cumprido  Float            @default(0)
+  status          String           @default("ATIVO") // ATIVO, CUMPRIDO, ATRASADO, CANCELADO
+  observacao      String?
+  criado_em       DateTime         @default(now())
+
+  tenant          Tenant           @relation(fields: [tenant_id], references: [id])
+  membro          Membro           @relation(fields: [membro_id], references: [id])
+  fundo           FundoFinanceiro? @relation(fields: [fundo_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([membro_id])
+  @@index([status])
+  @@map("financeiro_pledges")
+}
+
+// ── RECONCILIACAO BANCARIA ───────────────────────────────────────────────────
+
+model ContaBancaria {
+  id          Int                 @id @default(autoincrement())
+  tenant_id   Int
+  nome        String              // Ex: "CGD Conta Principal", "Millennium BCP"
+  iban        String?
+  banco       String?
+  ativa       Boolean             @default(true)
+  criado_em   DateTime            @default(now())
+
+  tenant      Tenant              @relation(fields: [tenant_id], references: [id])
+  movimentos  MovimentoBancario[]
+
+  @@unique([tenant_id, nome])
+  @@index([tenant_id])
+  @@map("financeiro_contas_bancarias")
+}
+
+model MovimentoBancario {
+  id              Int            @id @default(autoincrement())
+  tenant_id       Int
+  conta_id        Int
+  data            DateTime
+  descricao       String
+  valor           Float          // Positivo = credito, Negativo = debito
+  saldo_apos      Float?
+  referencia      String?        // Referencia do movimento bancario
+  reconciliado    Boolean        @default(false)
+  reconciliado_com String?       // "contribuicao:123" ou "despesa:456" — referencia ao lancamento
+  importado_em    DateTime       @default(now())
+
+  tenant          Tenant         @relation(fields: [tenant_id], references: [id])
+  conta           ContaBancaria  @relation(fields: [conta_id], references: [id])
+
+  @@index([tenant_id])
+  @@index([conta_id])
+  @@index([reconciliado])
+  @@map("financeiro_movimentos_bancarios")
+}

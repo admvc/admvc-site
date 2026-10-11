@@ -1,0 +1,5 @@
+ALTER TABLE "Tenant" ADD COLUMN "holyrics_url" TEXT;
+ALTER TABLE "Tenant" ADD COLUMN "holyrics_token" TEXT;
+ALTER TABLE "Tenant" ADD COLUMN "x32_ip" TEXT;
+ALTER TABLE "Tenant" ADD COLUMN "x32_port" INTEGER DEFAULT 10023;
+ALTER TABLE "Tenant" ADD COLUMN "lumikit_url" TEXT;
