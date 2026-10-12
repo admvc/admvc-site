@@ -4,8 +4,10 @@ import { redirect } from 'next/navigation'
 import { getSessionData, isAdmin } from '@/lib/auth-utils'
 import { getTenantClient } from '@/lib/prisma'
 import MembroHeader from '@/components/membros/MembroHeader'
-import MobileHeader from '@/components/membros/MobileHeader'
-import MobileBottomNav from '@/components/membros/MobileBottomNav'
+import CabecalhoApp from '@/components/app/CabecalhoApp'
+import BarraBaixo, { type ItemMais } from '@/components/app/BarraBaixo'
+import { modulosAtivosDaIgreja } from '@/lib/modulos'
+import { MODULOS, type Modulo } from '@/lib/planos'
 import PullToRefresh from '@/components/ui/PullToRefresh'
 import { getTenantIdFromHeaders } from '@/lib/db'
 
@@ -112,6 +114,36 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
     const mostraServico = permissoes.isAdmin || permissoes.isFinance || permissoes.isAcolhimento || permissoes.isCantina || permissoes.isMidia || permissoes.isLouvor || permissoes.isLider || permissoes.isDiaconia || permissoes.isSocial
 
     const alertas = permissoes.isAcolhimento || permissoes.isAdmin ? visitantesAtualizados : []
+
+    // "Mais" no telemovel: so o que a igreja tem ligado e a pessoa pode usar
+    const ativos = await modulosAtivosDaIgreja()
+    const temModulo = (m: Modulo) => ativos.includes(m)
+    const gruposQueLidera = await getTenantClient(session.tenantId).grupo.findMany({
+        where: { lideres: { some: { id: membro.id } } }, select: { id: true, nome: true }, take: 1,
+    }).catch(() => [])
+    const itensMais: ItemMais[] = []
+    if (temModulo(MODULOS.MURAL)) itensMais.push({ chave: 'avisos', texto: 'Avisos', href: '/membros/mural', detalhe: 'Mensagens da igreja e da sua equipa' })
+    if (temModulo(MODULOS.LOUVOR) && (permissoes.isLouvor || permissoes.isAdmin)) itensMais.push({ chave: 'louvor', texto: 'Louvor', href: '/louvor/repertorio', detalhe: 'Repertório e cifras' })
+    if (temModulo(MODULOS.GRUPOS) && gruposQueLidera[0]) itensMais.push({ chave: 'grupo', texto: 'O meu grupo', href: `/grupos/gestao/${gruposQueLidera[0].id}`, detalhe: gruposQueLidera[0].nome })
+    if (temModulo(MODULOS.ACOLHIMENTO) && (permissoes.isAcolhimento || permissoes.isAdmin)) itensMais.push({ chave: 'acolhimento', texto: 'Acolhimento', href: '/departamentos/acolhimento/dashboard' })
+    if (temModulo(MODULOS.HOLYRICS) && (permissoes.isMidia || permissoes.isAdmin)) itensMais.push({ chave: 'midia', texto: 'Mídia', href: '/midia/holyrics', detalhe: 'Holyrics' })
+    // Modulos que so aparecem se estiverem ligados no Cloud (e para quem tem acesso)
+    const ehLider = permissoes.isLider
+    if (temModulo(MODULOS.CANTINA) && (permissoes.isCantina || permissoes.isAdmin)) itensMais.push({ chave: 'cantina', texto: 'Cantina', href: '/cantina' })
+    if (temModulo(MODULOS.FINANCEIRO) && permissoes.isFinance) itensMais.push({ chave: 'tesouraria', texto: 'Tesouraria', href: '/tesouraria' })
+    if (temModulo(MODULOS.ASSISTENCIA) && (permissoes.isSocial || permissoes.isAdmin || role === 'FINANCE')) itensMais.push({ chave: 'social', texto: 'Assistência social', href: '/assistencia' })
+    if (temModulo(MODULOS.PREGACAO)) itensMais.push({ chave: 'pregacao', texto: 'Pregações', href: '/pregacao' })
+    if (permissoes.isDiaconia || permissoes.isAdmin) itensMais.push({ chave: 'obreiros', texto: 'Obreiros', href: '/departamentos/obreiros/dashboard' })
+    if (temModulo(MODULOS.EBD)) itensMais.push({ chave: 'cursos', texto: 'Cursos', href: '/ensino' })
+    if (temModulo(MODULOS.BOLEIA)) itensMais.push({ chave: 'boleias', texto: 'Boleias', href: '/boleia', detalhe: 'Oferecer ou pedir boleia para o culto' })
+    if (temModulo(MODULOS.GABINETE)) {
+        if (permissoes.isAdmin || ehLider) itensMais.push({ chave: 'gabinete', texto: 'Gabinete', href: '/gabinete', detalhe: 'Agendas e atendimentos' })
+        itensMais.push({ chave: 'atendimento', texto: 'Marcar atendimento', href: '/membros/agendar' })
+    }
+    if (temModulo(MODULOS.INVENTARIO) && permissoes.isAdmin) itensMais.push({ chave: 'inventario', texto: 'Inventário', href: '/admin/inventario' })
+    itensMais.push({ chave: 'perfil', texto: 'O meu perfil', href: `/membros/perfil/editar/${membro.id}`, detalhe: 'Dados, senha e os meus dados' })
+    if (permissoes.isAdmin) itensMais.push({ chave: 'admin', texto: 'Administração', href: '/admin/dashboard', detalhe: 'Melhor no computador' })
+    itensMais.push({ chave: 'privacidade', texto: 'Privacidade', href: '/privacidade' })
     const igrejaName = tenantData?.nome || 'Igreja'
 
     return (
@@ -128,20 +160,18 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
                 alertasAcolhimento={alertas}
             />
 
-            {/* Mobile header */}
-            <MobileHeader
-                membro={membro}
-                igrejaName={igrejaName}
-                escolaridades={escolaridades}
-                avisos={ultimosAvisos}
-                alertasAcolhimento={alertas}
-                temDepartamento={(membro.ministerios?.length || 0) > 0}
+            {/* Telemovel: cabecalho simples (a app nova) */}
+            <CabecalhoApp
+                igreja={igrejaName}
+                nome={`${membro.first_name} ${membro.last_name}`}
+                avatar={membro.avatar_file || null}
+                perfilHref={`/membros/perfil/editar/${membro.id}`}
             />
 
             <PullToRefresh><div className="bg-bg min-h-screen">{children}</div></PullToRefresh>
 
-            {/* Mobile bottom nav */}
-            <MobileBottomNav permissoes={permissoes} proximosEventos={proximosEventos} />
+            {/* Telemovel: Escalas, Agenda e Mais */}
+            <BarraBaixo itensMais={itensMais} />
         </>
     )
 }

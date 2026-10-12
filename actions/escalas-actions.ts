@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { getTenantClient } from '@/lib/prisma'
 import { getSessionData, requireAuth, requireRole } from '@/lib/auth-utils'
 import { podeGerirEscalasDoDepartamento } from '@/lib/escalas-permissoes'
+import { motivoIndisponivel } from '@/lib/indisponibilidade'
 import { enviarNotificacaoEscala } from '@/lib/email-escalas'
 import { sendPushToMembro } from '@/lib/web-push'
 import { audit } from '@/lib/audit'
@@ -209,12 +210,24 @@ async function notificarLiderEscala(escalaId: number, membroId: number, tipo: 'C
             departamento: {
                 select: {
                     nome: true,
-                    lider: { select: { first_name: true, email: true } }
+                    lider: { select: { id: true, first_name: true, email: true } }
                 }
             }
         }
     })
-    if (!escala?.departamento?.lider?.email) return
+    const lider = escala?.departamento?.lider
+    if (!escala || !lider) return
+
+    // Notificacao na app ao lider quando alguem nao pode (a confirmacao so vai por email)
+    if (tipo === 'RECUSADO') {
+        const quando = new Date(escala.evento.data).toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })
+        sendPushToMembro(lider.id, {
+            title: `${escala.membro.first_name} não pode servir`,
+            body: `${escala.evento.nome}, ${quando} — ${escala.funcao}${motivo ? ` (${motivo})` : ''}`,
+            url: `/escalas/culto/${escala.evento_id}?equipa=${escala.departamento_id}`,
+        }).catch(() => {})
+    }
+    if (!lider.email) return
 
     await enviarNotificacaoEscala({
         membroNome: `${escala.membro.first_name} ${escala.membro.last_name}`,
@@ -224,8 +237,8 @@ async function notificarLiderEscala(escalaId: number, membroId: number, tipo: 'C
         funcao: escala.funcao,
         tipo,
         motivo,
-        liderEmail: escala.departamento.lider.email,
-        liderNome: escala.departamento.lider.first_name,
+        liderEmail: lider.email,
+        liderNome: lider.first_name,
     })
 }
 
@@ -420,63 +433,17 @@ export async function verificarIndisponibilidade(
         await requireAuth()
         const { db } = await getDb()
         const data = new Date(dataEvento)
-        const diaSemana = data.getDay()          // 0-6
-        const horaEvento = data.toTimeString().slice(0, 5)  // 'HH:MM'
-
         const indisponibilidades = await db.indisponibilidadeMembro.findMany({
             where: { membro_id: membroId }
         })
-
-        for (const ind of indisponibilidades) {
-            // DIA DA SEMANA
-            if (ind.tipo === 'DIA_SEMANA' && ind.dia_semana === diaSemana) {
-                // Verifica se há restrição de horário
-                if (ind.hora_inicio && ind.hora_fim) {
-                    if (horaEvento >= ind.hora_inicio && horaEvento <= ind.hora_fim) {
-                        return { bloqueado: true, motivo: ind.motivo || `Indisponível às ${DIAS[diaSemana]}s entre ${ind.hora_inicio} e ${ind.hora_fim}` }
-                    }
-                } else {
-                    return { bloqueado: true, motivo: ind.motivo || `Indisponível às ${DIAS[diaSemana]}s` }
-                }
-            }
-
-            // DATA ESPECÍFICA
-            if (ind.tipo === 'DATA_ESPECIFICA' && ind.data_inicio) {
-                const dInd = new Date(ind.data_inicio)
-                if (mesmoDia(data, dInd)) {
-                    if (ind.hora_inicio && ind.hora_fim) {
-                        if (horaEvento >= ind.hora_inicio && horaEvento <= ind.hora_fim) {
-                            return { bloqueado: true, motivo: ind.motivo || `Indisponível neste dia entre ${ind.hora_inicio} e ${ind.hora_fim}` }
-                        }
-                    } else {
-                        return { bloqueado: true, motivo: ind.motivo || 'Indisponível neste dia' }
-                    }
-                }
-            }
-
-            // INTERVALO
-            if (ind.tipo === 'INTERVALO' && ind.data_inicio && ind.data_fim) {
-                const inicio = new Date(ind.data_inicio)
-                const fim = new Date(ind.data_fim)
-                inicio.setHours(0, 0, 0, 0)
-                fim.setHours(23, 59, 59, 999)
-                if (data >= inicio && data <= fim) {
-                    return { bloqueado: true, motivo: ind.motivo || `Indisponível de ${fmtData(inicio)} a ${fmtData(fim)}` }
-                }
-            }
-        }
+        const motivo = motivoIndisponivel(indisponibilidades, data)
+        if (motivo) return { bloqueado: true, motivo }
 
         return { bloqueado: false, motivo: null }
     } catch {
         return { bloqueado: false, motivo: null }
     }
 }
-
-const DIAS = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado']
-const mesmoDia = (a: Date, b: Date) =>
-    a.getDate() === b.getDate() && a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear()
-const fmtData = (d: Date) =>
-    d.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })
 
 // ── BUSCAR MENSAGEM DE UM EVENTO ──────────────────────────────────────────────
 export async function buscarMensagemEventoAction(eventoId: number) {

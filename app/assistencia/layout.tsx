@@ -1,5 +1,8 @@
+import { exigirModuloAtivo } from '@/lib/modulos'
+import { MODULOS } from '@/lib/planos'
 import MembroLayoutWrapper from '@/components/membros/MembroLayoutWrapper'
 
-export default function AssistenciaLayout({ children }: { children: React.ReactNode }) {
+export default async function AssistenciaLayout({ children }: { children: React.ReactNode }) {
+    await exigirModuloAtivo(MODULOS.ASSISTENCIA)
     return <MembroLayoutWrapper>{children}</MembroLayoutWrapper>
 }

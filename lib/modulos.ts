@@ -1,9 +1,14 @@
 // lib/modulos.ts
 // Helpers server-side para verificação de módulos activos
 
+import * as React from 'react'
+import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { type Modulo, isModuloAtivo, getModulosAtivos, PLANOS, type PlanoId } from '@/lib/planos'
 import { getTenantIdFromHeaders } from '@/lib/db'
+
+// Uma consulta por pedido (o `cache` do React existe no Next; nos testes nao).
+const memoPorPedido: <T extends (...a: any[]) => any>(f: T) => T = (React as any).cache ?? ((f: any) => f)
 
 interface TenantModuloInfo {
     tenantId: number
@@ -71,4 +76,25 @@ export async function checkModulo(modulo: Modulo): Promise<boolean> {
     } catch {
         return false
     }
+}
+
+/**
+ * Lista de modulos ativos da igreja da sessao (plano + o que esta ligado no
+ * painel Cloud). Vazia sem sessao. Uma consulta por pedido.
+ */
+export const modulosAtivosDaIgreja = memoPorPedido(async (): Promise<Modulo[]> => {
+    try {
+        return (await getTenantModulos()).modulosAtivos
+    } catch {
+        return []
+    }
+})
+
+/**
+ * Para layouts e paginas: se o modulo estiver desligado, volta ao inicio
+ * (em vez de mostrar uma area que a igreja nao usa).
+ */
+export async function exigirModuloAtivo(modulo: Modulo) {
+    const ativos = await modulosAtivosDaIgreja()
+    if (!ativos.includes(modulo)) redirect('/membros/dashboard')
 }

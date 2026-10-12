@@ -21,7 +21,7 @@ let A: { tenant: number; escala: number; aviso: string; visitante: number; congr
 
 beforeAll(async () => {
     const userA = await membroPorEmail('user@a.teste')
-    const escala = await prisma.escala.findFirst({ where: { tenant_id: userA.tenant_id } })
+    const escala = await prisma.escala.findFirst({ where: { tenant_id: userA.tenant_id, membro_id: userA.id } })
     const aviso = await prisma.avisoMural.findFirst({ where: { tenant_id: userA.tenant_id } })
     const visitante = await prisma.visitante.findFirst({ where: { tenant_id: userA.tenant_id } })
     const congregacao = await prisma.congregacao.findFirst({ where: { tenant_id: userA.tenant_id } })

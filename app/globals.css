@@ -213,3 +213,64 @@ input[type="range"].accent-emerald-500::-moz-range-thumb {
 /* Scrollbar invisivel para nav horizontal */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+/* ── App nova (telemovel): tema que segue o telemovel, tamanhos intermedios ──
+   So dentro de .app-novo, para nao mexer nas paginas antigas (que tem cores
+   fixas para o escuro). Contraste AA nos dois temas. */
+.app-novo {
+  --a-bg: #f5f7f6;
+  --a-card: #ffffff;
+  --a-borda: #dfe6e2;
+  --a-texto: #17201b;
+  --a-suave: #56655d;
+  --a-destaque: #2f6b47;
+  --a-destaque-suave: #e3efe8;
+  --a-sobre-destaque: #ffffff;
+  --a-ok: #1f7a46;
+  --a-ok-suave: #e2f3e8;
+  --a-aviso: #8a5a00;
+  --a-aviso-suave: #fdf1d8;
+  --a-erro: #b3261e;
+  --a-erro-suave: #fbe4e2;
+  background-color: var(--a-bg);
+  color: var(--a-texto);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  .app-novo {
+    --a-bg: #0f1311;
+    --a-card: #181e1b;
+    --a-borda: #2a332e;
+    --a-texto: #eef3f0;
+    --a-suave: #a9bab1;
+    --a-destaque: #7fc29b;
+    --a-destaque-suave: #1f3428;
+    --a-sobre-destaque: #0f1311;
+    --a-ok: #7fd3a0;
+    --a-ok-suave: #1b3326;
+    --a-aviso: #f2c46d;
+    --a-aviso-suave: #3a2f17;
+    --a-erro: #f2a39b;
+    --a-erro-suave: #3d1f1c;
+  }
+}
+
+.app-novo .a-card { background: var(--a-card); border: 1px solid var(--a-borda); border-radius: 18px; }
+.app-novo .a-suave { color: var(--a-suave); }
+.app-novo .a-botao {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: 48px; padding: 0 1.1rem; border-radius: 14px; font-weight: 600; font-size: 16px;
+  transition: transform .1s ease, opacity .15s ease;
+}
+.app-novo .a-botao:active { transform: scale(.98); }
+.app-novo .a-botao:disabled { opacity: .55; }
+.app-novo .a-botao-principal { background: var(--a-destaque); color: var(--a-sobre-destaque); }
+.app-novo .a-botao-secundario { background: var(--a-card); color: var(--a-texto); border: 1px solid var(--a-borda); }
+.app-novo .a-foco:focus-visible, .app-novo button:focus-visible, .app-novo a:focus-visible {
+  outline: 3px solid var(--a-destaque); outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-novo * { transition: none !important; animation: none !important; }
+}

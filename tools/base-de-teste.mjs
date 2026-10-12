@@ -48,7 +48,9 @@ const resumo = []
 for (const letra of ['a', 'b']) {
     const L = letra.toUpperCase()
     const tenant = await prisma.tenant.create({
-        data: { slug: `igreja-${letra}`, nome: `Igreja de Teste ${L}`, plano: 'PREMIUM', status: 'ATIVO', onboarding_completo: true },
+        data: { slug: `igreja-${letra}`, nome: `Igreja de Teste ${L}`, plano: 'ENTERPRISE', status: 'ATIVO', onboarding_completo: true,
+            // Os mesmos modulos que a igreja tem ligados na producao (painel Cloud)
+            modulos_custom: ['escalas', 'grupos', 'louvor', 'mural', 'personalizacao', 'holyrics', 'cifras'] },
     })
     const cong = await prisma.congregacao.create({
         data: { nome: `Sede ${L}`, cidade: 'Lisboa', endereco: 'Rua de Teste, 1', tenant_id: tenant.id },
@@ -88,16 +90,59 @@ for (const letra of ['a', 'b']) {
         },
     })
 
-    const depto = await prisma.departamento.create({ data: { nome: 'Louvor', tenant_id: tenant.id } })
-    const funcao = await prisma.funcaoDepartamento.create({ data: { nome: 'Voz', departamento_id: depto.id, tenant_id: tenant.id } })
-    await prisma.integranteDepartamento.create({ data: { membro_id: membros.USER.id, departamento_id: depto.id, tenant_id: tenant.id } })
-    await prisma.integranteDepartamento.create({ data: { membro_id: membros.LEADER.id, departamento_id: depto.id, tenant_id: tenant.id } })
+    // Louvor: o LEADER lidera; funcoes; uma equipa com nomes (para as capturas)
+    const depto = await prisma.departamento.create({ data: { nome: 'Louvor', tenant_id: tenant.id, lider_id: membros.LEADER.id } })
+    const funcoes = {}
+    for (const nome of ['Voz', 'Teclas', 'Guitarra', 'Bateria']) {
+        funcoes[nome] = await prisma.funcaoDepartamento.create({ data: { nome, departamento_id: depto.id, tenant_id: tenant.id } })
+    }
+    const funcao = funcoes.Voz
+    const equipa = [
+        [membros.USER, ['Voz']],
+        [membros.LEADER, ['Voz', 'Guitarra']],
+    ]
+    for (const [first, last, fs] of [['Ana', 'Ribeiro', ['Voz']], ['Bruno', 'Costa', ['Teclas']], ['Carla', 'Mendes', ['Voz', 'Teclas']], ['Daniel', 'Sousa', ['Bateria']]]) {
+        const m = await prisma.membro.create({
+            data: {
+                first_name: first, last_name: last, email: `${first.toLowerCase()}@${letra}.teste`, password: hash,
+                role: 'USER', status: 'ATIVO', is_active: true, termo_aceite: true, tenant_id: tenant.id, congregacao_id: cong.id,
+                phone_1: '91' + String(Math.floor(1000000 + Math.random() * 8999999)),
+            },
+        })
+        equipa.push([m, fs])
+    }
+    const integrantes = {}
+    for (const [m, fs] of equipa) {
+        integrantes[m.id] = await prisma.integranteDepartamento.create({
+            data: {
+                membro_id: m.id, departamento_id: depto.id, tenant_id: tenant.id,
+                funcoes: { create: fs.map((f) => ({ funcao_id: funcoes[f].id })) },
+            },
+        })
+    }
 
+    // Tres cultos: domingo (com escala do USER por confirmar), quarta e o domingo seguinte
+    const diaHora = (dias, h) => { const d = new Date(hoje.getTime() + dias * 86400000); d.setHours(h, 0, 0, 0); return d }
+    // Proximo domingo (nunca hoje) e a quarta a seguir: datas reais de culto
+    const domingo = ((7 - hoje.getDay()) % 7) || 7
+    const quarta = domingo + 3
     const evento = await prisma.evento.create({
-        data: { nome: `Culto de domingo ${L}`, data: new Date(hoje.getTime() + 3 * 86400000), atualizado_em: hoje, tenant_id: tenant.id },
+        data: { nome: `Culto de domingo ${L}`, data: diaHora(domingo, 10), atualizado_em: hoje, tenant_id: tenant.id, tipo: 'CULTO_REGULAR' },
     })
+    await prisma.evento.create({ data: { nome: 'Culto de oração', data: diaHora(quarta, 20), atualizado_em: hoje, tenant_id: tenant.id, tipo: 'CULTO_REGULAR' } })
+    await prisma.evento.create({ data: { nome: `Culto de domingo ${L}`, data: diaHora(domingo + 7, 10), atualizado_em: hoje, tenant_id: tenant.id, tipo: 'CULTO_REGULAR' } })
     await prisma.escala.create({
-        data: { funcao: funcao.nome, evento_id: evento.id, departamento_id: depto.id, membro_id: membros.USER.id, tenant_id: tenant.id },
+        data: { funcao: funcao.nome, funcao_id: funcao.id, evento_id: evento.id, departamento_id: depto.id, membro_id: membros.USER.id, tenant_id: tenant.id },
+    })
+    // A Ana ja confirmou as teclas? Nao: Ana canta; o Bruno toca e confirmou
+    const bruno = equipa.find(([m]) => m.first_name === 'Bruno')[0]
+    await prisma.escala.create({
+        data: { funcao: 'Teclas', funcao_id: funcoes.Teclas.id, evento_id: evento.id, departamento_id: depto.id, membro_id: bruno.id, tenant_id: tenant.id, confirmado: true },
+    })
+    // A Carla nao pode no primeiro domingo (indisponibilidade marcada)
+    const carla = equipa.find(([m]) => m.first_name === 'Carla')[0]
+    await prisma.indisponibilidadeMembro.create({
+        data: { membro_id: carla.id, tenant_id: tenant.id, tipo: 'DATA_ESPECIFICA', data_inicio: diaHora(domingo, 0), motivo: 'Viagem' },
     })
 
     await prisma.grupo.create({

@@ -1,3 +1,5 @@
+import { exigirModuloAtivo } from '@/lib/modulos'
+import { MODULOS } from '@/lib/planos'
 // app/membros/agendar/page.tsx — Vista do membro para pedir agendamento
 import { getDb } from '@/lib/db'
 import { getSessionData } from '@/lib/auth-utils'
@@ -5,6 +7,7 @@ import { redirect } from 'next/navigation'
 import AgendarClient from '@/components/membros/AgendarClient'
 
 export default async function AgendarPage() {
+    await exigirModuloAtivo(MODULOS.GABINETE)
     const db = await getDb()
     const session = await getSessionData()
     if (!session) redirect('/membros/login')

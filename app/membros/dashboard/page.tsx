@@ -37,7 +37,7 @@ import AcoesRapidas from '@/components/membros/AcoesRapidas'
 import EstatisticasPessoais from '@/components/membros/EstatisticasPessoais'
 import WidgetYouTube from '@/components/membros/WidgetYouTube'
 import WidgetInstagram from '@/components/membros/WidgetInstagram'
-import MobileDashboard from '@/components/membros/MobileDashboard'
+import InicioEscalas from '@/components/app/InicioEscalas'
 import { fetchLatestYouTubeVideo } from '@/lib/youtube-rss'
 import { getTenantIdFromHeaders } from '@/lib/db'
 
@@ -553,38 +553,11 @@ export default async function DashboardMembro({
 
     return (
         <>
-        {/* MOBILE DASHBOARD */}
-        <div className="md:hidden">
-            <MobileDashboard
-                membro={membroParaMobile}
-                escalas={escalasParaMobile}
-                departamentos={departamentosParaMobile}
-                membroId={membro.id}
-                role={role}
-                proximosEventos={(proximosEventos || []).map((e: any) => ({ id: e.id, nome: e.nome, data: e.data.toISOString() }))}
-                temEscalaCantina={listaEscalas.some((e: any) => {
-                    const dataEvento = new Date(e.evento.data)
-                    return dataEvento >= hojeInicio && dataEvento < amanha &&
-                        e.departamento.nome.toLowerCase().includes('cantina')
-                })}
-                cursosAtivos={(cursosAtivosRaw || []).map((c: any) => ({
-                    id: c.id,
-                    titulo: c.titulo,
-                    descricao: c.descricao,
-                    categoria: c.categoria,
-                    status: c.status,
-                    data_inicio: c.data_inicio.toISOString(),
-                    data_fim: c.data_fim.toISOString(),
-                    vagas_maximas: c.vagas_maximas,
-                    turmas: c.turmas?.map((t: any) => ({ _count: { matriculas: t._count?.matriculas || 0 } })),
-                    _count: c._count,
-                }))}
-                meusInteresseIds={(meusInteressesRaw || []).map((i: any) => i.curso_id)}
-                redesSociais={{
-                    instagram: tenantSocial?.instagram_handle ? `https://instagram.com/${tenantSocial.instagram_handle}` : undefined,
-                    youtube: tenantSocial?.youtube_channel_id ? `https://youtube.com/channel/${tenantSocial.youtube_channel_id}` : undefined,
-                }}
-            />
+        {/* TELEMOVEL: a app nova, centrada nas escalas */}
+        <div className="app-novo md:hidden min-h-screen">
+            <main className="mx-auto max-w-md px-4 pt-20 pb-28">
+                <InicioEscalas sessao={session} primeiroNome={membro.first_name} />
+            </main>
         </div>
 
         {/* DESKTOP DASHBOARD */}
