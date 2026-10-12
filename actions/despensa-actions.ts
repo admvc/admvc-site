@@ -4,11 +4,10 @@
 import { revalidatePath } from 'next/cache'
 import { requireRole } from '@/lib/auth-utils'
 import { getLoyverseTokenForTenant } from '@/lib/loyverse-api'
-import { headers } from 'next/headers'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 async function getTenantId(): Promise<number> {
-    const headersList = await headers()
-    return Number(headersList.get('x-tenant-id') || 0)
+    return await getTenantIdFromHeaders()
 }
 
 export async function cadastrarItemLoyverse(formData: FormData) {

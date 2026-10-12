@@ -1,12 +1,14 @@
 // app/api/loyverse/sync/route.ts
 import { NextResponse } from 'next/server'
 import { getTenantClient } from '@/lib/prisma'
+import { sessaoDaApi } from '@/lib/api-auth'
 import { getLoyverseTokenForTenant, createLoyverseCustomer } from '@/lib/loyverse-api'
 
 export async function POST(request: Request) {
     try {
-        const tenantId = Number(request.headers.get('x-tenant-id') || 0)
-        if (!tenantId) return NextResponse.json({ error: 'Tenant nao identificado' }, { status: 401 })
+        const { sessao, erro } = await sessaoDaApi(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
+        if (erro) return erro
+        const tenantId = sessao.tenantId
         const db = getTenantClient(tenantId)
 
         const token = await getLoyverseTokenForTenant(tenantId)

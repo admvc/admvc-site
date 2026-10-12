@@ -2,7 +2,6 @@
 import { getDb } from '@/lib/db'
 import { getSessionData } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
 import {
     Shield, Search, Calendar, User, AlertTriangle,
     CheckCircle2, XCircle, LogIn, LogOut, Edit3,
@@ -55,25 +54,17 @@ const COR_CATEGORIA: Record<string, string> = {
     MURAL: 'bg-lime-500/10 text-lime-700 border-lime-500/20',
 }
 
-export default async function AuditoriaPage({
-    searchParams
-}: {
-    searchParams: { categoria?: string; acao?: string; q?: string; pagina?: string }
-}) {
+export default async function AuditoriaPage(
+    props: {
+        searchParams: Promise<{ categoria?: string; acao?: string; q?: string; pagina?: string }>
+    }
+) {
+    const searchParams = await props.searchParams;
     const db = await getDb()
-    const cookieStore = await cookies()
-    const session = cookieStore.get('admvc_session')
+    const session = await getSessionData()
     if (!session) redirect('/membros/login')
-
-    const parts = decodeURIComponent(session.value).split('|')
-    let tenantId = '1', userRole = ''
-    parts.forEach(part => {
-        const [k, v] = part.split(':')
-        if (k === 'tenant_id') tenantId = v
-        if (k === 'role') userRole = v
-    })
-
-    if (userRole !== 'ADMIN') redirect('/membros/dashboard')
+    if (session.role !== 'ADMIN') redirect('/membros/dashboard')
+    const tenantId = session.tenantId
 
     const pagina = Number(searchParams.pagina || 1)
     const porPagina = 50

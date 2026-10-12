@@ -1,41 +1,18 @@
 'use server'
 
 import prisma, { getTenantClient } from '@/lib/prisma'
-import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { requireAuth, requireRole } from '@/lib/auth-utils'
+import { requireLouvorPermission } from '@/lib/louvor-permissoes'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 async function getDb() {
-    const h = await headers()
-    const tenantId = Number(h.get('x-tenant-id') || 0)
+    const tenantId = await getTenantIdFromHeaders()
     if (!tenantId) throw new Error('Igreja nao identificada.')
     return getTenantClient(tenantId)
 }
 
 /** Verifica se o utilizador e admin, lider do Louvor ou delegado com pode_gerir_escalas no Louvor */
-async function requireLouvorPermission() {
-    const session = await requireAuth()
-    const isAdmin = session.role === 'ADMIN' || session.role === 'CONGREGATION_ADMIN'
-
-    if (!isAdmin) {
-        const db = await getDb()
-        const lideraLouvor = await db.departamento.findFirst({
-            where: { lider_id: session.membroId, nome: { contains: 'Louvor', mode: 'insensitive' } },
-        })
-        const delegadoLouvor = await db.integranteDepartamento.findFirst({
-            where: {
-                membro_id: session.membroId,
-                pode_gerir_escalas: true,
-                departamento: { nome: { contains: 'Louvor', mode: 'insensitive' } },
-            },
-        })
-        if (!lideraLouvor && !delegadoLouvor) {
-            throw new Error('Apenas lideres ou delegados do Louvor podem gerir o repertorio.')
-        }
-    }
-
-    return session
-}
 
 // 1. BUSCAR O REPERTÓRIO DE UM EVENTO ESPECÍFICO
 export async function getRepertorioByEvento(eventoId: number) {
@@ -499,7 +476,7 @@ export async function buscarMusicaPorId(musicaId: string) {
 // ── GUARDAR CIFRA INTERNA ────────────────────────────────────────────────────
 export async function salvarCifraInternaAction(musicaId: string, cifra: string) {
     try {
-        await requireAuth()
+        await requireLouvorPermission()
         // Guardar a cifra como recebida (o editor já converte no client)
         await prisma.musica.update({
             where: { id: musicaId },
@@ -519,8 +496,7 @@ export async function buscarRelatorioLouvorAction(mes: number, ano: number) {
     try {
         await requireAuth()
         const db = await getDb()
-        const h = await headers()
-        const tenantId = Number(h.get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
 
         const inicioMes = new Date(ano, mes - 1, 1)
         const fimMes = new Date(ano, mes, 0, 23, 59, 59)

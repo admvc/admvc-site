@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server'
 import { getTenantClient } from '@/lib/prisma'
+import { sessaoDaApi } from '@/lib/api-auth'
 import { getLoyverseTokenForTenant } from '@/lib/loyverse-api'
 // 7b7958b8-70ba-4573-9844-bc7fc957759e UID de MEMBRO (Tipo de Pagamento do Loyverse)
 
 
 export async function POST(request: Request) {
     try {
-        const tenantId = Number(request.headers.get('x-tenant-id') || 0)
-        if (!tenantId) return NextResponse.json({ error: 'Tenant nao identificado' }, { status: 401 })
+        const { sessao, erro } = await sessaoDaApi(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
+        if (erro) return erro
+        const tenantId = sessao.tenantId
         const db = getTenantClient(tenantId)
 
         const { lancamentoId, membroId, valor } = await request.json()

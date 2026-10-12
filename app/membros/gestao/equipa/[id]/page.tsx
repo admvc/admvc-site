@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Phone, Mail, ArrowLeft, UserPlus } from 'lucide-react'
 
-export default async function EquipaDepartamento({ params }: { params: { id: string } }) {
+export default async function EquipaDepartamento({ params }: { params: Promise<{ id: string }> }) {
     const db = await getDb()
     const { id } = await params;
     const deptoId = parseInt(id);

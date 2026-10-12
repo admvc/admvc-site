@@ -3,50 +3,12 @@
 
 import prisma from '@/lib/prisma'
 import { getSessionData } from '@/lib/auth-utils'
+import { exigirAcolhimento } from '@/lib/acolhimento-permissions'
 import { revalidatePath } from 'next/cache'
 import { audit } from '@/lib/audit'
 
 // ATUALIZA ESTA LINHA ABAIXO:
 import { enviarEmailNotificacaoEquipa } from '@/lib/mail';
-
-export async function registarVisitante(formData: FormData) {
-    try {
-        const nome = formData.get('nome') as string;
-        const telefone = formData.get('telefone') as string;
-        const pedido = formData.get('pedido_oracao') as string;
-
-        // Recupera o tenant activo (formulário público, sem sessão)
-        const tenant = await prisma.tenant.findFirst({
-            where: { status: 'ATIVO' },
-            orderBy: { id: 'asc' },
-        }) ?? await prisma.tenant.findFirst({ orderBy: { id: 'asc' } });
-        if (!tenant) throw new Error("Tenant não configurado.");
-
-        const novoVisitante = await prisma.visitante.create({
-            data: {
-                tenant_id: tenant.id,
-                nome: nome,
-                telefone: telefone,
-                pedido_oracao: pedido,
-            }
-        });
-
-        audit({ tenant_id: tenant.id, categoria: 'VISITANTES', acao: 'CRIAR', alvo_nome: nome, alvo_tipo: 'VISITANTE', descricao: `Visitante "${nome}" registado` }).catch((err) => console.error('[VISITANTE] Falha no audit:', err))
-
-        // Agora a função será reconhecida
-        await enviarEmailNotificacaoEquipa({
-            nome: nome,
-            telefone: telefone,
-            pedido: pedido
-        });
-
-        revalidatePath('/departamentos/acolhimento/dashboard');
-        return { ok: true, data: novoVisitante };
-    } catch (e) {
-        console.error("Erro no registo:", e); // Agora vais ver o erro real se o Prisma falhar
-        return { ok: false, error: "Ocorreu um erro ao registar." }
-    }
-}
 
 export async function salvarRelatoRapido(formData: FormData) {
     try {
@@ -67,6 +29,7 @@ export async function salvarRelatoRapido(formData: FormData) {
         // 2. Captura dos dados do formulário
         const visitante_id = Number(formData.get('visitante_id'));
         const relato = formData.get('relato') as string;
+        await exigirAcolhimento('MEMBRO', visitante_id);
 
         if (!relato || relato.trim() === "") {
             return { ok: false, error: "O relato não pode estar vazio." };
@@ -133,6 +96,7 @@ export async function registarAcompanhamento(formData: FormData) {
         if (!membro) return { error: "Membro não encontrado." };
 
         const visitanteId = Number(formData.get('visitante_id'));
+        await exigirAcolhimento('MEMBRO', visitanteId);
         const tipoContacto = formData.get('tipo_contacto') as string;
         const observacoes = formData.get('observacoes') as string;
         const novoStatus = formData.get('status') as string;
@@ -194,14 +158,11 @@ export async function registarAcompanhamento(formData: FormData) {
         // 3. Se CONSOLIDADO → criar membro automaticamente
         if (novoStatus === 'CONSOLIDADO') {
             try {
-                const bcrypt = await import('bcryptjs')
                 const nomeParts = visitanteAtualizado.nome.trim().split(' ')
                 const firstName = nomeParts[0] || 'Membro'
                 const lastName = nomeParts.slice(1).join(' ') || ''
 
-                // Gerar senha temporária: primeiras 4 letras do nome + "2024!"
-                const senhaTemp = (firstName.slice(0, 4).toLowerCase() + '2024!').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                const hashedPassword = await bcrypt.hash(senhaTemp, 10)
+                // Conta sem senha: a pessoa define-a pelo link do email de boas-vindas.
 
                 // Verificar se ja existe membro com este visitante_id ou email
                 const jaExiste = visitanteAtualizado.email
@@ -214,7 +175,7 @@ export async function registarAcompanhamento(formData: FormData) {
                             first_name: firstName,
                             last_name: lastName,
                             email: visitanteAtualizado.email || `visitante${visitanteId}@temp.admvc.org`,
-                            password: hashedPassword,
+                            password: null,
                             phone_1: visitanteAtualizado.telefone,
                             status: 'PENDENTE',
                             church_role: 'Visitante',
@@ -241,7 +202,7 @@ export async function registarAcompanhamento(formData: FormData) {
                         alvo_id: novoMembro.id,
                         alvo_nome: `${firstName} ${lastName}`,
                         alvo_tipo: 'MEMBRO',
-                        descricao: `Membro criado automaticamente a partir do visitante "${visitanteAtualizado.nome}" (consolidacao). Senha temporaria: ${senhaTemp}`,
+                        descricao: `Membro criado automaticamente a partir do visitante "${visitanteAtualizado.nome}" (consolidacao). Sem senha: recebe link para a definir.`,
                     }).catch((err) => console.error('[CONSOLIDACAO] Falha no audit:', err))
 
                     // Auto-matricular no curso Permanecer (se existir)
@@ -266,11 +227,15 @@ export async function registarAcompanhamento(formData: FormData) {
                         }
                     } catch (err) { console.error('[CONSOLIDACAO] Falha na auto-matricula Permanecer:', err) }
 
-                    // Enviar email de boas-vindas com credenciais
+                    // Email de boas-vindas com o link para definir a palavra-passe
+                    const temEmail = !!novoMembro.email && !novoMembro.email.includes('@temp.admvc.org')
+                    let emailEnviado = false
                     try {
-                        const { enviarEmailBoasVindas } = await import('@/lib/mail')
-                        if (novoMembro.email && !novoMembro.email.includes('@temp.admvc.org')) {
-                            await enviarEmailBoasVindas(firstName, novoMembro.email, senhaTemp)
+                        if (temEmail) {
+                            const { enviarEmailBoasVindas } = await import('@/lib/mail')
+                            const { criarLinkRedefinir } = await import('@/lib/redefinir-senha')
+                            const r = await enviarEmailBoasVindas(firstName, novoMembro.email, await criarLinkRedefinir(novoMembro))
+                            emailEnviado = !!r?.ok
                         }
                     } catch (err) { console.error('[CONSOLIDACAO] Falha ao enviar email boas-vindas:', err) }
 
@@ -280,8 +245,8 @@ export async function registarAcompanhamento(formData: FormData) {
                         ok: true,
                         novoStatus,
                         credenciais: {
-                            email: novoMembro.email,
-                            senha: senhaTemp,
+                            email: temEmail ? novoMembro.email : null,
+                            emailEnviado,
                         }
                     };
                 }
@@ -313,17 +278,16 @@ export async function registarAcompanhamento(formData: FormData) {
 
 export async function atribuirResponsavel(visitanteId: number, responsavelId: number) {
     try {
-        const session = await getSessionData();
-        if (!session) return { error: "Sessao expirada." };
+        const session = await exigirAcolhimento('LIDER', visitanteId);
 
         const membro = await prisma.membro.findUnique({ where: { id: session.membroId } });
         if (!membro) return { error: "Membro nao encontrado." };
 
         const responsavel = await prisma.membro.findUnique({
             where: { id: responsavelId },
-            select: { first_name: true, last_name: true }
+            select: { first_name: true, last_name: true, tenant_id: true }
         });
-        if (!responsavel) return { error: "Responsavel nao encontrado." };
+        if (!responsavel || responsavel.tenant_id !== session.tenantId) return { error: "Responsavel nao encontrado." };
 
         await prisma.visitante.update({
             where: { id: visitanteId },
@@ -361,8 +325,7 @@ export async function atribuirResponsavel(visitanteId: number, responsavelId: nu
 
 export async function guardarNotaLider(visitanteId: number, nota: string) {
     try {
-        const session = await getSessionData();
-        if (!session) return { error: "Sessao expirada." };
+        const session = await exigirAcolhimento('LIDER', visitanteId);
 
         const membro = await prisma.membro.findUnique({ where: { id: session.membroId } });
         if (!membro) return { error: "Membro nao encontrado." };
@@ -393,8 +356,7 @@ export async function guardarNotaLider(visitanteId: number, nota: string) {
 
 export async function agendarProximoContacto(visitanteId: number, data: string) {
     try {
-        const session = await getSessionData();
-        if (!session) return { error: "Sessao expirada." };
+        const session = await exigirAcolhimento('MEMBRO', visitanteId);
 
         await prisma.visitante.update({
             where: { id: visitanteId },

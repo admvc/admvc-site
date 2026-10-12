@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
 import bcrypt from 'bcryptjs'
+import { validarSenhaNova } from '../lib/senhas'
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -10,6 +11,15 @@ const pool = new Pool({
 
 const adapter = new PrismaPg(pool as any)
 const prisma = new PrismaClient({ adapter })
+
+/** Le a senha de uma variavel de ambiente; recusa correr sem ela ou se for fraca. */
+function senhaDoSeed(variavel: string, email: string): string {
+    const senha = process.env[variavel]
+    if (!senha) throw new Error(`Defina ${variavel} antes de correr o seed (as contas nao sao criadas com senhas fixas).`)
+    const motivo = validarSenhaNova(senha, email)
+    if (motivo) throw new Error(`${variavel}: ${motivo}`)
+    return senha
+}
 
 async function main() {
     console.log('🌱 Iniciando a Sementeira (Seed)...')
@@ -229,7 +239,8 @@ async function main() {
     // =====================================================================
     // 5. CRIAR SUPER ADMIN INICIAL (VINCULADO AO TENANT)
     // =====================================================================
-    const hashedAdminPassword = await bcrypt.hash('admin123', 10) // Mude após o primeiro login
+    // Senhas so por variaveis de ambiente (nunca fixas no codigo): ver senhaDoSeed()
+    const hashedAdminPassword = await bcrypt.hash(senhaDoSeed('SEED_ADMIN_PASSWORD', 'admin@admvc.com'), 10)
 
     // O E-mail é a única coisa que continua a ser 100% global no sistema
     await prisma.membro.upsert({
@@ -249,12 +260,12 @@ async function main() {
             tenant_id: tenant.id // Obrigatório! Ligamos o admin à Sede Global
         },
     })
-    console.log('Admin da igreja criado: admin@admvc.com / admin123')
+    console.log('Admin da igreja criado: admin@admvc.com (senha de SEED_ADMIN_PASSWORD)')
 
     // =====================================================================
     // SUPER ADMIN DA PLATAFORMA (tabela separada)
     // =====================================================================
-    const hashedSaPassword = await bcrypt.hash('superadmin123', 10)
+    const hashedSaPassword = await bcrypt.hash(senhaDoSeed('SEED_SA_PASSWORD', 'sa@admvc.com'), 10)
     await prisma.superAdmin.upsert({
         where: { email: 'sa@admvc.com' },
         update: {},
@@ -264,7 +275,7 @@ async function main() {
             nome: 'Super Administrador',
         }
     })
-    console.log('Super Admin da Plataforma criado: sa@admvc.com / superadmin123')
+    console.log('Super Admin da Plataforma criado: sa@admvc.com (senha de SEED_SA_PASSWORD)')
 
     console.log('SEED CONCLUIDO COM SUCESSO!')
 }

@@ -102,7 +102,9 @@ export async function enviarEmailNotificacaoEquipa(dados: { nome: string, telefo
 }
 
 // ── EMAIL DE BOAS-VINDAS (primeiro login) ────────────────────────────────────
-export async function enviarEmailBoasVindas(nome: string, email: string, senha?: string) {
+// `linkDefinirSenha`: para contas criadas sem senha (importacao, visitante
+// consolidado). Nunca se envia uma senha por email.
+export async function enviarEmailBoasVindas(nome: string, email: string, linkDefinirSenha?: string) {
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   const linkDashboard = 'https://app.igrejaadmvc.org/membros/login';
@@ -133,12 +135,10 @@ export async function enviarEmailBoasVindas(nome: string, email: string, senha?:
               A partir de agora pode acompanhar escalas, eventos, grupos e muito mais pela sua area de membro.
             </p>
 
-            ${senha ? `
+            ${linkDefinirSenha ? `
             <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 16px; padding: 20px; margin: 20px 0;">
-              <p style="font-size: 10px; font-weight: 800; color: #3F6B4F; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px 0;">As suas credenciais</p>
-              <p style="font-size: 14px; margin: 5px 0;"><strong>Email:</strong> ${email}</p>
-              <p style="font-size: 14px; margin: 5px 0;"><strong>Senha:</strong> ${senha}</p>
-              <p style="font-size: 11px; color: #64748b; margin: 10px 0 0 0;">Recomendamos que altere a senha apos o primeiro acesso.</p>
+              <p style="font-size: 14px; margin: 0 0 12px 0;">Para entrar, defina primeiro a sua palavra-passe (o link vale 1 hora; depois pode pedir outro em "Esqueci-me da palavra-passe").</p>
+              <a href="${linkDefinirSenha}" target="_blank" style="display: inline-block; background-color: #3F6B4F; color: #ffffff; padding: 12px 28px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 13px;">Definir palavra-passe</a>
             </div>
             ` : ''}
 
@@ -166,10 +166,45 @@ export async function enviarEmailBoasVindas(nome: string, email: string, senha?:
       return { ok: false };
     }
 
-    console.log(`[BOAS-VINDAS] Email enviado para ${email}`);
     return { ok: true };
   } catch (err) {
     console.error('[BOAS-VINDAS] Erro ao enviar email:', err);
+    return { ok: false };
+  }
+}
+
+// ── DEFINIR / RECUPERAR PALAVRA-PASSE ────────────────────────────────────────
+export async function enviarEmailNovaSenha(nome: string, email: string, link: string, motivo: 'pedido' | 'senha-conhecida' | 'convite') {
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const intro = motivo === 'senha-conhecida'
+    ? 'Por segurança, a sua palavra-passe atual deixou de ser aceite (era uma senha atribuída automaticamente). Defina uma nova no botão abaixo.'
+    : motivo === 'convite'
+      ? 'Foi criado o seu acesso à área de membro. Defina a sua palavra-passe no botão abaixo.'
+      : 'Recebemos um pedido para definir uma nova palavra-passe. Se não foi você, ignore este email: nada muda.';
+
+  try {
+    const { error } = await resend.emails.send({
+      from: 'Igreja ADMVC <acolhimento@igrejaadmvc.org>',
+      to: email,
+      subject: 'Definir a sua palavra-passe — Igreja ADMVC',
+      html: `
+        <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; color: #1a202c;">
+          <p style="font-size: 16px;">Olá <strong>${nome}</strong>,</p>
+          <p style="font-size: 15px; line-height: 1.7;">${intro}</p>
+          <p style="text-align: center; margin: 28px 0;">
+            <a href="${link}" target="_blank" style="display: inline-block; background-color: #3F6B4F; color: #ffffff; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 14px;">Definir palavra-passe</a>
+          </p>
+          <p style="font-size: 13px; color: #64748b; line-height: 1.6;">O link vale 1 hora e só pode ser usado uma vez.</p>
+        </div>
+      `,
+    });
+    if (error) {
+      console.error('[NOVA SENHA] Erro Resend:', error);
+      return { ok: false };
+    }
+    return { ok: true };
+  } catch (err) {
+    console.error('[NOVA SENHA] Erro ao enviar email:', err);
     return { ok: false };
   }
 }

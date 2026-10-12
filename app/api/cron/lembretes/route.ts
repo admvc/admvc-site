@@ -1,6 +1,7 @@
 // app/api/cron/lembretes/route.ts
 // Cron job que corre a cada hora e envia push para escalados 2h antes do evento
 import { NextResponse } from 'next/server'
+import { cronAutorizado } from '@/lib/cron'
 import prisma from '@/lib/prisma'
 import { sendPushToMembros } from '@/lib/web-push'
 
@@ -8,9 +9,7 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
     // Verificar secret para proteger o endpoint
-    const authHeader = request.headers.get('authorization')
-    const cronSecret = process.env.CRON_SECRET
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronAutorizado(request)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

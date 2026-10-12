@@ -1,13 +1,12 @@
 // app/admin/congregacoes/page.tsx
 import { getTenantClient } from '@/lib/prisma'
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import GestaoCongregacoesClient from '@/components/igreja/GestaoCongregacoesClient'
 import Breadcrumbs from '@/components/Breadcrumbs'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 export default async function CongregacoesPage() {
-    const headersList = await headers()
-    const tenantIdStr = headersList.get('x-tenant-id')
+    const tenantIdStr = await getTenantIdFromHeaders()
 
     if (!tenantIdStr) {
         redirect('/membros/login?error=Igreja nao identificada.')

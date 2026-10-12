@@ -3,6 +3,7 @@
 // Também gera URLs directos para CifraClub e Letras.mus.br
 
 import { NextRequest, NextResponse } from 'next/server'
+import { sessaoDaApi } from '@/lib/api-auth'
 
 // ── HELPERS: gerar slugs para URLs directos ───────────────────────────────────
 function toSlug(str: string): string {
@@ -103,6 +104,9 @@ async function pesquisarYoutube(titulo: string, artista: string) {
 
 // ── HANDLER PRINCIPAL ──────────────────────────────────────────────────────────
 export async function GET(request: NextRequest) {
+    const { erro } = await sessaoDaApi()
+    if (erro) return erro
+
     const { searchParams } = request.nextUrl
     const titulo = searchParams.get('titulo') || ''
     const artista = searchParams.get('artista') || ''

@@ -181,7 +181,7 @@ export default async function AgendasDashboard() {
                                         const data = new Date(comp.data_inicio);
                                         
                                         // MÁGICA DOS NOMES (Junta quem quer que esteja marcado)
-                                        let listaNomes: string[] = [];
+                                        const listaNomes: string[] = [];
                                         if (comp.membros?.length) listaNomes.push(...comp.membros.map(m => m.first_name));
                                         if (comp.visitantes?.length) listaNomes.push(...comp.visitantes.map(v => v.nome.split(' ')[0])); // Apenas o 1º nome do visitante
                                         if (comp.departamentos?.length) listaNomes.push(...comp.departamentos.map(d => d.nome));

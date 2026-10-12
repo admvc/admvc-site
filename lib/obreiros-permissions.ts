@@ -33,3 +33,24 @@ export function podeGerirObreiros(role: ObreirosRole): boolean {
 export function podeVerRelatorio(role: ObreirosRole): boolean {
     return role === 'ADMIN' || role === 'LIDER'
 }
+
+/**
+ * Para as actions dos obreiros: equipa da Diaconia (nivel MEMBRO) ou
+ * lider/admin para o relatorio (nivel RELATORIO). Lanca erro se nao.
+ */
+export async function exigirObreiros(nivel: 'MEMBRO' | 'RELATORIO') {
+    const { requireAuth } = await import('@/lib/auth-utils')
+    const { default: prisma } = await import('@/lib/prisma')
+    const sessao = await requireAuth()
+    const membro = await prisma.membro.findUnique({
+        where: { id: sessao.membroId },
+        select: {
+            ministerios: { select: { departamento: { select: { nome: true } } } },
+            departamentos_liderados: { select: { nome: true } },
+        },
+    })
+    const papel = membro ? getObreirosRole(membro, sessao.role) : 'NONE'
+    const ok = nivel === 'RELATORIO' ? podeVerRelatorio(papel) : papel !== 'NONE'
+    if (!ok) throw new Error('Sem permissão: só para a equipa da Diaconia.')
+    return sessao
+}

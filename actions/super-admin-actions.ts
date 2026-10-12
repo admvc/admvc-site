@@ -2,9 +2,10 @@
 
 import prisma from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { validarSenhaNova } from '@/lib/senhas'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
+import { criarSessaoMembro } from '@/lib/sessao'
 import { requireSAAuth, getSASession } from '@/lib/sa-auth'
 import { type PlanoId, type Modulo, PLANOS, MODULOS } from '@/lib/planos'
 
@@ -35,6 +36,9 @@ export async function criarNovaIgreja(formData: FormData) {
 
         const slugExiste = await prisma.tenant.findUnique({ where: { slug } });
         if (slugExiste) return { error: 'Este identificador (slug) já está em uso.' };
+
+        const motivoSenha = validarSenhaNova(adminPassword, adminEmail);
+        if (motivoSenha) return { error: motivoSenha };
 
         // Hash da senha do novo admin
         const hashedPassword = await bcrypt.hash(adminPassword, 10);
@@ -289,7 +293,9 @@ export async function atualizarAdminIgreja(tenantId: number, formData: FormData)
             }
             data.email = email
         }
-        if (password && password.length >= 6) {
+        if (password) {
+            const motivoSenha = validarSenhaNova(password, email || admin.email)
+            if (motivoSenha) return { error: motivoSenha }
             data.password = await bcrypt.hash(password, 10)
         }
 
@@ -401,9 +407,8 @@ export async function criarSuperAdmin(formData: FormData) {
             return { error: 'Preencha todos os campos.' }
         }
 
-        if (password.length < 6) {
-            return { error: 'Password deve ter no minimo 6 caracteres.' }
-        }
+        const motivoSenha = validarSenhaNova(password, email)
+        if (motivoSenha) return { error: motivoSenha }
 
         const existe = await prisma.superAdmin.findUnique({ where: { email } })
         if (existe) return { error: 'Este email ja esta em uso.' }
@@ -478,18 +483,8 @@ export async function impersonarIgreja(tenantId: number) {
         },
     })
 
-    // Create member session cookie
-    const cong = tenant.congregacoes[0]
-    const sessionData = `id:${admin.id}|email:${admin.email}|role:${admin.role}|tenant_id:${tenantId}|plano:${tenant.plano}${cong ? `|cong_id:${cong.id}|cong_nome:${cong.nome}` : ''}`
-
-    const cookieStore = await cookies()
-    cookieStore.set('admvc_session', sessionData, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        path: '/',
-        maxAge: 60 * 60 * 2, // 2 hours only for impersonation
-        sameSite: 'lax',
-    })
+    // Sessao de membro (o admin dessa igreja), so por 2 horas
+    await criarSessaoMembro({ ...admin, plano: tenant.plano }, 60 * 60 * 2)
 
     redirect('/membros/dashboard')
 }

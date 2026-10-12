@@ -3,11 +3,11 @@
 // Configurar em vercel.json: { "crons": [{ "path": "/api/cron/audit-cleanup", "schedule": "0 3 * * *" }] }
 
 import { NextResponse } from 'next/server'
+import { cronAutorizado } from '@/lib/cron'
 import { limparLogsAntigos } from '@/lib/audit'
 
 export async function GET(request: Request) {
-    const authHeader = request.headers.get('authorization')
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    if (!cronAutorizado(request)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

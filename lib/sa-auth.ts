@@ -3,34 +3,31 @@
 
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import prisma from '@/lib/prisma'
+import { COOKIE_SA, impressaoDaSenha, lerSessao } from '@/lib/sessao-core'
 
 export interface SASessionData {
     saId: number
     email: string
 }
 
-const SA_COOKIE = 'admvc_sa_session'
-
 /**
- * Parseia o cookie de sessão do Super Admin.
- * Formato: "sa_id:X|email:Y"
+ * Le o cookie de sessao do Super Admin: verifica a assinatura e confirma na
+ * base que a conta existe, esta ativa e nao mudou de senha.
  */
 export async function getSASession(): Promise<SASessionData | null> {
     const cookieStore = await cookies()
-    const session = cookieStore.get(SA_COOKIE)
-    if (!session?.value) return null
+    const payload = await lerSessao(cookieStore.get(COOKIE_SA)?.value)
+    if (!payload || payload.t !== 'sa') return null
 
-    let saId: number | null = null
-    let email: string | null = null
-
-    session.value.split('|').forEach(part => {
-        const [key, val] = part.split(':')
-        if (key === 'sa_id') saId = parseInt(val)
-        if (key === 'email') email = val
+    const sa = await prisma.superAdmin.findUnique({
+        where: { id: payload.sa },
+        select: { id: true, email: true, is_active: true, password: true },
     })
+    if (!sa || !sa.is_active) return null
+    if ((await impressaoDaSenha(sa.password)) !== payload.pw) return null
 
-    if (!saId || isNaN(saId)) return null
-    return { saId, email: email || '' }
+    return { saId: sa.id, email: sa.email }
 }
 
 /**

@@ -1,11 +1,14 @@
 // app/api/escalas/criar/route.ts
 import { NextResponse } from 'next/server'
 import { getTenantClient } from '@/lib/prisma'
+import { sessaoDaApi } from '@/lib/api-auth'
+import { podeGerirEscalasDoDepartamento } from '@/lib/escalas-permissoes'
 
 export async function POST(request: Request) {
     try {
-        const tenantId = Number(request.headers.get('x-tenant-id') || 0)
-        if (!tenantId) return NextResponse.json({ error: 'Tenant nao identificado' }, { status: 401 })
+        const { sessao, erro } = await sessaoDaApi()
+        if (erro) return erro
+        const tenantId = sessao.tenantId
         const db = getTenantClient(tenantId)
 
         const body = await request.json()
@@ -14,6 +17,9 @@ export async function POST(request: Request) {
         // Validação básica
         if (!eventoId || !membroId || !departamentoId || !funcao) {
             return NextResponse.json({ error: 'Campos obrigatórios ausentes.' }, { status: 400 })
+        }
+        if (!(await podeGerirEscalasDoDepartamento(sessao, Number(departamentoId)))) {
+            return NextResponse.json({ error: 'Sem permissão para gerir escalas deste departamento.' }, { status: 403 })
         }
 
         // Criar a escala no banco

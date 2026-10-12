@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from '@/lib/prisma'
+import { getDb } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 import { Resend } from 'resend';
 import { EmailConfirmacaoAgenda } from '@/components/emails/EmailConfirmacaoAgenda';
@@ -23,23 +23,23 @@ export async function criarAgendaAction(formData: FormData) {
         }
 
         // 1. Verifica se o link já está em uso
-        const slugExiste = await prisma.agenda.findUnique({ where: { slug } });
+        const slugExiste = await (await getDb()).agenda.findUnique({ where: { slug } });
         if (slugExiste) {
             return { ok: false, error: "Este link (URL) já está a ser utilizado por outra agenda." };
         }
 
         // 2. Verifica se o líder já tem uma agenda (só pode ter 1 principal)
-        const donoExiste = await prisma.agenda.findUnique({ where: { dono_id } });
+        const donoExiste = await (await getDb()).agenda.findUnique({ where: { dono_id } });
         if (donoExiste) {
             return { ok: false, error: "Este líder já possui uma agenda criada." };
         }
 
         // 3. Vai buscar o tenant_id do líder
-        const dono = await prisma.membro.findUnique({ where: { id: dono_id }, select: { tenant_id: true } });
+        const dono = await (await getDb()).membro.findUnique({ where: { id: dono_id }, select: { tenant_id: true } });
         if (!dono) return { ok: false, error: "Líder não encontrado." };
 
         // 4. Cria a Agenda
-        await prisma.agenda.create({
+        await (await getDb()).agenda.create({
             data: {
                 tenant_id: dono.tenant_id,
                 nome,
@@ -72,7 +72,7 @@ export async function editarAgendaAction(formData: FormData) {
         }
 
         // Verifica se o slug já existe noutra agenda que não seja esta
-        const slugExiste = await prisma.agenda.findFirst({
+        const slugExiste = await (await getDb()).agenda.findFirst({
             where: { slug: slug, NOT: { id: id } }
         });
 
@@ -80,7 +80,7 @@ export async function editarAgendaAction(formData: FormData) {
             return { ok: false, error: "Este link já está a ser utilizado por outra agenda." };
         }
 
-        await prisma.agenda.update({
+        await (await getDb()).agenda.update({
             where: { id: id },
             data: { nome, slug, dono_id, is_publica, gestores: { set: gestores_ids.map(id => ({ id })) } }
         });
@@ -96,7 +96,7 @@ export async function editarAgendaAction(formData: FormData) {
 export async function apagarAgendaAction(id: number) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'LEADER'])
-        await prisma.agenda.delete({
+        await (await getDb()).agenda.delete({
             where: { id }
         });
 
@@ -141,10 +141,10 @@ export async function criarCompromissoAction(formData: FormData) {
         }
 
         // 1. Vai buscar a agenda para saber qual é o tenant_id
-        const agenda = await prisma.agenda.findUnique({ where: { id: agenda_id } });
+        const agenda = await (await getDb()).agenda.findUnique({ where: { id: agenda_id } });
         if (!agenda) return { ok: false, error: "Agenda não encontrada." };
 
-        await prisma.compromisso.create({
+        await (await getDb()).compromisso.create({
             data: {
                 tenant_id: agenda.tenant_id,
                 agenda_id: agenda_id,
@@ -176,7 +176,7 @@ export async function alterarStatusCompromisso(id: number, status: 'AGENDADO' | 
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'LEADER'])
         // 1. Atualiza o status E vai buscar os dados de quem vai à reunião
-        const comp = await prisma.compromisso.update({
+        const comp = await (await getDb()).compromisso.update({
             where: { id },
             data: { status },
             include: {
@@ -242,7 +242,7 @@ export async function alterarStatusCompromisso(id: number, status: 'AGENDADO' | 
 export async function apagarCompromisso(id: number) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'LEADER'])
-        await prisma.compromisso.delete({ where: { id } });
+        await (await getDb()).compromisso.delete({ where: { id } });
         const { revalidatePath } = await import('next/cache');
         revalidatePath('/gabinete');
         return { ok: true };
@@ -276,7 +276,7 @@ export async function atualizarHorariosDisponiveis(agendaId: number, horarios: H
             }
         }
 
-        await prisma.agenda.update({
+        await (await getDb()).agenda.update({
             where: { id: agendaId },
             data: { horarios_disponiveis: horarios as any }
         })
@@ -311,7 +311,7 @@ export async function editarCompromissoAction(formData: FormData) {
         const grupos_ids = formData.getAll('grupos[]').map(id => ({ id: Number(id) }));
         const celulas_ids = formData.getAll('celulas[]').map(id => ({ id: Number(id) }));
 
-        await prisma.compromisso.update({
+        await (await getDb()).compromisso.update({
             where: { id },
             data: {
                 titulo, categoria, data_inicio, data_fim, observacoes,
@@ -334,10 +334,10 @@ export async function toggleVisibilidadeAgenda(agendaId: number) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
 
-        const agenda = await prisma.agenda.findUnique({ where: { id: agendaId } })
+        const agenda = await (await getDb()).agenda.findUnique({ where: { id: agendaId } })
         if (!agenda) return { ok: false, error: 'Agenda nao encontrada.' }
 
-        await prisma.agenda.update({
+        await (await getDb()).agenda.update({
             where: { id: agendaId },
             data: { is_publica: !agenda.is_publica },
         })
@@ -354,14 +354,14 @@ export async function toggleVisibilidadeAgenda(agendaId: number) {
 export async function listarAgendasPublicas() {
     try {
         const session = await requireAuth()
-        const agendas = await prisma.agenda.findMany({
+        const agendas = await (await getDb()).agenda.findMany({
             where: { is_publica: true },
             include: {
                 dono: { select: { first_name: true, last_name: true, avatar_file: true } },
             },
             orderBy: { nome: 'asc' },
         })
-        const membro = await prisma.membro.findUnique({
+        const membro = await (await getDb()).membro.findUnique({
             where: { id: session.membroId },
             select: { id: true, first_name: true, last_name: true, phone_1: true, email: true },
         })
@@ -392,10 +392,10 @@ export async function pedirAgendamentoAction(dados: {
             return { ok: false, error: 'Nao e possivel agendar para uma data/hora ja passada.' }
         }
 
-        const agenda = await prisma.agenda.findUnique({ where: { id: dados.agenda_id } })
+        const agenda = await (await getDb()).agenda.findUnique({ where: { id: dados.agenda_id } })
         if (!agenda) return { ok: false, error: 'Agenda nao encontrada.' }
 
-        await prisma.compromisso.create({
+        await (await getDb()).compromisso.create({
             data: {
                 tenant_id: agenda.tenant_id,
                 agenda_id: dados.agenda_id,
@@ -426,7 +426,7 @@ export async function sincronizarCalendarAction(): Promise<{ ok: boolean; criado
             return { ok: false, criados: 0, erros: 0, total: 0, error: 'GOOGLE_CALENDAR_CREDENTIALS não configurado.' }
         }
 
-        const compromissos = await prisma.compromisso.findMany({
+        const compromissos = await (await getDb()).compromisso.findMany({
             where: {
                 status: 'AGENDADO',
                 data_inicio: { gte: new Date() }

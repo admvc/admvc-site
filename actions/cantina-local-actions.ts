@@ -2,6 +2,24 @@
 
 import { getDb, getTenantIdFromHeaders } from '@/lib/db'
 import { requireAuth, requireRole, isAdmin } from '@/lib/auth-utils'
+import { exigirEquipa, pertenceAEquipa, EQUIPA_CANTINA } from '@/lib/equipas'
+import prisma from '@/lib/prisma'
+
+/**
+ * Saldo e extrato da cantina: o proprio, alguem da mesma familia, a equipa da
+ * cantina, as financas ou um admin.
+ */
+async function exigirVerCantinaDe(membroId: number) {
+    const sessao = await requireAuth()
+    if (sessao.membroId === membroId || isAdmin(sessao.role) || sessao.role === 'FINANCE') return sessao
+    const [eu, alvo] = await Promise.all([
+        prisma.membro.findUnique({ where: { id: sessao.membroId }, select: { familia_id: true } }),
+        prisma.membro.findUnique({ where: { id: membroId }, select: { familia_id: true, tenant_id: true } }),
+    ])
+    if (alvo && alvo.tenant_id === sessao.tenantId && eu?.familia_id && eu.familia_id === alvo.familia_id) return sessao
+    if (await pertenceAEquipa(sessao.membroId, EQUIPA_CANTINA)) return sessao
+    throw new Error('Sem permissão para ver o saldo deste membro.')
+}
 import { revalidatePath } from 'next/cache'
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -232,7 +250,7 @@ export async function registarVenda(
     formaPagamento: string | { forma: string; valor: number }[] = 'CREDITOS',
     turnoId: number | null = null
 ) {
-    const session = await requireAuth()
+    const session = await exigirEquipa(EQUIPA_CANTINA, [], 'a equipa da Cantina')
     const db = await getDb()
     const tenantId = await getTenantIdFromHeaders()
 
@@ -453,12 +471,14 @@ export async function estornarTransacao(transacaoId: number) {
 // ══════════════════════════════════════════════════════════════════════════════
 
 export async function obterSaldoMembro(membroId: number) {
+    await exigirVerCantinaDe(membroId)
     const db = await getDb()
     const saldo = await db.saldoCantina.findUnique({ where: { membro_id: membroId } })
     return saldo?.saldo || 0
 }
 
 export async function obterExtratoMembro(membroId: number, limite = 50) {
+    await exigirVerCantinaDe(membroId)
     const db = await getDb()
     return db.transacaoCantina.findMany({
         where: { membro_id: membroId },
@@ -473,7 +493,8 @@ export async function obterExtratoMembro(membroId: number, limite = 50) {
 // ══════════════════════════════════════════════════════════════════════════════
 
 export async function gerarQrCodeMembro(membroId: number) {
-    await requireAuth()
+    const sessao = await requireAuth()
+    if (sessao.membroId !== membroId && !isAdmin(sessao.role)) throw new Error('Sem permissão.')
     const db = await getDb()
     const tenantId = await getTenantIdFromHeaders()
 
@@ -532,6 +553,7 @@ export async function gerarQrCodesTodosMembros() {
 }
 
 export async function buscarMembroPorQr(qrCode: string) {
+    await exigirEquipa(EQUIPA_CANTINA, [], 'a equipa da Cantina')
     const db = await getDb()
     const qrNormalizado = qrCode.trim()
 
@@ -615,7 +637,7 @@ export async function definirLimiteCantina(
 
     try {
         // Buscar ou criar saldo
-        let saldo = await db.saldoCantina.findUnique({ where: { membro_id: membroId } })
+        const saldo = await db.saldoCantina.findUnique({ where: { membro_id: membroId } })
 
         if (!saldo) {
             await (db as any).saldoCantina.create({

@@ -605,6 +605,7 @@ model Visitante {
   origem               String?
   notas_lider          String?
   prioridade           String                    @default("NORMAL")
+  consentimento_em     DateTime?                 // RGPD: quando aceitou que a igreja guarde os dados (boas-vindas)
   tenant_id            Int
   acompanhamentos      AcompanhamentoVisitante[]
   responsavel          Membro?                   @relation("ResponsavelVisitante", fields: [responsavel_id], references: [id])

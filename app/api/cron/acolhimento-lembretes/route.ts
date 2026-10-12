@@ -1,15 +1,14 @@
 // app/api/cron/acolhimento-lembretes/route.ts
 // Cron diário: notifica membros/líderes sobre visitantes com acompanhamento atrasado (+48h)
 import { NextResponse } from 'next/server'
+import { cronAutorizado } from '@/lib/cron'
 import prisma from '@/lib/prisma'
 import { sendPushToMembros } from '@/lib/web-push'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
-    const authHeader = request.headers.get('authorization')
-    const cronSecret = process.env.CRON_SECRET
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronAutorizado(request)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

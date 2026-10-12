@@ -1,10 +1,11 @@
 // app/api/admin/criar-membro/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { sessaoDaApi } from '@/lib/api-auth'
 import prismaGlobal from '@/lib/prisma'
 import { put } from '@vercel/blob'
 import bcrypt from 'bcryptjs'
 import { audit } from '@/lib/audit'
+import { validarSenhaNova } from '@/lib/senhas'
 
 const parseDate = (val: any): Date | null => {
     if (!val || String(val).trim() === '') return null
@@ -18,40 +19,13 @@ export async function POST(request: NextRequest) {
     console.log('========================================')
 
     try {
-        const cookieStore = await cookies()
-        const session = cookieStore.get('admvc_session')
-
-        if (!session) {
-            console.error('[API CRIAR MEMBRO] Sem sessao')
-            return NextResponse.json({ error: 'Sem sessao.' }, { status: 401 })
-        }
-
-        const parts = decodeURIComponent(session.value).split('|')
-        let tenantId = ''
-        parts.forEach(part => {
-            const [key, val] = part.split(':')
-            if (key === 'tenant_id') tenantId = val
-        })
-
-        if (!tenantId) {
-            console.error('[API CRIAR MEMBRO] tenant_id nao encontrado no cookie')
-            return NextResponse.json({ error: 'Igreja nao identificada.' }, { status: 401 })
-        }
+        const { sessao, erro } = await sessaoDaApi(['ADMIN', 'CONGREGATION_ADMIN'])
+        if (erro) return erro
+        const tenantId = sessao.tenantId
 
         console.log('[API CRIAR MEMBRO] tenant_id: ' + tenantId)
         const db = prismaGlobal
         const formData = await request.formData()
-
-        console.log('[API CRIAR MEMBRO] Campos recebidos:')
-        for (const [key, value] of formData.entries()) {
-            if (key === 'password') {
-                console.log('  ' + key + ': [OCULTO]')
-            } else if (value instanceof File) {
-                console.log('  ' + key + ': File(name=' + value.name + ', size=' + value.size + ', type=' + value.type + ')')
-            } else {
-                console.log('  ' + key + ': "' + value + '"')
-            }
-        }
 
         const email = (formData.get('email') as string)?.toLowerCase().trim()
         const password = formData.get('password') as string
@@ -59,10 +33,11 @@ export async function POST(request: NextRequest) {
         if (!email || !password) {
             return NextResponse.json({ error: 'Email e password sao obrigatorios.' }, { status: 400 })
         }
+        const motivoSenha = validarSenhaNova(password, email)
+        if (motivoSenha) return NextResponse.json({ error: motivoSenha }, { status: 400 })
 
         const existe = await prismaGlobal.membro.findUnique({ where: { email } })
         if (existe) {
-            console.warn('[API CRIAR MEMBRO] Email ja existe: ' + email)
             return NextResponse.json({ error: 'Este e-mail ja esta registado.' }, { status: 409 })
         }
 

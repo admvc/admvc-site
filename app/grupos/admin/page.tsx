@@ -1,21 +1,13 @@
 // app/grupos/admin/page.tsx
 import { getDb, getTenantIdFromHeaders } from '@/lib/db'
 import { getSessionData } from '@/lib/auth-utils'
-import nextDynamic from 'next/dynamic'
+import MapaGrupos from '@/components/grupos/MapaGruposLazy'
 import Link from 'next/link'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import GeocodificarBotao from '@/components/grupos/GeocodificarBotao'
 import { Users, MapPin, Map, Globe, Settings } from 'lucide-react'
 
-// Carregamento lazy — o Leaflet só funciona no browser
-const MapaGrupos = nextDynamic(() => import('@/components/grupos/MapaGrupos'), {
-    ssr: false,
-    loading: () => (
-        <div className="h-[500px] rounded-[1.5rem] bg-soft/30 border border-soft flex items-center justify-center animate-pulse">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted">A carregar mapa...</p>
-        </div>
-    )
-})
+
 
 const REGIOES_DEFAULT = ['Norte', 'Centro', 'Sul', 'Lisboa', 'Online']
 

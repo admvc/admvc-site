@@ -2,9 +2,13 @@
 import { put } from '@vercel/blob'
 import { NextRequest, NextResponse } from 'next/server'
 import { comprimirImagem } from '@/lib/image-utils'
+import { sessaoDaApi } from '@/lib/api-auth'
 
 export async function POST(request: NextRequest) {
     console.log('🟡 [API UPLOAD] Recebido pedido POST')
+
+    const { erro } = await sessaoDaApi()
+    if (erro) return erro
 
     try {
         const formData = await request.formData()

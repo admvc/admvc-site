@@ -6,10 +6,11 @@ import BotaoImprimir from "@/components/BotaoImprimir";
 import QrCodeMembro from "@/components/cantina/QrCodeMembro";
 
 interface ConfirmacaoPageProps {
-    searchParams: { id?: string }
+    searchParams: Promise<{ id?: string }>
 }
 
-export default async function PaginaConfirmacao({ searchParams }: ConfirmacaoPageProps) {
+export default async function PaginaConfirmacao(props: ConfirmacaoPageProps) {
+    const searchParams = await props.searchParams;
     const db = await getDb()
     const idParam = searchParams.id
     const membroId = idParam ? parseInt(idParam) : null

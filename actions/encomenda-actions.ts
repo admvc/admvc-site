@@ -2,6 +2,7 @@
 
 import { getDb, getTenantIdFromHeaders } from '@/lib/db'
 import { requireAuth, requireRole } from '@/lib/auth-utils'
+import { exigirEquipa, EQUIPA_CANTINA } from '@/lib/equipas'
 import { revalidatePath } from 'next/cache'
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -174,7 +175,7 @@ export async function cancelarPreEncomenda(encomendaId: number) {
 // ══════════════════════════════════════════════════════════════════════════════
 
 export async function marcarEntregue(encomendaId: number) {
-    await requireAuth()
+    await exigirEquipa(EQUIPA_CANTINA, [], 'a equipa da Cantina')
     const db = await getDb()
 
     try {

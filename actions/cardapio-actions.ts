@@ -2,12 +2,13 @@
 
 import { getDb, getTenantIdFromHeaders } from '@/lib/db'
 import { requireAuth } from '@/lib/auth-utils'
+import { exigirEquipa, EQUIPA_CANTINA } from '@/lib/equipas'
 import { revalidatePath } from 'next/cache'
 
 // ── CRIAR/ATUALIZAR CARDAPIO PARA UM EVENTO ──────────────────────────────────
 
 export async function salvarCardapio(eventoId: number, itens: { produtoId: number; quantidade?: number }[]) {
-    await requireAuth()
+    await exigirEquipa(EQUIPA_CANTINA, [], 'a equipa da Cantina')
     const db = await getDb()
     const tenantId = await getTenantIdFromHeaders()
 
@@ -53,7 +54,7 @@ export async function salvarCardapio(eventoId: number, itens: { produtoId: numbe
 // ── REMOVER CARDAPIO ─────────────────────────────────────────────────────────
 
 export async function removerCardapio(eventoId: number) {
-    await requireAuth()
+    await exigirEquipa(EQUIPA_CANTINA, [], 'a equipa da Cantina')
     const db = await getDb()
 
     try {

@@ -190,6 +190,14 @@ export default function AgendamentoPublico({ agendaId, compromissosOcupados }: {
                         <textarea name="observacoes" rows={3} placeholder="Quer adiantar o assunto da reunião?" className="w-full bg-bg border-2 border-soft rounded-2xl px-5 py-4 text-xs font-medium text-fg focus:border-figueira outline-none resize-none transition-colors" />
                     </div>
 
+                    <label className="flex items-start gap-3 text-xs text-fg">
+                        <input type="checkbox" name="consentimento" value="sim" required className="mt-0.5 h-4 w-4 shrink-0 accent-figueira" />
+                        <span>
+                            Aceito que a igreja guarde estes dados para tratar da marcação e me contactar.{' '}
+                            <a href="/privacidade" className="underline">Política de privacidade</a>
+                        </span>
+                    </label>
+
                     <button disabled={isPending} type="submit" className="w-full mt-2 flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50">
                         {isPending ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}
                         {isPending ? "A Confirmar..." : "Confirmar Agendamento"}

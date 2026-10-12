@@ -1,6 +1,8 @@
 'use server'
 
+import { headers } from 'next/headers'
 import prisma from '@/lib/prisma'
+import { rateLimit, ipDoPedido } from '@/lib/rate-limit'
 
 export async function submeterMarcacaoPublica(formData: FormData) {
     try {
@@ -16,6 +18,15 @@ export async function submeterMarcacaoPublica(formData: FormData) {
         if (!agenda_id || !categoria || !data_str || !hora_inicio || !nome || !telefone) {
             return { ok: false, error: "Preencha todos os campos obrigatórios." };
         }
+
+        // RGPD: sem consentimento nao se guarda nada
+        if (formData.get('consentimento') !== 'sim') {
+            return { ok: false, error: "Para marcar, aceite a caixa de consentimento." };
+        }
+
+        const ip = ipDoPedido(await headers());
+        const { success } = await rateLimit(`marcacao:${ip}`, 10, 60 * 60 * 1000);
+        if (!success) return { ok: false, error: "Demasiados pedidos. Tente de novo mais tarde." };
 
         // 0. Buscar a Agenda para obter o tenant_id
         const agenda = await prisma.agenda.findUnique({
@@ -48,7 +59,7 @@ export async function submeterMarcacaoPublica(formData: FormData) {
 
         // 3. Tentar encontrar se a pessoa já é membro pelo telefone (simplificado)
         const membro = await prisma.membro.findFirst({ where: { phone_1: telefone } });
-        let membro_id = membro?.id || null;
+        const membro_id = membro?.id || null;
         let visitante_id = null;
 
         // Se não for membro, procuramos ou criamos um visitante
@@ -63,7 +74,8 @@ export async function submeterMarcacaoPublica(formData: FormData) {
                         telefone,
                         email,
                         data_primeira_visita: new Date(),
-                        status: 'NOVO'
+                        status: 'NOVO',
+                        consentimento_em: new Date()
                     }
                 });
             }

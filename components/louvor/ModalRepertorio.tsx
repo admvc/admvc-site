@@ -269,7 +269,7 @@ export default function ModalRepertorio({ eventoId, repertorioInical, podeEditar
 
     const handleDrop = async () => {
         if (dragItem.current === null || dragOverItem.current === null) return
-        let _lista = [...lista]
+        const _lista = [...lista]
         const dragged = _lista.splice(dragItem.current, 1)[0]
         _lista.splice(dragOverItem.current, 0, dragged)
         dragItem.current = null; dragOverItem.current = null

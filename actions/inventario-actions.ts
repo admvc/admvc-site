@@ -4,8 +4,8 @@
 import prisma, { getTenantClient } from '@/lib/prisma'
 import { audit } from '@/lib/audit'
 import { revalidatePath } from 'next/cache'
-import { headers } from 'next/headers'
 import { getSessionData } from '@/lib/auth-utils'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 async function verificarAcesso() {
     const session = await getSessionData()
@@ -16,8 +16,7 @@ async function verificarAcesso() {
 }
 
 async function getDb() {
-    const h = await headers()
-    const tenantId = Number(h.get('x-tenant-id') || 0)
+    const tenantId = await getTenantIdFromHeaders()
     if (!tenantId) throw new Error('Igreja não identificada.')
     return { db: getTenantClient(tenantId), tenantId }
 }

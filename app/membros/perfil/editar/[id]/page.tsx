@@ -1,9 +1,9 @@
 // app/membros/perfil/[id]/page.tsx
 import { getTenantClient } from '@/lib/prisma'
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { getSessionData, isAdmin } from '@/lib/auth-utils'
 import MeuPerfilClient from '@/components/membros/MeuPerfilClient'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 export default async function EditarMeuPerfilPage({
     params
@@ -22,8 +22,7 @@ export default async function EditarMeuPerfilPage({
         redirect('/membros/dashboard?error=Sem permissão para editar este perfil')
     }
 
-    const headersList = await headers()
-    const tenantIdStr = headersList.get('x-tenant-id')
+    const tenantIdStr = await getTenantIdFromHeaders()
     if (!tenantIdStr) redirect('/membros/login?error=Igreja não identificada.')
 
     const db = getTenantClient(Number(tenantIdStr))

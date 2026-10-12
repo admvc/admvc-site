@@ -16,8 +16,8 @@ function getProximoEncontro(diaStr: string, horario: string) {
 
     if (targetDay === undefined) return null;
 
-    let nextDate = new Date(today);
-    let diasFaltando = (targetDay + 7 - today.getDay()) % 7;
+    const nextDate = new Date(today);
+    const diasFaltando = (targetDay + 7 - today.getDay()) % 7;
     nextDate.setDate(today.getDate() + diasFaltando);
 
     const [horas, minutos] = horario.split(':').map(Number);

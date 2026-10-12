@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    // npm run dev:teste usa .next-teste, para correr ao lado do dev normal
+    distDir: process.env.NEXT_DIST_DIR || '.next',
     transpilePackages: ['@react-pdf/renderer'],
     experimental: {
         serverActions: {

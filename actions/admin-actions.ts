@@ -3,19 +3,19 @@
 
 // 🔄 MUDANÇA 1: Importamos o global e a função multitenant
 import prismaGlobal, { getTenantClient } from '@/lib/prisma'
-import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
+import { validarSenhaNova } from "@/lib/senhas";
 import { put } from "@vercel/blob";
 import { audit, diffCampos, sanitizar } from '@/lib/audit'
 import { geocodificarComFallback } from '@/lib/geocode'
 import { invalidateDepartamentos, invalidateGrupos, invalidateTenant } from '@/lib/cache'
 import { requireAuth, requireRole } from '@/lib/auth-utils'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 async function getDb() {
-    const headersList = await headers()
-    const tenantId = headersList.get('x-tenant-id')
+    const tenantId = await getTenantIdFromHeaders()
     if (!tenantId) throw new Error('Igreja nao identificada.')
     return { db: getTenantClient(Number(tenantId)), tenantId: Number(tenantId) }
 }
@@ -471,7 +471,7 @@ export async function gerarEventosLoteAction(formData: FormData) {
         dataFim.setMonth(hoje.getMonth() + mesesDuracao);
 
         const eventosParaCriar = [];
-        let dataAtual = new Date(hoje);
+        const dataAtual = new Date(hoje);
         const [horas, minutos] = horario.split(':');
         dataAtual.setHours(Number(horas), Number(minutos), 0, 0);
 
@@ -533,7 +533,7 @@ export async function criarEventoUnificadoAction(formData: FormData) {
             dataFim.setMonth(hoje.getMonth() + mesesDuracao);
 
             const eventosParaCriar = [];
-            let dataAtual = new Date(hoje);
+            const dataAtual = new Date(hoje);
             dataAtual.setHours(Number(horas), Number(minutos), 0, 0);
 
             while (dataAtual <= dataFim) {
@@ -1062,8 +1062,7 @@ export async function buscarCongregacoes() {
 }
 
 async function getContext() {
-    const headersList = await headers();
-    const tenantId = Number(headersList.get('x-tenant-id'));
+    const tenantId = await getTenantIdFromHeaders();
     if (!tenantId) throw new Error("Igreja não identificada.");
     const db = getTenantClient(tenantId);
     return { db, tenantId };
@@ -1166,7 +1165,8 @@ export async function confirmarImportacao(membrosValidos: any[]) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
         const { db, tenantId } = await getContext();
-        const passwordPadrao = await bcrypt.hash("admvc123", 10);
+        // Sem senha: cada pessoa define a sua (link do admin ou "Esqueci-me da palavra-passe").
+        const passwordPadrao = null;
 
         // Criamos em lote para performance
         const criacoes = membrosValidos.map(item => {
@@ -1272,8 +1272,7 @@ export async function removerMembroTotal(membroId: number, departamentoId: numbe
 export async function alternarPermissaoEscala(integranteId: number, statusAtual: boolean) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
-        const headersList = await headers();
-        const tenantId = headersList.get('x-tenant-id');
+        const tenantId = await getTenantIdFromHeaders();
         if (!tenantId) return { ok: false, error: 'Sessão inválida.' };
 
         const db = getTenantClient(Number(tenantId));
@@ -1299,18 +1298,6 @@ export async function criarNovoMembroAction(formData: FormData) {
     console.log('[CRIAR MEMBRO] INICIO DO PROCESSO')
     console.log('========================================')
 
-    // LOG DE TODOS OS CAMPOS RECEBIDOS
-    console.log('[CRIAR MEMBRO] Campos recebidos no FormData:')
-    for (const [key, value] of formData.entries()) {
-        if (key === 'password') {
-            console.log(`  ${key}: [OCULTO]`)
-        } else if (key === 'avatar') {
-            const f = value as File
-            console.log(`  ${key}: File(name=${f.name}, size=${f.size}, type=${f.type})`)
-        } else {
-            console.log(`  ${key}: "${value}"`)
-        }
-    }
 
     const email = (formData.get('email') as string)?.toLowerCase().trim()
     const password = formData.get('password') as string
@@ -1319,8 +1306,9 @@ export async function criarNovoMembroAction(formData: FormData) {
         console.error('[CRIAR MEMBRO] ERRO: Email ou password em falta')
         return { error: 'Email e password sao obrigatorios.' }
     }
+    const motivoSenha = validarSenhaNova(password, email)
+    if (motivoSenha) return { error: motivoSenha }
 
-    console.log(`[CRIAR MEMBRO] Email: ${email}`)
 
     // Verificacao de email duplicado
     const existe = await prismaGlobal.membro.findUnique({ where: { email } })
@@ -1463,8 +1451,7 @@ export async function criarNovoMembroAction(formData: FormData) {
 }
 
 async function getTenantId(): Promise<number> {
-    const headersList = await headers()
-    const tenantId = headersList.get('x-tenant-id')
+    const tenantId = await getTenantIdFromHeaders()
     return Number(tenantId || 0)
 }
 
@@ -1563,6 +1550,8 @@ export async function atualizarMembroAdmin(membroId: number, formData: FormData)
 
         // Actualiza senha apenas se preenchida
         if (novaSenha && novaSenha.trim().length > 0) {
+            const motivoSenha = validarSenhaNova(novaSenha, dataUpdate.email)
+            if (motivoSenha) return { error: motivoSenha }
             dataUpdate.password = await bcrypt.hash(novaSenha, 10)
         }
 
@@ -1875,8 +1864,7 @@ export async function removerMembroDeCongregacao(membroId: number) {
 export async function salvarRegioesAction(regioes: string[]) {
     try {
         await requireRole(['ADMIN'])
-        const headersList = await headers()
-        const tenantId = Number(headersList.get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
         if (!tenantId) return { ok: false, error: 'Tenant nao identificado.' }
 
         await prismaGlobal.tenant.update({
@@ -1895,8 +1883,7 @@ export async function salvarRegioesAction(regioes: string[]) {
 export async function buscarRegioesAction() {
     try {
         await requireAuth()
-        const headersList = await headers()
-        const tenantId = Number(headersList.get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
         const tenant = await prismaGlobal.tenant.findUnique({
             where: { id: tenantId },
             select: { regioes_custom: true }

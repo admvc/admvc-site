@@ -1,5 +1,4 @@
 import { getTenantClient } from '@/lib/prisma'
-import { headers } from 'next/headers'
 import { criarCargo, excluirCargo, criarDepartamento, excluirDepartamento } from '@/actions/admin-actions'
 import FormCriarDepartamento from '@/components/admin/FormCriarDepartamento'
 import DeptoItem from '@/components/DeptoItem'
@@ -8,10 +7,10 @@ import StopPropagation from '@/components/ui/StopPropagation'
 import { Plus, Briefcase, LayoutGrid, Users, MapPin, Settings } from 'lucide-react'
 import EstruturaSubMenu from '@/components/admin/EstruturaSubMenu'
 import Breadcrumbs from '@/components/Breadcrumbs'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 export default async function EstruturaPage() {
-    const headersList = await headers()
-    const tenantId = Number(headersList.get('x-tenant-id') || 0)
+    const tenantId = await getTenantIdFromHeaders()
     const db = getTenantClient(tenantId)
 
     let cargos: any[] = [], deptos: any[] = [], deptosParaSelect: any[] = []

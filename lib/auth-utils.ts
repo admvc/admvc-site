@@ -1,10 +1,15 @@
 import { cookies } from 'next/headers'
+import * as React from 'react'
+import prisma from '@/lib/prisma'
+import { COOKIE_MEMBRO, impressaoDaSenha, lerSessao } from '@/lib/sessao-core'
 
 /**
  * Interface representing the session data structure.
+ * Tudo o que aqui vem foi confirmado na base, nao no cookie.
  */
 export interface SessionData {
     membroId: number;
+    tenantId: number;
     role: string;
     email?: string;
     plano?: string;
@@ -43,74 +48,54 @@ export async function requireRole(rolesPermitidos: Role[]): Promise<SessionData>
 }
 
 /**
- * Retrieves and parses session data from the 'admvc_session' cookie.
- * 
- * Supports multiple session formats:
- * - Newest: id:XX|email:XX|role:XX
- * - Simplified: id:XX|role:XX
- * - Legacy: membro_XX
+ * Le a sessao a partir do valor do cookie: verifica a assinatura e a validade,
+ * e depois confirma na base que o membro existe, esta ativo, pertence a mesma
+ * igreja e nao mudou de senha. O papel e a igreja devolvidos vem da base.
  */
-export async function getSessionData(): Promise<SessionData | null> {
-    const cookieStore = await cookies();
-    const session = cookieStore.get('admvc_session');
-    
-    if (!session || !session.value) {
-        return null;
-    }
+export async function sessaoDoCookie(valor: string | undefined): Promise<SessionData | null> {
+    const payload = await lerSessao(valor)
+    if (!payload || payload.t !== 'm') return null
 
-    const value = session.value;
-    let membroId: number | null = null;
-    let role: string | null = null;
-    let email: string | null = null;
-    let plano: string | null = null;
-    let congregacaoId: number | null = null;
-
-    // Check for the delimited format (id:XX|role:XX|...)
-    if (value.includes('id:') && (value.includes('role:') || value.includes('email:'))) {
-        const partes = value.split('|');
-        partes.forEach(p => {
-            if (p.startsWith('id:')) {
-                const val = p.split(':')[1];
-                if (val) membroId = parseInt(val);
-            }
-            if (p.startsWith('role:')) {
-                const val = p.split(':')[1];
-                if (val) role = val.toUpperCase();
-            }
-            if (p.startsWith('email:')) {
-                const val = p.split(':')[1];
-                if (val) email = val;
-            }
-            if (p.startsWith('plano:')) {
-                const val = p.split(':')[1];
-                if (val) plano = val;
-            }
-            if (p.startsWith('cong:')) {
-                const val = p.split(':')[1];
-                if (val) congregacaoId = parseInt(val);
-            }
-        });
-    } 
-    // Check for the legacy format (membro_XX)
-    else if (value.startsWith('membro_')) {
-        membroId = parseInt(value.replace('membro_', ''));
-        role = 'USER';
-    }
-
-    // Fallback/validation: if we have an ID but no role, assume USER
-    if (membroId !== null && !role) {
-        role = 'USER';
-    }
-
-    if (membroId === null || isNaN(membroId)) {
-        return null;
-    }
+    const membro = await prisma.membro.findUnique({
+        where: { id: payload.id },
+        select: {
+            id: true,
+            email: true,
+            role: true,
+            tenant_id: true,
+            congregacao_id: true,
+            is_active: true,
+            password: true,
+            tenant: { select: { plano: true } },
+        },
+    })
+    if (!membro || membro.is_active === false) return null
+    if (membro.tenant_id !== payload.tid) return null
+    if ((await impressaoDaSenha(membro.password)) !== payload.pw) return null
 
     return {
-        membroId,
-        role: role || 'USER',
-        email: email || undefined,
-        plano: plano || undefined,
-        congregacaoId: congregacaoId && !isNaN(congregacaoId) ? congregacaoId : undefined
-    };
+        membroId: membro.id,
+        tenantId: membro.tenant_id,
+        role: String(membro.role).toUpperCase(),
+        email: membro.email || undefined,
+        plano: membro.tenant?.plano || 'FREE',
+        congregacaoId: membro.congregacao_id ?? undefined,
+    }
+}
+
+// Uma consulta a base por pedido, mesmo que varias funcoes peçam a sessao.
+// (`cache` existe no React do Next; nos testes nao, e ai corre sem memoria.)
+const memoPorPedido: <T extends (...a: any[]) => any>(f: T) => T =
+    (React as any).cache ?? ((f: any) => f)
+
+const sessaoDoPedido = memoPorPedido(async (): Promise<SessionData | null> => {
+    const cookieStore = await cookies()
+    return sessaoDoCookie(cookieStore.get(COOKIE_MEMBRO)?.value)
+})
+
+/**
+ * Devolve a sessao do membro autenticado, ou null.
+ */
+export async function getSessionData(): Promise<SessionData | null> {
+    return sessaoDoPedido()
 }

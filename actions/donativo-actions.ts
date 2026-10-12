@@ -1,5 +1,8 @@
 'use server'
 
+import { headers } from 'next/headers'
+import { rateLimit, ipDoPedido } from '@/lib/rate-limit'
+
 import { getDb, getTenantIdFromHeaders } from '@/lib/db'
 import { requireRole } from '@/lib/auth-utils'
 import prisma from '@/lib/prisma'
@@ -10,6 +13,11 @@ import { revalidatePath } from 'next/cache'
  * Submete um novo donativo online (pagina publica, sem auth).
  */
 export async function submeterDonativo(tenantSlug: string, formData: FormData) {
+    // Publica (pagina de donativos): limitar pedidos por IP
+    const ip = ipDoPedido(await headers())
+    const { success } = await rateLimit(`donativo:${ip}`, 10, 60 * 60 * 1000)
+    if (!success) return { error: 'Demasiados pedidos. Tente de novo mais tarde.' }
+
     // Find tenant by slug
     const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
     if (!tenant) return { error: 'Igreja nao encontrada.' }

@@ -2,6 +2,7 @@
 
 import { getDb, getTenantIdFromHeaders } from '@/lib/db'
 import { requireAuth, requireRole } from '@/lib/auth-utils'
+import { exigirEquipa, EQUIPA_CANTINA } from '@/lib/equipas'
 import { revalidatePath } from 'next/cache'
 import { audit } from '@/lib/audit'
 
@@ -10,7 +11,7 @@ import { audit } from '@/lib/audit'
 // ══════════════════════════════════════════════════════════════════════════════
 
 export async function obterRelatorioCantinaPN(de: string, ate: string) {
-    await requireAuth()
+    await exigirEquipa(EQUIPA_CANTINA, ['FINANCE'], 'a equipa da Cantina ou as finanças')
     const db = await getDb()
 
     const dataInicio = new Date(de)
@@ -107,11 +108,11 @@ export async function obterRelatorioCantinaPN(de: string, ate: string) {
 // ══════════════════════════════════════════════════════════════════════════════
 
 export async function obterSaldoCantinaTransferivel() {
-    await requireAuth()
+    await exigirEquipa(EQUIPA_CANTINA, ['FINANCE'], 'a equipa da Cantina ou as finanças')
     const db = await getDb()
 
     // Find CANTINA fund
-    let fundoCantina = await db.fundoFinanceiro.findFirst({
+    const fundoCantina = await db.fundoFinanceiro.findFirst({
         where: {
             OR: [
                 { tipo: 'CANTINA' },

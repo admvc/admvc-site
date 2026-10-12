@@ -1,7 +1,7 @@
 'use server'
 
 import { getDb, getTenantIdFromHeaders } from '@/lib/db'
-import { requireAuth } from '@/lib/auth-utils'
+import { requireRole } from '@/lib/auth-utils'
 
 export interface AlertaOrcamento {
     fundoNome: string
@@ -18,7 +18,7 @@ export interface AlertaOrcamento {
  * Compara despesas pagas com o valor previsto por categoria.
  */
 export async function obterAlertasOrcamento(ano?: number): Promise<AlertaOrcamento[]> {
-    await requireAuth()
+    await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
     const db = await getDb()
 
     const anoAtual = ano ?? new Date().getFullYear()

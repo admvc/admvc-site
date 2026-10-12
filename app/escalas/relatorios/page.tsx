@@ -6,11 +6,12 @@ import BotaoImprimir from '@/components/BotaoImprimir' // Importando o component
 
 export const dynamic = 'force-dynamic'
 
-export default async function RelatorioEscalasPage({
-    searchParams,
-}: {
-    searchParams: { inicio?: string; fim?: string }
-}) {
+export default async function RelatorioEscalasPage(
+    props: {
+        searchParams: Promise<{ inicio?: string; fim?: string }>
+    }
+) {
+    const searchParams = await props.searchParams;
     const db = await getDb()
 
     // 1. Período ajustado

@@ -2,25 +2,45 @@ import { PrismaClient } from '@prisma/client'
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 
-const prismaClientSingleton = () => {
-    const connectionString = process.env.DATABASE_URL
+/**
+ * O adaptador pg nao le o `?schema=` do endereco: tira-se daqui e passa-se a
+ * mao. Na producao nao ha `?schema=` (schema public). A base de teste
+ * (Supabase partilhado com o Atelie) usa `?schema=admvc_teste` — sem isto, as
+ * consultas iam parar ao public dessa base, que nao e nosso.
+ */
+export function ligacaoDoEndereco(url: string | undefined) {
+    if (!url) return { connectionString: url, schema: undefined as string | undefined, ssl: undefined }
+    const u = new URL(url)
+    const schema = u.searchParams.get('schema') ?? undefined
+    if (!schema) return { connectionString: url, schema: undefined, ssl: undefined }
+    const sslmode = u.searchParams.get('sslmode')
+    for (const p of ['schema', 'connection_limit', 'pgbouncer', 'sslmode']) u.searchParams.delete(p)
+    return {
+        connectionString: u.toString(),
+        schema,
+        ssl: sslmode === 'disable' ? false : { rejectUnauthorized: false },
+    }
+}
 
-    const pool = new Pool({ connectionString, max: 3, idleTimeoutMillis: 20000 })
-    const adapter = new PrismaPg(pool as any)
+const prismaClientSingleton = () => {
+    const { connectionString, schema, ssl } = ligacaoDoEndereco(process.env.DATABASE_URL)
+
+    const pool = new Pool({ connectionString, max: 3, idleTimeoutMillis: 20000, ...(ssl !== undefined ? { ssl } : {}) })
+    const adapter = new PrismaPg(pool as any, schema ? { schema } : undefined)
 
     return new PrismaClient({ adapter })
 }
 
-declare global {
-    var prisma: undefined | ReturnType<typeof prismaClientSingleton>
-}
+// Sem `declare global`: a declaracao global deixava usar `prisma` sem o
+// importar (o TypeScript aceitava, e em producao a variavel nao existia).
+const globalParaPrisma = globalThis as unknown as { __prismaAdmvc?: ReturnType<typeof prismaClientSingleton> }
 
 // Cliente global base (acesso a tudo — usar apenas para queries globais/SA)
-const prisma = globalThis.prisma ?? prismaClientSingleton()
+const prisma = globalParaPrisma.__prismaAdmvc ?? prismaClientSingleton()
 
 export default prisma
 
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma
+if (process.env.NODE_ENV !== 'production') globalParaPrisma.__prismaAdmvc = prisma
 
 // ============================================================================
 // EXTENSAO MULTITENANT + CONGREGACAO
@@ -48,6 +68,11 @@ const PROTECTED_MODELS = [
     'DonativoOnline', 'Pledge',
     'ContaBancaria', 'MovimentoBancario',
     'InteresseDepartamento',
+    // Faltavam (tinham tenant_id mas o cliente nao os filtrava):
+    'Sermao', 'EscolaBiblica', 'CursoEBD', 'TurmaEBD', 'MatriculaEBD',
+    'AtividadeEBD', 'NotaEBD', 'InteresseCurso',
+    'AuditLog', 'BoleiaTracking', 'DespesaCantina', 'TipoCesta', 'EntregaCesta',
+    // Fora de proposito: AvisoPlataforma e PlanoHistorico (da plataforma, nao de uma igreja)
 ]
 
 // Modelos que suportam congregacao_id (para filtro explicito na UI)
@@ -94,6 +119,12 @@ export const getTenantClient = (tenantId: number) => {
                     // 3. Updates e Deletes singulares — apenas tenant_id
                     if (['update', 'delete'].includes(operation)) {
                         anyArgs.where = { ...anyArgs.where, tenant_id: tenantId }
+                    }
+
+                    // 4. Upsert — so encontra registos da igreja e cria-os nela
+                    if (operation === 'upsert') {
+                        anyArgs.where = { ...anyArgs.where, tenant_id: tenantId }
+                        if (anyArgs.create) anyArgs.create.tenant_id = tenantId
                     }
 
                     return query(anyArgs)

@@ -21,7 +21,7 @@ export default function CardDepartamentoMembro({ depto, membroId, role, podeGeri
     const isGrupo = depto.tipo === 'GRUPO';
 
     // 1. Tratamento seguro das funções para evitar erro de toLowerCase()
-    let funcoesDoMembro = depto.funcoes ? [...depto.funcoes] : [];
+    const funcoesDoMembro = depto.funcoes ? [...depto.funcoes] : [];
 
     const ehLiderPeloID = depto.lideres?.some((lider: any) => lider.id === membroId) || depto.lider_id === membroId;
     const ehAdmin = role === 'ADMIN';

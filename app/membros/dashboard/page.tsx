@@ -6,7 +6,6 @@ import QrCodeMembro from '@/components/cantina/QrCodeMembro'
 import CardLimiteFilhos from '@/components/cantina/CardLimiteFilhos'
 import ExtratoCantinaLocal from '@/components/cantina/ExtratoCantinaLocal'
 import ConsumoFilhos from '@/components/cantina/ConsumoFilhos'
-import { headers } from 'next/headers'
 import ModuloBloqueado from '@/components/ui/ModuloBloqueado'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
@@ -40,6 +39,7 @@ import WidgetYouTube from '@/components/membros/WidgetYouTube'
 import WidgetInstagram from '@/components/membros/WidgetInstagram'
 import MobileDashboard from '@/components/membros/MobileDashboard'
 import { fetchLatestYouTubeVideo } from '@/lib/youtube-rss'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 export default async function DashboardMembro({
     searchParams
@@ -54,8 +54,7 @@ export default async function DashboardMembro({
     if (!session) redirect('/membros/login');
     const { membroId, role } = session;
 
-    const headersList = await headers();
-    const tenantIdStr = headersList.get('x-tenant-id');
+    const tenantIdStr = await getTenantIdFromHeaders();
 
     if (!tenantIdStr) {
         return redirect('/membros/login?error=Igreja não identificada na sessão.');
@@ -141,11 +140,7 @@ export default async function DashboardMembro({
     }
 
     if (!membro) {
-        // Membro nao encontrado neste tenant — pode ser cookie de impersonacao
-        // Limpar cookie e forcar re-login
-        const { cookies } = await import('next/headers')
-        const cookieStore = await cookies()
-        cookieStore.delete('admvc_session')
+        // Membro nao encontrado neste tenant: forcar re-login
         return redirect('/membros/login?error=Sessao invalida. Faca login novamente.')
     }
 

@@ -57,7 +57,7 @@ export default function ModalRelatorioEscalaLider({
 
     const navMes = (dir: 1 | -1) => {
         setMes(prev => {
-            let m = prev + dir
+            const m = prev + dir
             if (m > 11) { setAno(a => a + 1); return 0 }
             if (m < 0) { setAno(a => a - 1); return 11 }
             return m

@@ -1,41 +1,50 @@
 // lib/db.ts
 // Helper centralizado para obter o cliente Prisma filtrado por tenant.
 // Usar em TODAS as paginas e actions protegidas em vez do prisma global.
+//
+// A igreja e o utilizador vem SEMPRE da sessao verificada (lib/auth-utils.ts),
+// nunca de cabecalhos do pedido. Os nomes "FromHeaders" ficaram por
+// compatibilidade com o codigo que ja os usa.
 
-import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import { getTenantClient } from '@/lib/prisma'
+import { getSessionData } from '@/lib/auth-utils'
 
 /**
  * Retorna o cliente Prisma filtrado pelo tenant_id do utilizador autenticado.
- * Extrai o tenant_id do header x-tenant-id injectado pelo middleware.
  */
 export async function getDb() {
-    const headersList = await headers()
-    const tenantId = Number(headersList.get('x-tenant-id') || 0)
-    if (!tenantId) throw new Error('Tenant nao identificado.')
+    const tenantId = await getTenantIdFromHeaders()
+    // Sem sessao valida (expirou, senha mudou, conta inativa): para o login,
+    // em vez de rebentar com erro 500 nas paginas que pedem a base primeiro.
+    if (!tenantId) redirect('/membros/login')
     return getTenantClient(tenantId)
 }
 
 /**
- * Retorna o tenant_id do utilizador autenticado.
+ * Retorna o tenant_id do utilizador autenticado (0 sem sessao).
  */
 export async function getTenantIdFromHeaders() {
-    const headersList = await headers()
-    return Number(headersList.get('x-tenant-id') || 0)
+    return (await getSessionData())?.tenantId ?? 0
 }
 
 /**
- * Retorna o user_id do utilizador autenticado.
+ * Retorna o user_id do utilizador autenticado (0 sem sessao).
  */
 export async function getUserIdFromHeaders() {
-    const headersList = await headers()
-    return Number(headersList.get('x-user-id') || 0)
+    return (await getSessionData())?.membroId ?? 0
 }
 
 /**
- * Retorna o user_role do utilizador autenticado.
+ * Retorna o user_role do utilizador autenticado ('' sem sessao).
  */
 export async function getUserRoleFromHeaders() {
-    const headersList = await headers()
-    return headersList.get('x-user-role') || ''
+    return (await getSessionData())?.role ?? ''
+}
+
+/**
+ * Retorna a congregacao do utilizador autenticado (undefined sem sessao).
+ */
+export async function getCongregacaoIdDaSessao() {
+    return (await getSessionData())?.congregacaoId
 }

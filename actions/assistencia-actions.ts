@@ -2,12 +2,12 @@
 
 import { revalidatePath } from 'next/cache'
 import { getDb, getTenantIdFromHeaders } from '@/lib/db'
-import { requireAuth } from '@/lib/auth-utils'
+import { exigirEquipa, EQUIPA_SOCIAL } from '@/lib/equipas'
 
 // ── CRIAR ITEM ─────────────────────────────────────────────────────────────────
 export async function criarItemAssistencia(formData: FormData) {
     try {
-        const session = await requireAuth()
+        const session = await exigirEquipa(EQUIPA_SOCIAL, ['FINANCE'], 'a equipa de Assistência Social')
         const db = await getDb()
         const tenantId = await getTenantIdFromHeaders()
 
@@ -44,7 +44,7 @@ export async function criarItemAssistencia(formData: FormData) {
 // ── REGISTAR MOVIMENTO ──────────────────────────────────────────────────────────
 export async function registarMovimentoAssistencia(formData: FormData) {
     try {
-        const session = await requireAuth()
+        const session = await exigirEquipa(EQUIPA_SOCIAL, ['FINANCE'], 'a equipa de Assistência Social')
         const db = await getDb()
         const tenantId = await getTenantIdFromHeaders()
 
@@ -124,7 +124,7 @@ export async function registarMovimentoAssistencia(formData: FormData) {
 
 export async function criarTipoCesta(formData: FormData) {
     try {
-        await requireAuth()
+        await exigirEquipa(EQUIPA_SOCIAL, ['FINANCE'], 'a equipa de Assistência Social')
         const db = await getDb()
         const tenantId = await getTenantIdFromHeaders()
 
@@ -146,8 +146,14 @@ export async function criarTipoCesta(formData: FormData) {
 
 export async function adicionarItemCesta(tipoCestaId: number, itemId: number, quantidade: number) {
     try {
-        await requireAuth()
+        await exigirEquipa(EQUIPA_SOCIAL, ['FINANCE'], 'a equipa de Assistência Social')
         const db = await getDb()
+
+        const [cesta, item] = await Promise.all([
+            db.tipoCesta.findUnique({ where: { id: tipoCestaId }, select: { id: true } }),
+            db.itemAssistenciaSocial.findUnique({ where: { id: itemId }, select: { id: true } }),
+        ])
+        if (!cesta || !item) return { error: 'Cesta ou item não encontrado.' }
 
         await db.itemCesta.upsert({
             where: { tipo_cesta_id_item_id: { tipo_cesta_id: tipoCestaId, item_id: itemId } },
@@ -164,8 +170,11 @@ export async function adicionarItemCesta(tipoCestaId: number, itemId: number, qu
 
 export async function removerItemCesta(itemCestaId: number) {
     try {
-        await requireAuth()
+        await exigirEquipa(EQUIPA_SOCIAL, ['FINANCE'], 'a equipa de Assistência Social')
         const db = await getDb()
+        const ligacao = await db.itemCesta.findUnique({ where: { id: itemCestaId }, select: { tipo_cesta_id: true } })
+        const cesta = ligacao ? await db.tipoCesta.findUnique({ where: { id: ligacao.tipo_cesta_id }, select: { id: true } }) : null
+        if (!cesta) return { error: 'Item não encontrado.' }
         await db.itemCesta.delete({ where: { id: itemCestaId } })
         revalidatePath('/assistencia/cestas')
         return { ok: true }
@@ -176,7 +185,7 @@ export async function removerItemCesta(itemCestaId: number) {
 
 export async function eliminarTipoCesta(tipoCestaId: number) {
     try {
-        await requireAuth()
+        await exigirEquipa(EQUIPA_SOCIAL, ['FINANCE'], 'a equipa de Assistência Social')
         const db = await getDb()
         await db.tipoCesta.delete({ where: { id: tipoCestaId } })
         revalidatePath('/assistencia/cestas')
@@ -188,7 +197,7 @@ export async function eliminarTipoCesta(tipoCestaId: number) {
 
 export async function montarCesta(tipoCestaId: number, destinatario: string, observacao?: string) {
     try {
-        const session = await requireAuth()
+        const session = await exigirEquipa(EQUIPA_SOCIAL, ['FINANCE'], 'a equipa de Assistência Social')
         const db = await getDb()
         const tenantId = await getTenantIdFromHeaders()
 
@@ -254,7 +263,7 @@ export async function montarCesta(tipoCestaId: number, destinatario: string, obs
 // ── ELIMINAR ITEM ───────────────────────────────────────────────────────────────
 export async function eliminarItemAssistencia(itemId: number) {
     try {
-        await requireAuth()
+        await exigirEquipa(EQUIPA_SOCIAL, ['FINANCE'], 'a equipa de Assistência Social')
         const db = await getDb()
 
         // Eliminar movimentos associados primeiro

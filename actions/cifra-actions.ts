@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/lib/prisma'
-import { requireAuth } from '@/lib/auth-utils'
+import { requireLouvorPermission } from '@/lib/louvor-permissoes'
 import { revalidatePath } from 'next/cache'
 import { importarCifraClub } from '@/lib/cifra'
 
@@ -11,14 +11,19 @@ import { importarCifraClub } from '@/lib/cifra'
  */
 export async function importarCifraDeUrlAction(musicaId: string, url: string) {
     try {
-        await requireAuth()
+        await requireLouvorPermission()
 
-        if (!url || !url.includes('cifraclub') && !url.includes('cifras.com')) {
+        // So https e so os sites de cifras (o servidor vai buscar o endereco:
+        // nunca um endereco qualquer que "contenha" o nome do site).
+        let destino: URL
+        try { destino = new URL(url) } catch { return { ok: false, error: 'URL inválida. Use um link do CifraClub.' } }
+        const hostsPermitidos = ['cifraclub.com.br', 'cifraclub.com', 'cifras.com.br']
+        if (destino.protocol !== 'https:' || !hostsPermitidos.some(h => destino.hostname === h || destino.hostname.endsWith('.' + h))) {
             return { ok: false, error: 'URL inválida. Use um link do CifraClub.' }
         }
 
         // 1. Buscar a página HTML
-        const res = await fetch(url, {
+        const res = await fetch(destino.toString(), {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (compatible; ADMVC/1.0)',
                 'Accept': 'text/html',

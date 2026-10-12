@@ -2,6 +2,7 @@
 
 import { getDb, getTenantIdFromHeaders } from '@/lib/db'
 import { requireAuth } from '@/lib/auth-utils'
+import { exigirEquipa, EQUIPA_CANTINA } from '@/lib/equipas'
 import { revalidatePath } from 'next/cache'
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -9,7 +10,7 @@ import { revalidatePath } from 'next/cache'
 // ══════════════════════════════════════════════════════════════════════════════
 
 export async function abrirTurno(valorInicial: number) {
-    const session = await requireAuth()
+    const session = await exigirEquipa(EQUIPA_CANTINA, [], 'a equipa da Cantina')
     const db = await getDb()
     const tenantId = await getTenantIdFromHeaders()
 
@@ -50,7 +51,7 @@ export async function abrirTurno(valorInicial: number) {
 // ══════════════════════════════════════════════════════════════════════════════
 
 export async function fecharTurno(turnoId: number, valorFinalReal: number, observacao?: string) {
-    const session = await requireAuth()
+    const session = await exigirEquipa(EQUIPA_CANTINA, [], 'a equipa da Cantina')
     const db = await getDb()
 
     try {
@@ -133,7 +134,7 @@ export async function fecharTurno(turnoId: number, valorFinalReal: number, obser
 // ══════════════════════════════════════════════════════════════════════════════
 
 export async function obterTurnoAberto() {
-    const session = await requireAuth()
+    const session = await exigirEquipa(EQUIPA_CANTINA, [], 'a equipa da Cantina')
     const db = await getDb()
 
     try {
@@ -161,6 +162,7 @@ export async function obterTurnoAberto() {
 // ══════════════════════════════════════════════════════════════════════════════
 
 export async function obterHistoricoTurnos(limite = 20) {
+    await exigirEquipa(EQUIPA_CANTINA, ['FINANCE'], 'a equipa da Cantina ou as finanças')
     const db = await getDb()
 
     try {

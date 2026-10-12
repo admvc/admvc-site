@@ -11,17 +11,18 @@ export default function BoasVindasPage() {
     const [pedido, setPedido] = useState('')
     const [enviado, setEnviado] = useState(false)
     const [enviando, setEnviando] = useState(false)
+    const [consentimento, setConsentimento] = useState(false)
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
-        if (!nome.trim() || !telefone.trim()) return
+        if (!nome.trim() || !telefone.trim() || !consentimento) return
 
         setEnviando(true)
         try {
             const res = await fetch('/api/public/visitante', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nome: nome.trim(), telefone: telefone.trim(), pedido_oracao: pedido.trim() || null })
+                body: JSON.stringify({ nome: nome.trim(), telefone: telefone.trim(), pedido_oracao: pedido.trim() || null, consentimento })
             })
             const data = await res.json()
             if (!res.ok) {
@@ -129,7 +130,20 @@ export default function BoasVindasPage() {
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-bold text-white outline-none focus:border-emerald-500/50 placeholder:text-white/20 resize-none transition-all" />
                     </div>
 
-                    <button type="submit" disabled={enviando || !nome.trim() || !telefone.trim()}
+                    <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
+                        <p className="text-xs leading-relaxed text-white/70">
+                            Usamos estes dados só para te acolher e contactar. Quem os vê é a equipa de acolhimento.
+                            Guardamo-los até 12 meses sem visitas; o pedido de oração, 3 meses.{' '}
+                            <a href="/privacidade" className="underline text-white">Política de privacidade</a>
+                        </p>
+                        <label className="flex items-start gap-3 text-xs font-bold text-white">
+                            <input type="checkbox" checked={consentimento} onChange={e => setConsentimento(e.target.checked)} required
+                                className="mt-0.5 h-4 w-4 shrink-0 accent-emerald-500" />
+                            Aceito que a igreja guarde estes dados (incluindo o pedido de oração, se o escrever) para me contactar.
+                        </label>
+                    </div>
+
+                    <button type="submit" disabled={enviando || !nome.trim() || !telefone.trim() || !consentimento}
                         className="w-full flex items-center justify-center gap-3 bg-emerald-500 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all disabled:opacity-50 shadow-lg shadow-emerald-500/20 active:scale-95">
                         {enviando ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                         {enviando ? 'A enviar...' : 'Enviar'}

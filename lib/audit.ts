@@ -31,6 +31,7 @@ export type AuditAcao =
     | 'CONFIG'
     | 'ASSINAR'
     | 'ARQUIVAR'
+    | 'ANONIMIZAR'
 
 export type AuditCategoria =
     | 'MEMBROS'
@@ -49,6 +50,7 @@ export type AuditCategoria =
     | 'AGENDA'
     | 'VISITANTES'
     | 'MURAL'
+    | 'RGPD'
 
 export type AuditAlvoTipo =
     | 'MEMBRO'

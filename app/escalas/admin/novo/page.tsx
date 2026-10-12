@@ -1,15 +1,15 @@
 // app/escalas/admin/novo/page.tsx
 import { getDb } from '@/lib/db'
-import { cookies } from 'next/headers'
+import { getSessionData } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
 import { ChevronLeft, Calendar as CalendarIcon, Users } from 'lucide-react'
 import Link from 'next/link'
 import GestaoEscalasDepto from '@/components/admin/GestaoEscalasDepto'
 
-export default async function NovaEscalaPage({ searchParams }: { searchParams: { depto?: string } }) {
+export default async function NovaEscalaPage(props: { searchParams: Promise<{ depto?: string }> }) {
+    const searchParams = await props.searchParams;
     const db = await getDb()
-    const cookieStore = await cookies()
-    const session = cookieStore.get('admvc_session')
+    const session = await getSessionData()
     if (!session) redirect('/membros/login')
 
     const deptoId = searchParams.depto ? parseInt(searchParams.depto) : null;

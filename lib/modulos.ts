@@ -2,8 +2,8 @@
 // Helpers server-side para verificação de módulos activos
 
 import prisma from '@/lib/prisma'
-import { headers } from 'next/headers'
 import { type Modulo, isModuloAtivo, getModulosAtivos, PLANOS, type PlanoId } from '@/lib/planos'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 interface TenantModuloInfo {
     tenantId: number
@@ -13,11 +13,10 @@ interface TenantModuloInfo {
 
 /**
  * Obtém informação do tenant e seus módulos activos.
- * Usa o header x-tenant-id injectado pelo middleware.
+ * Usa a igreja da sessao verificada (lib/db.ts).
  */
 export async function getTenantModulos(): Promise<TenantModuloInfo> {
-    const headersList = await headers()
-    const tenantId = Number(headersList.get('x-tenant-id') || 0)
+    const tenantId = await getTenantIdFromHeaders()
 
     if (!tenantId) {
         throw new Error('Igreja não identificada.')

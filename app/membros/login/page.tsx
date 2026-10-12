@@ -3,7 +3,8 @@
 import { loginUnificado } from '@/actions/auth-actions'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation' // Importamos o router
-import { LogIn, Loader2, ShieldCheck, CheckCircle2 } from 'lucide-react'
+import { LogIn, Loader2, CheckCircle2 } from 'lucide-react'
+import Link from 'next/link'
 
 export default function LoginPage() {
     const router = useRouter();
@@ -55,7 +56,10 @@ export default function LoginPage() {
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Palavra-passe</label>
-                            <input name="password" type="password" onChange={() => setError(null)} required className="w-full bg-bg border border-soft rounded-2xl px-6 py-4 text-xs font-bold outline-none focus:border-figueira transition-all" placeholder="••••••••" />
+                            <input name="password" type="password" onChange={() => setError(null)} required className="w-full bg-bg border border-soft rounded-2xl px-6 py-4 text-xs font-bold outline-none focus:border-figueira transition-all" />
+                            <div className="text-right pr-4">
+                                <Link href="/membros/recuperar" className="text-[11px] font-bold text-muted underline hover:text-figueira">Esqueci-me da palavra-passe</Link>
+                            </div>
                         </div>
                     </div>
 
@@ -100,9 +104,9 @@ export default function LoginPage() {
                     </button>
                 </form>
 
-                <div className="flex justify-center gap-2 items-center text-[9px] font-bold text-muted uppercase tracking-widest opacity-50">
-                    <ShieldCheck size={12} /> Conexão Segura SSL
-                </div>
+                <p className="text-center">
+                    <Link href="/privacidade" className="text-[11px] font-bold text-muted underline">Política de privacidade</Link>
+                </p>
             </div>
         </main>
     )

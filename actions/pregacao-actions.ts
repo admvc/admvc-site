@@ -1,16 +1,30 @@
 'use server'
 
 import prisma, { getTenantClient } from '@/lib/prisma'
-import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { requireAuth } from '@/lib/auth-utils'
+import { podeGerirCursos, podeGerirSermoes } from '@/lib/cursos-permissoes'
 import { invalidateSermoes } from '@/lib/cache'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 async function getDb() {
-    const h = await headers()
-    const tenantId = Number(h.get('x-tenant-id') || 0)
+    const tenantId = await getTenantIdFromHeaders()
     if (!tenantId) throw new Error('Igreja nao identificada.')
     return getTenantClient(tenantId)
+}
+
+// Ver: qualquer membro. Gerir: as mesmas regras que as paginas usam para
+// mostrar os botoes (lib/cursos-permissoes.ts) — aqui para nao se contornarem.
+async function exigirGestaoSermoes() {
+    const sessao = await requireAuth()
+    if (!(await podeGerirSermoes(sessao.membroId, sessao.role))) throw new Error('Sem permissão para gerir pregações e aulas.')
+    return sessao
+}
+
+async function exigirGestaoCursos() {
+    const sessao = await requireAuth()
+    if (!(await podeGerirCursos(sessao.membroId, sessao.role))) throw new Error('Sem permissão para gerir cursos.')
+    return sessao
 }
 
 // ── SERMÕES ─────────────────────────────────────────────────────────────────
@@ -68,9 +82,9 @@ export async function buscarSermao(id: string) {
 
 export async function criarSermao(formData: FormData) {
     try {
-        await requireAuth()
+        await exigirGestaoSermoes()
         const db = await getDb()
-        const tenantId = Number((await headers()).get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
 
         const titulo = formData.get('titulo') as string
         const texto_corpo = formData.get('texto_corpo') as string | null
@@ -113,7 +127,7 @@ export async function criarSermao(formData: FormData) {
 
 export async function atualizarSermao(id: string, formData: FormData) {
     try {
-        await requireAuth()
+        await exigirGestaoSermoes()
         const db = await getDb()
 
         const titulo = formData.get('titulo') as string
@@ -156,7 +170,7 @@ export async function atualizarSermao(id: string, formData: FormData) {
 
 export async function removerSermao(id: string) {
     try {
-        await requireAuth()
+        await exigirGestaoSermoes()
         const db = await getDb()
 
         await db.sermao.delete({ where: { id } })
@@ -171,7 +185,7 @@ export async function removerSermao(id: string) {
 
 export async function partilharSermaoWhatsApp(id: string) {
     try {
-        await requireAuth()
+        await exigirGestaoSermoes()
         const db = await getDb()
 
         const sermao = await db.sermao.findUnique({
@@ -252,9 +266,9 @@ export async function listarEBD(mes: number, ano: number) {
 
 export async function criarEBD(formData: FormData) {
     try {
-        await requireAuth()
+        await exigirGestaoSermoes()
         const db = await getDb()
-        const tenantId = Number((await headers()).get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
 
         const titulo = formData.get('titulo') as string
         const tema = formData.get('tema') as string | null
@@ -299,7 +313,7 @@ export async function criarEBD(formData: FormData) {
 
 export async function atualizarEBD(id: string, formData: FormData) {
     try {
-        await requireAuth()
+        await exigirGestaoSermoes()
         const db = await getDb()
 
         const titulo = formData.get('titulo') as string
@@ -338,7 +352,7 @@ export async function atualizarEBD(id: string, formData: FormData) {
 
 export async function removerEBD(id: string) {
     try {
-        await requireAuth()
+        await exigirGestaoSermoes()
         const db = await getDb()
 
         await db.escolaBiblica.delete({ where: { id } })
@@ -353,8 +367,10 @@ export async function removerEBD(id: string) {
 
 export async function registarPresencasEBD(escolaBiblicaId: string, presenteIds: number[]) {
     try {
-        await requireAuth()
+        await exigirGestaoSermoes()
         const db = await getDb()
+        const aula = await db.escolaBiblica.findUnique({ where: { id: escolaBiblicaId }, select: { id: true } })
+        if (!aula) return { ok: false, error: 'Aula não encontrada.' }
 
         // Apaga todas as presenças existentes para esta aula
         await db.presencaEBD.deleteMany({
@@ -467,9 +483,9 @@ export async function listarCursos(ano?: number) {
 
 export async function criarCurso(formData: FormData) {
     try {
-        const session = await requireAuth()
+        const session = await exigirGestaoCursos()
         const db = await getDb()
-        const tenantId = Number((await headers()).get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
         const titulo = formData.get('titulo') as string
         const descricao = formData.get('descricao') as string | null
         const ementa = formData.get('ementa') as string | null
@@ -543,7 +559,7 @@ export async function criarCurso(formData: FormData) {
 
 export async function atualizarCurso(id: string, formData: FormData) {
     try {
-        await requireAuth()
+        await exigirGestaoCursos()
         const db = await getDb()
 
         const titulo = formData.get('titulo') as string
@@ -606,7 +622,7 @@ export async function atualizarCurso(id: string, formData: FormData) {
 
 export async function removerCurso(id: string) {
     try {
-        await requireAuth()
+        await exigirGestaoCursos()
         const db = await getDb()
         await db.cursoEBD.delete({ where: { id } })
         revalidatePath('/ensino')
@@ -621,9 +637,9 @@ export async function removerCurso(id: string) {
 
 export async function criarTurma(formData: FormData) {
     try {
-        await requireAuth()
+        await exigirGestaoCursos()
         const db = await getDb()
-        const tenantId = Number((await headers()).get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
 
         const nome = formData.get('nome') as string
         const faixa_etaria = formData.get('faixa_etaria') as string | null
@@ -655,7 +671,7 @@ export async function criarTurma(formData: FormData) {
 
 export async function removerTurma(id: string) {
     try {
-        await requireAuth()
+        await exigirGestaoCursos()
         const db = await getDb()
         await db.turmaEBD.delete({ where: { id } })
         revalidatePath('/ensino')
@@ -721,9 +737,9 @@ export async function buscarTurma(id: string) {
 
 export async function matricularAlunos(turmaId: string, membroIds: number[]) {
     try {
-        await requireAuth()
+        await exigirGestaoCursos()
         const db = await getDb()
-        const tenantId = Number((await headers()).get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
 
         // Validar que a turma existe e o curso está EM_CURSO
         const turma = await db.turmaEBD.findUnique({
@@ -763,7 +779,7 @@ export async function matricularAlunos(turmaId: string, membroIds: number[]) {
 
 export async function removerMatricula(turmaId: string, membroId: number) {
     try {
-        await requireAuth()
+        await exigirGestaoCursos()
         const db = await getDb()
 
         await db.matriculaEBD.delete({
@@ -782,9 +798,9 @@ export async function removerMatricula(turmaId: string, membroId: number) {
 
 export async function criarAtividade(formData: FormData) {
     try {
-        await requireAuth()
+        await exigirGestaoCursos()
         const db = await getDb()
-        const tenantId = Number((await headers()).get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
 
         const titulo = formData.get('titulo') as string
         const tipo = formData.get('tipo') as string
@@ -823,7 +839,7 @@ export async function criarAtividade(formData: FormData) {
 
 export async function editarAtividade(formData: FormData) {
     try {
-        await requireAuth()
+        await exigirGestaoCursos()
         const db = await getDb()
 
         const atividadeId = formData.get('atividade_id') as string
@@ -863,7 +879,7 @@ export async function editarAtividade(formData: FormData) {
 
 export async function removerAtividade(id: string) {
     try {
-        await requireAuth()
+        await exigirGestaoCursos()
         const db = await getDb()
         await db.atividadeEBD.delete({ where: { id } })
         revalidatePath('/ensino')
@@ -876,9 +892,9 @@ export async function removerAtividade(id: string) {
 
 export async function salvarNotas(atividadeId: string, notas: { membro_id: number; nota: number | null; entregue: boolean; observacao?: string }[]) {
     try {
-        await requireAuth()
+        await exigirGestaoCursos()
         const db = await getDb()
-        const tenantId = Number((await headers()).get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
 
         for (const n of notas) {
             await db.notaEBD.upsert({
@@ -913,7 +929,7 @@ export async function responderAtividade(atividadeId: string, respostas: any[]) 
     try {
         const session = await requireAuth()
         const db = await getDb()
-        const tenantId = Number((await headers()).get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
 
         // Verificar se a atividade tem perguntas
         const atividade = await db.atividadeEBD.findUnique({ where: { id: atividadeId } })
@@ -969,7 +985,7 @@ export async function responderAtividade(atividadeId: string, respostas: any[]) 
 
 export async function calcularAprovacao(turmaId: string) {
     try {
-        await requireAuth()
+        await exigirGestaoCursos()
         const db = await getDb()
 
         const turma = await db.turmaEBD.findUnique({
@@ -1074,7 +1090,7 @@ export async function calcularAprovacao(turmaId: string) {
 
 export async function aprovarCurso(cursoId: string) {
     try {
-        const session = await requireAuth()
+        const session = await exigirGestaoCursos()
         const db = await getDb()
 
         // Validar que o curso existe e está PLANEADO
@@ -1111,7 +1127,7 @@ export async function aprovarCurso(cursoId: string) {
 
 export async function agendarAberturaCurso(cursoId: string, dataAbertura: string) {
     try {
-        await requireAuth()
+        await exigirGestaoCursos()
         const db = await getDb()
 
         await db.cursoEBD.update({
@@ -1135,7 +1151,7 @@ export async function manifestarInteresse(cursoId: string, mensagem?: string) {
     try {
         const session = await requireAuth()
         const db = await getDb()
-        const tenantId = Number((await headers()).get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
 
         const curso = await db.cursoEBD.findUnique({ where: { id: cursoId } })
         if (!curso) return { ok: false, error: 'Curso não encontrado.' }
@@ -1191,9 +1207,9 @@ export async function cancelarInteresse(cursoId: string) {
 
 export async function aprovarInteresse(interesseId: number, turmaId: string) {
     try {
-        const session = await requireAuth()
+        const session = await exigirGestaoCursos()
         const db = await getDb()
-        const tenantId = Number((await headers()).get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
 
         const interesse = await db.interesseCurso.findUnique({ where: { id: interesseId } })
         if (!interesse) return { ok: false, error: 'Interesse não encontrado.' }
@@ -1235,7 +1251,7 @@ export async function aprovarInteresse(interesseId: number, turmaId: string) {
 
 export async function rejeitarInteresse(interesseId: number) {
     try {
-        const session = await requireAuth()
+        const session = await exigirGestaoCursos()
         const db = await getDb()
 
         await db.interesseCurso.update({

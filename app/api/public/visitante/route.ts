@@ -2,18 +2,26 @@ import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { enviarEmailNotificacaoEquipa } from '@/lib/mail'
 import { sendPushToDepartamento } from '@/lib/web-push'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit, ipDoPedido } from '@/lib/rate-limit'
 
 export async function POST(request: Request) {
     try {
-        const ip = request.headers.get('x-forwarded-for') || 'unknown'
-        const { success } = rateLimit(`visitante:${ip}`, 5, 60000) // 5 requests per minute
+        const ip = ipDoPedido(request.headers)
+        const { success } = await rateLimit(`visitante:${ip}`, 5, 60000) // 5 requests per minute
         if (!success) {
             return NextResponse.json({ error: 'Demasiados pedidos. Tente novamente mais tarde.' }, { status: 429 })
         }
 
         const body = await request.json()
-        const { nome, telefone, pedido_oracao } = body
+        const { nome, telefone, pedido_oracao, consentimento } = body
+
+        // RGPD: sem consentimento explicito nao se guarda nada
+        if (consentimento !== true) {
+            return NextResponse.json(
+                { error: 'Para enviarmos os seus dados, aceite a caixa de consentimento.' },
+                { status: 400 }
+            )
+        }
 
         if (!nome || !telefone) {
             return NextResponse.json(
@@ -51,6 +59,7 @@ export async function POST(request: Request) {
                 nome,
                 telefone,
                 pedido_oracao: pedido_oracao || null,
+                consentimento_em: new Date(),
             }
         })
 

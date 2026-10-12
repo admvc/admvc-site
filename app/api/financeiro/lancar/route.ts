@@ -1,16 +1,16 @@
 // app/api/financeiro/lancar/route.ts
 import { NextResponse } from 'next/server'
 import { getTenantClient } from '@/lib/prisma'
-import { getSessionData } from '@/lib/auth-utils'
+import { sessaoDaApi } from '@/lib/api-auth'
 
 export async function POST(request: Request) {
     try {
-        const tenantId = Number(request.headers.get('x-tenant-id') || 0)
-        if (!tenantId) return NextResponse.json({ error: 'Tenant nao identificado' }, { status: 401 })
+        const { sessao, erro } = await sessaoDaApi(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
+        if (erro) return erro
+        const tenantId = sessao.tenantId
         const db = getTenantClient(tenantId)
 
-        const session = await getSessionData();
-        const registradoPorId = session?.membroId || 1;
+        const registradoPorId = sessao.membroId;
 
         const body = await request.json()
         const { objetivoId, membroId, valor, forma, data } = body

@@ -2,16 +2,15 @@
 
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
-import { headers } from 'next/headers'
 import { put } from '@vercel/blob'
 import { requireRole } from '@/lib/auth-utils'
 import { audit } from '@/lib/audit'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 const HEX_REGEX = /^#[0-9A-Fa-f]{6}$/
 
 async function getTenantId(): Promise<number> {
-    const headersList = await headers()
-    const id = headersList.get('x-tenant-id')
+    const id = await getTenantIdFromHeaders()
     if (!id) throw new Error('Igreja nao identificada.')
     return Number(id)
 }

@@ -294,6 +294,18 @@ export default function MeuPerfilClient({
                                 <Input label="Nova Senha (Opcional)" name="nova_senha" type="password"
                                     autoComplete="new-password" placeholder="Deixe em branco para manter" />
                             </div>
+                            <p className="mt-2 text-xs text-muted">Mínimo 10 caracteres. Uma frase curta é fácil de lembrar e difícil de adivinhar.</p>
+                        </div>
+
+                        <div className="pt-6 border-t border-soft">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-3">Os meus dados</p>
+                            <p className="text-xs text-muted mb-4">
+                                Pode descarregar tudo o que o portal guarda sobre si. Para apagar os seus dados, fale com a administração.{' '}
+                                <a href="/privacidade" className="underline">Política de privacidade</a>
+                            </p>
+                            <a href="/api/membros/meus-dados" className="inline-flex items-center gap-2 rounded-xl border border-soft px-4 py-2.5 text-xs font-bold text-fg hover:border-figueira">
+                                Descarregar os meus dados
+                            </a>
                         </div>
                     </div>
 

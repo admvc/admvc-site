@@ -5,23 +5,21 @@ import { revalidatePath } from 'next/cache'
 import { getSessionData, requireRole, requireAuth } from '@/lib/auth-utils'
 import prismaGlobal, { getTenantClient } from '@/lib/prisma'
 import { getLoyverseTokenForTenant } from '@/lib/loyverse-api'
-import { headers } from 'next/headers'
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import { put } from "@vercel/blob";
 import { audit } from '@/lib/audit'
 import { recarregarSaldo } from '@/actions/cantina-local-actions'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 async function getDb() {
-    const headersList = await headers()
-    const tenantId = headersList.get('x-tenant-id')
+    const tenantId = await getTenantIdFromHeaders()
     if (!tenantId) throw new Error('Igreja nao identificada.')
     return getTenantClient(Number(tenantId))
 }
 
 async function getTenantId(): Promise<number> {
-    const headersList = await headers()
-    return Number(headersList.get('x-tenant-id') || 0)
+    return await getTenantIdFromHeaders()
 }
 
 const euro = (val: number) =>
@@ -40,7 +38,7 @@ export async function criarCampanhaEmLoteAction(formData: FormData, membrosIds: 
         const parcelas_total = parseInt(formData.get('parcelas_total') as string);
         const data_pagamento = parseInt(formData.get('data_pagamento') as string);
 
-        const primeiroMembro = await prisma.membro.findUnique({
+        const primeiroMembro = await (await getDb()).membro.findUnique({
             where: { id: membrosIds[0] },
             select: { tenant_id: true }
         });
@@ -60,7 +58,7 @@ export async function criarCampanhaEmLoteAction(formData: FormData, membrosIds: 
             status: "ATIVO"
         }));
 
-        await prisma.objetivoFinanceiro.createMany({
+        await (await getDb()).objetivoFinanceiro.createMany({
             data: dadosParaInserir
         });
 
@@ -81,7 +79,7 @@ export async function atualizarCompradorRifaAction(formData: FormData) {
 
         const membro_id = membro_id_str ? parseInt(membro_id_str) : null;
 
-        await prisma.rifaNumero.update({
+        await (await getDb()).rifaNumero.update({
             where: { id: venda_id },
             data: {
                 membro_id,
@@ -114,7 +112,7 @@ export async function venderNumerosRifaLoteAction(formData: FormData) {
         }
 
         // 1. Verificação de segurança: Alguém já comprou algum destes?
-        const jaVendidos = await prisma.rifaNumero.findMany({
+        const jaVendidos = await (await getDb()).rifaNumero.findMany({
             where: { rifa_id, numero: { in: numeros } }
         });
 
@@ -123,7 +121,7 @@ export async function venderNumerosRifaLoteAction(formData: FormData) {
             return { ok: false, error: `Os números ${numVendidos} já foram vendidos entretanto!` };
         }
 
-        const rifa = await prisma.rifa.findUnique({
+        const rifa = await (await getDb()).rifa.findUnique({
             where: { id: rifa_id },
             select: { tenant_id: true }
         });
@@ -143,7 +141,7 @@ export async function venderNumerosRifaLoteAction(formData: FormData) {
         }));
 
         // 3. Regista a venda em lote
-        await prisma.rifaNumero.createMany({
+        await (await getDb()).rifaNumero.createMany({
             data: dadosParaInserir
         });
 
@@ -158,7 +156,7 @@ export async function venderNumerosRifaLoteAction(formData: FormData) {
 export async function finalizarRifaAction(rifaId: number) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
-        await prisma.rifa.update({
+        await (await getDb()).rifa.update({
             where: { id: rifaId },
             data: { status: 'FINALIZADA' }
         });
@@ -198,7 +196,7 @@ export async function solicitarSaldoCantinaAction(formData: FormData) {
             return { ok: false, error: "Valor inválido. Por favor, verifique o montante." };
         }
 
-        const membroObj = await prisma.membro.findUnique({
+        const membroObj = await (await getDb()).membro.findUnique({
             where: { id: membroId },
             select: { tenant_id: true }
         });
@@ -211,7 +209,7 @@ export async function solicitarSaldoCantinaAction(formData: FormData) {
 
         // 2. GRAVAR COMO PENDENTE
         console.log(`💾 [PRISMA] A gravar o pedido na base de dados (Status: PENDENTE)...`);
-        const novoPedido = await prisma.pedidoSaldoCantina.create({
+        const novoPedido = await (await getDb()).pedidoSaldoCantina.create({
             data: {
                 tenant_id: membroObj.tenant_id,
                 membro_id: membroId,
@@ -242,7 +240,7 @@ export async function aprovarSaldoCantinaAction(pedidoId: number, _loyverseId: s
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
 
         // Buscar pedido para obter membro_id e forma_pagamento
-        const pedido = await prisma.pedidoSaldoCantina.findUnique({ where: { id: pedidoId } })
+        const pedido = await (await getDb()).pedidoSaldoCantina.findUnique({ where: { id: pedidoId } })
         if (!pedido) return { ok: false, error: 'Pedido nao encontrado.' }
         if (pedido.status === 'APROVADO') return { ok: false, error: 'Este pedido ja foi aprovado.' }
 
@@ -251,7 +249,7 @@ export async function aprovarSaldoCantinaAction(pedidoId: number, _loyverseId: s
         if (result.error) return { ok: false, error: result.error }
 
         // Atualizar status do pedido
-        await prisma.pedidoSaldoCantina.update({
+        await (await getDb()).pedidoSaldoCantina.update({
             where: { id: pedidoId },
             data: { status: 'APROVADO' }
         })
@@ -270,7 +268,7 @@ export async function aprovarSaldoCantinaAction(pedidoId: number, _loyverseId: s
 export async function setVencedorRifaAction(rifaId: number, numero: number) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
-        await prisma.rifa.update({
+        await (await getDb()).rifa.update({
             where: { id: rifaId },
             data: {
                 numero_sorteado: numero,
@@ -322,7 +320,7 @@ export async function getHistoricoComprasLoyverse(loyverseId: string) {
 export async function lancarPagamentoCarne(carneId: number, qtdParcelas: number) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
-        const carne = await prisma.objetivoFinanceiro.findUnique({
+        const carne = await (await getDb()).objetivoFinanceiro.findUnique({
             where: { id: carneId }
         });
 
@@ -334,7 +332,7 @@ export async function lancarPagamentoCarne(carneId: number, qtdParcelas: number)
         const valorTotal = carne.valor_mensal * qtdParcelas;
 
         // 1. Atualiza o Carnê (Soma as parcelas pagas e o status)
-        await prisma.objetivoFinanceiro.update({
+        await (await getDb()).objetivoFinanceiro.update({
             where: { id: carneId },
             data: {
                 parcelas_pagas: { increment: qtdParcelas },
@@ -343,7 +341,7 @@ export async function lancarPagamentoCarne(carneId: number, qtdParcelas: number)
         });
 
         // 2. Lança a Transação
-        await prisma.lancamentoFinanceiro.create({
+        await (await getDb()).lancamentoFinanceiro.create({
             data: {
                 tenant_id: carne.tenant_id,
                 objetivo_id: carneId,
@@ -371,7 +369,7 @@ export async function registrarPagamentoCampanhaAction(formData: FormData) {
         const valor_pago = parseFloat(formData.get('valor_pago') as string);
         const forma_pagamento = formData.get('forma_pagamento') as string;
 
-        const objetivo = await prisma.objetivoFinanceiro.findUnique({
+        const objetivo = await (await getDb()).objetivoFinanceiro.findUnique({
             where: { id: objetivo_id },
             select: { tenant_id: true }
         });
@@ -381,7 +379,7 @@ export async function registrarPagamentoCampanhaAction(formData: FormData) {
         }
 
         // 1. Regista a entrada do dinheiro
-        await prisma.lancamentoFinanceiro.create({
+        await (await getDb()).lancamentoFinanceiro.create({
             data: {
                 tenant_id: objetivo.tenant_id,
                 objetivo_id,
@@ -392,7 +390,7 @@ export async function registrarPagamentoCampanhaAction(formData: FormData) {
         });
 
         // 2. Incrementa o número de parcelas pagas na campanha
-        await prisma.objetivoFinanceiro.update({
+        await (await getDb()).objetivoFinanceiro.update({
             where: { id: objetivo_id },
             data: {
                 parcelas_pagas: { increment: 1 }
@@ -423,7 +421,7 @@ export async function buscarRelatorioTesouraria(ano: number, mes: number, membro
         const membroId = membroIdFiltro && membroIdFiltro !== 'todos' ? Number(membroIdFiltro) : undefined;
 
         // 1. Busca Dízimos, Ofertas e Missões
-        let whereContribuicoes: any = { data: { gte: dataInicio, lte: dataFim } };
+        const whereContribuicoes: any = { data: { gte: dataInicio, lte: dataFim } };
         if (membroId) whereContribuicoes.membro_id = membroId;
 
         // Se escolheu um tipo específico que não é CAMPANHA
@@ -433,14 +431,14 @@ export async function buscarRelatorioTesouraria(ano: number, mes: number, membro
             whereContribuicoes.id = -1; // Truque para não trazer contribuições se ele só quer ver Campanhas
         }
 
-        const contribuicoes = await prisma.contribuicao.findMany({
+        const contribuicoes = await (await getDb()).contribuicao.findMany({
             where: whereContribuicoes,
             include: { membro: true },
             orderBy: { data: 'asc' }
         });
 
         // 2. Busca Pagamentos de Carnês/Campanhas
-        let whereLancamentos: any = { data_recebimento: { gte: dataInicio, lte: dataFim } };
+        const whereLancamentos: any = { data_recebimento: { gte: dataInicio, lte: dataFim } };
         if (membroId) whereLancamentos.objetivo = { membro_id: membroId };
 
         // Se escolheu um tipo específico que não é CAMPANHA, não trazemos os carnês
@@ -448,7 +446,7 @@ export async function buscarRelatorioTesouraria(ano: number, mes: number, membro
             whereLancamentos.id = -1;
         }
 
-        const lancamentos = await prisma.lancamentoFinanceiro.findMany({
+        const lancamentos = await (await getDb()).lancamentoFinanceiro.findMany({
             where: whereLancamentos,
             include: { objetivo: { include: { membro: true } } },
             orderBy: { data_recebimento: 'asc' }
@@ -498,7 +496,7 @@ export async function buscarExtratoFinanceiroMembro(
 
         // CORRECAO: filtrar por createdAt (sempre preenchido) em vez de data (pode ser null)
         // e remover o OR que causava conflito
-        const contribuicoes = await prisma.contribuicao.findMany({
+        const contribuicoes = await (await getDb()).contribuicao.findMany({
             where: {
                 membro_id: membroId,
                 createdAt: { gte: inicio, lte: fim }
@@ -506,7 +504,7 @@ export async function buscarExtratoFinanceiroMembro(
             orderBy: { createdAt: 'desc' }
         })
 
-        const lancamentos = await prisma.lancamentoFinanceiro.findMany({
+        const lancamentos = await (await getDb()).lancamentoFinanceiro.findMany({
             where: {
                 NOT: { forma_pagamento: 'MBWAY' },
                 objetivo: { membro_id: membroId },
@@ -518,7 +516,7 @@ export async function buscarExtratoFinanceiroMembro(
             orderBy: { data_recebimento: 'desc' }
         })
 
-        const numerosRifa = await prisma.rifaNumero.findMany({
+        const numerosRifa = await (await getDb()).rifaNumero.findMany({
             where: {
                 membro_id: membroId,
                 createdAt: { gte: inicio, lte: fim }
@@ -743,7 +741,7 @@ export async function lancarPagamentoCarneAction(carneId: number, qtd: number) {
 
         const tenant_id = await getTenantId()
 
-        const carne = await prisma.objetivoFinanceiro.findUnique({
+        const carne = await (await getDb()).objetivoFinanceiro.findUnique({
             where: { id: carneId },
             include: {
                 membro: { select: { id: true, first_name: true, last_name: true } }
@@ -754,7 +752,7 @@ export async function lancarPagamentoCarneAction(carneId: number, qtd: number) {
 
         const valorTotal = carne.valor_mensal * qtd
 
-        const novoLancamento = await prisma.lancamentoFinanceiro.create({
+        const novoLancamento = await (await getDb()).lancamentoFinanceiro.create({
             data: {
                 tenant_id: carne.tenant_id,
                 objetivo_id: carneId,
@@ -766,7 +764,7 @@ export async function lancarPagamentoCarneAction(carneId: number, qtd: number) {
         })
 
         const novasParcelas = carne.parcelas_pagas + qtd
-        await prisma.objetivoFinanceiro.update({
+        await (await getDb()).objetivoFinanceiro.update({
             where: { id: carneId },
             data: {
                 parcelas_pagas: { increment: qtd },
@@ -817,14 +815,14 @@ export async function lancarContribuicaoAction(formData: FormData) {
         const observacao = (formData.get('observacao') as string) || null
         const data = formData.get('data') ? new Date(formData.get('data') as string) : new Date()
 
-        const membro = await prisma.membro.findUnique({
+        const membro = await (await getDb()).membro.findUnique({
             where: { id: membroId },
             select: { first_name: true, last_name: true, tenant_id: true }
         })
 
         if (!membro) return { ok: false, error: 'Membro nao encontrado.' }
 
-        const novaContribuicao = await prisma.contribuicao.create({
+        const novaContribuicao = await (await getDb()).contribuicao.create({
             data: {
                 tenant_id: membro.tenant_id,
                 membro_id: membroId,
@@ -871,7 +869,7 @@ export async function criarRifaAction(formData: FormData) {
 
         const tenant_id = await getTenantId()
 
-        const membroLogado = await prisma.membro.findUnique({
+        const membroLogado = await (await getDb()).membro.findUnique({
             where: { id: session.membroId },
             select: { tenant_id: true }
         })
@@ -882,7 +880,7 @@ export async function criarRifaAction(formData: FormData) {
         const valor_numero = parseFloat(formData.get('valor_numero') as string)
         const total_numeros = parseInt(formData.get('total_numeros') as string)
 
-        const novaRifa = await prisma.rifa.create({
+        const novaRifa = await (await getDb()).rifa.create({
             data: {
                 tenant_id: membroLogado.tenant_id,
                 nome,
@@ -931,13 +929,13 @@ export async function venderNumeroRifaAction(formData: FormData) {
         const nome_externo = (formData.get('nome_externo') as string) || null
         const membro_id = membro_id_str ? parseInt(membro_id_str) : null
 
-        const jaVendido = await prisma.rifaNumero.findUnique({
+        const jaVendido = await (await getDb()).rifaNumero.findUnique({
             where: { rifa_id_numero: { rifa_id, numero } }
         })
 
         if (jaVendido) return { ok: false, error: 'Este numero ja foi vendido.' }
 
-        const rifa = await prisma.rifa.findUnique({
+        const rifa = await (await getDb()).rifa.findUnique({
             where: { id: rifa_id },
             select: { tenant_id: true, nome: true, valor_numero: true }
         })
@@ -946,14 +944,14 @@ export async function venderNumeroRifaAction(formData: FormData) {
 
         let membroNome = nome_externo || 'Externo'
         if (membro_id) {
-            const membro = await prisma.membro.findUnique({
+            const membro = await (await getDb()).membro.findUnique({
                 where: { id: membro_id },
                 select: { first_name: true, last_name: true }
             })
             if (membro) membroNome = `${membro.first_name} ${membro.last_name}`
         }
 
-        const novoNumero = await prisma.rifaNumero.create({
+        const novoNumero = await (await getDb()).rifaNumero.create({
             data: {
                 tenant_id: rifa.tenant_id,
                 rifa_id,
@@ -1001,12 +999,12 @@ export async function setVencedoresRifaAction(formData: FormData) {
         const num2 = formData.get('num2') ? parseInt(formData.get('num2') as string) : null
         const num3 = formData.get('num3') ? parseInt(formData.get('num3') as string) : null
 
-        const rifa = await prisma.rifa.findUnique({
+        const rifa = await (await getDb()).rifa.findUnique({
             where: { id: rifa_id },
             select: { nome: true, tenant_id: true }
         })
 
-        await prisma.rifa.update({
+        await (await getDb()).rifa.update({
             where: { id: rifa_id },
             data: {
                 numero_sorteado: num1,

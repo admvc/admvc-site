@@ -2,12 +2,11 @@
 
 import prisma, { getTenantClient } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
-import { headers } from 'next/headers'
 import { requireRole } from '@/lib/auth-utils'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 async function getDb() {
-    const headersList = await headers();
-    const tenantId = headersList.get('x-tenant-id');
+    const tenantId = await getTenantIdFromHeaders();
     if (!tenantId) throw new Error("Sessão inválida. Igreja não identificada.");
     return { db: getTenantClient(Number(tenantId)), tenantId: Number(tenantId) };
 }

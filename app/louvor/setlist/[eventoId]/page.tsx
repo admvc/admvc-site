@@ -5,7 +5,8 @@ import SetlistPalco from '@/components/louvor/SetlistPalco'
 
 export const dynamic = 'force-dynamic'
 
-export default async function SetlistPage({ params }: { params: { eventoId: string } }) {
+export default async function SetlistPage(props: { params: Promise<{ eventoId: string }> }) {
+    const params = await props.params;
     const db = await getDb()
     const eventoId = Number(params.eventoId)
     if (isNaN(eventoId)) notFound()

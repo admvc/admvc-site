@@ -1,10 +1,9 @@
 // app/membros/page.tsx
-import { cookies } from 'next/headers'
+import { getSessionData } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
 
 export default async function RaizMembros() {
-    const cookieStore = await cookies()
-    const session = cookieStore.get('admvc_session')
+    const session = await getSessionData()
 
     if (session) {
         redirect('/membros/dashboard')

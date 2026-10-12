@@ -1,16 +1,15 @@
 'use server'
 
 import prisma from '@/lib/prisma'
-import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { requireRole } from '@/lib/auth-utils'
 import { audit } from '@/lib/audit'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 export async function salvarConfigMidia(formData: FormData) {
     try {
         await requireRole(['ADMIN'])
-        const headersList = await headers()
-        const tenantId = Number(headersList.get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
         if (!tenantId) return { ok: false, error: 'Tenant nao identificado.' }
 
         await prisma.tenant.update({
@@ -93,8 +92,7 @@ export type X32CenasConfig = {
 export async function salvarX32Cenas(config: X32CenasConfig) {
     try {
         await requireRole(['ADMIN'])
-        const headersList = await headers()
-        const tenantId = Number(headersList.get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
         if (!tenantId) return { ok: false, error: 'Tenant nao identificado.' }
 
         await prisma.tenant.update({
@@ -132,8 +130,7 @@ export type LumikitConfig = {
 export async function salvarLumikitCenas(config: LumikitConfig) {
     try {
         await requireRole(['ADMIN'])
-        const headersList = await headers()
-        const tenantId = Number(headersList.get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
         if (!tenantId) return { ok: false, error: 'Tenant nao identificado.' }
 
         await prisma.tenant.update({

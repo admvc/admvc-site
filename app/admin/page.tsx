@@ -1,10 +1,9 @@
 // app/admin/page.tsx
-import { cookies } from 'next/headers'
+import { getSessionData } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
 
 export default async function RaizAdmin() {
-    const cookieStore = await cookies()
-    const session = cookieStore.get('admvc_session')
+    const session = await getSessionData()
 
     // LÓGICA DE DIRECIONAMENTO:
     if (session) {

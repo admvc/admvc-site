@@ -7,7 +7,7 @@ import { ShieldCheck, Calendar, Activity, BarChart2 } from 'lucide-react'
 //import RelatorioEscalasDepartamento from '@/components/escalas/RelatorioEscalasDepartamento'
 import ModalRelatorioEscalaLider from '@/components/escalas/ModalRelatorioEscalaLider'
 
-export default async function GestaoEscalaLider({ params }: { params: { id: string } }) {
+export default async function GestaoEscalaLider({ params }: { params: Promise<{ id: string }> }) {
     const db = await getDb()
     const { id } = await params;
     const deptoId = parseInt(id);

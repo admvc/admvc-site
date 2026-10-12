@@ -1,4 +1,4 @@
-import { cookies } from 'next/headers'
+import { getSASession } from '@/lib/sa-auth'
 import { LogOut, ShieldAlert } from 'lucide-react'
 import { logoutSuperAdmin } from '@/actions/sa-auth-actions'
 import prismaGlobal from '@/lib/prisma'
@@ -9,8 +9,7 @@ export default async function SuperAdminLayout({
 }: {
     children: React.ReactNode
 }) {
-    const cookieStore = await cookies()
-    const saSession = cookieStore.get('admvc_sa_session')
+    const saSession = await getSASession()
 
     if (!saSession) {
         return <>{children}</>

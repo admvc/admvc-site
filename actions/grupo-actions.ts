@@ -3,15 +3,14 @@
 //import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { getTenantClient } from '@/lib/prisma'
-import { headers } from 'next/headers'
 import { getSessionData, requireRole, requireAuth } from '@/lib/auth-utils'
 import { invalidateGrupos } from '@/lib/cache'
 import { audit } from '@/lib/audit'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 
 async function getDb() {
-    const headersList = await headers()
-    const tenantId = headersList.get('x-tenant-id')
+    const tenantId = await getTenantIdFromHeaders()
     if (!tenantId) throw new Error('Tenant não identificado.')
     return { db: getTenantClient(Number(tenantId)), tenantId: Number(tenantId) }
 }
@@ -28,14 +27,14 @@ export async function registrarEncontroAction(formData: FormData, presentesIds: 
         // const foto_file = formData.get('foto') as File;
         const foto_url = null; // Substitui pelo link do upload real quando tiveres
 
-        const grupo = await prisma.grupo.findUnique({
+        const grupo = await (await getDb()).db.grupo.findUnique({
             where: { id: grupo_id },
             select: { tenant_id: true }
         });
 
         if (!grupo) return { sucesso: false, erro: "Grupo não encontrado." };
 
-        await prisma.encontroGrupo.create({
+        await (await getDb()).db.encontroGrupo.create({
             data: {
                 tenant_id: grupo.tenant_id,
                 grupo_id,
@@ -69,7 +68,7 @@ export async function atualizarDadosGrupoAction(formData: FormData) {
         const estado = formData.get('estado') as string;
         const pais = formData.get('pais') as string;
 
-        await prisma.grupo.update({
+        await (await getDb()).db.grupo.update({
             where: { id },
             data: {
                 dia_semana,
@@ -84,8 +83,7 @@ export async function atualizarDadosGrupoAction(formData: FormData) {
         });
 
         revalidatePath(`/grupos/gestao/${id}`);
-        const hdr = await headers()
-        invalidateGrupos(Number(hdr.get('x-tenant-id'))).catch(() => {})
+        invalidateGrupos(await getTenantIdFromHeaders()).catch(() => {})
         return { sucesso: true };
     } catch (error) {
         return { sucesso: false, erro: "Erro ao atualizar dados." };
@@ -95,15 +93,14 @@ export async function atualizarDadosGrupoAction(formData: FormData) {
 export async function gerirMembroGrupoAction(grupoId: number, membroId: number, acao: 'ADICIONAR' | 'REMOVER') {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'LEADER'])
-        const hdr = await headers()
-        const tenantId = Number(hdr.get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
         if (acao === 'ADICIONAR') {
-            await prisma.grupo.update({
+            await (await getDb()).db.grupo.update({
                 where: { id: grupoId },
                 data: { membros: { connect: { id: membroId } } }
             });
         } else {
-            await prisma.grupo.update({
+            await (await getDb()).db.grupo.update({
                 where: { id: grupoId },
                 data: { membros: { disconnect: { id: membroId } } }
             });

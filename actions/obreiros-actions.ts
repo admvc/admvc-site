@@ -1,14 +1,14 @@
 'use server'
 
 import { getTenantClient } from '@/lib/prisma'
-import { headers } from 'next/headers'
 import { requireAuth } from '@/lib/auth-utils'
+import { exigirObreiros } from '@/lib/obreiros-permissions'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 const TERMOS_DIACONIA = ['diaconia', 'diácono', 'diacono', 'obreiro']
 
 async function getDb() {
-    const headersList = await headers()
-    const tenantId = headersList.get('x-tenant-id')
+    const tenantId = await getTenantIdFromHeaders()
     if (!tenantId) throw new Error('Tenant nao identificado.')
     return {
         db: getTenantClient(Number(tenantId)),
@@ -27,7 +27,7 @@ async function findDiaconiaDepartamento(db: any) {
 
 export async function buscarDadosObreirosDashboard() {
     try {
-        await requireAuth()
+        await exigirObreiros('MEMBRO')
         const { db } = await getDb()
 
         const depto = await findDiaconiaDepartamento(db)
@@ -146,7 +146,7 @@ export async function buscarDadosObreirosDashboard() {
 
 export async function buscarEstatisticasObreiros(departamentoId: number, meses: number = 3) {
     try {
-        await requireAuth()
+        await exigirObreiros('RELATORIO')
         const { db } = await getDb()
 
         const agora = new Date()

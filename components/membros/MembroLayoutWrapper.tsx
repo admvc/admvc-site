@@ -1,20 +1,19 @@
 // components/membros/MembroLayoutWrapper.tsx
 // Layout reutilizavel para qualquer rota que precisa do header do membro
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
 import { getSessionData, isAdmin } from '@/lib/auth-utils'
 import { getTenantClient } from '@/lib/prisma'
 import MembroHeader from '@/components/membros/MembroHeader'
 import MobileHeader from '@/components/membros/MobileHeader'
 import MobileBottomNav from '@/components/membros/MobileBottomNav'
 import PullToRefresh from '@/components/ui/PullToRefresh'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 export default async function MembroLayoutWrapper({ children }: { children: React.ReactNode }) {
     const session = await getSessionData()
     if (!session) return <>{children}</>
 
-    const headersList = await headers()
-    const tenantIdStr = headersList.get('x-tenant-id')
+    const tenantIdStr = await getTenantIdFromHeaders()
     if (!tenantIdStr) return <>{children}</>
 
     let membro: any = null

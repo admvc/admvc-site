@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation'
 import { getSessionData, isAdmin as isAdminCheck } from '@/lib/auth-utils'
 import GestaoGrupoClient from '@/components/membros/GestaoGrupoClient'
 
-export default async function GestaoGrupoPage({ params }: { params: { id: string } }) {
+export default async function GestaoGrupoPage(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     const db = await getDb()
     const session = await getSessionData();
     if (!session) redirect('/login');

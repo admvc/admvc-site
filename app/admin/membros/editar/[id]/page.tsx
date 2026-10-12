@@ -2,27 +2,23 @@ import prismaGlobal, { getTenantClient } from '@/lib/prisma' // 🔄 Importamos 
 import { headers } from 'next/headers' // 🔄 Importamos os headers
 import EditarMembroClient from '@/components/membros/Client'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
+import { getSessionData } from '@/lib/auth-utils'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 export default async function EditarMembroPage({ params }: { params: Promise<{ id: string }> }) {
 
     // --- 1. SEGURANÇA DE ACESSO (ROLE) ---
-    const cookieStore = await cookies();
-    const session = cookieStore.get('admvc_session');
+    const session = await getSessionData();
 
-    // Se não há cookie, expulsa logo
+    // Sem sessão, expulsa logo
     if (!session) redirect('/membros/login?error=Sessao expirada');
 
-    const sessionValue = decodeURIComponent(session.value);
-    const isAdmin = sessionValue.includes('role:ADMIN');
-
-    if (!isAdmin) {
+    if (session.role !== 'ADMIN') {
         redirect('/membros/login?error=Acesso restrito a administradores');
     }
 
     // --- 2. SEGURANÇA MULTITENANT (IGREJA) ---
-    const headersList = await headers();
-    const tenantIdStr = headersList.get('x-tenant-id');
+    const tenantIdStr = await getTenantIdFromHeaders();
 
     if (!tenantIdStr) {
         redirect('/membros/login?error=Igreja não identificada.');

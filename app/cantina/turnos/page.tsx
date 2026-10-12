@@ -54,7 +54,7 @@ export default async function TurnosPage() {
     })
 
     // ── Stats for open shift ─────────────────────────────────────────
-    let turnoStats = { count: 0, total: 0, totalDinheiro: 0 }
+    const turnoStats = { count: 0, total: 0, totalDinheiro: 0 }
     if (turnoAberto) {
         const transacoes = await db.transacaoCantina.findMany({
             where: { turno_id: turnoAberto.id, tipo: 'CONSUMO' },

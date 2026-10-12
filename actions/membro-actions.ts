@@ -1,28 +1,27 @@
 'use server'
 
 import prisma, { getTenantClient } from '@/lib/prisma'
-import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import bcrypt from 'bcryptjs'
 import { put } from '@vercel/blob'
 import { getSessionData, requireAuth, requireRole } from '@/lib/auth-utils'
 import { invalidateMembros } from '@/lib/cache'
 import { audit } from '@/lib/audit'
+import { validarSenhaNova } from '@/lib/senhas'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 
 // ============================================================================
 // 🛠️ FUNÇÕES AUXILIARES PARA MULTITENANT
 // ============================================================================
 async function getDb() {
-    const headersList = await headers();
-    const tenantId = headersList.get('x-tenant-id');
+    const tenantId = await getTenantIdFromHeaders();
     if (!tenantId) throw new Error("Sessão inválida. Igreja não identificada.");
     return getTenantClient(Number(tenantId));
 }
 
 async function getContext() {
-    const headersList = await headers()
-    const tenantId = Number(headersList.get('x-tenant-id'))
+    const tenantId = await getTenantIdFromHeaders()
     if (!tenantId) throw new Error('Igreja nao identificada.')
     const db = getTenantClient(tenantId)
     return { db, tenantId }
@@ -42,71 +41,13 @@ const parseData = (s: string): Date | null => {
 
 
 
-/*
-export async function atualizarDadosMembroAction(id: number, formData: FormData) {
-    try {
-        const membroId = Number(id);
-
-        // 1. Criamos um objeto vazio para a atualização
-        const dadosParaAtualizar: any = {};
-
-        // 2. Só adicionamos ao objeto se o campo existir no formData
-        // Isso evita sobrescrever com 'null' campos que não estavam na aba atual
-        const campos = [
-            'first_name', 'last_name', 'email', 'phone_1', 'phone_2',
-            'birthdate', 'gender', 'marital_status', 'spouse_name',
-            'children_number', 'notes'
-        ];
-
-        campos.forEach(campo => {
-            const valor = formData.get(campo);
-            if (valor !== null) { // Se o campo existe no envio do formulário
-                if (campo === 'children_number') {
-                    dadosParaAtualizar[campo] = parseInt(valor as string) || 0;
-                } else if (campo === 'birthdate' && valor !== "") {
-                    dadosParaAtualizar[campo] = new Date(valor as string);
-                } else {
-                    dadosParaAtualizar[campo] = valor as string;
-                }
-            }
-        });
-
-        // 3. Executamos o update apenas com os campos capturados
-        await prisma.membro.update({
-            where: { id: membroId },
-            data: dadosParaAtualizar
-        });
-
-        // 4. Lógica de Ministérios (opcional, só se os checkboxes estiverem no form)
-        const deptosEnviados = formData.getAll('deptos');
-        if (deptosEnviados.length > 0) {
-            const deptoIds = deptosEnviados.map(id => Number(id));
-            await prisma.integranteDepartamento.deleteMany({ where: { membro_id: membroId } });
-            await prisma.integranteDepartamento.createMany({
-                data: deptoIds.map(dId => ({
-                    membro_id: membroId,
-                    departamento_id: dId,
-                    funcao: "Membro"
-                }))
-            });
-        }
-
-        revalidatePath('/admin/membros');
-        return { ok: true };
-
-    } catch (error: any) {
-        console.error("Erro na atualização parcial:", error);
-        return { ok: false, error: error.message };
-    }
-}
-*/
-
 export async function confirmarPresenca(escalaId: number, status: boolean) {
     try {
-        await requireAuth()
+        // So a propria escala
+        const sessao = await requireAuth()
         const db = await getDb()
-        await db.escala.update({
-            where: { id: escalaId },
+        await db.escala.updateMany({
+            where: { id: escalaId, membro_id: sessao.membroId },
             data: { confirmado: status }
         });
         revalidatePath("/membros/dashboard");
@@ -118,7 +59,9 @@ export async function confirmarPresenca(escalaId: number, status: boolean) {
 
 export async function assinarTermosAction(membroId: number) {
     try {
-        await requireAuth()
+        // So o proprio assina os seus termos
+        const sessao = await requireAuth()
+        if (sessao.membroId !== membroId) return { success: false }
         const db = await getDb()
         await db.membro.update({
             where: { id: membroId },
@@ -163,8 +106,14 @@ export async function cadastrarMembroCompleto(formData: FormData) {
         // 1. Instanciamos o banco de dados blindado (Multitenant)
         const { db, tenantId } = await getContext();
 
-        const passwordRaw = (formData.get('password') as string) || "membro123";
-        const hashedPassword = await bcrypt.hash(passwordRaw, 10);
+        // Sem senha escrita, a conta fica sem senha: a pessoa define-a pelo link.
+        const passwordRaw = ((formData.get('password') as string) || '').trim();
+        const emailNovo = ((formData.get('email') as string) || '').toLowerCase().trim();
+        if (passwordRaw) {
+            const motivo = validarSenhaNova(passwordRaw, emailNovo);
+            if (motivo) return { erro: motivo };
+        }
+        const hashedPassword = passwordRaw ? await bcrypt.hash(passwordRaw, 10) : null;
 
         // Captura de IDs estrangeiros
         const escolaridade_id = formData.get('escolaridade_id') ? Number(formData.get('escolaridade_id')) : null;
@@ -232,7 +181,9 @@ export async function cadastrarMembroCompleto(formData: FormData) {
 
 export async function atualizarDadosMembro(membroId: number, formData: FormData) {
     try {
-        await requireAuth()
+        // So o proprio membro (a ficha de outros edita-se no admin).
+        const sessao = await requireAuth()
+        if (sessao.membroId !== membroId) return { erro: 'Só pode alterar os seus próprios dados.' };
         console.log(`\n=============================================`);
         console.log(`👤 [DEBUG EDIÇÃO PERFIL] O membro ID ${membroId} está a atualizar os próprios dados`);
 
@@ -294,9 +245,9 @@ export async function atualizarDadosMembro(membroId: number, formData: FormData)
             console.log(`✅ Upload concluído! URL: ${blob.url}`);
         }
         if (novaSenha && novaSenha.trim() !== '') {
-            console.log(`🔑 O Membro decidiu alterar a sua própria senha: "${novaSenha.trim()}"`);
+            const motivo = validarSenhaNova(novaSenha.trim(), dataToUpdate.email);
+            if (motivo) return { error: motivo };
             dataToUpdate.password = await bcrypt.hash(novaSenha.trim(), 10);
-            console.log(`🔐 Senha encriptada e pronta a gravar!`);
         } else {
             console.log(`⏭️ O campo 'nova_senha' veio vazio. A senha atual mantém-se.`);
         }
@@ -313,8 +264,7 @@ export async function atualizarDadosMembro(membroId: number, formData: FormData)
 
         revalidatePath('/membros/dashboard');
         revalidatePath('/admin/membros');
-        const hdr = await headers()
-        invalidateMembros(Number(hdr.get('x-tenant-id'))).catch(() => {})
+        invalidateMembros(await getTenantIdFromHeaders()).catch(() => {})
         return { sucesso: "Dados atualizados com sucesso!" };
     } catch (error: any) {
         console.error("❌ ERRO NO PRISMA:", error);
@@ -324,11 +274,13 @@ export async function atualizarDadosMembro(membroId: number, formData: FormData)
 
 export async function alternarConfirmacaoEscala(escalaIds: number[], statusConfirmacao: boolean) {
     try {
-        await requireAuth()
+        // So as escalas do proprio
+        const sessao = await requireAuth()
         const db = await getDb()
         await db.escala.updateMany({
             where: {
-                id: { in: escalaIds } // Atualiza todas as escalas deste array
+                id: { in: escalaIds },
+                membro_id: sessao.membroId,
             },
             data: { confirmado: statusConfirmacao }
         });
@@ -343,9 +295,10 @@ export async function alternarConfirmacaoEscala(escalaIds: number[], statusConfi
 
 export async function assinarDocumentoAction(membroId: number, tipo: 'GDPR' | 'PERMANECER') {
     try {
-        await requireAuth()
-        const hdr = await headers()
-        const tenantId = Number(hdr.get('x-tenant-id') || 0)
+        // So o proprio assina os seus documentos
+        const sessao = await requireAuth()
+        if (sessao.membroId !== membroId) return { success: false, error: 'Só pode assinar os seus próprios documentos.' }
+        const tenantId = await getTenantIdFromHeaders()
         const hoje = new Date();
 
         // Define a validade (Ex: 12 meses a partir de hoje)
@@ -525,8 +478,7 @@ export async function exportarMembrosCSV() {
             m.avatar_file || '',
         ].join(';'))
 
-        const hdrExport = await headers()
-        const tenantIdExport = Number(hdrExport.get('x-tenant-id') || 0)
+        const tenantIdExport = await getTenantIdFromHeaders()
         audit({ tenant_id: tenantIdExport, categoria: 'MEMBROS', acao: 'EXPORT', alvo_tipo: 'MEMBRO', descricao: `Exportação CSV de ${membros.length} membros` }).catch(() => {})
 
         return { csv: cabecalho + '\n' + linhas.join('\n') }
@@ -640,7 +592,8 @@ export async function confirmarImportacao(membrosValidos: any[]) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
         const { db, tenantId } = await getContext()
-        const passwordPadrao = await bcrypt.hash('admvc123', 10)
+        // Sem senha: cada pessoa define a sua (link do admin ou "Esqueci-me da palavra-passe").
+        const passwordPadrao = null
 
         const dados = membrosValidos.map(item => {
             const d = item.dados as Record<string, string>
@@ -706,8 +659,7 @@ export async function confirmarImportacao(membrosValidos: any[]) {
         audit({ tenant_id: tenantId, categoria: 'MEMBROS', acao: 'IMPORTAR', alvo_tipo: 'MEMBRO', descricao: `Importação CSV: ${result.count} membros importados` }).catch(() => {})
 
         revalidatePath('/admin/membros')
-        const hdr2 = await headers()
-        invalidateMembros(Number(hdr2.get('x-tenant-id'))).catch(() => {})
+        invalidateMembros(await getTenantIdFromHeaders()).catch(() => {})
         return { ok: true, count: dados.length }
 
     } catch (err: any) {
@@ -728,8 +680,7 @@ export async function submeterInteresseDepartamento(membroId: number, departamen
         // Segurança: só o próprio membro
         if (session.membroId !== membroId) return { ok: false, error: 'Sem permissao.' }
 
-        const hdr = await headers()
-        const tenantId = Number(hdr.get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
         if (!tenantId) return { ok: false, error: 'Tenant nao identificado.' }
 
         const db = getTenantClient(tenantId)

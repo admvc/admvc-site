@@ -1,15 +1,14 @@
 // app/api/cron/pledges/route.ts
 // Cron job diario (06:00) que atualiza o status de todos os pledges
 import { NextResponse } from 'next/server'
+import { cronAutorizado } from '@/lib/cron'
 import prisma from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
     // Verificar secret para proteger o endpoint
-    const authHeader = request.headers.get('authorization')
-    const cronSecret = process.env.CRON_SECRET
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronAutorizado(request)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

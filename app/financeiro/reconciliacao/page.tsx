@@ -45,7 +45,7 @@ export default async function ReconciliacaoPage({
 
     // Load movements for selected account
     let movimentos: any[] = []
-    let stats = { total: 0, reconciliados: 0, pendentes: 0, totalCreditos: 0, totalDebitos: 0, saldo: 0 }
+    const stats = { total: 0, reconciliados: 0, pendentes: 0, totalCreditos: 0, totalDebitos: 0, saldo: 0 }
 
     if (contaSelecionada) {
         movimentos = await db.movimentoBancario.findMany({

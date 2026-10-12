@@ -2,7 +2,7 @@
 // Helper para obter branding (cores e logo) do tenant actual
 
 import prisma from '@/lib/prisma'
-import { headers } from 'next/headers'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 export interface TenantBranding {
     corPrimaria: string
@@ -19,13 +19,12 @@ const DEFAULTS: TenantBranding = {
 }
 
 /**
- * Busca as cores e logo do tenant actual via header x-tenant-id.
+ * Busca as cores e logo do tenant actual (igreja da sessao verificada).
  * Retorna defaults se o tenant nao tem customizacao.
  */
 export async function getTenantBranding(): Promise<TenantBranding> {
     try {
-        const headersList = await headers()
-        const tenantId = Number(headersList.get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
 
         if (!tenantId) return DEFAULTS
 

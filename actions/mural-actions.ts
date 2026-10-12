@@ -5,6 +5,7 @@ import prisma from '@/lib/prisma'
 import { getSessionData } from '@/lib/auth-utils'
 import { revalidatePath } from 'next/cache'
 import { audit } from '@/lib/audit'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 export async function publicarAviso(formData: FormData) {
     try {
@@ -57,15 +58,14 @@ export async function apagarAviso(avisoId: string) {
         if (!session) return { error: 'Não autorizado' };
 
         const aviso = await prisma.avisoMural.findUnique({ where: { id: avisoId } });
-        if (!aviso) return { error: 'Aviso não encontrado.' };
+        if (!aviso || aviso.tenant_id !== session.tenantId) return { error: 'Aviso não encontrado.' };
 
         // Verifica se é o autor da mensagem ou um Administrador
         if (aviso.autor_id !== session.membroId && session.role !== 'ADMIN') {
             return { error: 'Não tens permissão para apagar esta mensagem.' };
         }
 
-        const hdr = await (await import('next/headers')).headers()
-        const tenantId = Number(hdr.get('x-tenant-id') || 0)
+        const tenantId = await getTenantIdFromHeaders()
 
         await prisma.avisoMural.delete({ where: { id: avisoId } });
 

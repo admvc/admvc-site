@@ -1,0 +1,131 @@
+# Copia de seguranca da base de dados (pg_dump), cifrada, com teste de restauro.
+#
+# Corre todos os dias as 03:00 UTC, mas so faz a copia conforme a variavel do
+# repositorio BACKUP_PERIODICIDADE: mensal (por omissao, dia 1), semanal
+# (domingo) ou diaria. "Run workflow" faz sempre a copia.
+#
+# Configuracao e restauro: docs/COPIAS.md
+
+name: Copia da base
+
+on:
+  # DESLIGADO até os segredos estarem configurados (docs/COPIAS.md).
+  # Para ligar: tirar o "#" das duas linhas abaixo.
+  # schedule:
+  #   - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: copia-base
+  cancel-in-progress: false
+
+jobs:
+  copia:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    # Postgres descartavel, so para provar que a copia se restaura
+    services:
+      restauro:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: restauro
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Decidir se hoje ha copia
+        id: decidir
+        env:
+          PERIODICIDADE: ${{ vars.BACKUP_PERIODICIDADE || 'mensal' }}
+          EVENTO: ${{ github.event_name }}
+        run: |
+          dia=$(date -u +%d)
+          semana=$(date -u +%u)
+          correr=nao
+          if [ "$EVENTO" = "workflow_dispatch" ]; then
+            correr=sim
+          else
+            case "$PERIODICIDADE" in
+              diaria)  correr=sim ;;
+              semanal) [ "$semana" = "7" ] && correr=sim ;;
+              mensal)  [ "$dia" = "01" ] && correr=sim ;;
+              *) echo "::error::BACKUP_PERIODICIDADE invalida: '$PERIODICIDADE' (use diaria, semanal ou mensal)"; exit 1 ;;
+            esac
+          fi
+          echo "Periodicidade: $PERIODICIDADE · hoje: $correr"
+          echo "correr=$correr" >> "$GITHUB_OUTPUT"
+
+      - name: Verificar segredos
+        if: steps.decidir.outputs.correr == 'sim'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          [ -n "$DATABASE_URL" ] || { echo "::error::Falta o segredo DATABASE_URL"; exit 1; }
+          [ ${#BACKUP_PASSPHRASE} -ge 20 ] || { echo "::error::Falta o segredo BACKUP_PASSPHRASE (minimo 20 caracteres)"; exit 1; }
+
+      - name: Instalar o cliente PostgreSQL 17
+        if: steps.decidir.outputs.correr == 'sim'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y -qq postgresql-client-17
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+
+      - name: Copiar a base (pg_dump)
+        if: steps.decidir.outputs.correr == 'sim'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          pg_dump --version
+          pg_dump "$DATABASE_URL" --format=custom --no-owner --no-privileges --file=copia.dump
+          ls -lh copia.dump
+
+      - name: Testar o restauro e comparar contagens
+        if: steps.decidir.outputs.correr == 'sim'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RESTAURO_URL: postgresql://postgres:restauro@localhost:5432/postgres
+        run: |
+          # Avisos (ex.: extensoes do servidor de origem) nao contam; contam as contagens.
+          pg_restore --no-owner --no-privileges --dbname="$RESTAURO_URL" copia.dump || echo "::warning::pg_restore terminou com avisos"
+          falhou=0
+          for tabela in membros '"Tenant"' visitantes escalas; do
+            origem=$(psql "$DATABASE_URL" -tAc "select count(*) from $tabela")
+            copia=$(psql "$RESTAURO_URL" -tAc "select count(*) from $tabela")
+            echo "$tabela: base $origem · copia restaurada $copia"
+            # (um registo novo entre a copia e a contagem tambem da diferenca: repetir)
+            [ "$origem" = "$copia" ] || falhou=1
+          done
+          [ "$falhou" = "0" ] || { echo "::error::A copia restaurada nao bate certo com a base"; exit 1; }
+
+      - name: Cifrar (AES-256)
+        if: steps.decidir.outputs.correr == 'sim'
+        id: cifrar
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          nome="copia-admvc-$(date -u +%Y-%m-%d)"
+          printf '%s' "$BACKUP_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 \
+            --symmetric --cipher-algo AES256 --output "$nome.dump.gpg" copia.dump
+          shred -u copia.dump
+          echo "nome=$nome" >> "$GITHUB_OUTPUT"
+
+      - name: Guardar a copia cifrada
+        if: steps.decidir.outputs.correr == 'sim'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.cifrar.outputs.nome }}
+          path: ${{ steps.cifrar.outputs.nome }}.dump.gpg
+          retention-days: ${{ vars.BACKUP_RETENCAO_DIAS || 90 }}
+          if-no-files-found: error

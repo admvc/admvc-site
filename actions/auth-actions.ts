@@ -1,7 +1,11 @@
 'use server'
 
 import prisma from '@/lib/prisma'
-import { cookies, headers } from 'next/headers' // ✅ Importação do headers corrigida
+import { headers } from 'next/headers'
+import { criarSessaoMembro, apagarSessaoMembro } from '@/lib/sessao'
+import { eSenhaConhecida } from '@/lib/senhas'
+import { enviarLinkRedefinir } from '@/lib/redefinir-senha'
+import { getSessionData } from '@/lib/auth-utils'
 import bcrypt from 'bcryptjs'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
@@ -31,9 +35,36 @@ const ratelimitPorIp = redis ? new Ratelimit({
     analytics: true,
 }) : null;
 
+const MSG_SENHA_CONHECIDA = 'Por segurança tem de definir uma nova palavra-passe. Enviámos um link para o seu email.'
+
+/**
+ * A senha esta certa, mas e uma das que o sistema antigo atribuia (ex.: a da
+ * importacao de membros). Nao entra: envia o link para definir uma nova.
+ * Devolve a mensagem a mostrar, ou null se a senha nao e conhecida.
+ */
+async function bloquearSenhaConhecida(
+    m: { id: number; tenant_id: number; first_name: string; last_name?: string | null; email: string; password: string | null },
+    senhaEscrita: string,
+): Promise<string | null> {
+    if (!eSenhaConhecida(senhaEscrita, m.first_name)) return null
+    try {
+        await enviarLinkRedefinir(m, 'senha-conhecida')
+    } catch (err) {
+        console.error('[LOGIN] Erro ao enviar link de nova senha:', err)
+    }
+    await audit({
+        tenant_id: m.tenant_id,
+        categoria: 'ACESSO',
+        acao: 'LOGIN_FALHOU',
+        actor_id: m.id,
+        actor_nome: `${m.first_name} ${m.last_name ?? ''}`.trim(),
+        descricao: 'Senha atribuida automaticamente: entrada recusada e link para nova senha enviado',
+    })
+    return MSG_SENHA_CONHECIDA
+}
+
 export async function validarLoginGeral(email: string, pass: string, redirectPath: string = '/membros/dashboard') {
     console.log(`\n=============================================`);
-    console.log(`[LOGIN GERAL] Tentativa: ${email}`);
 
     // 🛡️ VERIFICAR RATE LIMIT ANTES DA BASE DE DADOS
     const rateLimit = await verificarRateLimit(email);
@@ -61,19 +92,14 @@ export async function validarLoginGeral(email: string, pass: string, redirectPat
             return { autorizado: false, erro: "Credenciais inválidas." };
         }
 
+        const bloqueioGeral = await bloquearSenhaConhecida(membro, pass);
+        if (bloqueioGeral) return { autorizado: false, erro: bloqueioGeral };
+
         if (redirectPath.includes('/admin') && membro.role !== 'ADMIN') {
             return { autorizado: false, erro: "Não tem permissão de administrador." };
         }
 
-        const planoGeral = membro.tenant?.plano || 'FREE';
-        const cookieStore = await cookies();
-        cookieStore.set('admvc_session', `id:${membro.id}|role:${membro.role}|tenant_id:${membro.tenant_id}|plano:${planoGeral}`, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 60 * 60 * 2, // 2 horas
-            path: '/',
-            sameSite: 'lax',
-        });
+        await criarSessaoMembro({ ...membro, plano: membro.tenant?.plano }, 60 * 60 * 2); // 2 horas
 
         logado = true;
         userRole = membro.role;
@@ -109,6 +135,8 @@ export async function validarLoginMembro(email: string, pass: string) {
 
         const senhaValida = await bcrypt.compare(pass, membro.password);
         if (!senhaValida) return { autorizado: false };
+        const bloqueioMembro = await bloquearSenhaConhecida(membro, pass);
+        if (bloqueioMembro) return { autorizado: false, erro: bloqueioMembro };
 
         return { autorizado: true, membro };
     } catch (error) {
@@ -117,8 +145,7 @@ export async function validarLoginMembro(email: string, pass: string) {
 }
 
 export async function logoutGeral(tipo: 'admin' | 'membro') {
-    const cookieStore = await cookies();
-    cookieStore.delete('admvc_session');
+    await apagarSessaoMembro();
     revalidatePath('/', 'layout');
 
     if (tipo === 'admin') {
@@ -183,7 +210,6 @@ export async function loginUnificado(formData: FormData) {
     const password = formData.get('password') as string
 
     console.log(`\n=============================================`)
-    console.log(`[LOGIN UNIFICADO] Tentativa: ${email}`)
 
     const rateLimit = await verificarRateLimit(email)
     if (!rateLimit.permitido) return { error: rateLimit.erro }
@@ -238,6 +264,9 @@ export async function loginUnificado(formData: FormData) {
         return { error: 'Credenciais invalidas.' }
     }
 
+    const bloqueio = await bloquearSenhaConhecida(usuario, password)
+    if (bloqueio) return { error: bloqueio }
+
     // Login bem sucedido
     await audit({
         tenant_id: usuario.tenant_id,
@@ -250,17 +279,7 @@ export async function loginUnificado(formData: FormData) {
 
     console.log(`LOGIN BEM SUCEDIDO! Role: ${usuario.role}`)
 
-    const plano = usuario.tenant?.plano || 'FREE'
-    const congId = usuario.congregacao_id || ''
-    const sessionData = `id:${usuario.id}|role:${usuario.role}|tenant_id:${usuario.tenant_id}|plano:${plano}${congId ? `|cong:${congId}` : ''}`
-    const cookieStore = await cookies()
-    cookieStore.set('admvc_session', sessionData, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        path: '/',
-        maxAge: 60 * 60 * 24 * 7,
-        sameSite: 'lax',
-    })
+    await criarSessaoMembro({ ...usuario, plano: usuario.tenant?.plano })
 
     // Atualizar ultimo_login e enviar email de boas-vindas se for o primeiro acesso
     const primeiroLogin = usuario.ultimo_login === null
@@ -289,7 +308,6 @@ export async function loginAdmin(formData: FormData) {
     const password = formData.get('password') as string
 
     console.log(`\n=============================================`)
-    console.log(`[LOGIN ADMIN] Tentativa: ${email}`)
 
     const rateLimit = await verificarRateLimit(email)
     if (!rateLimit.permitido) return { error: rateLimit.erro }
@@ -341,6 +359,9 @@ export async function loginAdmin(formData: FormData) {
         return { error: 'Acesso negado ou credenciais invalidas.' }
     }
 
+    const bloqueioAdmin = await bloquearSenhaConhecida(membro, password)
+    if (bloqueioAdmin) return { error: bloqueioAdmin }
+
     await audit({
         tenant_id: membro.tenant_id,
         categoria: 'ACESSO',
@@ -350,16 +371,7 @@ export async function loginAdmin(formData: FormData) {
         descricao: `Login de administrador realizado com sucesso`,
     })
 
-    const planoAdmin = membro.tenant?.plano || 'FREE'
-    const sessionData = `id:${membro.id}|role:${membro.role}|tenant_id:${membro.tenant_id}|plano:${planoAdmin}`
-    const cookieStore = await cookies()
-    cookieStore.set('admvc_session', sessionData, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 60 * 60 * 24,
-        path: '/',
-        sameSite: 'lax',
-    })
+    await criarSessaoMembro({ ...membro, plano: membro.tenant?.plano }, 60 * 60 * 24)
 
     console.log(`LOGIN ADMIN BEM SUCEDIDO!`)
     console.log(`=============================================\n`)
@@ -370,33 +382,20 @@ export async function loginAdmin(formData: FormData) {
 // ── LOGOUT ────────────────────────────────────────────────────────────────────
 export async function logoutAdmin() {
     try {
-        const cookieStore = await cookies()
-        const session = cookieStore.get('admvc_session')
-
+        const session = await getSessionData()
         if (session) {
-            const parts = decodeURIComponent(session.value).split('|')
-            let userId = '', tenantId = ''
-            parts.forEach(p => {
-                const [k, v] = p.split(':')
-                if (k === 'id') userId = v
-                if (k === 'tenant_id') tenantId = v
+            await audit({
+                tenant_id: session.tenantId,
+                categoria: 'ACESSO',
+                acao: 'LOGOUT',
+                actor_id: session.membroId,
+                descricao: 'Sessao terminada',
             })
-
-            if (userId && tenantId) {
-                await audit({
-                    tenant_id: Number(tenantId),
-                    categoria: 'ACESSO',
-                    acao: 'LOGOUT',
-                    actor_id: Number(userId),
-                    descricao: 'Sessao terminada',
-                })
-            }
         }
     } catch {
         // Nao bloqueia o logout
     }
 
-    const cookieStore = await cookies()
-    cookieStore.delete('admvc_session')
+    await apagarSessaoMembro()
     redirect('/membros/login')
 }

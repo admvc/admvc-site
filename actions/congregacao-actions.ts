@@ -1,12 +1,16 @@
 'use server'
 
 import prisma from '@/lib/prisma'
-import { cookies } from 'next/headers'
+import { criarSessaoMembro } from '@/lib/sessao'
 import { redirect } from 'next/navigation'
 import { requireAuth } from '@/lib/auth-utils'
 
 export async function selecionarCongregacao(congregacaoId: number) {
     const session = await requireAuth()
+
+    // So congregacoes da propria igreja
+    const congregacao = await prisma.congregacao.findUnique({ where: { id: congregacaoId }, select: { tenant_id: true } })
+    if (!congregacao || congregacao.tenant_id !== session.tenantId) throw new Error('Congregação não encontrada.')
 
     // Atualiza o membro com a congregação escolhida
     await prisma.membro.update({
@@ -14,24 +18,12 @@ export async function selecionarCongregacao(congregacaoId: number) {
         data: { congregacao_id: congregacaoId }
     })
 
-    // Atualiza o cookie para incluir a congregação
-    const cookieStore = await cookies()
-    const currentSession = cookieStore.get('admvc_session')
-
-    if (currentSession) {
-        // Remove cong: antigo se existir e adiciona o novo
-        const parts = currentSession.value.split('|').filter(p => !p.startsWith('cong:'))
-        parts.push(`cong:${congregacaoId}`)
-        const newSession = parts.join('|')
-
-        cookieStore.set('admvc_session', newSession, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            path: '/',
-            maxAge: 60 * 60 * 24 * 7,
-            sameSite: 'lax',
-        })
-    }
+    // Reemite a sessao com a congregacao nova
+    const membro = await prisma.membro.findUnique({
+        where: { id: session.membroId },
+        include: { tenant: { select: { plano: true } } },
+    })
+    if (membro) await criarSessaoMembro({ ...membro, plano: membro.tenant?.plano })
 
     if (session.role === 'ADMIN') redirect('/admin/dashboard')
     redirect('/membros/dashboard')

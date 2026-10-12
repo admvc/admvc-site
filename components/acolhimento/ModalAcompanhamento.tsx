@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useToast } from '@/components/ui/ConfirmDialog'
 import { ClipboardEdit, X, Loader2, Save } from 'lucide-react'
 import { registarAcompanhamento } from '@/actions/visitante-actions'
+import { anonimizarVisitanteAction } from '@/actions/rgpd-actions'
 
 interface Visitante {
     id: number
@@ -26,7 +27,19 @@ export default function ModalAcompanhamento({ visitante }: { visitante: Visitant
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const [credenciais, setCredenciais] = useState<{ email: string; senha: string } | null>(null)
+    const [credenciais, setCredenciais] = useState<{ email: string | null; emailEnviado: boolean } | null>(null)
+
+    async function anonimizar() {
+        if (!window.confirm(`Anonimizar "${visitante.nome}"? Apaga nome, telefone, email, pedido de oração e notas. Não se pode desfazer.`)) return;
+        setLoading(true);
+        const res = await anonimizarVisitanteAction(visitante.id);
+        setLoading(false);
+        if (res.error) toast(res.error, 'erro');
+        else {
+            toast('Visitante anonimizado.', 'sucesso');
+            setIsOpen(false);
+        }
+    }
 
     async function handleAction(formData: FormData) {
         setLoading(true);
@@ -122,9 +135,15 @@ export default function ModalAcompanhamento({ visitante }: { visitante: Visitant
                             {credenciais && (
                                 <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-5 space-y-2">
                                     <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Membro Criado!</p>
-                                    <p className="text-xs text-fg font-bold">Email: <span className="font-mono bg-bg px-2 py-1 rounded">{credenciais.email}</span></p>
-                                    <p className="text-xs text-fg font-bold">Senha: <span className="font-mono bg-bg px-2 py-1 rounded">{credenciais.senha}</span></p>
-                                    <p className="text-[8px] text-muted">Comunique estas credenciais ao novo membro para aceder a app.</p>
+                                    {credenciais.email ? (
+                                        <p className="text-xs text-fg font-bold">
+                                            {credenciais.emailEnviado
+                                                ? <>Enviámos para <span className="font-mono bg-bg px-2 py-1 rounded">{credenciais.email}</span> um link para definir a palavra-passe.</>
+                                                : <>Não foi possível enviar o email para {credenciais.email}. Um administrador pode reenviar o link na ficha do membro.</>}
+                                        </p>
+                                    ) : (
+                                        <p className="text-xs text-fg font-bold">O visitante não tem email. Para ter acesso à app, um administrador acrescenta o email na ficha do membro e envia o link.</p>
+                                    )}
                                     <button type="button" onClick={() => { setCredenciais(null); setIsOpen(false) }}
                                         className="w-full mt-2 bg-fg text-bg py-3 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-figueira transition-all">
                                         Fechar
@@ -136,6 +155,13 @@ export default function ModalAcompanhamento({ visitante }: { visitante: Visitant
                                 <button disabled={loading} className="w-full flex items-center justify-center gap-2 bg-figueira text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:brightness-110 transition-all shadow-lg shadow-figueira/20 disabled:opacity-50 mt-2">
                                     {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                                     {loading ? 'A Guardar...' : 'Salvar Histórico'}
+                                </button>
+                            )}
+
+                            {!credenciais && (
+                                <button type="button" disabled={loading} onClick={anonimizar}
+                                    className="w-full text-center text-[11px] font-bold text-red-500 underline disabled:opacity-50">
+                                    Anonimizar este visitante (a pedido dele — RGPD)
                                 </button>
                             )}
                         </form>

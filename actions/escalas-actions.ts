@@ -2,15 +2,15 @@
 
 import { revalidatePath } from 'next/cache'
 import { getTenantClient } from '@/lib/prisma'
-import { headers } from 'next/headers'
 import { getSessionData, requireAuth, requireRole } from '@/lib/auth-utils'
+import { podeGerirEscalasDoDepartamento } from '@/lib/escalas-permissoes'
 import { enviarNotificacaoEscala } from '@/lib/email-escalas'
 import { sendPushToMembro } from '@/lib/web-push'
 import { audit } from '@/lib/audit'
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 async function getDb() {
-    const headersList = await headers()
-    const tenantId = headersList.get('x-tenant-id')
+    const tenantId = await getTenantIdFromHeaders()
     if (!tenantId) throw new Error('Tenant nao identificado.')
     return {
         db: getTenantClient(Number(tenantId)),
@@ -32,6 +32,9 @@ export async function deletarEscalaAction(escalaId: number) {
         });
 
         if (!escala) return { ok: false };
+        if (!(await podeGerirEscalasDoDepartamento(session, escala.departamento_id))) {
+            return { ok: false, error: 'Não tens permissão para gerir escalas deste departamento.' };
+        }
 
         await db.escala.delete({
             where: { id: escalaId }
@@ -82,24 +85,7 @@ export async function criarEscalaAction(formData: FormData) {
             return { ok: false, error: 'Erro de integridade: Departamento sem Tenant associado.' };
         }
 
-        const vinculoLider = await db.integranteDepartamento.findFirst({
-            where: {
-                membro_id: liderLogadoId,
-                departamento_id: deptoId,
-                OR: [
-                    { pode_gerir_escalas: true },
-                    {
-                        funcoes: {
-                            some: {
-                                funcao: { nome: { contains: 'Lider', mode: 'insensitive' } }
-                            }
-                        }
-                    }
-                ]
-            }
-        });
-
-        const ehAutorizado = role === 'ADMIN' || depto.lider_id === liderLogadoId || !!vinculoLider;
+        const ehAutorizado = await podeGerirEscalasDoDepartamento(session, deptoId);
 
         if (!ehAutorizado) {
             return { ok: false, error: 'Não tens permissão para escalar neste grupo.' };
@@ -362,7 +348,7 @@ export async function criarIndisponibilidade(formData: FormData) {
         const hora_inicio = formData.get('hora_inicio') as string | null
         const hora_fim = formData.get('hora_fim') as string | null
 
-        let data: any = {
+        const data: any = {
             tenant_id: tenantId,
             membro_id: session.membroId,
             tipo,
@@ -525,10 +511,8 @@ export async function buscarMensagemEventoAction(eventoId: number) {
 // ── GUARDAR / ACTUALIZAR MENSAGEM ─────────────────────────────────────────────
 export async function salvarMensagemEventoAction(formData: FormData) {
     console.log('=== MENSAGEM ACTION ===')
-    console.log('Dados recebidos:', Object.fromEntries(formData))
     try {
-        const session = await getSessionData()
-        if (!session) return { sucesso: false, error: 'Sessao expirada.' }
+        await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'LEADER'])
 
         const evento_id = Number(formData.get('evento_id'))
         const pregador_id = formData.get('pregador_id') ? Number(formData.get('pregador_id')) : null

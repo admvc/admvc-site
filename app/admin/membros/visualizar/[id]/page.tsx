@@ -4,11 +4,12 @@ import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import VisualizarMembroClient from "@/components/membros/VisualizarMembroClient";
 import QrCodeMembro from "@/components/cantina/QrCodeMembro";
+import { getTenantIdFromHeaders } from '@/lib/db'
 
 export default async function VisualizarMembroPage({
     params
 }: {
-    params: Promise<{ id: string }> | { id: string }
+    params: Promise<{ id: string }>
 }) {
     // 1. Tratamento de Params
     const resolvedParams = await params;
@@ -19,8 +20,7 @@ export default async function VisualizarMembroPage({
     }
 
     // 2. Multitenant: Identificar a Igreja
-    const headersList = await headers();
-    const tenantIdStr = headersList.get('x-tenant-id');
+    const tenantIdStr = await getTenantIdFromHeaders();
 
     if (!tenantIdStr) {
         return redirect('/membros/login?error=Igreja não identificada.');

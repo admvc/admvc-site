@@ -12,6 +12,7 @@ import {
 import Image from 'next/image'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import { useToast } from '@/components/ui/ConfirmDialog'
+import AcoesContaMembro from '@/components/admin/AcoesContaMembro'
 
 export default function EditarMembroClient({
     membro,
@@ -323,6 +324,12 @@ export default function EditarMembroClient({
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 <Input label="Nova Senha" name="nova_senha" type="password" autoComplete="new-password" placeholder="Deixe em branco para manter a atual" />
                             </div>
+                        </div>
+                        <div className="mt-8 pt-8 border-t border-soft">
+                            <h4 className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2 mb-6">
+                                <ShieldAlert size={14} className="text-figueira" /> Acesso e dados pessoais
+                            </h4>
+                            <AcoesContaMembro membroId={membro.id} nome={`${membro.first_name} ${membro.last_name}`} />
                         </div>
                     </div>
 

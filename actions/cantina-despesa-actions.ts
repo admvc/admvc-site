@@ -2,6 +2,7 @@
 
 import { getDb, getTenantIdFromHeaders } from '@/lib/db'
 import { requireAuth, requireRole } from '@/lib/auth-utils'
+import { exigirEquipa, EQUIPA_CANTINA } from '@/lib/equipas'
 import { revalidatePath } from 'next/cache'
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -9,7 +10,7 @@ import { revalidatePath } from 'next/cache'
 // ══════════════════════════════════════════════════════════════════════════════
 
 export async function submeterDespesaCantina(formData: FormData) {
-    const session = await requireAuth()
+    const session = await exigirEquipa(EQUIPA_CANTINA, [], 'a equipa da Cantina')
     const db = await getDb()
     const tenantId = await getTenantIdFromHeaders()
 
@@ -124,7 +125,7 @@ export async function pagarDespesaCantina(despesaId: number) {
 // ══════════════════════════════════════════════════════════════════════════════
 
 export async function listarDespesasCantina() {
-    await requireAuth()
+    await exigirEquipa(EQUIPA_CANTINA, ['FINANCE'], 'a equipa da Cantina ou as finanças')
     const db = await getDb()
 
     try {
