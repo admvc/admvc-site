@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 
 interface Props {
@@ -25,13 +25,14 @@ export default function SeccaoColapsavel({
                 onClick={() => setOpen(o => !o)}
             >
                 <div className="flex items-center gap-2 min-w-0">
-                    {icon}
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">{titulo}</h2>
-                    {badge}
+                    {/* key: elementos que vem do servidor como props (aviso do React) */}
+                    <Fragment key="icone">{icon}</Fragment>
+                    <h2 key="titulo" className="text-sm font-bold text-fg">{titulo}</h2>
+                    <Fragment key="badge">{badge}</Fragment>
                 </div>
                 <div className="flex items-center gap-2 shrink-0" onClick={e => e.stopPropagation()}>
-                    {headerExtra}
-                    <button
+                    <Fragment key="extra">{headerExtra}</Fragment>
+                    <button key="abrir"
                         onClick={() => setOpen(o => !o)}
                         className="w-7 h-7 flex items-center justify-center rounded-lg bg-soft/50 text-muted hover:bg-soft hover:text-fg transition-all"
                     >

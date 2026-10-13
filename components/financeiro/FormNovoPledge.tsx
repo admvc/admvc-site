@@ -61,7 +61,7 @@ export default function FormNovoPledge({
         return (
             <button
                 onClick={() => setAberto(true)}
-                className="h-11 px-5 bg-bg2 border border-soft text-fg rounded-xl flex items-center gap-2 hover:bg-bg transition-all active:scale-95 text-[9px] font-black uppercase tracking-widest"
+                className="h-11 px-5 bg-bg2 border border-soft text-fg rounded-xl flex items-center gap-2 hover:bg-bg transition-all active:scale-95 text-[13px] font-bold uppercase tracking-wide"
             >
                 <PlusCircle size={14} />
                 Nova Promessa
@@ -72,7 +72,7 @@ export default function FormNovoPledge({
     return (
         <div className="bg-bg2 border border-soft rounded-2xl p-6 space-y-4">
             <div className="flex items-center justify-between">
-                <h3 className="text-sm font-black italic uppercase tracking-tighter text-fg">
+                <h3 className="text-sm font-bold text-fg">
                     Nova Promessa de Contribuicao
                 </h3>
                 <button
@@ -86,7 +86,7 @@ export default function FormNovoPledge({
             <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {isAdmin && membros && (
                     <div className="sm:col-span-2 space-y-1.5">
-                        <label className="text-[8px] font-black uppercase tracking-widest text-muted">Membro</label>
+                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Membro</label>
                         <select
                             name="membro_id"
                             className="w-full h-11 px-4 bg-bg border border-soft rounded-xl text-fg text-xs focus:border-figueira focus:ring-1 focus:ring-figueira/30 outline-none transition-all"
@@ -102,7 +102,7 @@ export default function FormNovoPledge({
                 )}
 
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Fundo</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Fundo</label>
                     <select
                         name="fundo_id"
                         required
@@ -116,7 +116,7 @@ export default function FormNovoPledge({
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Valor Mensal (EUR)</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Valor Mensal (EUR)</label>
                     <input
                         name="valor_mensal"
                         type="number"
@@ -129,7 +129,7 @@ export default function FormNovoPledge({
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Duracao (meses)</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Duracao (meses)</label>
                     <input
                         name="duracao_meses"
                         type="number"
@@ -142,7 +142,7 @@ export default function FormNovoPledge({
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Observacao</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Observacao</label>
                     <input
                         name="observacao"
                         type="text"
@@ -155,14 +155,14 @@ export default function FormNovoPledge({
                     <button
                         type="submit"
                         disabled={loading}
-                        className="h-11 px-6 bg-figueira text-white rounded-xl flex items-center gap-2 hover:bg-figueira/90 transition-all active:scale-95 text-[9px] font-black uppercase tracking-widest disabled:opacity-50"
+                        className="h-11 px-6 bg-figueira text-white rounded-xl flex items-center gap-2 hover:bg-figueira/90 transition-all active:scale-95 text-[13px] font-bold uppercase tracking-wide disabled:opacity-50"
                     >
                         <PlusCircle size={14} />
                         {loading ? 'A criar...' : 'Criar Promessa'}
                     </button>
 
-                    {erro && <span className="text-[10px] font-bold text-red-500">{erro}</span>}
-                    {sucesso && <span className="text-[10px] font-bold text-green-500">Promessa criada com sucesso!</span>}
+                    {erro && <span className="text-[14px] font-bold text-red-500">{erro}</span>}
+                    {sucesso && <span className="text-[14px] font-bold text-green-500">Promessa criada com sucesso!</span>}
                 </div>
             </form>
         </div>

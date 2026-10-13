@@ -15,18 +15,29 @@ export async function podeGerirEscalasDoDepartamento(
 ): Promise<boolean> {
     if (isAdmin(session.role)) return true
     const db = getTenantClient(session.tenantId)
-    const depto = await db.departamento.findUnique({ where: { id: deptoId }, select: { lider_id: true } })
-    if (!depto) return false
-    if (depto.lider_id === session.membroId) return true
-    const vinculoLider = await db.integranteDepartamento.findFirst({
-        where: {
-            membro_id: session.membroId,
-            departamento_id: deptoId,
-            OR: [
-                { pode_gerir_escalas: true },
-                { funcoes: { some: { funcao: { nome: { contains: 'Lider', mode: 'insensitive' } } } } },
-            ],
-        },
-    })
-    return !!vinculoLider
+    // Uma so consulta (cada ida a base conta)
+    const n = await db.departamento.count({ where: { id: deptoId, ...gereDepartamento(session.membroId) } })
+    return n > 0
+}
+
+/** Filtro de departamento: o lider, ou um integrante nomeado por ele. */
+export function gereDepartamento(membroId: number) {
+    return {
+        OR: [
+            { lider_id: membroId },
+            {
+                integrantes: {
+                    some: {
+                        membro_id: membroId,
+                        OR: [
+                            { pode_gerir_escalas: true },
+                            // "Lider" ou "Líder" (o ILIKE nao ignora acentos)
+                            { funcoes: { some: { funcao: { nome: { contains: 'Lider', mode: 'insensitive' as const } } } } },
+                            { funcoes: { some: { funcao: { nome: { contains: 'Líder', mode: 'insensitive' as const } } } } },
+                        ],
+                    },
+                },
+            },
+        ],
+    }
 }

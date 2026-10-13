@@ -44,10 +44,10 @@ export default async function DespesasCantinaPage() {
             {/* HEADER */}
             <header className="flex items-center gap-3">
                 <Link href="/cantina"
-                    className="text-[9px] font-black uppercase tracking-widest text-muted hover:text-figueira transition-colors flex items-center gap-1">
+                    className="text-[13px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors flex items-center gap-1">
                     <ArrowLeft size={12} /> Cantina
                 </Link>
-                <h1 className="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-fg">Despesas da Cantina</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-fg">Despesas da Cantina</h1>
             </header>
 
             {/* KPI ROW */}
@@ -56,22 +56,22 @@ export default async function DespesasCantinaPage() {
                     <div className="w-9 h-9 rounded-xl bg-orange-500/10 flex items-center justify-center mx-auto mb-2">
                         <Clock size={16} className="text-orange-500" />
                     </div>
-                    <p className="text-lg sm:text-xl font-black text-fg">{pendentes.length}</p>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-muted">Pendentes</p>
+                    <p className="text-lg sm:text-xl font-bold text-fg">{pendentes.length}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Pendentes</p>
                 </div>
                 <div className="bg-bg2 border border-soft rounded-2xl p-4 text-center">
                     <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-2">
                         <DollarSign size={16} className="text-emerald-500" />
                     </div>
-                    <p className="text-lg sm:text-xl font-black text-fg">{totalPago.toFixed(2)}&euro;</p>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-muted">Total Pago</p>
+                    <p className="text-lg sm:text-xl font-bold text-fg">{totalPago.toFixed(2)}&euro;</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Total Pago</p>
                 </div>
                 <div className="bg-bg2 border border-soft rounded-2xl p-4 text-center">
                     <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center mx-auto mb-2">
                         <Receipt size={16} className="text-blue-500" />
                     </div>
-                    <p className="text-lg sm:text-xl font-black text-fg">{totalEsteMes.toFixed(2)}&euro;</p>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-muted">Este Mes</p>
+                    <p className="text-lg sm:text-xl font-bold text-fg">{totalEsteMes.toFixed(2)}&euro;</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Este Mes</p>
                 </div>
             </div>
 
@@ -83,8 +83,8 @@ export default async function DespesasCantinaPage() {
                             <Clock size={16} />
                         </div>
                         <div>
-                            <h2 className="text-sm font-black uppercase tracking-widest text-fg">Aguardam Aprovacao</h2>
-                            <p className="text-[8px] font-bold text-orange-600 uppercase tracking-widest">
+                            <h2 className="text-sm font-bold text-fg">Aguardam Aprovacao</h2>
+                            <p className="text-[13px] font-bold text-orange-600 uppercase tracking-wide">
                                 {pendentes.length} despesa{pendentes.length !== 1 ? 's' : ''} pendente{pendentes.length !== 1 ? 's' : ''}
                             </p>
                         </div>
@@ -94,19 +94,19 @@ export default async function DespesasCantinaPage() {
                             <div key={d.id} className="px-5 py-4 hover:bg-orange-500/5 transition-colors">
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="min-w-0 flex-1">
-                                        <p className="text-[11px] font-black uppercase text-fg">{d.descricao}</p>
+                                        <p className="text-[14px] font-bold uppercase text-fg">{d.descricao}</p>
                                         <div className="flex items-center gap-3 mt-1 flex-wrap">
-                                            <span className="text-[10px] font-black text-orange-600">{Number(d.valor).toFixed(2)}&euro;</span>
-                                            <span className="text-[8px] font-bold text-muted">{d.categoria}</span>
+                                            <span className="text-[14px] font-bold text-orange-600">{Number(d.valor).toFixed(2)}&euro;</span>
+                                            <span className="text-[13px] font-bold text-muted">{d.categoria}</span>
                                             {d.fornecedor && (
-                                                <span className="text-[8px] font-bold text-muted">Fornecedor: {d.fornecedor}</span>
+                                                <span className="text-[13px] font-bold text-muted">Fornecedor: {d.fornecedor}</span>
                                             )}
-                                            <span className="text-[8px] font-bold text-muted">
+                                            <span className="text-[13px] font-bold text-muted">
                                                 {new Date(d.data).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </span>
                                         </div>
                                         {d.observacao && (
-                                            <p className="text-[9px] text-muted italic mt-1">"{d.observacao}"</p>
+                                            <p className="text-[13px] text-muted mt-1">"{d.observacao}"</p>
                                         )}
                                     </div>
                                     {isAdmin && (
@@ -136,26 +136,26 @@ export default async function DespesasCantinaPage() {
             <SeccaoColapsavel
                 titulo="Historico"
                 icon={<Receipt size={14} className="text-muted" />}
-                badge={<span className="text-[8px] font-black bg-soft px-2 py-0.5 rounded text-muted">{despesas.length}</span>}
+                badge={<span className="text-[13px] font-bold bg-soft px-2 py-0.5 rounded text-muted">{despesas.length}</span>}
                 defaultOpen={true}
             >
                 {despesas.length === 0 ? (
                     <div className="py-12 text-center">
                         <Receipt size={24} className="mx-auto text-muted/20 mb-3" />
-                        <p className="text-[10px] font-black text-muted uppercase tracking-widest">Nenhuma despesa registada.</p>
+                        <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Nenhuma despesa registada.</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="border-b border-soft">
-                                    <th className="text-[8px] font-black uppercase tracking-widest text-muted px-5 py-3">Data</th>
-                                    <th className="text-[8px] font-black uppercase tracking-widest text-muted px-3 py-3">Descricao</th>
-                                    <th className="text-[8px] font-black uppercase tracking-widest text-muted px-3 py-3 hidden sm:table-cell">Categoria</th>
-                                    <th className="text-[8px] font-black uppercase tracking-widest text-muted px-3 py-3 text-right">Valor</th>
-                                    <th className="text-[8px] font-black uppercase tracking-widest text-muted px-3 py-3 text-center">Status</th>
+                                    <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-5 py-3">Data</th>
+                                    <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-3 py-3">Descricao</th>
+                                    <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-3 py-3 hidden sm:table-cell">Categoria</th>
+                                    <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-3 py-3 text-right">Valor</th>
+                                    <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-3 py-3 text-center">Status</th>
                                     {isAdmin && (
-                                        <th className="text-[8px] font-black uppercase tracking-widest text-muted px-3 py-3 text-right">Acoes</th>
+                                        <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-3 py-3 text-right">Acoes</th>
                                     )}
                                 </tr>
                             </thead>
@@ -165,24 +165,24 @@ export default async function DespesasCantinaPage() {
                                     return (
                                         <tr key={d.id} className="hover:bg-soft/10 transition-colors">
                                             <td className="px-5 py-3">
-                                                <span className="text-[10px] font-bold text-fg whitespace-nowrap">
+                                                <span className="text-[14px] font-bold text-fg whitespace-nowrap">
                                                     {new Date(d.data).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}
                                                 </span>
                                             </td>
                                             <td className="px-3 py-3">
-                                                <p className="text-[10px] font-black text-fg">{d.descricao}</p>
+                                                <p className="text-[14px] font-bold text-fg">{d.descricao}</p>
                                                 {d.fornecedor && (
-                                                    <p className="text-[8px] font-bold text-muted">{d.fornecedor}</p>
+                                                    <p className="text-[13px] font-bold text-muted">{d.fornecedor}</p>
                                                 )}
                                             </td>
                                             <td className="px-3 py-3 hidden sm:table-cell">
-                                                <span className="text-[9px] font-bold text-muted">{d.categoria}</span>
+                                                <span className="text-[13px] font-bold text-muted">{d.categoria}</span>
                                             </td>
                                             <td className="px-3 py-3 text-right">
-                                                <span className="text-[11px] font-black text-fg">{Number(d.valor).toFixed(2)}&euro;</span>
+                                                <span className="text-[14px] font-bold text-fg">{Number(d.valor).toFixed(2)}&euro;</span>
                                             </td>
                                             <td className="px-3 py-3 text-center">
-                                                <span className={`text-[7px] font-black uppercase tracking-widest px-2 py-1 rounded-lg ${cfg.bg} ${cfg.text}`}>
+                                                <span className={`text-[13px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg ${cfg.bg} ${cfg.text}`}>
                                                     {cfg.label}
                                                 </span>
                                             </td>

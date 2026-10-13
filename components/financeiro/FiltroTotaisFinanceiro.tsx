@@ -54,7 +54,7 @@ export default function FiltroTotaisFinanceiro({ transacoes }: { transacoes: Tra
             {/* BARRA DE FILTROS MINIMALISTA */}
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black text-muted uppercase tracking-widest pl-1">Mês Referência</label>
+                    <label className="text-[13px] font-bold text-muted uppercase tracking-wide pl-1">Mês Referência</label>
                     <select
                         value={mes}
                         onChange={(e) => setMes(e.target.value)}
@@ -68,7 +68,7 @@ export default function FiltroTotaisFinanceiro({ transacoes }: { transacoes: Tra
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black text-muted uppercase tracking-widest pl-1">Origem da Receita</label>
+                    <label className="text-[13px] font-bold text-muted uppercase tracking-wide pl-1">Origem da Receita</label>
                     <select
                         value={categoria}
                         onChange={(e) => setCategoria(e.target.value)}
@@ -92,9 +92,9 @@ export default function FiltroTotaisFinanceiro({ transacoes }: { transacoes: Tra
                 <div className="relative z-10 mb-8">
                     <div className="flex items-center gap-2 mb-2 text-white/70">
                         <Wallet size={14} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Total Filtrado</span>
+                        <span className="text-[14px] font-bold uppercase tracking-wide">Total Filtrado</span>
                     </div>
-                    <h4 className="text-4xl lg:text-5xl font-black italic tracking-tighter leading-none">
+                    <h4 className="text-4xl lg:text-5xl font-bold leading-none">
                         <span className="valor-dinheiro inline-block">{euro(totais.geral)}</span>
                     </h4>
                 </div>
@@ -104,36 +104,36 @@ export default function FiltroTotaisFinanceiro({ transacoes }: { transacoes: Tra
                     <div className="flex items-start gap-2.5">
                         <div className="bg-white/10 p-2 rounded-lg shrink-0 mt-0.5"><Receipt size={14} /></div>
                         <div>
-                            <span className="text-[9px] font-black text-white/60 uppercase tracking-widest block mb-0.5 leading-none">Carnês</span>
+                            <span className="text-[13px] font-bold text-white/60 uppercase tracking-wide block mb-0.5 leading-none">Carnês</span>
                             {/* Adicionado aqui 👇 */}
-                            <span className="text-sm font-black italic text-white leading-none valor-dinheiro inline-block">{euro(totais.carnes)}</span>
+                            <span className="text-sm font-bold text-white leading-none valor-dinheiro inline-block">{euro(totais.carnes)}</span>
                         </div>
                     </div>
                     
                     <div className="flex items-start gap-2.5">
                         <div className="bg-white/10 p-2 rounded-lg shrink-0 mt-0.5"><HandCoins size={14} /></div>
                         <div>
-                            <span className="text-[9px] font-black text-white/60 uppercase tracking-widest block mb-0.5 leading-none">Ofertas Livres</span>
+                            <span className="text-[13px] font-bold text-white/60 uppercase tracking-wide block mb-0.5 leading-none">Ofertas Livres</span>
                             {/* Adicionado aqui 👇 */}
-                            <span className="text-sm font-black italic text-white leading-none valor-dinheiro inline-block">{euro(totais.contribuicoes)}</span>
+                            <span className="text-sm font-bold text-white leading-none valor-dinheiro inline-block">{euro(totais.contribuicoes)}</span>
                         </div>
                     </div>
 
                     <div className="flex items-start gap-2.5">
                         <div className="bg-white/10 p-2 rounded-lg shrink-0 mt-0.5"><Ticket size={14} /></div>
                         <div>
-                            <span className="text-[9px] font-black text-white/60 uppercase tracking-widest block mb-0.5 leading-none">Rifas</span>
+                            <span className="text-[13px] font-bold text-white/60 uppercase tracking-wide block mb-0.5 leading-none">Rifas</span>
                             {/* Adicionado aqui 👇 */}
-                            <span className="text-sm font-black italic text-white leading-none valor-dinheiro inline-block">{euro(totais.rifas)}</span>
+                            <span className="text-sm font-bold text-white leading-none valor-dinheiro inline-block">{euro(totais.rifas)}</span>
                         </div>
                     </div>
 
                     <div className="flex items-start gap-2.5">
                         <div className="bg-white/10 p-2 rounded-lg shrink-0 mt-0.5"><Coffee size={14} /></div>
                         <div>
-                            <span className="text-[9px] font-black text-white/60 uppercase tracking-widest block mb-0.5 leading-none">Cantina</span>
+                            <span className="text-[13px] font-bold text-white/60 uppercase tracking-wide block mb-0.5 leading-none">Cantina</span>
                             {/* Adicionado aqui 👇 */}
-                            <span className="text-sm font-black italic text-white leading-none valor-dinheiro inline-block">{euro(totais.cantina)}</span>
+                            <span className="text-sm font-bold text-white leading-none valor-dinheiro inline-block">{euro(totais.cantina)}</span>
                         </div>
                     </div>
                 </div>

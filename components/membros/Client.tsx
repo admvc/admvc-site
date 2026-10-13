@@ -151,10 +151,10 @@ export default function EditarMembroClient({
                     {ok ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
                 </div>
                 <div className="flex flex-col">
-                    <span className={`text-[10px] font-black uppercase tracking-widest leading-none ${ok ? 'text-green-700' : 'text-red-600'}`}>
+                    <span className={`text-[14px] font-bold uppercase tracking-wide leading-none ${ok ? 'text-green-700' : 'text-red-600'}`}>
                         {nome}
                     </span>
-                    <span className={`text-[8px] font-bold uppercase tracking-widest mt-0.5 ${ok ? 'text-green-600/70' : 'text-red-500/70'}`}>
+                    <span className={`text-[13px] font-bold uppercase tracking-wide mt-0.5 ${ok ? 'text-green-600/70' : 'text-red-500/70'}`}>
                         {ok && validade
                             ? `Valido ate ${new Date(validade).toLocaleDateString('pt-PT')}`
                             : ok ? 'Assinado' : 'Pendente / Expirado'}
@@ -176,11 +176,11 @@ export default function EditarMembroClient({
                 <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-soft pb-8">
                     <div className="space-y-1">
                         {isAdmin && (
-                            <span className="text-figueira font-black text-[10px] uppercase tracking-[0.4em] flex items-center gap-2">
+                            <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center gap-2">
                                 <ShieldAlert size={14} /> Painel Administrativo
                             </span>
                         )}
-                        <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                        <h1 className="text-4xl md:text-5xl font-bold text-fg leading-none">
                             Editar <span className="text-muted/20">Membro.</span>
                         </h1>
                     </div>
@@ -188,13 +188,13 @@ export default function EditarMembroClient({
                         {mostrarSucesso && (
                             <div className="flex items-center gap-3 text-green-500 bg-green-500/10 px-5 py-3 rounded-2xl border border-green-500/20 animate-in fade-in duration-300">
                                 <Check size={16} strokeWidth={3} />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Atualizado com sucesso!</span>
+                                <span className="text-[14px] font-bold uppercase tracking-wide">Atualizado com sucesso!</span>
                             </div>
                         )}
                         <button
                             type="submit"
                             disabled={isPending}
-                            className="w-full md:w-auto flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-xl active:scale-95 disabled:opacity-50"
+                            className="w-full md:w-auto flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-xl active:scale-95 disabled:opacity-50"
                         >
                             {isPending ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
                             {isPending ? "A GUARDAR..." : "SALVAR"}
@@ -213,19 +213,19 @@ export default function EditarMembroClient({
                             <div>
                                 {familiaActual ? (
                                     <>
-                                        <h3 className="text-xl font-black uppercase italic tracking-tighter text-fg leading-none">
+                                        <h3 className="text-xl font-bold text-fg leading-none">
                                             Familia {familiaActual.surname}
                                         </h3>
-                                        <p className="text-[9px] text-figueira font-black uppercase tracking-widest mt-1 bg-figueira/10 px-2 py-0.5 rounded border border-figueira/20 inline-block">
+                                        <p className="text-[13px] text-figueira font-bold uppercase tracking-wide mt-1 bg-figueira/10 px-2 py-0.5 rounded border border-figueira/20 inline-block">
                                             Vinculado a Familia
                                         </p>
                                     </>
                                 ) : (
                                     <>
-                                        <h3 className="text-xl font-black uppercase italic tracking-tighter text-fg leading-none">
+                                        <h3 className="text-xl font-bold text-fg leading-none">
                                             FAMILIA ADMVC
                                         </h3>
-                                        <p className="text-[9px] text-muted font-black uppercase tracking-widest mt-1">
+                                        <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-1">
                                             Nenhum vinculo registado
                                         </p>
                                     </>
@@ -292,8 +292,8 @@ export default function EditarMembroClient({
                                 <input type="file" name="avatar" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
                             </div>
                             <div>
-                                <h4 className="text-xl font-black uppercase italic text-fg">Dados Pessoais</h4>
-                                <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-1">Identificacao e contactos basicos.</p>
+                                <h4 className="text-xl font-bold text-fg">Dados Pessoais</h4>
+                                <p className="text-[14px] text-muted font-bold uppercase tracking-wide mt-1">Identificacao e contactos basicos.</p>
                             </div>
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -307,9 +307,9 @@ export default function EditarMembroClient({
                             <Input label="Nome do Pai" name="father_name" defaultValue={membro.father_name} />
                             <Input label="Nome da Mae" name="mother_name" defaultValue={membro.mother_name} />
                             <div className="space-y-1.5 lg:col-span-3">
-                                <label className="text-[9px] font-black uppercase text-muted tracking-widest ml-4">Nivel de Escolaridade</label>
+                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">Nivel de Escolaridade</label>
                                 <select name="escolaridade_id" defaultValue={membro?.escolaridade_id || ""}
-                                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-[11px] font-bold text-fg focus:border-figueira outline-none shadow-sm appearance-none cursor-pointer">
+                                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none shadow-sm appearance-none cursor-pointer">
                                     <option value="">Selecione...</option>
                                     {escolaridades.map((esc: any) => (
                                         <option key={esc.id} value={esc.id}>{esc.nome}</option>
@@ -318,7 +318,7 @@ export default function EditarMembroClient({
                             </div>
                         </div>
                         <div className="mt-8 pt-8 border-t border-soft">
-                            <h4 className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2 mb-6">
+                            <h4 className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-6">
                                 <Lock size={14} className="text-figueira" /> Alterar Senha do Membro
                             </h4>
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -326,7 +326,7 @@ export default function EditarMembroClient({
                             </div>
                         </div>
                         <div className="mt-8 pt-8 border-t border-soft">
-                            <h4 className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2 mb-6">
+                            <h4 className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-6">
                                 <ShieldAlert size={14} className="text-figueira" /> Acesso e dados pessoais
                             </h4>
                             <AcoesContaMembro membroId={membro.id} nome={`${membro.first_name} ${membro.last_name}`} />
@@ -335,14 +335,14 @@ export default function EditarMembroClient({
 
                     {/* ABA MORADA */}
                     <div className={abaAtiva === 'endereco' ? 'block animate-in fade-in slide-in-from-bottom-4' : 'hidden'}>
-                        <h4 className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2 mb-8 pb-4 border-b border-soft">
+                        <h4 className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-8 pb-4 border-b border-soft">
                             <MapPin size={14} className="text-figueira" /> Endereco Residencial
                         </h4>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <div className="space-y-2 relative md:col-span-1">
-                                <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Codigo Postal</label>
+                                <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Codigo Postal</label>
                                 <input name="postal_code" value={endereco.postal_code} onChange={handleCodigoPostalChange} maxLength={8} placeholder="Ex: 4000-123"
-                                    className={`w-full bg-bg border ${buscandoCP ? 'border-figueira/50 bg-figueira/5' : 'border-soft'} rounded-2xl p-4 text-[11px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm`} />
+                                    className={`w-full bg-bg border ${buscandoCP ? 'border-figueira/50 bg-figueira/5' : 'border-soft'} rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm`} />
                                 {buscandoCP && <Loader2 size={14} className="animate-spin text-figueira absolute right-4 top-[38px]" />}
                             </div>
                             <Input label="Pais" name="country" value={endereco.country} onChange={(e: any) => setEndereco({ ...endereco, country: e.target.value })} className="md:col-span-1 lg:col-span-2" />
@@ -357,7 +357,7 @@ export default function EditarMembroClient({
 
                     {/* ABA FAMILIA */}
                     <div className={abaAtiva === 'familia' ? 'block animate-in fade-in slide-in-from-bottom-4' : 'hidden'}>
-                        <h4 className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2 mb-8 pb-4 border-b border-soft">
+                        <h4 className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-8 pb-4 border-b border-soft">
                             <Users2 size={14} className="text-figueira" /> Documentacao e Relacoes
                         </h4>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -379,17 +379,17 @@ export default function EditarMembroClient({
 
                     {/* ABA ECLESIASTICO */}
                     <div className={abaAtiva === 'eclesiastico' ? 'block animate-in fade-in slide-in-from-bottom-4' : 'hidden'}>
-                        <h4 className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2 mb-8 pb-4 border-b border-soft">
+                        <h4 className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-8 pb-4 border-b border-soft">
                             <Church size={14} className="text-figueira" /> Jornada Espiritual
                         </h4>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {/* Congregação */}
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Congregacao</label>
+                                <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Congregacao</label>
                                 <select
                                     name="congregacao_id"
                                     defaultValue={membro.congregacao_id || ''}
-                                    className="w-full bg-bg border border-soft rounded-3xl px-5 py-4 text-[11px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm appearance-none"
+                                    className="w-full bg-bg border border-soft rounded-3xl px-5 py-4 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm appearance-none"
                                 >
                                     <option value="">Sem congregacao</option>
                                     {congregacoes.map((c: any) => (
@@ -403,13 +403,13 @@ export default function EditarMembroClient({
                             <Input label="Data de Batismo" name="baptism_date" type="date" defaultValue={formatDate(membro.baptism_date)} />
                             <Input label="Data de Conversao" name="conversion_date" type="date" defaultValue={formatDate(membro.conversion_date)} />
                             <div className="md:col-span-2 lg:col-span-3 space-y-2 mt-2">
-                                <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Testemunho / Notas</label>
+                                <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Testemunho / Notas</label>
                                 <textarea name="notes" rows={4} defaultValue={membro.notes}
-                                    className="w-full bg-bg border border-soft rounded-3xl p-5 text-[11px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm resize-none" />
+                                    className="w-full bg-bg border border-soft rounded-3xl p-5 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm resize-none" />
                             </div>
                         </div>
                         <div className="mt-10 pt-8 border-t border-soft">
-                            <h4 className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2 mb-6">
+                            <h4 className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-6">
                                 <ArrowLeft size={14} className="text-figueira" /> Historico Previo
                             </h4>
                             <div className="grid md:grid-cols-3 gap-6">
@@ -425,14 +425,14 @@ export default function EditarMembroClient({
                         <div className="bg-figueira/5 border border-figueira/10 rounded-3xl p-6 md:p-8 space-y-8">
                             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-figueira/10 pb-6">
                                 <div>
-                                    <h4 className="text-sm font-black uppercase italic tracking-tighter text-figueira flex items-center gap-2">
+                                    <h4 className="text-sm font-bold text-figueira flex items-center gap-2">
                                         <ShieldAlert size={18} /> Controlo de Acessos
                                     </h4>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted mt-1">Altere permissoes, cargos e integracoes.</p>
+                                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted mt-1">Altere permissoes, cargos e integracoes.</p>
                                 </div>
                                 <label className="flex items-center gap-3 cursor-pointer group bg-white/60 px-5 py-3 rounded-xl border border-figueira/20 hover:bg-white transition-all shadow-sm">
                                     <input type="checkbox" name="is_active" defaultChecked={membro.is_active} className="w-5 h-5 accent-figueira cursor-pointer" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-fg group-hover:text-figueira transition-colors">
+                                    <span className="text-[14px] font-bold uppercase tracking-wide text-fg group-hover:text-figueira transition-colors">
                                         Acesso ao Sistema Permitido
                                     </span>
                                 </label>
@@ -456,10 +456,10 @@ export default function EditarMembroClient({
                         <div className="bg-bg2 border border-soft w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
                             <div className="flex justify-between items-center p-6 border-b border-soft bg-soft/10">
                                 <div>
-                                    <h3 className="text-lg font-black uppercase italic tracking-tighter text-fg flex items-center gap-2">
+                                    <h3 className="text-lg font-bold text-fg flex items-center gap-2">
                                         <Home className="text-figueira" size={20} /> Agregado Familiar
                                     </h3>
-                                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted mt-1">
+                                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted mt-1">
                                         Vincule este membro a uma familia existente.
                                     </p>
                                 </div>
@@ -471,7 +471,7 @@ export default function EditarMembroClient({
 
                             <div className="p-6 md:p-8 space-y-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-2">Selecione a Familia</label>
+                                    <label className="text-[14px] font-bold uppercase tracking-wide text-muted ml-2">Selecione a Familia</label>
                                     <select value={familiaSelecionada} onChange={e => setFamiliaSelecionada(e.target.value)}
                                         className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none shadow-sm appearance-none cursor-pointer">
                                         <option value="">Nenhuma Familia (Remover Vinculo)</option>
@@ -483,7 +483,7 @@ export default function EditarMembroClient({
 
                                 {familiaSelecionada && (
                                     <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted ml-2">Papel na Familia (Parentesco)</label>
+                                        <label className="text-[14px] font-bold uppercase tracking-wide text-muted ml-2">Papel na Familia (Parentesco)</label>
                                         <select value={parentescoSelecionado} onChange={e => setParentescoSelecionado(e.target.value)}
                                             className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none shadow-sm appearance-none cursor-pointer">
                                             <option value="">Selecione o grau de parentesco...</option>
@@ -498,7 +498,7 @@ export default function EditarMembroClient({
                                 )}
 
                                 <button type="button" onClick={handleAplicarFamilia} disabled={vinculandoFamilia}
-                                    className="w-full bg-fg text-bg py-5 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-figueira transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xl disabled:opacity-50">
+                                    className="w-full bg-fg text-bg py-5 rounded-xl font-bold uppercase text-[14px] tracking-wide hover:bg-figueira transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xl disabled:opacity-50">
                                     {vinculandoFamilia
                                         ? <><Loader2 size={16} className="animate-spin" /> A vincular...</>
                                         : <><CheckCircle2 size={16} /> Confirmar Vinculo</>
@@ -516,11 +516,11 @@ export default function EditarMembroClient({
 function Input({ label, className = '', value, onChange, readOnly, title, ...props }: any) {
     return (
         <div className={`space-y-1.5 ${className}`} title={title}>
-            <label className="text-[9px] font-black uppercase text-muted ml-4 tracking-widest flex items-center gap-2">
+            <label className="text-[13px] font-bold uppercase text-muted ml-4 tracking-wide flex items-center gap-2">
                 {label} {readOnly && <Lock size={8} className="text-figueira opacity-50" />}
             </label>
             <input value={value} onChange={onChange} readOnly={readOnly} {...props}
-                className={`w-full bg-bg border border-soft rounded-2xl p-4 text-[11px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm ${readOnly ? 'focus:border-soft bg-soft/30 cursor-not-allowed' : ''}`} />
+                className={`w-full bg-bg border border-soft rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm ${readOnly ? 'focus:border-soft bg-soft/30 cursor-not-allowed' : ''}`} />
         </div>
     )
 }
@@ -528,9 +528,9 @@ function Input({ label, className = '', value, onChange, readOnly, title, ...pro
 function Select({ label, options, defaultValue, ...props }: any) {
     return (
         <div className="space-y-1.5">
-            <label className="text-[9px] font-black uppercase text-muted ml-4 tracking-widest">{label}</label>
+            <label className="text-[13px] font-bold uppercase text-muted ml-4 tracking-wide">{label}</label>
             <select {...props} defaultValue={defaultValue}
-                className="w-full bg-bg border border-soft rounded-2xl p-4 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer shadow-sm">
+                className="w-full bg-bg border border-soft rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer shadow-sm">
                 <option value="">Selecione...</option>
                 {options.map((opt: any) => {
                     const v = typeof opt === 'string' ? opt : opt.value

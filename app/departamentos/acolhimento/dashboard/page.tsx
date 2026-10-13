@@ -164,12 +164,12 @@ export default async function AcolhimentoDashboard() {
             <header className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
                     <Link href={isAdmin ? '/admin/dashboard' : '/membros/dashboard'}
-                        className="hidden sm:flex text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted hover:text-figueira transition-colors shrink-0">
+                        className="hidden sm:flex text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors shrink-0">
                         ←
                     </Link>
-                    <h1 className="text-xl sm:text-2xl font-black italic uppercase tracking-tighter text-fg truncate">Acolhimento</h1>
+                    <h1 className="text-xl sm:text-2xl font-bold text-fg truncate">Acolhimento</h1>
                     {isLiderOuAdmin && (
-                        <span className="text-[7px] md:text-[9px] font-black uppercase tracking-widest bg-figueira/10 text-figueira px-2 py-1 rounded-lg border border-figueira/20 flex items-center gap-1 shrink-0">
+                        <span className="text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira px-2 py-1 rounded-lg border border-figueira/20 flex items-center gap-1 shrink-0">
                             <Shield size={9} /> {acolhimentoRole === 'ADMIN' ? 'Admin' : 'Lider'}
                         </span>
                     )}
@@ -177,12 +177,12 @@ export default async function AcolhimentoDashboard() {
                 <div className="flex gap-2 shrink-0">
                     {podeVerRelatorio(acolhimentoRole) && (
                         <Link href="/departamentos/acolhimento/relatorio"
-                            className="flex items-center gap-2 bg-bg2 border border-soft text-muted px-3 py-2 rounded-xl text-[9px] md:text-[11px] font-black uppercase tracking-widest hover:text-fg hover:border-figueira/30 transition-all">
+                            className="flex items-center gap-2 bg-bg2 border border-soft text-muted px-3 py-2 rounded-xl text-[13px] md:text-[14px] font-bold uppercase tracking-wide hover:text-fg hover:border-figueira/30 transition-all">
                             <BarChart3 size={13} /> <span className="hidden sm:inline">Relatorio</span>
                         </Link>
                     )}
                     <Link href="/boasvindas" target="_blank"
-                        className="flex items-center gap-2 bg-fg text-bg px-3 py-2 rounded-xl text-[9px] md:text-[11px] font-black uppercase tracking-widest hover:bg-figueira transition-all shadow-sm">
+                        className="flex items-center gap-2 bg-fg text-bg px-3 py-2 rounded-xl text-[13px] md:text-[14px] font-bold uppercase tracking-wide hover:bg-figueira transition-all shadow-sm">
                         <QrCode size={13} /> <span className="hidden sm:inline">Boas-Vindas</span>
                     </Link>
                 </div>
@@ -192,8 +192,8 @@ export default async function AcolhimentoDashboard() {
             {isLiderOuAdmin && semResponsavel > 0 && (
                 <div className="flex items-center gap-3 bg-amber-500/5 border border-amber-500/20 rounded-2xl px-5 py-3">
                     <AlertCircle size={16} className="text-amber-500 shrink-0" />
-                    <p className="text-[10px] md:text-xs font-bold text-amber-700">
-                        <span className="font-black">{semResponsavel} visitante{semResponsavel !== 1 ? 's' : ''}</span> activo{semResponsavel !== 1 ? 's' : ''} sem responsavel atribuido.
+                    <p className="text-[14px] md:text-xs font-bold text-amber-700">
+                        <span className="font-bold">{semResponsavel} visitante{semResponsavel !== 1 ? 's' : ''}</span> activo{semResponsavel !== 1 ? 's' : ''} sem responsavel atribuido.
                     </p>
                 </div>
             )}
@@ -206,8 +206,8 @@ export default async function AcolhimentoDashboard() {
                             <AlertCircle size={16} />
                         </div>
                         <div>
-                            <h2 className="text-sm font-black uppercase tracking-widest text-fg">Novos Registos</h2>
-                            <p className="text-[8px] md:text-[10px] font-bold text-orange-600 uppercase tracking-widest">
+                            <h2 className="text-sm font-bold text-fg">Novos Registos</h2>
+                            <p className="text-[13px] md:text-[14px] font-bold text-orange-600 uppercase tracking-wide">
                                 {novos.length} pessoa{novos.length !== 1 ? 's' : ''} aguardam primeiro contacto
                             </p>
                         </div>
@@ -219,24 +219,24 @@ export default async function AcolhimentoDashboard() {
                                 <div key={v.id} className="flex items-center justify-between gap-4 px-5 py-3 hover:bg-orange-500/5 transition-colors">
                                     <div className="flex items-center gap-3 min-w-0 flex-1">
                                         <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center shrink-0">
-                                            <span className="text-[9px] md:text-[11px] font-black text-orange-600">{v.nome[0]}</span>
+                                            <span className="text-[13px] md:text-[14px] font-bold text-orange-600">{v.nome[0]}</span>
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2 flex-wrap">
-                                                <p className="text-[11px] font-black uppercase text-fg truncate">{v.nome}</p>
+                                                <p className="text-[14px] font-bold uppercase text-fg truncate">{v.nome}</p>
                                                 {origemInfo && (
-                                                    <span className="text-[7px] md:text-[9px] font-black bg-blue-500/10 text-blue-600 px-1.5 py-0.5 rounded border border-blue-500/20">
+                                                    <span className="text-[13px] font-bold bg-blue-500/10 text-blue-600 px-1.5 py-0.5 rounded border border-blue-500/20">
                                                         {origemInfo.label}
                                                     </span>
                                                 )}
                                                 {v.responsavel && (
-                                                    <span className="text-[7px] md:text-[9px] font-bold text-muted bg-soft px-1.5 py-0.5 rounded">
+                                                    <span className="text-[13px] font-bold text-muted bg-soft px-1.5 py-0.5 rounded">
                                                         {v.responsavel.first_name}
                                                     </span>
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-2 mt-0.5">
-                                                <a href={`tel:${v.telefone}`} className="text-[9px] md:text-[11px] font-bold text-muted flex items-center gap-1 hover:text-fg transition-colors">
+                                                <a href={`tel:${v.telefone}`} className="text-[13px] md:text-[14px] font-bold text-muted flex items-center gap-1 hover:text-fg transition-colors">
                                                     <Phone size={9} /> {v.telefone}
                                                 </a>
                                             </div>
@@ -264,12 +264,12 @@ export default async function AcolhimentoDashboard() {
             <SeccaoColapsavel
                 titulo="Em Acompanhamento"
                 icon={<Clock size={14} className="text-figueira" />}
-                badge={<span className="text-[8px] md:text-[10px] font-black bg-soft px-2 py-0.5 rounded text-muted">{emContacto.length}</span>}
+                badge={<span className="text-[13px] md:text-[14px] font-bold bg-soft px-2 py-0.5 rounded text-muted">{emContacto.length}</span>}
             >
                 {emContacto.length === 0 ? (
                     <div className="py-12 text-center">
                         <HeartHandshake size={24} className="mx-auto text-muted/20 mb-3" />
-                        <p className="text-[10px] md:text-xs font-black text-muted uppercase tracking-widest">Nenhum visitante em contacto activo.</p>
+                        <p className="text-[14px] md:text-xs font-bold text-muted uppercase tracking-wide">Nenhum visitante em contacto activo.</p>
                     </div>
                 ) : (
                     <div className="divide-y divide-soft">
@@ -282,33 +282,33 @@ export default async function AcolhimentoDashboard() {
                                 <div key={v.id} className={`flex items-center justify-between gap-4 px-5 py-3.5 transition-colors ${isAtrasado ? 'bg-red-500/5' : 'hover:bg-soft/10'}`}>
                                     <div className="flex items-center gap-3 min-w-0 flex-1">
                                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isAtrasado ? 'bg-red-500/10' : 'bg-figueira/10'}`}>
-                                            <span className={`text-[9px] md:text-[11px] font-black ${isAtrasado ? 'text-red-500' : 'text-figueira'}`}>{v.nome[0]}</span>
+                                            <span className={`text-[13px] md:text-[14px] font-bold ${isAtrasado ? 'text-red-500' : 'text-figueira'}`}>{v.nome[0]}</span>
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2 flex-wrap">
-                                                <p className="text-[11px] font-black uppercase text-fg truncate">{v.nome}</p>
+                                                <p className="text-[14px] font-bold uppercase text-fg truncate">{v.nome}</p>
                                                 {isSite && (
-                                                    <span className="text-[7px] md:text-[9px] font-black bg-blue-500/10 text-blue-600 px-1.5 py-0.5 rounded border border-blue-500/20">Site</span>
+                                                    <span className="text-[13px] font-bold bg-blue-500/10 text-blue-600 px-1.5 py-0.5 rounded border border-blue-500/20">Site</span>
                                                 )}
                                                 {isAtrasado && (
-                                                    <span className="text-[7px] md:text-[9px] font-black bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded border border-red-500/20 animate-pulse">+24h</span>
+                                                    <span className="text-[13px] font-bold bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded border border-red-500/20 animate-pulse">+24h</span>
                                                 )}
                                                 {v.responsavel && (
-                                                    <span className="text-[7px] md:text-[9px] font-bold text-muted bg-soft px-1.5 py-0.5 rounded">
+                                                    <span className="text-[13px] font-bold text-muted bg-soft px-1.5 py-0.5 rounded">
                                                         {v.responsavel.first_name}
                                                     </span>
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-3 mt-0.5">
-                                                <a href={`tel:${v.telefone}`} className="text-[8px] md:text-[10px] font-bold text-muted flex items-center gap-1 hover:text-fg transition-colors">
+                                                <a href={`tel:${v.telefone}`} className="text-[13px] md:text-[14px] font-bold text-muted flex items-center gap-1 hover:text-fg transition-colors">
                                                     <Phone size={8} /> {v.telefone}
                                                 </a>
-                                                <span className="text-[8px] md:text-[10px] font-bold text-muted">{v.quantidade_visitas} visita{v.quantidade_visitas !== 1 ? 's' : ''}</span>
-                                                <span className="text-[8px] md:text-[10px] font-bold text-muted hidden sm:inline">
+                                                <span className="text-[13px] md:text-[14px] font-bold text-muted">{v.quantidade_visitas} visita{v.quantidade_visitas !== 1 ? 's' : ''}</span>
+                                                <span className="text-[13px] md:text-[14px] font-bold text-muted hidden sm:inline">
                                                     Por: {v.acompanhamentos[0]?.membro?.first_name || 'Sistema'}
                                                 </span>
                                                 {v.proximo_contacto && (
-                                                    <span className="text-[7px] md:text-[9px] font-black text-blue-600 bg-blue-500/10 px-1.5 py-0.5 rounded flex items-center gap-1">
+                                                    <span className="text-[13px] font-bold text-blue-600 bg-blue-500/10 px-1.5 py-0.5 rounded flex items-center gap-1">
                                                         <Calendar size={8} /> {new Date(v.proximo_contacto).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}
                                                     </span>
                                                 )}
@@ -339,26 +339,26 @@ export default async function AcolhimentoDashboard() {
                 <section className="bg-blue-500/5 border border-blue-500/20 rounded-2xl overflow-hidden">
                     <div className="flex items-center gap-2 px-5 py-4 border-b border-blue-500/10">
                         <Users size={14} className="text-blue-500" />
-                        <h2 className="text-sm font-black uppercase tracking-widest text-fg">Reuniao com Pastor</h2>
-                        <span className="text-[8px] md:text-[10px] font-black bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded">{reuniaoPastorRaw.length}</span>
+                        <h2 className="text-sm font-bold text-fg">Reuniao com Pastor</h2>
+                        <span className="text-[13px] md:text-[14px] font-bold bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded">{reuniaoPastorRaw.length}</span>
                     </div>
                     <div className="divide-y divide-blue-500/10">
                         {reuniaoPastorRaw.map(v => (
                             <div key={v.id} className="flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-blue-500/5 transition-colors">
                                 <div className="flex items-center gap-3 min-w-0 flex-1">
                                     <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
-                                        <span className="text-[9px] md:text-[11px] font-black text-blue-600">{v.nome[0]}</span>
+                                        <span className="text-[13px] md:text-[14px] font-bold text-blue-600">{v.nome[0]}</span>
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <p className="text-[11px] font-black uppercase text-fg truncate">{v.nome}</p>
+                                            <p className="text-[14px] font-bold uppercase text-fg truncate">{v.nome}</p>
                                             {v.responsavel && (
-                                                <span className="text-[7px] md:text-[9px] font-bold text-muted bg-soft px-1.5 py-0.5 rounded">
+                                                <span className="text-[13px] font-bold text-muted bg-soft px-1.5 py-0.5 rounded">
                                                     {v.responsavel.first_name}
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-[8px] md:text-[10px] font-bold text-muted flex items-center gap-1.5">
+                                        <p className="text-[13px] md:text-[14px] font-bold text-muted flex items-center gap-1.5">
                                             <Phone size={8} /> {v.telefone} · {v.quantidade_visitas} visita{v.quantidade_visitas !== 1 ? 's' : ''}
                                         </p>
                                         <div className="mt-1.5">
@@ -385,7 +385,7 @@ export default async function AcolhimentoDashboard() {
             <SeccaoColapsavel
                 titulo="Consolidados"
                 icon={<CheckCircle2 size={14} className="text-emerald-500" />}
-                badge={<span className="text-[8px] md:text-[10px] font-black bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded">{totalConsolidados}</span>}
+                badge={<span className="text-[13px] md:text-[14px] font-bold bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded">{totalConsolidados}</span>}
                 headerExtra={<ModalListaConsolidados consolidados={consolidados} />}
             >
                 {consolidados.length > 0 ? (
@@ -393,22 +393,22 @@ export default async function AcolhimentoDashboard() {
                         <div className="flex -space-x-2">
                             {consolidados.slice(0, 8).map(v => (
                                 <div key={v.id} className="w-8 h-8 rounded-lg bg-emerald-500/10 border-2 border-bg2 flex items-center justify-center" title={v.nome}>
-                                    <span className="text-[8px] md:text-[10px] font-black text-emerald-600">{v.nome[0]}</span>
+                                    <span className="text-[13px] md:text-[14px] font-bold text-emerald-600">{v.nome[0]}</span>
                                 </div>
                             ))}
                             {consolidados.length > 8 && (
                                 <div className="w-8 h-8 rounded-lg bg-soft border-2 border-bg2 flex items-center justify-center">
-                                    <span className="text-[7px] md:text-[9px] font-black text-muted">+{consolidados.length - 8}</span>
+                                    <span className="text-[13px] font-bold text-muted">+{consolidados.length - 8}</span>
                                 </div>
                             )}
                         </div>
-                        <p className="text-[8px] md:text-[10px] font-bold text-muted uppercase tracking-widest mt-2">
+                        <p className="text-[13px] md:text-[14px] font-bold text-muted uppercase tracking-wide mt-2">
                             {totalConsolidados} pessoa{totalConsolidados !== 1 ? 's' : ''} integrada{totalConsolidados !== 1 ? 's' : ''} na igreja
                         </p>
                     </div>
                 ) : (
                     <div className="py-8 text-center">
-                        <p className="text-[9px] md:text-[11px] font-bold text-muted uppercase tracking-widest">Nenhum consolidado ainda.</p>
+                        <p className="text-[13px] md:text-[14px] font-bold text-muted uppercase tracking-wide">Nenhum consolidado ainda.</p>
                     </div>
                 )}
             </SeccaoColapsavel>
@@ -418,17 +418,17 @@ export default async function AcolhimentoDashboard() {
                 <SeccaoColapsavel
                     titulo="Saidas"
                     icon={<UserX size={14} className="text-red-400" />}
-                    badge={<span className="text-[8px] md:text-[10px] font-black bg-red-500/10 text-red-500 px-2 py-0.5 rounded">{saidas.length}</span>}
+                    badge={<span className="text-[13px] md:text-[14px] font-bold bg-red-500/10 text-red-500 px-2 py-0.5 rounded">{saidas.length}</span>}
                 >
                     <div className="divide-y divide-soft">
                         {saidas.slice(0, 10).map(v => (
                             <div key={v.id} className="flex items-center justify-between gap-4 px-5 py-3 hover:bg-soft/10 transition-colors">
                                 <div className="flex items-center gap-3 min-w-0 flex-1">
                                     <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
-                                        <span className="text-[9px] md:text-[11px] font-black text-red-400">{v.nome[0]}</span>
+                                        <span className="text-[13px] md:text-[14px] font-bold text-red-400">{v.nome[0]}</span>
                                     </div>
                                     <div className="min-w-0">
-                                        <p className="text-[11px] font-black uppercase text-fg truncate">{v.nome}</p>
+                                        <p className="text-[14px] font-bold uppercase text-fg truncate">{v.nome}</p>
                                         <div className="flex items-center gap-2 mt-0.5">
                                             <VisitantePipelineBar status={v.status} />
                                         </div>
@@ -452,29 +452,29 @@ export default async function AcolhimentoDashboard() {
                         <section className="bg-bg2 border border-figueira/20 rounded-2xl overflow-hidden">
                             <div className="flex items-center gap-2 px-5 py-4 border-b border-figueira/10">
                                 <Shield size={14} className="text-figueira" />
-                                <h2 className="text-sm font-black uppercase tracking-widest text-fg">Equipa de Acolhimento</h2>
-                                <span className="text-[7px] md:text-[9px] font-black uppercase tracking-widest bg-figueira/10 text-figueira px-2 py-0.5 rounded">So Lider</span>
+                                <h2 className="text-sm font-bold text-fg">Equipa de Acolhimento</h2>
+                                <span className="text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira px-2 py-0.5 rounded">So Lider</span>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left">
                                     <thead>
                                         <tr className="border-b border-soft">
-                                            <th className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted px-5 py-3">Membro</th>
-                                            <th className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted px-3 py-3 text-center">Follow-ups</th>
-                                            <th className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted px-3 py-3 text-right hidden sm:table-cell">Ultimo Contacto</th>
+                                            <th className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted px-5 py-3">Membro</th>
+                                            <th className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted px-3 py-3 text-center">Follow-ups</th>
+                                            <th className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted px-3 py-3 text-right hidden sm:table-cell">Ultimo Contacto</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-soft">
                                         {equipaStats.map(m => (
                                             <tr key={m.id} className="hover:bg-soft/10 transition-colors">
                                                 <td className="px-5 py-3">
-                                                    <p className="text-[11px] font-black uppercase text-fg">{m.first_name} {m.last_name}</p>
+                                                    <p className="text-[14px] font-bold uppercase text-fg">{m.first_name} {m.last_name}</p>
                                                 </td>
                                                 <td className="px-3 py-3 text-center">
-                                                    <span className="text-[11px] font-black text-fg">{m.total}</span>
+                                                    <span className="text-[14px] font-bold text-fg">{m.total}</span>
                                                 </td>
                                                 <td className="px-3 py-3 text-right hidden sm:table-cell">
-                                                    <span className="text-[9px] md:text-[11px] font-bold text-muted">
+                                                    <span className="text-[13px] md:text-[14px] font-bold text-muted">
                                                         {m.ultimoContacto
                                                             ? new Date(m.ultimoContacto).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })
                                                             : 'Nunca'}
@@ -493,26 +493,26 @@ export default async function AcolhimentoDashboard() {
                         <section className="bg-bg2 border border-figueira/20 rounded-2xl overflow-hidden">
                             <div className="flex items-center gap-2 px-5 py-4 border-b border-figueira/10">
                                 <Activity size={14} className="text-figueira" />
-                                <h2 className="text-sm font-black uppercase tracking-widest text-fg">Actividade Recente</h2>
-                                <span className="text-[7px] md:text-[9px] font-black uppercase tracking-widest bg-figueira/10 text-figueira px-2 py-0.5 rounded">So Lider</span>
+                                <h2 className="text-sm font-bold text-fg">Actividade Recente</h2>
+                                <span className="text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira px-2 py-0.5 rounded">So Lider</span>
                             </div>
                             <div className="divide-y divide-soft max-h-80 overflow-y-auto">
                                 {actividadeRecente.map((a: any) => (
                                     <div key={a.id} className="flex items-start gap-3 px-5 py-3 hover:bg-soft/10 transition-colors">
                                         <div className="w-7 h-7 rounded-lg bg-figueira/10 flex items-center justify-center shrink-0 mt-0.5">
-                                            <span className="text-[8px] md:text-[10px] font-black text-figueira">{a.membro?.first_name?.[0]}</span>
+                                            <span className="text-[13px] md:text-[14px] font-bold text-figueira">{a.membro?.first_name?.[0]}</span>
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <p className="text-[10px] md:text-xs text-fg">
-                                                <span className="font-black">{a.membro?.first_name}</span>
+                                            <p className="text-[14px] md:text-xs text-fg">
+                                                <span className="font-bold">{a.membro?.first_name}</span>
                                                 {' '}registou contacto com{' '}
-                                                <span className="font-black">{a.visitante?.nome}</span>
+                                                <span className="font-bold">{a.visitante?.nome}</span>
                                             </p>
                                             {a.observacoes && (
-                                                <p className="text-[9px] md:text-[11px] text-muted italic mt-0.5 line-clamp-1">"{a.observacoes}"</p>
+                                                <p className="text-[13px] md:text-[14px] text-muted mt-0.5 line-clamp-1">"{a.observacoes}"</p>
                                             )}
                                         </div>
-                                        <span className="text-[8px] md:text-[10px] font-bold text-muted shrink-0">
+                                        <span className="text-[13px] md:text-[14px] font-bold text-muted shrink-0">
                                             {new Date(a.data_contacto).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}
                                         </span>
                                     </div>

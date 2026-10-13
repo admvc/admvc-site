@@ -38,8 +38,8 @@ export default async function PaginaConfirmacao(props: ConfirmacaoPageProps) {
                         </svg>
                     </div>
                     <div>
-                        <span className="text-figueira font-black text-[10px] uppercase tracking-[0.4em]">Processo Concluído</span>
-                        <h1 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-none mt-2">
+                        <span className="text-figueira font-bold text-[14px] uppercase tracking-wide">Processo Concluído</span>
+                        <h1 className="text-4xl md:text-6xl font-bold leading-none mt-2">
                             Cadastro <br /> Confirmado
                         </h1>
                         <p className="text-white/60 mt-4 font-medium max-w-md">
@@ -59,8 +59,8 @@ export default async function PaginaConfirmacao(props: ConfirmacaoPageProps) {
             {/* 2. RELATÓRIO TÉCNICO (GRID) */}
             <section className="space-y-6">
                 <div className="flex justify-between items-end border-b border-soft pb-4">
-                    <h2 className="text-sm font-black uppercase italic tracking-widest text-fg">Detalhes do Registro</h2>
-                    <span className="text-[10px] font-bold text-muted uppercase tracking-tighter">ID INTERNO: #{membro.id}</span>
+                    <h2 className="text-sm font-bold text-fg">Detalhes do Registro</h2>
+                    <span className="text-[14px] font-bold text-muted uppercase tracking-wide">ID INTERNO: #{membro.id}</span>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-8 bg-bg2 border border-soft rounded-[3rem] p-10 shadow-sm relative">
@@ -75,7 +75,7 @@ export default async function PaginaConfirmacao(props: ConfirmacaoPageProps) {
                             )}
                         </div>
                         <div className="text-center">
-                            <span className={`px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${membro.status === 'ATIVO' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+                            <span className={`px-4 py-1 rounded-full text-[13px] font-bold uppercase tracking-wide ${membro.status === 'ATIVO' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
                                 {membro.status}
                             </span>
                         </div>
@@ -97,13 +97,13 @@ export default async function PaginaConfirmacao(props: ConfirmacaoPageProps) {
             <footer className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                 <Link
                     href="/admin/membros"
-                    className="flex items-center justify-center gap-3 px-8 py-5 bg-fg text-bg rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:scale-[1.02] transition-all shadow-xl"
+                    className="flex items-center justify-center gap-3 px-8 py-5 bg-fg text-bg rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:scale-[1.02] transition-all shadow-xl"
                 >
                     📁 Aceder à Listagem Geral
                 </Link>
                 <Link
                     href="/admin/membros/cadastro"
-                    className="flex items-center justify-center gap-3 px-8 py-5 bg-soft text-fg rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-soft/80 transition-all"
+                    className="flex items-center justify-center gap-3 px-8 py-5 bg-soft text-fg rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-soft/80 transition-all"
                 >
                     ➕ Realizar Novo Cadastro
                 </Link>
@@ -119,8 +119,8 @@ export default async function PaginaConfirmacao(props: ConfirmacaoPageProps) {
 function DataInfo({ label, value }: { label: string, value: string | null | undefined }) {
     return (
         <div className="space-y-1">
-            <p className="text-[9px] font-black text-muted uppercase tracking-[0.15em]">{label}</p>
-            <p className="text-sm font-bold text-fg tracking-tight">{value || 'Não informado'}</p>
+            <p className="text-[13px] font-bold text-muted uppercase tracking-wide">{label}</p>
+            <p className="text-sm font-bold text-fg">{value || 'Não informado'}</p>
         </div>
     )
 }

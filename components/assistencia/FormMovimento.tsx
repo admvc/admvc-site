@@ -42,7 +42,7 @@ export default function FormMovimento({ itens }: { itens: Item[] }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Item */}
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                         Item
                     </label>
                     <select
@@ -61,7 +61,7 @@ export default function FormMovimento({ itens }: { itens: Item[] }) {
 
                 {/* Tipo */}
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                         Tipo de Movimento
                     </label>
                     <select
@@ -81,7 +81,7 @@ export default function FormMovimento({ itens }: { itens: Item[] }) {
 
                 {/* Quantidade */}
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                         Quantidade
                     </label>
                     <input
@@ -97,7 +97,7 @@ export default function FormMovimento({ itens }: { itens: Item[] }) {
                 {/* Destinatario */}
                 {!isEntrada && tipo && (
                     <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                             Destinatario
                         </label>
                         <input
@@ -111,7 +111,7 @@ export default function FormMovimento({ itens }: { itens: Item[] }) {
 
                 {/* Observacao */}
                 <div className="space-y-1.5 sm:col-span-2">
-                    <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                         Observacao
                     </label>
                     <input
@@ -138,7 +138,7 @@ export default function FormMovimento({ itens }: { itens: Item[] }) {
             <button
                 type="submit"
                 disabled={loading || !tipo}
-                className="flex items-center gap-2 bg-figueira text-bg px-6 py-3.5 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:brightness-110 transition-all active:scale-95 disabled:opacity-50"
+                className="flex items-center gap-2 bg-figueira text-bg px-6 py-3.5 rounded-2xl font-bold text-[13px] uppercase tracking-wide hover:brightness-110 transition-all active:scale-95 disabled:opacity-50"
             >
                 {loading ? (
                     <Loader2 size={14} className="animate-spin" />

@@ -112,21 +112,21 @@ export default function GestaoCongregacoesClient({
 
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-soft pb-8">
                 <div>
-                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-fg flex items-center gap-3">
                         <Building2 size={28} className="text-figueira" />
                         Congregacoes
                     </h1>
-                    <p className="text-[10px] font-bold text-muted uppercase tracking-widest mt-1">
+                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-1">
                         Gerir unidades e associar membros
                     </p>
                 </div>
 
                 {modo === 'lista' ? (
-                    <button onClick={() => setModo('criar')} className="bg-fg text-bg px-5 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-figueira transition-all flex items-center gap-2">
+                    <button onClick={() => setModo('criar')} className="bg-fg text-bg px-5 py-3 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all flex items-center gap-2">
                         <PlusCircle size={14} /> Nova Congregacao
                     </button>
                 ) : (
-                    <button onClick={voltarLista} className="bg-bg2 border border-soft text-fg px-5 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:border-figueira transition-all flex items-center gap-2">
+                    <button onClick={voltarLista} className="bg-bg2 border border-soft text-fg px-5 py-3 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:border-figueira transition-all flex items-center gap-2">
                         <ArrowLeft size={14} /> Voltar
                     </button>
                 )}
@@ -143,7 +143,7 @@ export default function GestaoCongregacoesClient({
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {congregacoes.length === 0 ? (
                         <div className="col-span-full p-10 border-2 border-dashed border-soft rounded-2xl text-center bg-bg2/50">
-                            <p className="text-xs font-black uppercase tracking-widest text-muted italic">Nenhuma congregacao registada.</p>
+                            <p className="text-xs font-bold text-muted">Nenhuma congregacao registada.</p>
                         </div>
                     ) : congregacoes.map((c) => (
                         <div key={c.id} className="bg-bg2 border border-soft p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group">
@@ -151,21 +151,21 @@ export default function GestaoCongregacoesClient({
                                 <div className="w-10 h-10 bg-figueira/10 text-figueira rounded-xl flex items-center justify-center mb-3">
                                     <Building2 size={20} />
                                 </div>
-                                <h3 className="text-lg font-black uppercase italic tracking-tighter text-fg leading-none truncate">
+                                <h3 className="text-lg font-bold text-fg leading-none truncate">
                                     {c.nome}
                                 </h3>
-                                <p className="text-[10px] font-bold text-muted mt-1.5 flex items-center gap-1.5 truncate">
+                                <p className="text-[14px] font-bold text-muted mt-1.5 flex items-center gap-1.5 truncate">
                                     <MapPin size={11} className="shrink-0" /> {c.cidade}
                                 </p>
                                 <div className="mt-4 flex items-center gap-3">
-                                    <span className="text-[9px] font-black text-muted uppercase tracking-widest flex items-center gap-1 bg-bg px-2.5 py-1 rounded-lg border border-soft">
+                                    <span className="text-[13px] font-bold text-muted uppercase tracking-wide flex items-center gap-1 bg-bg px-2.5 py-1 rounded-lg border border-soft">
                                         <Users size={11} className="text-figueira" /> {c._count.membros}
                                     </span>
                                 </div>
                             </div>
                             <button
                                 onClick={() => { setSelecionada(c); setModo('editar'); setStatus(null) }}
-                                className="mt-5 w-full flex items-center justify-center gap-2 py-2.5 bg-bg border border-soft rounded-xl text-[9px] font-black uppercase tracking-widest text-muted group-hover:bg-fg group-hover:text-bg transition-all"
+                                className="mt-5 w-full flex items-center justify-center gap-2 py-2.5 bg-bg border border-soft rounded-xl text-[13px] font-bold uppercase tracking-wide text-muted group-hover:bg-fg group-hover:text-bg transition-all"
                             >
                                 <Edit3 size={13} /> Gerir
                             </button>
@@ -181,61 +181,61 @@ export default function GestaoCongregacoesClient({
                     <div className="max-w-2xl bg-bg2 border border-soft p-8 rounded-[2.5rem] shadow-xl animate-in slide-in-from-bottom-4">
                         <form action={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Nome</label>
+                                <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Nome</label>
                                 <input name="nome" defaultValue={selecionada?.nome} required className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Ex: Campus Norte" />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Endereco</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Endereco</label>
                                     <input name="endereco" defaultValue={selecionada?.endereco} required className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Rua, No..." />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Cidade</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Cidade</label>
                                     <input name="cidade" defaultValue={selecionada?.cidade} required className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Ex: Figueira da Foz" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Codigo Postal</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Codigo Postal</label>
                                     <input name="codigo_postal" defaultValue={selecionada?.codigo_postal} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Ex: 3080-001" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Distrito</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Distrito</label>
                                     <input name="distrito" defaultValue={selecionada?.distrito} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Ex: Coimbra" />
                                 </div>
                             </div>
 
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted mt-4 mb-2 ml-4">Lideranca</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted mt-4 mb-2 ml-4">Lideranca</p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Pastor Responsavel</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Pastor Responsavel</label>
                                     <input name="pastor" defaultValue={selecionada?.pastor} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Nome completo" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Co-Pastor / Auxiliar</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Co-Pastor / Auxiliar</label>
                                     <input name="co_pastor" defaultValue={selecionada?.co_pastor} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Nome completo" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Telefone</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Telefone</label>
                                     <input name="telefone" defaultValue={selecionada?.telefone} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="+351 912 345 678" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Email</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Email</label>
                                     <input name="email" type="email" defaultValue={selecionada?.email} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="congregacao@email.com" />
                                 </div>
                             </div>
 
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted mt-4 mb-2 ml-4">Geolocalizacao (opcional)</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted mt-4 mb-2 ml-4">Geolocalizacao (opcional)</p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Latitude</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Latitude</label>
                                     <input name="latitude" type="number" step="any" defaultValue={selecionada?.latitude} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Ex: 40.1508" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Longitude</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Longitude</label>
                                     <input name="longitude" type="number" step="any" defaultValue={selecionada?.longitude} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Ex: -8.8613" />
                                 </div>
                             </div>
                             <div className="pt-4 border-t border-soft flex gap-3">
-                                <button disabled={loading} type="submit" className={`flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${loading ? 'bg-muted text-bg' : 'bg-fg text-bg hover:bg-figueira'}`}>
+                                <button disabled={loading} type="submit" className={`flex-1 py-4 rounded-2xl font-bold text-[14px] uppercase tracking-wide transition-all flex items-center justify-center gap-2 ${loading ? 'bg-muted text-bg' : 'bg-fg text-bg hover:bg-figueira'}`}>
                                     {loading ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}
                                     Guardar
                                 </button>
@@ -254,13 +254,13 @@ export default function GestaoCongregacoesClient({
                             <div className="flex items-center justify-between px-6 py-5 border-b border-soft">
                                 <div className="flex items-center gap-3">
                                     <Users size={16} className="text-figueira" />
-                                    <h3 className="text-sm font-black uppercase tracking-widest text-fg">
+                                    <h3 className="text-sm font-bold text-fg">
                                         Membros ({selecionada.membros?.length || 0})
                                     </h3>
                                 </div>
                                 <button
                                     onClick={() => setMostrarAssociar(!mostrarAssociar)}
-                                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-figueira/10 text-figueira text-[9px] font-black uppercase tracking-widest hover:bg-figueira hover:text-white transition-all"
+                                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-figueira/10 text-figueira text-[13px] font-bold uppercase tracking-wide hover:bg-figueira hover:text-white transition-all"
                                 >
                                     <UserPlus size={13} /> Associar Membros
                                 </button>
@@ -284,7 +284,7 @@ export default function GestaoCongregacoesClient({
                                             <button
                                                 onClick={handleAssociarMembros}
                                                 disabled={loading}
-                                                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-figueira text-white text-[9px] font-black uppercase tracking-widest hover:brightness-110 transition-all disabled:opacity-50"
+                                                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-figueira text-white text-[13px] font-bold uppercase tracking-wide hover:brightness-110 transition-all disabled:opacity-50"
                                             >
                                                 {loading ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
                                                 Associar {selecionados.length}
@@ -293,7 +293,7 @@ export default function GestaoCongregacoesClient({
                                     </div>
 
                                     {membrosFiltrados.length === 0 ? (
-                                        <p className="text-[10px] text-muted text-center py-4 font-bold">
+                                        <p className="text-[14px] text-muted text-center py-4 font-bold">
                                             {membrosSemCongregacao.length === 0 ? 'Todos os membros ja estao associados.' : 'Nenhum resultado.'}
                                         </p>
                                     ) : (
@@ -325,17 +325,17 @@ export default function GestaoCongregacoesClient({
                             <div className="divide-y divide-soft">
                                 {(!selecionada.membros || selecionada.membros.length === 0) ? (
                                     <div className="py-10 text-center">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-muted italic">
+                                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted">
                                             Nenhum membro associado
                                         </p>
                                     </div>
                                 ) : selecionada.membros.map((m: Membro) => (
                                     <div key={m.id} className="flex items-center justify-between px-6 py-3 hover:bg-soft/10 transition-all">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-7 h-7 bg-figueira/10 text-figueira rounded-lg flex items-center justify-center text-[9px] font-black">
+                                            <div className="w-7 h-7 bg-figueira/10 text-figueira rounded-lg flex items-center justify-center text-[13px] font-bold">
                                                 {m.first_name[0]}
                                             </div>
-                                            <span className="text-[11px] font-bold text-fg">{m.first_name} {m.last_name}</span>
+                                            <span className="text-[14px] font-bold text-fg">{m.first_name} {m.last_name}</span>
                                         </div>
                                         <button
                                             onClick={() => handleRemoverMembro(m.id)}

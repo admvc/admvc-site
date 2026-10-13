@@ -11,7 +11,7 @@ interface BreadcrumbsProps {
 
 export default function Breadcrumbs({ items }: BreadcrumbsProps) {
     return (
-        <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-6">
+        <nav className="flex items-center gap-2 text-[14px] font-bold uppercase tracking-wide text-muted mb-6">
             <Link href="/admin" className="hover:text-figueira transition-colors">
                 Dashboard
             </Link>
@@ -24,7 +24,7 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
                             {item.label}
                         </Link>
                     ) : (
-                        <span className="text-fg italic">{item.label}</span>
+                        <span className="text-fg">{item.label}</span>
                     )}
                 </div>
             ))}

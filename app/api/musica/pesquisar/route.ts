@@ -5,6 +5,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sessaoDaApi } from '@/lib/api-auth'
 
+/** A pagina existe? (GET rapido; o CifraClub nao responde bem a HEAD) */
+async function existe(url: string): Promise<boolean> {
+    try {
+        const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ADMVC/1.0)' }, signal: AbortSignal.timeout(5000) })
+        return r.ok
+    } catch {
+        return false
+    }
+}
+
 // ── HELPERS: gerar slugs para URLs directos ───────────────────────────────────
 function toSlug(str: string): string {
     return str
@@ -122,9 +132,11 @@ export async function GET(request: NextRequest) {
     const artistaSlug = artista ? toSlug(artista) : ''
     const tituloSlug = toSlug(titulo)
 
-    const urlCifraClub = artistaSlug
-        ? `https://www.cifraclub.com.br/${artistaSlug}/${tituloSlug}/`
-        : `https://www.cifraclub.com.br/busca/?q=${encodeURIComponent(titulo)}`
+    // O endereco adivinhado (artista/musica) nem sempre existe: confirma-se, e
+    // se nao existir sugere-se a pesquisa do CifraClub (o lider escolhe la).
+    const buscaCifraClub = `https://www.cifraclub.com.br/?q=${encodeURIComponent(`${titulo} ${artista}`.trim())}`
+    const adivinhado = artistaSlug ? `https://www.cifraclub.com.br/${artistaSlug}/${tituloSlug}/` : null
+    const urlCifraClub = adivinhado && (await existe(adivinhado)) ? adivinhado : buscaCifraClub
 
     const urlLetras = artistaSlug
         ? `https://www.letras.mus.br/${artistaSlug}/${tituloSlug}/`

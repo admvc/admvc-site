@@ -124,10 +124,10 @@ export default function MeuPerfilClient({
                     {ok ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
                 </div>
                 <div className="flex flex-col">
-                    <span className={`text-[10px] font-black uppercase tracking-widest leading-none ${ok ? 'text-green-700' : 'text-red-600'}`}>
+                    <span className={`text-[14px] font-bold uppercase tracking-wide leading-none ${ok ? 'text-green-700' : 'text-red-600'}`}>
                         {nome}
                     </span>
-                    <span className={`text-[8px] font-bold uppercase tracking-widest mt-0.5 ${ok ? 'text-green-600/70' : 'text-red-500/70'}`}>
+                    <span className={`text-[13px] font-bold uppercase tracking-wide mt-0.5 ${ok ? 'text-green-600/70' : 'text-red-500/70'}`}>
                         {ok && validade
                             ? `Válido até ${new Date(validade).toLocaleDateString('pt-PT')}`
                             : ok ? 'Assinado' : 'Pendente / Expirado'}
@@ -143,12 +143,12 @@ export default function MeuPerfilClient({
 
                 {/* BREADCRUMB — só fora do drawer */}
                 {!isDrawer && (
-                    <nav className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted">
+                    <nav className="flex items-center gap-4 text-[14px] font-bold uppercase tracking-wide text-muted">
                         <Link href="/membros/dashboard" className="hover:text-figueira transition-colors flex items-center gap-2">
                             <ArrowLeft size={12} strokeWidth={3} /> Voltar à Dashboard
                         </Link>
                         <ChevronRight size={10} className="opacity-30" />
-                        <span className="text-fg italic">O Meu Perfil</span>
+                        <span className="text-fg">O Meu Perfil</span>
                     </nav>
                 )}
 
@@ -156,11 +156,11 @@ export default function MeuPerfilClient({
                 <header className={`flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-soft pb-6 ${isDrawer ? '' : 'mb-2'}`}>
                     <div className="space-y-1">
                         {!isDrawer && (
-                            <span className="text-figueira font-black text-[10px] uppercase tracking-[0.4em] flex items-center gap-2">
+                            <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center gap-2">
                                 <User size={14} /> Área Pessoal
                             </span>
                         )}
-                        <h1 className={`font-black italic uppercase tracking-tighter text-fg leading-none ${isDrawer ? 'text-2xl' : 'text-4xl md:text-5xl'}`}>
+                        <h1 className={`font-bold text-fg leading-none ${isDrawer ? 'text-2xl' : 'text-4xl md:text-5xl'}`}>
                             {isDrawer ? 'Editar Dados' : <>O Meu <span className="text-muted/20">Perfil.</span></>}
                         </h1>
                     </div>
@@ -169,13 +169,13 @@ export default function MeuPerfilClient({
                         {mostrarSucesso && (
                             <div className="flex items-center gap-3 text-green-500 bg-green-500/10 px-5 py-3 rounded-2xl border border-green-500/20 animate-in fade-in duration-300">
                                 <Check size={16} strokeWidth={3} />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Atualizado!</span>
+                                <span className="text-[14px] font-bold uppercase tracking-wide">Atualizado!</span>
                             </div>
                         )}
                         <button
                             type="submit"
                             disabled={isPending}
-                            className="w-full md:w-auto flex items-center justify-center gap-3 bg-fg text-bg px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-xl active:scale-95 disabled:opacity-50"
+                            className="w-full md:w-auto flex items-center justify-center gap-3 bg-fg text-bg px-8 py-4 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-xl active:scale-95 disabled:opacity-50"
                         >
                             {isPending ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
                             {isPending ? 'A guardar...' : 'Guardar Alterações'}
@@ -192,13 +192,13 @@ export default function MeuPerfilClient({
                         <div>
                             {membro.familia ? (
                                 <>
-                                    <h3 className="text-base font-black uppercase italic tracking-tighter text-fg leading-none">Família {membro.familia.surname}</h3>
-                                    <p className="text-[9px] text-figueira font-black uppercase tracking-widest mt-1 bg-figueira/10 px-2 py-0.5 rounded border border-figueira/20 inline-block">Grupo Familiar Vinculado</p>
+                                    <h3 className="text-base font-bold text-fg leading-none">Família {membro.familia.surname}</h3>
+                                    <p className="text-[13px] text-figueira font-bold uppercase tracking-wide mt-1 bg-figueira/10 px-2 py-0.5 rounded border border-figueira/20 inline-block">Grupo Familiar Vinculado</p>
                                 </>
                             ) : (
                                 <>
-                                    <h3 className="text-base font-black uppercase italic tracking-tighter text-fg leading-none">Sem Família Vinculada</h3>
-                                    <p className="text-[9px] text-muted font-black uppercase tracking-widest mt-1">Contacta a secretaria para vincular</p>
+                                    <h3 className="text-base font-bold text-fg leading-none">Sem Família Vinculada</h3>
+                                    <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-1">Contacta a secretaria para vincular</p>
                                 </>
                             )}
                         </div>
@@ -224,7 +224,7 @@ export default function MeuPerfilClient({
                             key={tab.id}
                             type="button"
                             onClick={() => setAbaAtiva(tab.id)}
-                            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] transition-all ${abaAtiva === tab.id ? 'bg-fg text-bg shadow-md' : 'bg-bg2 text-muted border border-soft hover:bg-soft hover:text-fg'}`}
+                            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-[13px] uppercase tracking-wide transition-all ${abaAtiva === tab.id ? 'bg-fg text-bg shadow-md' : 'bg-bg2 text-muted border border-soft hover:bg-soft hover:text-fg'}`}
                         >
                             {tab.icon} {tab.label}
                         </button>
@@ -257,8 +257,8 @@ export default function MeuPerfilClient({
                                 <input type="file" name="avatar" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
                             </div>
                             <div>
-                                <h4 className="text-lg font-black uppercase italic text-fg">Foto de Perfil</h4>
-                                <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-1">Clica na câmara para alterar.</p>
+                                <h4 className="text-lg font-bold text-fg">Foto de Perfil</h4>
+                                <p className="text-[14px] text-muted font-bold uppercase tracking-wide mt-1">Clica na câmara para alterar.</p>
                             </div>
                         </div>
 
@@ -275,9 +275,9 @@ export default function MeuPerfilClient({
                             <Input label="Nome do Pai" name="father_name" defaultValue={membro.father_name} />
                             <Input label="Nome da Mãe" name="mother_name" defaultValue={membro.mother_name} />
                             <div className="space-y-1.5 lg:col-span-3">
-                                <label className="text-[9px] font-black uppercase text-muted tracking-widest ml-4">Escolaridade</label>
+                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">Escolaridade</label>
                                 <select name="escolaridade_id" defaultValue={membro?.escolaridade_id || ''}
-                                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-[11px] font-bold text-fg focus:border-figueira outline-none shadow-sm appearance-none cursor-pointer">
+                                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none shadow-sm appearance-none cursor-pointer">
                                     <option value="">Selecione...</option>
                                     {escolaridades.map((esc: any) => (
                                         <option key={esc.id} value={esc.id}>{esc.nome}</option>
@@ -287,7 +287,7 @@ export default function MeuPerfilClient({
                         </div>
 
                         <div className="pt-6 border-t border-soft">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2 mb-5">
+                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-5">
                                 <Lock size={12} className="text-figueira" /> Segurança
                             </p>
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -298,7 +298,7 @@ export default function MeuPerfilClient({
                         </div>
 
                         <div className="pt-6 border-t border-soft">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-3">Os meus dados</p>
+                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted mb-3">Os meus dados</p>
                             <p className="text-xs text-muted mb-4">
                                 Pode descarregar tudo o que o portal guarda sobre si. Para apagar os seus dados, fale com a administração.{' '}
                                 <a href="/privacidade" className="underline">Política de privacidade</a>
@@ -311,7 +311,7 @@ export default function MeuPerfilClient({
 
                     {/* ABA: MORADA */}
                     <div className={abaAtiva === 'endereco' ? 'block animate-in fade-in slide-in-from-bottom-4' : 'hidden'}>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2 mb-6 pb-4 border-b border-soft">
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-6 pb-4 border-b border-soft">
                             <MapPin size={12} className="text-figueira" /> Endereço Residencial
                         </p>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -320,9 +320,9 @@ export default function MeuPerfilClient({
                             <Input label="Complemento" name="address_2" defaultValue={membro.address_2} className="md:col-span-2" />
                             <Input label="Número" name="address_number" defaultValue={membro.address_number} />
                             <div className="space-y-2 relative">
-                                <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Código Postal</label>
+                                <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Código Postal</label>
                                 <input name="postal_code" value={endereco.postal_code} onChange={handleCodigoPostalChange} maxLength={8} placeholder="Ex: 4000-123"
-                                    className={`w-full bg-bg border ${buscandoCP ? 'border-figueira/50 bg-figueira/5' : 'border-soft'} rounded-2xl p-4 text-[11px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm`} />
+                                    className={`w-full bg-bg border ${buscandoCP ? 'border-figueira/50 bg-figueira/5' : 'border-soft'} rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm`} />
                                 {buscandoCP && <Loader2 size={14} className="animate-spin text-figueira absolute right-4 top-[38px]" />}
                             </div>
                             <Input label="Cidade" name="id_city" value={endereco.city} onChange={(e: any) => setEndereco({ ...endereco, city: e.target.value })} />
@@ -335,7 +335,7 @@ export default function MeuPerfilClient({
 
                     {/* ABA: FAMÍLIA */}
                     <div className={abaAtiva === 'familia' ? 'block animate-in fade-in slide-in-from-bottom-4' : 'hidden'}>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2 mb-6 pb-4 border-b border-soft">
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-6 pb-4 border-b border-soft">
                             <Users2 size={12} className="text-figueira" /> Documentação e Relações
                         </p>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -357,7 +357,7 @@ export default function MeuPerfilClient({
 
                     {/* ABA: ECLESIÁSTICO */}
                     <div className={abaAtiva === 'eclesiastico' ? 'block animate-in fade-in slide-in-from-bottom-4' : 'hidden'}>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2 mb-6 pb-4 border-b border-soft">
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-6 pb-4 border-b border-soft">
                             <Church size={12} className="text-figueira" /> Jornada Espiritual
                         </p>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -365,13 +365,13 @@ export default function MeuPerfilClient({
                             <Input label="Data de Batismo" name="baptism_date" type="date" defaultValue={formatDate(membro.baptism_date)} />
                             <Input label="Data de Conversão" name="conversion_date" type="date" defaultValue={formatDate(membro.conversion_date)} />
                             <div className="md:col-span-2 lg:col-span-3 space-y-2 mt-2">
-                                <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Testemunho / Notas</label>
+                                <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Testemunho / Notas</label>
                                 <textarea name="notes" rows={4} defaultValue={membro.notes}
-                                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-[11px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm resize-none" />
+                                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm resize-none" />
                             </div>
                         </div>
                         <div className="mt-8 pt-6 border-t border-soft">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-5">Histórico Prévio</p>
+                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted mb-5">Histórico Prévio</p>
                             <div className="grid md:grid-cols-3 gap-5">
                                 <Input label="Igreja Anterior" name="previous_church" defaultValue={membro.previous_church} />
                                 <Input label="Cargo que exercia" name="church_role" defaultValue={membro.church_role} />
@@ -395,15 +395,15 @@ export default function MeuPerfilClient({
                         <div className="bg-orange-500/5 border border-orange-500/20 rounded-2xl p-5 mb-6 flex items-start gap-4">
                             <AlertCircle size={18} className="text-orange-500 shrink-0 mt-0.5" />
                             <div>
-                                <h4 className="text-sm font-black uppercase italic tracking-tighter text-orange-700">Acesso Restrito</h4>
-                                <p className="text-[10px] text-orange-600/80 font-bold uppercase tracking-widest mt-1">
+                                <h4 className="text-sm font-bold text-orange-700">Acesso Restrito</h4>
+                                <p className="text-[14px] text-orange-600/80 font-bold uppercase tracking-wide mt-1">
                                     Estes dados são geridos pela administração. Apenas para consulta.
                                 </p>
                             </div>
                         </div>
                         <div className="grid md:grid-cols-3 gap-5 opacity-70 pointer-events-none">
                             <Input label="Conta Ativa?" value={membro.is_active ? 'Sim (Ativa)' : 'Não (Bloqueada)'} readOnly className="bg-soft/50 border-dashed" />
-                            <Input label="Nível de Permissão" value={membro.role || 'USER'} readOnly className="bg-soft/50 border-dashed font-black text-figueira" />
+                            <Input label="Nível de Permissão" value={membro.role || 'USER'} readOnly className="bg-soft/50 border-dashed font-bold text-figueira" />
                             <Input label="ID Loyverse (Cantina)" value={membro.loyverse_id || 'Não Integrado'} readOnly className="bg-soft/50 border-dashed" />
                         </div>
                     </div>
@@ -418,11 +418,11 @@ export default function MeuPerfilClient({
 function Input({ label, className, value, onChange, readOnly, title, ...props }: any) {
     return (
         <div className="space-y-1.5" title={title}>
-            <label className="text-[9px] font-black uppercase text-muted ml-4 tracking-widest flex items-center gap-1.5">
+            <label className="text-[13px] font-bold uppercase text-muted ml-4 tracking-wide flex items-center gap-1.5">
                 {label} {readOnly && <Lock size={8} className="text-figueira opacity-50" />}
             </label>
             <input value={value} onChange={onChange} readOnly={readOnly} {...props}
-                className={`w-full bg-bg border border-soft rounded-2xl p-4 text-[11px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm ${readOnly ? 'focus:border-soft' : ''} ${className || ''}`} />
+                className={`w-full bg-bg border border-soft rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm ${readOnly ? 'focus:border-soft' : ''} ${className || ''}`} />
         </div>
     )
 }
@@ -466,8 +466,8 @@ function ServirSection({ membroId, departamentos, interessesExistentes, minister
             <div className="bg-figueira/5 border border-figueira/20 rounded-2xl p-5 flex items-start gap-4">
                 <HeartHandshake size={18} className="text-figueira shrink-0 mt-0.5" />
                 <div>
-                    <h4 className="text-sm font-black uppercase italic tracking-tighter text-fg">Quero Servir</h4>
-                    <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-1">
+                    <h4 className="text-sm font-bold text-fg">Quero Servir</h4>
+                    <p className="text-[14px] text-muted font-bold uppercase tracking-wide mt-1">
                         Indica os departamentos onde gostarias de servir. A lideranca recebe o teu pedido.
                     </p>
                 </div>
@@ -505,7 +505,7 @@ function ServirSection({ membroId, departamentos, interessesExistentes, minister
                         >
                             {d.nome}
                             {jaPediu && (
-                                <span className="block text-[7px] mt-0.5 normal-case tracking-normal font-bold">
+                                <span className="block text-[13px] mt-0.5 normal-case tracking-normal font-bold">
                                     {interesse === 'APROVADO' ? 'Aprovado' : interesse === 'REJEITADO' ? 'Rejeitado' : 'Pendente'}
                                 </span>
                             )}
@@ -515,7 +515,7 @@ function ServirSection({ membroId, departamentos, interessesExistentes, minister
             </div>
 
             {ministeriosAtuais.length > 0 && (
-                <p className="text-[8px] text-muted font-bold uppercase tracking-widest">
+                <p className="text-[13px] text-muted font-bold uppercase tracking-wide">
                     Ja serves em {ministeriosAtuais.length} departamento{ministeriosAtuais.length !== 1 ? 's' : ''} (nao listados acima).
                 </p>
             )}
@@ -533,7 +533,7 @@ function ServirSection({ membroId, departamentos, interessesExistentes, minister
                         type="button"
                         onClick={handleSubmit}
                         disabled={loading}
-                        className="w-full flex items-center justify-center gap-2 bg-figueira text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:brightness-110 transition-all shadow-lg shadow-figueira/20 disabled:opacity-50"
+                        className="w-full flex items-center justify-center gap-2 bg-figueira text-white py-4 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:brightness-110 transition-all shadow-lg shadow-figueira/20 disabled:opacity-50"
                     >
                         {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                         Enviar Interesse ({selecionados.length} departamento{selecionados.length !== 1 ? 's' : ''})
@@ -547,9 +547,9 @@ function ServirSection({ membroId, departamentos, interessesExistentes, minister
 function Select({ label, options, defaultValue, ...props }: any) {
     return (
         <div className="space-y-1.5">
-            <label className="text-[9px] font-black uppercase text-muted ml-4 tracking-widest">{label}</label>
+            <label className="text-[13px] font-bold uppercase text-muted ml-4 tracking-wide">{label}</label>
             <select {...props} defaultValue={defaultValue}
-                className="w-full bg-bg border border-soft rounded-2xl p-4 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer shadow-sm">
+                className="w-full bg-bg border border-soft rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer shadow-sm">
                 <option value="">Selecione...</option>
                 {options.map((opt: any) => {
                     const val = typeof opt === 'string' ? opt : opt.value

@@ -1,43 +1,46 @@
 'use client'
 
-// Barra de baixo no telemovel: Escalas, Agenda e Mais. "Mais" abre uma lista
-// simples com o resto (so o que a igreja tem ligado e a pessoa pode usar).
+// Barra de baixo no telemovel (como o LouveApp): Inicio, Escalas, Repertorio
+// (so o louvor) e Mais. "Mais" abre uma lista simples com o resto (so o que a
+// igreja tem ligado e a pessoa pode usar). Nunca mais de um nivel.
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-    CalendarCheck2, CalendarDays, Menu, X, Megaphone, Music2, Users, UserRound,
+    CalendarCheck2, CalendarDays, Home, ListMusic, Menu, X, Megaphone, Music2, Users, UserRound,
     HelpCircle, ShieldCheck, LogOut, HeartHandshake, MonitorPlay, Shield,
     Store, Wallet, HandHeart, BookOpen, Church, GraduationCap, Car, Briefcase, CalendarClock, Package,
+    SlidersVertical, Lightbulb,
 } from 'lucide-react'
 import ModalAjuda from '@/components/membros/ModalAjuda'
 import { logoutMembro } from '@/actions/auth-actions'
 
 export type ItemMais = {
-    chave: 'avisos' | 'louvor' | 'grupo' | 'acolhimento' | 'midia' | 'perfil' | 'admin' | 'privacidade'
+    chave: 'agenda' | 'avisos' | 'louvor' | 'grupo' | 'acolhimento' | 'midia' | 'perfil' | 'admin' | 'privacidade'
         | 'cantina' | 'tesouraria' | 'social' | 'pregacao' | 'obreiros' | 'cursos' | 'boleias'
-        | 'gabinete' | 'atendimento' | 'inventario'
+        | 'gabinete' | 'atendimento' | 'inventario' | 'mesa' | 'luz'
     texto: string
     href: string
     detalhe?: string
 }
 
-const ICONES: Record<ItemMais['chave'], typeof Users> = {
-    avisos: Megaphone, louvor: Music2, grupo: Users, acolhimento: HeartHandshake,
+export const ICONES: Record<ItemMais['chave'], typeof Users> = {
+    agenda: CalendarDays, avisos: Megaphone, louvor: Music2, grupo: Users, acolhimento: HeartHandshake,
     midia: MonitorPlay, perfil: UserRound, admin: ShieldCheck, privacidade: Shield,
     cantina: Store, tesouraria: Wallet, social: HandHeart, pregacao: BookOpen, obreiros: Church,
     cursos: GraduationCap, boleias: Car, gabinete: Briefcase, atendimento: CalendarClock, inventario: Package,
+    mesa: SlidersVertical, luz: Lightbulb,
 }
 
-export default function BarraBaixo({ itensMais }: { itensMais: ItemMais[] }) {
+export default function BarraBaixo({ itensMais, repertorio = false }: { itensMais: ItemMais[]; repertorio?: boolean }) {
     const pathname = usePathname()
     const [aberto, setAberto] = useState(false)
 
     // Fecha a lista ao mudar de pagina
     useEffect(() => { setAberto(false) }, [pathname])
 
-    const ativo = (href: string) => (href === '/membros/dashboard' ? pathname === href : pathname.startsWith(href))
+    const ativo = (href: string) => (href === '/membros/dashboard' ? pathname === href : href.startsWith('/louvor') ? pathname.startsWith('/louvor') : pathname.startsWith(href))
     const botao = 'a-foco flex flex-1 flex-col items-center justify-center gap-1 min-h-[60px] text-[13px] font-semibold'
 
     return (
@@ -47,8 +50,9 @@ export default function BarraBaixo({ itensMais }: { itensMais: ItemMais[] }) {
                 style={{ background: 'var(--a-card)', borderColor: 'var(--a-borda)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
                 <div className="mx-auto flex max-w-md">
                     {[
-                        { href: '/membros/dashboard', texto: 'Escalas', Icone: CalendarCheck2 },
-                        { href: '/membros/agenda', texto: 'Agenda', Icone: CalendarDays },
+                        { href: '/membros/dashboard', texto: 'Início', Icone: Home },
+                        { href: '/escalas', texto: 'Escalas', Icone: CalendarCheck2 },
+                        ...(repertorio ? [{ href: '/louvor/musicas', texto: 'Repertório', Icone: ListMusic }] : []),
                     ].map(({ href, texto, Icone }) => (
                         <Link key={href} href={href} className={botao} aria-current={ativo(href) ? 'page' : undefined}
                             style={{ color: ativo(href) ? 'var(--a-destaque)' : 'var(--a-suave)' }}>

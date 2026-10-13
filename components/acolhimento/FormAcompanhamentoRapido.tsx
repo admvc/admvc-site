@@ -37,13 +37,13 @@ export default function FormAcompanhamentoRapido({ visitante }: { visitante: any
             {/* ÚLTIMO RELATO — compacto */}
             {temHistorico && (
                 <div className="flex items-start justify-between gap-3 bg-bg border border-soft rounded-2xl px-3 py-2.5">
-                    <p className="text-[10px] text-muted font-medium italic leading-relaxed line-clamp-2 flex-1">
+                    <p className="text-[14px] text-muted font-medium leading-relaxed line-clamp-2 flex-1">
                         "{ultimoAcomp.observacoes}"
                     </p>
                     <ModalHistorico
                         visitante={visitante}
                         acionador={
-                            <button className="shrink-0 flex items-center gap-1 text-[8px] font-black uppercase tracking-widest text-muted hover:text-figueira transition-colors bg-soft/50 px-2 py-1 rounded-lg">
+                            <button className="shrink-0 flex items-center gap-1 text-[13px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors bg-soft/50 px-2 py-1 rounded-lg">
                                 <History size={9} /> Histórico
                             </button>
                         }
@@ -85,7 +85,7 @@ export default function FormAcompanhamentoRapido({ visitante }: { visitante: any
                         placeholder="Descreve o contacto realizado..."
                         required
                         autoFocus
-                        className="w-full bg-bg border border-soft rounded-2xl p-3 text-[10px] font-medium text-fg focus:border-figueira outline-none resize-none h-16 transition-all placeholder:text-muted/50"
+                        className="w-full bg-bg border border-soft rounded-2xl p-3 text-[14px] font-medium text-fg focus:border-figueira outline-none resize-none h-16 transition-all placeholder:text-muted/50"
                     />
 
                     <div className="flex gap-2">
@@ -106,7 +106,7 @@ export default function FormAcompanhamentoRapido({ visitante }: { visitante: any
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 flex items-center justify-center gap-2 h-9 bg-figueira text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
+                            className="flex-1 flex items-center justify-center gap-2 h-9 bg-figueira text-white rounded-xl text-[13px] font-bold uppercase tracking-wide hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
                         >
                             {loading
                                 ? <><Loader2 size={12} className="animate-spin" /> A gravar...</>

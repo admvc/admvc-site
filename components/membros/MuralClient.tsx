@@ -58,7 +58,7 @@ export default function MuralClient({ canais, avisos, membroAtualId }: { canais:
 
             {/* LISTA DE CANAIS — horizontal scroll no mobile, sidebar no desktop */}
             <div className="md:w-64 shrink-0 flex flex-col gap-2 overflow-x-auto md:overflow-y-auto custom-scrollbar md:pr-2 -mx-4 px-4 md:mx-0 md:px-0">
-                <span className="text-[9px] font-black uppercase tracking-widest text-muted mb-1 hidden md:block px-2">Meus Canais</span>
+                <span className="text-[13px] font-bold uppercase tracking-wide text-muted mb-1 hidden md:block px-2">Meus Canais</span>
                 <div className="flex md:flex-col gap-2">
                     {canais.map(canal => (
                         <button
@@ -71,8 +71,8 @@ export default function MuralClient({ canais, avisos, membroAtualId }: { canais:
                         >
                             <Hash size={14} className={`md:w-4 md:h-4 ${canalAtivo === canal.id ? 'text-white' : 'text-figueira'}`} />
                             <div className="overflow-hidden">
-                                <p className="text-[10px] md:text-[11px] font-black uppercase tracking-wider truncate">{canal.nome}</p>
-                                <p className={`text-[7px] md:text-[8px] font-bold uppercase tracking-widest mt-0.5 hidden md:block ${canalAtivo === canal.id ? 'text-white/70' : 'text-muted/50'}`}>
+                                <p className="text-[14px] font-bold uppercase tracking-wide truncate">{canal.nome}</p>
+                                <p className={`text-[13px] font-bold uppercase tracking-wide mt-0.5 hidden md:block ${canalAtivo === canal.id ? 'text-white/70' : 'text-muted/50'}`}>
                                     {canal.tipo}
                                 </p>
                             </div>
@@ -85,7 +85,7 @@ export default function MuralClient({ canais, avisos, membroAtualId }: { canais:
             <div className="flex-1 flex flex-col bg-bg2 border border-soft rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-sm min-h-0">
 
                 <div className="bg-bg border-b border-soft p-3 md:p-5 shrink-0">
-                    <h3 className="text-xs md:text-sm font-black text-fg uppercase tracking-widest flex items-center gap-2">
+                    <h3 className="text-xs md:text-sm font-bold text-fg flex items-center gap-2">
                         <Hash size={14} className="text-figueira" />
                         {canais.find(c => c.id === canalAtivo)?.nome}
                     </h3>
@@ -111,8 +111,8 @@ export default function MuralClient({ canais, avisos, membroAtualId }: { canais:
 
                                     <div className={`max-w-[80%] md:max-w-[70%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
                                         <div className="flex items-baseline gap-2 mb-1 px-1">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-fg">{msg.autor.first_name} {msg.autor.last_name}</span>
-                                            <span className="text-[8px] font-bold uppercase tracking-widest text-muted">{formatDate(msg.createdAt)}</span>
+                                            <span className="text-[14px] font-bold uppercase tracking-wide text-fg">{msg.autor.first_name} {msg.autor.last_name}</span>
+                                            <span className="text-[13px] font-bold uppercase tracking-wide text-muted">{formatDate(msg.createdAt)}</span>
                                         </div>
 
                                         <div className={`p-4 rounded-2xl text-sm font-medium leading-relaxed shadow-sm ${isMe
@@ -127,7 +127,7 @@ export default function MuralClient({ canais, avisos, membroAtualId }: { canais:
                                             <button
                                                 onClick={() => handleDelete(msg.id)}
                                                 disabled={deletingId === msg.id}
-                                                className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-muted hover:text-red-500 transition-colors mt-1 px-1"
+                                                className="flex items-center gap-1 text-[13px] font-bold uppercase tracking-wide text-muted hover:text-red-500 transition-colors mt-1 px-1"
                                             >
                                                 {deletingId === msg.id ? <Loader2 size={10} className="animate-spin" /> : <Trash2 size={10} />}
                                                 Apagar
@@ -140,7 +140,7 @@ export default function MuralClient({ canais, avisos, membroAtualId }: { canais:
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center text-muted opacity-50 space-y-3">
                             <MessageSquare size={32} />
-                            <p className="text-[10px] font-black uppercase tracking-widest">Ainda não há mensagens neste canal.</p>
+                            <p className="text-[14px] font-bold uppercase tracking-wide">Ainda não há mensagens neste canal.</p>
                         </div>
                     )}
                 </div>

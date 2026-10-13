@@ -118,7 +118,7 @@ export default function MidiaConfigClient({ config }: { config: Config | null })
                 {/* GUARDAR */}
                 <div className="flex justify-end">
                     <button type="submit" disabled={saving}
-                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-fg text-bg text-[9px] font-black uppercase tracking-widest hover:bg-figueira transition-all disabled:opacity-50 shadow-sm">
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-fg text-bg text-[13px] font-bold uppercase tracking-wide hover:bg-figueira transition-all disabled:opacity-50 shadow-sm">
                         {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
                         Guardar Configuracoes
                     </button>
@@ -152,21 +152,21 @@ function DeviceCard({ icon, title, description, color, testResult, testing, onTe
                         {icon}
                     </div>
                     <div>
-                        <h2 className="text-sm font-black uppercase tracking-widest text-fg">{title}</h2>
-                        <p className="text-[8px] font-bold text-muted uppercase tracking-widest">{description}</p>
+                        <h2 className="text-sm font-bold text-fg">{title}</h2>
+                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide">{description}</p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                     {/* Status */}
                     {testResult && (
-                        <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg flex items-center gap-1 ${testResult.ok ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-400'}`}>
+                        <span className={`text-[13px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg flex items-center gap-1 ${testResult.ok ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-400'}`}>
                             {testResult.ok ? <CheckCircle2 size={10} /> : <XCircle size={10} />}
                             {testResult.ok ? 'Conectado' : testResult.info ? 'Info' : 'Offline'}
                         </span>
                     )}
                     <button type="button" onClick={onTest} disabled={testing}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-bg border border-soft text-[8px] font-black uppercase tracking-widest text-muted hover:text-fg hover:border-figueira/30 transition-all disabled:opacity-50">
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-bg border border-soft text-[13px] font-bold uppercase tracking-wide text-muted hover:text-fg hover:border-figueira/30 transition-all disabled:opacity-50">
                         {testing ? <Loader2 size={11} className="animate-spin" /> : <Wifi size={11} />}
                         Testar
                     </button>
@@ -176,7 +176,7 @@ function DeviceCard({ icon, title, description, color, testResult, testing, onTe
             <div className="p-5 space-y-3">
                 {children}
                 {testResult && !testResult.ok && testResult.info && (
-                    <p className="text-[9px] text-orange-400 bg-orange-500/5 border border-orange-500/10 px-3 py-2 rounded-lg">
+                    <p className="text-[13px] text-orange-400 bg-orange-500/5 border border-orange-500/10 px-3 py-2 rounded-lg">
                         {testResult.info}
                     </p>
                 )}
@@ -190,7 +190,7 @@ function InputField({ label, name, value, onChange, placeholder, type = 'text' }
 }) {
     return (
         <div className="space-y-1.5">
-            <label className="text-[8px] font-black uppercase tracking-widest text-muted">{label}</label>
+            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">{label}</label>
             <input type={type} name={name} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
                 className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-sm font-bold text-fg focus:border-figueira outline-none placeholder:text-muted/30" />
         </div>

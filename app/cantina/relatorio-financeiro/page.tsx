@@ -56,7 +56,7 @@ export default async function RelatorioFinanceiroPage({
                     <ArrowLeft size={18} className="text-muted" />
                 </Link>
                 <div className="space-y-1">
-                    <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-fg">
+                    <h1 className="text-3xl md:text-4xl font-bold text-fg">
                         Relatorio Financeiro
                     </h1>
                     <p className="text-xs text-muted">
@@ -69,19 +69,19 @@ export default async function RelatorioFinanceiroPage({
             <section className="flex flex-wrap gap-2">
                 <Link
                     href={`/cantina/relatorio-financeiro?de=${mesAtualDe}&ate=${mesAtualAte}`}
-                    className="px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[9px] md:text-[11px] font-black uppercase tracking-widest text-fg"
+                    className="px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-fg"
                 >
                     Este Mes
                 </Link>
                 <Link
                     href={`/cantina/relatorio-financeiro?de=${trimestreDe}&ate=${mesAtualAte}`}
-                    className="px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[9px] md:text-[11px] font-black uppercase tracking-widest text-fg"
+                    className="px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-fg"
                 >
                     Este Trimestre
                 </Link>
                 <Link
                     href={`/cantina/relatorio-financeiro?de=${anoDe}&ate=${mesAtualAte}`}
-                    className="px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[9px] md:text-[11px] font-black uppercase tracking-widest text-fg"
+                    className="px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-fg"
                 >
                     Este Ano
                 </Link>
@@ -91,7 +91,7 @@ export default async function RelatorioFinanceiroPage({
             <section className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                 <div className="flex items-center gap-3 px-6 py-4 border-b border-soft">
                     <DollarSign size={20} className="text-figueira" />
-                    <h2 className="text-xl font-black uppercase italic tracking-tighter text-fg">
+                    <h2 className="text-xl font-bold text-fg">
                         Demonstracao de Resultados
                     </h2>
                 </div>
@@ -103,7 +103,7 @@ export default async function RelatorioFinanceiroPage({
                             <TrendingUp size={16} className="text-green-500" />
                             <span className="text-sm font-bold text-fg">Receita de Vendas</span>
                         </div>
-                        <span className="text-lg font-black text-green-500">{fmt(relatorio.receita)} EUR</span>
+                        <span className="text-lg font-bold text-green-500">{fmt(relatorio.receita)} EUR</span>
                     </div>
 
                     {/* COGS */}
@@ -112,13 +112,13 @@ export default async function RelatorioFinanceiroPage({
                             <TrendingDown size={16} className="text-red-400" />
                             <span className="text-sm font-bold text-fg">(-) Custo de Mercadoria</span>
                         </div>
-                        <span className="text-lg font-black text-red-400">{fmt(relatorio.custoMercadoria)} EUR</span>
+                        <span className="text-lg font-bold text-red-400">{fmt(relatorio.custoMercadoria)} EUR</span>
                     </div>
 
                     {/* Margem Bruta */}
                     <div className="flex items-center justify-between py-3 border-t border-soft bg-soft/10 rounded-xl px-3 -mx-3">
-                        <span className="text-sm font-black text-fg">= Margem Bruta</span>
-                        <span className={`text-lg font-black ${relatorio.margemBruta >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        <span className="text-sm font-bold text-fg">= Margem Bruta</span>
+                        <span className={`text-lg font-bold ${relatorio.margemBruta >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                             {fmt(relatorio.margemBruta)} EUR
                         </span>
                     </div>
@@ -129,13 +129,13 @@ export default async function RelatorioFinanceiroPage({
                             <TrendingDown size={16} className="text-red-400" />
                             <span className="text-sm font-bold text-fg">(-) Despesas Operacionais</span>
                         </div>
-                        <span className="text-lg font-black text-red-400">{fmt(relatorio.despesasOperacionais)} EUR</span>
+                        <span className="text-lg font-bold text-red-400">{fmt(relatorio.despesasOperacionais)} EUR</span>
                     </div>
 
                     {/* Resultado Liquido */}
                     <div className={`flex items-center justify-between py-4 border-t-2 border-fg/20 rounded-xl px-3 -mx-3 ${relatorio.lucroLiquido >= 0 ? 'bg-green-500/5' : 'bg-red-500/5'}`}>
-                        <span className="text-base font-black text-fg">= Resultado Liquido</span>
-                        <span className={`text-2xl font-black ${relatorio.lucroLiquido >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        <span className="text-base font-bold text-fg">= Resultado Liquido</span>
+                        <span className={`text-2xl font-bold ${relatorio.lucroLiquido >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                             {fmt(relatorio.lucroLiquido)} EUR
                         </span>
                     </div>
@@ -162,7 +162,7 @@ export default async function RelatorioFinanceiroPage({
             <section className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                 <div className="flex items-center gap-3 px-6 py-4 border-b border-soft">
                     <BarChart3 size={20} className="text-figueira" />
-                    <h2 className="text-lg font-black uppercase italic tracking-tighter text-fg">
+                    <h2 className="text-lg font-bold text-fg">
                         Receita por Metodo de Pagamento
                     </h2>
                 </div>
@@ -184,10 +184,10 @@ export default async function RelatorioFinanceiroPage({
                             return entries.map(([key, val]) => (
                                 <div key={key} className="space-y-1.5">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-fg">
+                                        <span className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-fg">
                                             {labels[key] || key}
                                         </span>
-                                        <span className="text-sm font-black text-figueira">
+                                        <span className="text-sm font-bold text-figueira">
                                             {fmt(val)} EUR
                                         </span>
                                     </div>
@@ -208,7 +208,7 @@ export default async function RelatorioFinanceiroPage({
             <section className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                 <div className="flex items-center gap-3 px-6 py-4 border-b border-soft">
                     <TrendingDown size={20} className="text-red-400" />
-                    <h2 className="text-lg font-black uppercase italic tracking-tighter text-fg">
+                    <h2 className="text-lg font-bold text-fg">
                         Despesas por Categoria
                     </h2>
                 </div>
@@ -224,10 +224,10 @@ export default async function RelatorioFinanceiroPage({
                             return entries.map(([cat, val]) => (
                                 <div key={cat} className="space-y-1.5">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-fg">
+                                        <span className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-fg">
                                             {cat}
                                         </span>
-                                        <span className="text-sm font-black text-red-400">
+                                        <span className="text-sm font-bold text-red-400">
                                             {fmt(val)} EUR
                                         </span>
                                     </div>

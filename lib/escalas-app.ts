@@ -120,46 +120,6 @@ export async function equipasQueGiro(sessao: SessionData): Promise<EquipaQueGiro
     return geridos
 }
 
-export interface CultoDaEquipa {
-    id: number
-    nome: string
-    data: string
-    funcoesTotal: number
-    funcoesPreenchidas: number
-    naoPodem: number
-    porConfirmar: number
-}
-
-/** Proximos cultos/eventos (6 semanas) e o estado da escala desta equipa em cada um. */
-export async function cultosDaEquipa(sessao: SessionData, deptoId: number, limite = 8): Promise<CultoDaEquipa[]> {
-    const db = getTenantClient(sessao.tenantId)
-    const ate = new Date(Date.now() + 42 * 86400000)
-    const [funcoes, eventos] = await Promise.all([
-        db.funcaoDepartamento.findMany({ where: { departamento_id: deptoId }, select: { id: true } }),
-        db.evento.findMany({
-            where: { data: { gte: inicioDeHoje(), lte: ate } },
-            select: {
-                id: true, nome: true, data: true,
-                escalas: { where: { departamento_id: deptoId }, select: { funcao_id: true, confirmado: true, motivo_recusa: true } },
-            },
-            orderBy: { data: 'asc' },
-            take: limite,
-        }),
-    ])
-    return eventos.map((ev) => {
-        const ativas = ev.escalas.filter((e) => !e.motivo_recusa)
-        return {
-            id: ev.id,
-            nome: ev.nome,
-            data: ev.data.toISOString(),
-            funcoesTotal: funcoes.length,
-            funcoesPreenchidas: new Set(ativas.map((e) => e.funcao_id).filter(Boolean)).size,
-            naoPodem: ev.escalas.filter((e) => e.motivo_recusa).length,
-            porConfirmar: ativas.filter((e) => !e.confirmado).length,
-        }
-    })
-}
-
 export interface PessoaDaEquipa {
     membroId: number
     nome: string

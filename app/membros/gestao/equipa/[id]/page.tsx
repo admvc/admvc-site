@@ -67,20 +67,20 @@ export default async function EquipaDepartamento({ params }: { params: Promise<{
             {/* HEADER */}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div className="space-y-2">
-                    <Link href="/membros/dashboard" className="flex items-center gap-2 text-[10px] font-black uppercase text-muted hover:text-figueira transition-all">
+                    <Link href="/membros/dashboard" className="flex items-center gap-2 text-[14px] font-bold uppercase text-muted hover:text-figueira transition-all">
                         <ArrowLeft size={12} /> Voltar ao Painel
                     </Link>
-                    <h1 className="text-4xl font-black italic uppercase text-fg tracking-tighter leading-none">
+                    <h1 className="text-4xl font-bold text-fg leading-none">
                         Equipa: <span className="text-figueira">{depto?.nome}</span>
                     </h1>
-                    <p className="text-[10px] font-bold text-muted uppercase tracking-[0.2em]">
+                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide">
                         {depto?.integrantes.length} Membros Ativos no Setor
                     </p>
                 </div>
 
                 {/* Botão para o Admin adicionar mais gente (opcional) */}
                 {eAdmin && (
-                    <Link href={`/admin/departamentos/editar/${deptoId}`} className="bg-soft hover:bg-fg hover:text-bg text-fg px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2">
+                    <Link href={`/admin/departamentos/editar/${deptoId}`} className="bg-soft hover:bg-fg hover:text-bg text-fg px-6 py-4 rounded-2xl text-[14px] font-bold uppercase tracking-wide transition-all flex items-center gap-2">
                         <UserPlus size={14} /> Gerir Integrantes
                     </Link>
                 )}
@@ -100,7 +100,7 @@ export default async function EquipaDepartamento({ params }: { params: Promise<{
                                     className="rounded-2xl object-cover border-2 border-white shadow-md"
                                 />
                             ) : (
-                                <div className="w-full h-full rounded-2xl bg-soft text-muted flex items-center justify-center font-black text-xl">
+                                <div className="w-full h-full rounded-2xl bg-soft text-muted flex items-center justify-center font-bold text-xl">
                                     {item.membro.first_name[0]}
                                 </div>
                             )}
@@ -108,10 +108,10 @@ export default async function EquipaDepartamento({ params }: { params: Promise<{
 
                         {/* Info do Membro */}
                         <div className="flex-1 min-w-0">
-                            <h4 className="font-black text-sm uppercase text-fg truncate">
+                            <h4 className="font-bold text-sm text-fg truncate">
                                 {item.membro.first_name} {item.membro.last_name}
                             </h4>
-                            <span className="text-[9px] font-black text-figueira uppercase tracking-widest block mb-2 italic">
+                            <span className="text-[13px] font-bold text-figueira uppercase tracking-wide block mb-2">
                                 {item.funcoes?.map((f: any) => f.funcao?.nome).join(', ') || 'Membro'}
                             </span>
 
@@ -142,7 +142,7 @@ export default async function EquipaDepartamento({ params }: { params: Promise<{
 
             {depto?.integrantes.length === 0 && (
                 <div className="py-20 border-2 border-dashed border-soft rounded-[3rem] text-center">
-                    <p className="text-xs font-bold text-muted uppercase tracking-widest italic">Ainda não existem membros vinculados a este departamento.</p>
+                    <p className="text-xs font-bold text-muted">Ainda não existem membros vinculados a este departamento.</p>
                 </div>
             )}
         </main>

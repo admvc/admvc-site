@@ -40,19 +40,19 @@ export default function ModalHistoricoRifa({ rifa }: { rifa: any }) {
             >
                 <div>
                     <div className="flex justify-between items-start mb-2">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-muted group-hover:text-figueira transition-colors">
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted group-hover:text-figueira transition-colors">
                             {new Date(rifa.createdAt).toLocaleDateString('pt-PT', { month: 'short', year: 'numeric' })}
                         </span>
                         <Archive size={14} className="text-muted group-hover:text-figueira transition-colors" />
                     </div>
-                    <h4 className="text-sm font-black uppercase text-fg leading-tight">{rifa.nome}</h4>
+                    <h4 className="text-sm font-bold text-fg leading-tight">{rifa.nome}</h4>
 
                     {vencedor1 ? (
-                        <p className="text-[10px] text-figueira font-black uppercase mt-2 flex items-center gap-1">
+                        <p className="text-[14px] text-figueira font-bold uppercase mt-2 flex items-center gap-1">
                             <Trophy size={10} /> #{vencedor1.numero} - {vencedor1.nome.split(' ')[0]}
                         </p>
                     ) : (
-                        <p className="text-[10px] text-red-400 font-bold uppercase mt-2">Sem vencedor</p>
+                        <p className="text-[14px] text-red-400 font-bold uppercase mt-2">Sem vencedor</p>
                     )}
                 </div>
             </button>
@@ -64,8 +64,8 @@ export default function ModalHistoricoRifa({ rifa }: { rifa: any }) {
                         {/* HEADER FIXO */}
                         <div className="p-6 md:p-8 border-b border-soft flex justify-between items-start shrink-0">
                             <div>
-                                <h3 className="text-2xl font-black italic uppercase tracking-tighter text-fg leading-none">{rifa.nome}</h3>
-                                <p className="text-[10px] font-bold text-muted uppercase tracking-widest mt-1">Sorteio Finalizado</p>
+                                <h3 className="text-2xl font-bold text-fg leading-none">{rifa.nome}</h3>
+                                <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-1">Sorteio Finalizado</p>
                             </div>
                             <button onClick={() => setAberto(false)} className="p-2 bg-soft rounded-xl hover:bg-red-500 hover:text-white transition-all">
                                 <X size={20} />
@@ -81,8 +81,8 @@ export default function ModalHistoricoRifa({ rifa }: { rifa: any }) {
                                     <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-2xl flex items-center gap-4">
                                         <div className="bg-yellow-200 text-yellow-700 p-3 rounded-xl"><Trophy size={24} /></div>
                                         <div>
-                                            <span className="text-[9px] font-black uppercase text-yellow-700 tracking-widest block">1º Prémio</span>
-                                            <p className="text-sm font-black text-fg uppercase">#{vencedor1.numero} - {vencedor1.nome}</p>
+                                            <span className="text-[13px] font-bold uppercase text-yellow-700 tracking-wide block">1º Prémio</span>
+                                            <p className="text-sm font-bold text-fg">#{vencedor1.numero} - {vencedor1.nome}</p>
                                         </div>
                                     </div>
 
@@ -91,8 +91,8 @@ export default function ModalHistoricoRifa({ rifa }: { rifa: any }) {
                                             <div className="bg-gray-50 border border-gray-200 p-4 rounded-2xl flex items-center gap-3">
                                                 <div className="bg-gray-200 text-gray-600 p-2 rounded-xl"><Medal size={16} /></div>
                                                 <div>
-                                                    <span className="text-[8px] font-black uppercase text-gray-600 tracking-widest block">2º Prémio</span>
-                                                    <p className="text-xs font-black text-fg uppercase truncate">#{vencedor2.numero} - {vencedor2.nome.split(' ')[0]}</p>
+                                                    <span className="text-[13px] font-bold uppercase text-gray-600 tracking-wide block">2º Prémio</span>
+                                                    <p className="text-xs font-bold text-fg truncate">#{vencedor2.numero} - {vencedor2.nome.split(' ')[0]}</p>
                                                 </div>
                                             </div>
                                         )}
@@ -100,8 +100,8 @@ export default function ModalHistoricoRifa({ rifa }: { rifa: any }) {
                                             <div className="bg-orange-50 border border-orange-200 p-4 rounded-2xl flex items-center gap-3">
                                                 <div className="bg-orange-200 text-orange-700 p-2 rounded-xl"><Medal size={16} /></div>
                                                 <div>
-                                                    <span className="text-[8px] font-black uppercase text-orange-700 tracking-widest block">3º Prémio</span>
-                                                    <p className="text-xs font-black text-fg uppercase truncate">#{vencedor3.numero} - {vencedor3.nome.split(' ')[0]}</p>
+                                                    <span className="text-[13px] font-bold uppercase text-orange-700 tracking-wide block">3º Prémio</span>
+                                                    <p className="text-xs font-bold text-fg truncate">#{vencedor3.numero} - {vencedor3.nome.split(' ')[0]}</p>
                                                 </div>
                                             </div>
                                         )}
@@ -110,20 +110,20 @@ export default function ModalHistoricoRifa({ rifa }: { rifa: any }) {
                             ) : (
                                 <div className="bg-red-50 text-red-500 p-6 rounded-2xl flex flex-col items-center text-center border border-red-100">
                                     <AlertCircle size={32} className="mb-2" />
-                                    <h4 className="font-black uppercase tracking-widest text-xs">Sorteio Cancelado</h4>
-                                    <p className="text-[10px] font-bold mt-1">A rifa foi encerrada sem atribuição de vencedores.</p>
+                                    <h4 className="font-bold text-xs">Sorteio Cancelado</h4>
+                                    <p className="text-[14px] font-bold mt-1">A rifa foi encerrada sem atribuição de vencedores.</p>
                                 </div>
                             )}
 
                             {/* RESUMO FINANCEIRO */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="bg-bg border border-soft p-4 rounded-2xl text-center shadow-sm">
-                                    <span className="text-[9px] font-black uppercase text-muted tracking-widest block">Números Vendidos</span>
-                                    <p className="text-xl font-black text-fg">{rifa.numeros_vendidos.length} <span className="text-xs text-muted">/ {rifa.total_numeros}</span></p>
+                                    <span className="text-[13px] font-bold uppercase text-muted tracking-wide block">Números Vendidos</span>
+                                    <p className="text-xl font-bold text-fg">{rifa.numeros_vendidos.length} <span className="text-xs text-muted">/ {rifa.total_numeros}</span></p>
                                 </div>
                                 <div className="bg-bg border border-soft p-4 rounded-2xl text-center shadow-sm">
-                                    <span className="text-[9px] font-black uppercase text-muted tracking-widest block">Arrecadado</span>
-                                    <p className="text-xl font-black text-figueira italic">{(rifa.numeros_vendidos.length * rifa.valor_numero).toFixed(2)} €</p>
+                                    <span className="text-[13px] font-bold uppercase text-muted tracking-wide block">Arrecadado</span>
+                                    <p className="text-xl font-bold text-figueira">{(rifa.numeros_vendidos.length * rifa.valor_numero).toFixed(2)} €</p>
                                 </div>
                             </div>
 
@@ -133,7 +133,7 @@ export default function ModalHistoricoRifa({ rifa }: { rifa: any }) {
                             <div className="pt-6 border-t border-soft">
                                 <div className="flex items-center gap-2 mb-4">
                                     <Users size={16} className="text-muted" />
-                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-muted">Lista de Participantes</h4>
+                                    <h4 className="text-[14px] font-bold uppercase tracking-wide text-muted">Lista de Participantes</h4>
                                 </div>
 
                                 <div className="space-y-2">
@@ -150,10 +150,10 @@ export default function ModalHistoricoRifa({ rifa }: { rifa: any }) {
                                                         }`}
                                                 >
                                                     <div className="flex items-center gap-4">
-                                                        <span className={`text-xs font-black w-8 text-center ${isVencedor ? 'text-yellow-600' : 'text-muted'}`}>
+                                                        <span className={`text-xs font-bold w-8 text-center ${isVencedor ? 'text-yellow-600' : 'text-muted'}`}>
                                                             #{venda.numero}
                                                         </span>
-                                                        <span className="text-xs font-bold uppercase text-fg">
+                                                        <span className="text-xs font-bold text-fg">
                                                             {venda.membro ? `${venda.membro.first_name} ${venda.membro.last_name}` : venda.nome_externo}
                                                         </span>
                                                     </div>
@@ -164,7 +164,7 @@ export default function ModalHistoricoRifa({ rifa }: { rifa: any }) {
                                             )
                                         })
                                     ) : (
-                                        <p className="text-[10px] text-muted italic text-center py-4">Nenhum número foi vendido nesta rifa.</p>
+                                        <p className="text-[14px] text-muted text-center py-4">Nenhum número foi vendido nesta rifa.</p>
                                     )}
                                 </div>
                             </div>

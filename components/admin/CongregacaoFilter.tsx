@@ -45,7 +45,7 @@ function FilterSelect({
                 value={currentValue}
                 onChange={(e) => handleChange(e.target.value)}
                 disabled={disabled}
-                className="w-full bg-bg border border-soft rounded-xl px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-fg appearance-none cursor-pointer hover:border-figueira/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed pr-7"
+                className="w-full bg-bg border border-soft rounded-xl px-3 py-2 text-[14px] font-bold uppercase tracking-wide text-fg appearance-none cursor-pointer hover:border-figueira/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed pr-7"
                 style={{
                     backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                     backgroundPosition: 'right 0.5rem center',

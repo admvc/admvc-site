@@ -42,14 +42,14 @@ export default function FormTransferencia({ fundos }: { fundos: FundoResumido[] 
                     <ArrowRightLeft size={20} />
                 </div>
                 <div>
-                    <h3 className="text-sm font-black uppercase italic tracking-tighter text-fg leading-none">Transferir Saldo</h3>
-                    <p className="text-[9px] text-muted mt-1">Move valores entre fundos financeiros.</p>
+                    <h3 className="text-sm font-bold text-fg leading-none">Transferir Saldo</h3>
+                    <p className="text-[13px] text-muted mt-1">Move valores entre fundos financeiros.</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Fundo de Origem</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Fundo de Origem</label>
                     <select
                         name="fundo_origem_id"
                         required
@@ -65,12 +65,12 @@ export default function FormTransferencia({ fundos }: { fundos: FundoResumido[] 
                         ))}
                     </select>
                     {fundoOrigem && (
-                        <p className="text-[8px] text-muted">Saldo disponivel: <span className="text-fg font-bold">{euro(fundoOrigem.saldo_atual)}</span></p>
+                        <p className="text-[13px] text-muted">Saldo disponivel: <span className="text-fg font-bold">{euro(fundoOrigem.saldo_atual)}</span></p>
                     )}
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Fundo de Destino</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Fundo de Destino</label>
                     <select
                         name="fundo_destino_id"
                         required
@@ -90,7 +90,7 @@ export default function FormTransferencia({ fundos }: { fundos: FundoResumido[] 
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Valor</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Valor</label>
                     <input
                         type="number"
                         name="valor"
@@ -103,7 +103,7 @@ export default function FormTransferencia({ fundos }: { fundos: FundoResumido[] 
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Motivo</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Motivo</label>
                     <input
                         type="text"
                         name="motivo"
@@ -117,7 +117,7 @@ export default function FormTransferencia({ fundos }: { fundos: FundoResumido[] 
             <button
                 type="submit"
                 disabled={loading || !origemId || !destinoId}
-                className="w-full bg-blue-600 text-white rounded-2xl py-3.5 text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-blue-600 text-white rounded-2xl py-3.5 text-[14px] font-bold uppercase tracking-wide hover:bg-blue-500 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <ArrowRightLeft size={16} />}
                 {loading ? 'A Transferir...' : 'Transferir'}

@@ -33,7 +33,7 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
             <button
                 type="button"
                 onClick={() => setIsOpen(true)}
-                className="flex items-center gap-3 bg-figueira text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira/90 transition-all shadow-lg shadow-figueira/20 active:scale-95 w-full sm:w-auto justify-center"
+                className="flex items-center gap-3 bg-figueira text-white px-6 py-4 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira/90 transition-all shadow-lg shadow-figueira/20 active:scale-95 w-full sm:w-auto justify-center"
             >
                 <CalendarPlus size={16} />
                 Agendar Evento
@@ -49,10 +49,10 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
                         {/* CABEÇALHO */}
                         <div className="p-8 border-b border-soft flex justify-between items-center bg-bg2 relative shrink-0">
                             <div className="space-y-1">
-                                <span className="text-figueira font-black text-[9px] uppercase tracking-[0.3em] flex items-center gap-2">
+                                <span className="text-figueira font-bold text-[13px] uppercase tracking-wide flex items-center gap-2">
                                     <CalendarPlus size={12} /> Criador de Agendas
                                 </span>
-                                <h3 className="text-3xl font-black italic uppercase tracking-tighter text-fg">
+                                <h3 className="text-3xl font-bold text-fg">
                                     Novo <span className="text-muted/30">Evento.</span>
                                 </h3>
                             </div>
@@ -70,14 +70,14 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
                                 <button
                                     type="button"
                                     onClick={() => setTipoEvento('UNICO')}
-                                    className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 ${tipoEvento === 'UNICO' ? 'bg-figueira text-white shadow-md' : 'text-muted hover:text-fg'}`}
+                                    className={`flex-1 py-3 text-[14px] font-bold uppercase tracking-wide rounded-xl transition-all flex items-center justify-center gap-2 ${tipoEvento === 'UNICO' ? 'bg-figueira text-white shadow-md' : 'text-muted hover:text-fg'}`}
                                 >
                                     <Calendar size={14} /> Evento Único
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setTipoEvento('CONTINUO')}
-                                    className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 ${tipoEvento === 'CONTINUO' ? 'bg-figueira text-white shadow-md' : 'text-muted hover:text-fg'}`}
+                                    className={`flex-1 py-3 text-[14px] font-bold uppercase tracking-wide rounded-xl transition-all flex items-center justify-center gap-2 ${tipoEvento === 'CONTINUO' ? 'bg-figueira text-white shadow-md' : 'text-muted hover:text-fg'}`}
                                 >
                                     <Repeat size={14} /> Culto Regular (Contínuo)
                                 </button>
@@ -91,7 +91,7 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
                             <div className="space-y-6 bg-bg2 p-8 rounded-[2.5rem] border border-soft shadow-sm">
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                                     <div className="space-y-2 sm:col-span-2">
-                                        <label className="text-[9px] font-black uppercase text-muted tracking-widest ml-2 flex items-center gap-2">
+                                        <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                             <Type size={12} className="text-figueira" /> Título / Nome do Evento
                                         </label>
                                         <input
@@ -103,7 +103,7 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
                                         />
                                     </div>
                                     <div className="space-y-2 sm:col-span-1">
-                                        <label className="text-[9px] font-black uppercase text-muted tracking-widest ml-2 flex items-center gap-2">
+                                        <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                             <Clock size={12} className="text-figueira" /> Horário
                                         </label>
                                         <input
@@ -118,7 +118,7 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
 
                                 {/* DESCRIÇÃO */}
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase text-muted tracking-widest ml-2 flex items-center gap-2">
+                                    <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                         <AlignLeft size={12} className="text-figueira" /> Descrição / Tema (Opcional)
                                     </label>
                                     <textarea
@@ -131,7 +131,7 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
 
                                 {/* TIPO DE EVENTO */}
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase text-muted tracking-widest ml-2 flex items-center gap-2">
+                                    <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                         <Filter size={12} className="text-figueira" /> Tipo de Evento
                                     </label>
                                     <select
@@ -153,7 +153,7 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
                                 {/* CONGREGAÇÃO */}
                                 {congregacoes.length > 0 && (
                                     <div className="space-y-2">
-                                        <label className="text-[9px] font-black uppercase text-muted tracking-widest ml-2 flex items-center gap-2">
+                                        <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                             <CalendarDays size={12} className="text-figueira" /> Congregacao
                                         </label>
                                         <select
@@ -177,7 +177,7 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
                                 {/* ======================================= */}
                                 {tipoEvento === 'UNICO' && (
                                     <div className="space-y-2 animate-in fade-in zoom-in-95 duration-300">
-                                        <label className="text-[9px] font-black uppercase text-muted tracking-widest ml-2 flex items-center gap-2">
+                                        <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                             <CalendarDays size={12} className="text-figueira" /> Data do Evento
                                         </label>
                                         <input
@@ -196,7 +196,7 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
                                 {tipoEvento === 'CONTINUO' && (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in fade-in zoom-in-95 duration-300">
                                         <div className="space-y-2">
-                                            <label className="text-[9px] font-black uppercase text-muted tracking-widest ml-2 flex items-center gap-2">
+                                            <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                                 <CalendarDays size={12} className="text-figueira" /> Dia do Evento
                                             </label>
                                             <select name="diaDaSemana" className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-sm font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer shadow-sm transition-all">
@@ -211,7 +211,7 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
                                         </div>
 
                                         <div className="space-y-2">
-                                            <label className="text-[9px] font-black uppercase text-muted tracking-widest ml-2 flex items-center gap-2">
+                                            <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                                 <Filter size={12} className="text-figueira" /> Frequência
                                             </label>
                                             <select name="frequencia" className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-sm font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer shadow-sm transition-all">
@@ -225,7 +225,7 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
                                         </div>
 
                                         <div className="space-y-2 sm:col-span-2 border-t border-soft pt-6 mt-2">
-                                            <label className="text-[9px] font-black uppercase text-muted tracking-widest ml-2 flex items-center gap-2">
+                                            <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                                 <Repeat size={12} className="text-figueira" /> Período de Agendamento Automático
                                             </label>
                                             <select name="meses" className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-sm font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer shadow-sm transition-all">
@@ -244,7 +244,7 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
                                 <button
                                     type="submit"
                                     disabled={isPending}
-                                    className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-xl active:scale-95 disabled:opacity-50"
+                                    className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-xl active:scale-95 disabled:opacity-50"
                                 >
                                     {isPending ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
                                     {isPending ? "A Guardar na Agenda..." : "Gravar Agendamento"}

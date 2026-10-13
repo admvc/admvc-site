@@ -61,12 +61,12 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
 
             {/* FEEDBACK */}
             {sucesso && (
-                <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 px-4 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest animate-in slide-in-from-top-2">
+                <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 px-4 py-3 rounded-2xl text-[13px] font-bold uppercase tracking-wide animate-in slide-in-from-top-2">
                     <CheckCircle2 size={13} /> Grupo guardado com sucesso!
                 </div>
             )}
             {erro && (
-                <div className="bg-red-500/10 border border-red-500/20 text-red-700 px-4 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest">
+                <div className="bg-red-500/10 border border-red-500/20 text-red-700 px-4 py-3 rounded-2xl text-[13px] font-bold uppercase tracking-wide">
                     {erro}
                 </div>
             )}
@@ -77,9 +77,9 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
             {/* DIA + HORA */}
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase text-muted ml-1 tracking-widest">Dia da Semana</label>
+                    <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">Dia da Semana</label>
                     <select name="dia_semana" defaultValue={grupo?.dia_semana || ''}
-                        className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                        className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                         <option value="">Selecione...</option>
                         {DIAS_SEMANA.map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
@@ -90,9 +90,9 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
             {/* CATEGORIA + PERFIL */}
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase text-muted ml-1 tracking-widest">Categoria</label>
+                    <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">Categoria</label>
                     <select name="categoria" defaultValue={grupo?.categoria || ''}
-                        className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                        className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                         <option value="">Selecione...</option>
                         {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
@@ -102,7 +102,7 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
 
             {/* SEPARADOR MORADA */}
             <div className="pt-2 border-t border-soft">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-2 mb-4">
+                <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-4">
                     <MapPin size={11} className="text-figueira" /> Morada — preenchida automaticamente no mapa
                 </p>
                 <div className="space-y-4">
@@ -123,7 +123,7 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
 
             {/* REGIÃO */}
             <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase text-muted ml-1 tracking-widest">
+                <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">
                     Regiao (para filtrar no mapa)
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -132,7 +132,7 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
                             <input type="radio" name="regiao" value={r}
                                 defaultChecked={grupo?.regiao === r}
                                 className="sr-only peer" />
-                            <span className="peer-checked:bg-fg peer-checked:text-bg peer-checked:border-fg px-4 py-2 rounded-xl border border-soft text-[9px] font-black uppercase tracking-widest text-muted hover:border-figueira/30 transition-all">
+                            <span className="peer-checked:bg-fg peer-checked:text-bg peer-checked:border-fg px-4 py-2 rounded-xl border border-soft text-[13px] font-bold uppercase tracking-wide text-muted hover:border-figueira/30 transition-all">
                                 {r}
                             </span>
                         </label>
@@ -143,9 +143,9 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
             {/* LIDER */}
             {membros.length > 0 && (
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase text-muted ml-1 tracking-widest">Lider do Grupo</label>
+                    <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">Lider do Grupo</label>
                     <select name="lider_id" defaultValue={grupo?.lideres?.[0]?.id || ''}
-                        className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                        className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                         <option value="">Sem lider definido</option>
                         {membros.map(m => (
                             <option key={m.id} value={m.id}>{m.first_name} {m.last_name}</option>
@@ -156,10 +156,10 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
 
             {/* DESCRICAO */}
             <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase text-muted ml-1 tracking-widest">Descricao</label>
+                <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">Descricao</label>
                 <textarea name="descricao" rows={3} defaultValue={grupo?.descricao || ''}
                     placeholder="Breve descricao do grupo, tema, dinamica..."
-                    className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[11px] font-bold text-fg focus:border-figueira outline-none resize-none" />
+                    className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none resize-none" />
             </div>
 
             {/* VISIBILIDADE PÚBLICA */}
@@ -169,10 +169,10 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
                 <div className="flex items-center gap-3">
                     {publico ? <Globe size={16} className="text-blue-600" /> : <EyeOff size={16} className="text-muted" />}
                     <div>
-                        <p className={`text-[10px] font-black uppercase tracking-widest ${publico ? 'text-blue-700' : 'text-fg'}`}>
+                        <p className={`text-[14px] font-bold uppercase tracking-wide ${publico ? 'text-blue-700' : 'text-fg'}`}>
                             {publico ? 'Visievel no site publico' : 'Privado — apenas admin'}
                         </p>
-                        <p className="text-[9px] font-medium text-muted mt-0.5">
+                        <p className="text-[13px] font-medium text-muted mt-0.5">
                             {publico ? 'Aparece na pagina /grupos com mapa' : 'Nao aparece na pagina publica'}
                         </p>
                     </div>
@@ -184,14 +184,14 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
 
             {/* MAPA DE LOCALIZAÇÃO */}
             <div className="space-y-2">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
+                <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
                     <MapPin size={11} className="text-figueira" /> Localização no Mapa
                 </p>
                 <MapaPreviewGrupo
                     latitude={grupo?.latitude || null}
                     longitude={grupo?.longitude || null}
                 />
-                <p className="text-[9px] font-medium text-figueira/80 leading-relaxed">
+                <p className="text-[13px] font-medium text-figueira/80 leading-relaxed">
                     As coordenadas GPS são preenchidas automaticamente com base na morada ao guardar.
                     Precisa de preencher pelo menos a <strong>Cidade</strong>.
                 </p>
@@ -199,7 +199,7 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
 
             {/* SUBMIT */}
             <button type="submit" disabled={isPending}
-                className="w-full flex items-center justify-center gap-2 bg-fg text-bg py-4 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-figueira transition-all shadow-lg active:scale-95 disabled:opacity-50">
+                className="w-full flex items-center justify-center gap-2 bg-fg text-bg py-4 rounded-2xl font-bold text-[13px] uppercase tracking-wide hover:bg-figueira transition-all shadow-lg active:scale-95 disabled:opacity-50">
                 {isPending
                     ? <><Loader2 size={14} className="animate-spin" /> A guardar e geocodificar...</>
                     : <><CheckCircle2 size={14} /> Guardar Grupo</>
@@ -212,9 +212,9 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
 function Campo({ label, className = '', ...props }: any) {
     return (
         <div className={`space-y-1.5 ${className}`}>
-            <label className="text-[9px] font-black uppercase text-muted ml-1 tracking-widest">{label}</label>
+            <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">{label}</label>
             <input {...props}
-                className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[11px] font-bold text-fg focus:border-figueira outline-none transition-all" />
+                className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all" />
         </div>
     )
 }

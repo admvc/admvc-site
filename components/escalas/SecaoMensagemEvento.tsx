@@ -41,7 +41,7 @@ interface Props {
 export default function SecaoMensagemEvento({
     eventoId,
     eventoNome,
-    mensagemInicial = null,
+    mensagemInicial,
     membros,
     podeEditar
 }: Props) {
@@ -53,7 +53,7 @@ export default function SecaoMensagemEvento({
     const [loading, setLoading] = useState(false)
     const [salvando, setSalvando] = useState(false)
     const [editando, setEditando] = useState(false)
-    const [mensagem, setMensagem] = useState<MensagemData | null>(mensagemInicial)
+    const [mensagem, setMensagem] = useState<MensagemData | null>(mensagemInicial ?? null)
 
     // Form
     const [pregadorId, setPregadorId] = useState(mensagemInicial?.pregador_id?.toString() ?? '')
@@ -172,7 +172,7 @@ export default function SecaoMensagemEvento({
         return (
             <div className="border-t border-soft flex items-center gap-2 py-4 px-6">
                 <Loader2 size={13} className="animate-spin text-figueira" />
-                <span className="text-[9px] font-black uppercase tracking-widest text-muted">A carregar mensagem...</span>
+                <span className="text-[13px] font-bold uppercase tracking-wide text-muted">A carregar mensagem...</span>
             </div>
         )
     }
@@ -184,11 +184,11 @@ export default function SecaoMensagemEvento({
             <div className="flex items-center justify-between px-6 py-4 bg-blue-500/3">
                 <div className="flex items-center gap-2">
                     <BookOpen size={14} className="text-blue-500" />
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-fg">
+                    <h4 className="text-[14px] font-bold uppercase tracking-wide text-fg">
                         Mensagem do Culto
                     </h4>
                     {mensagem?.titulo && (
-                        <span className="text-[7px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span className="text-[13px] font-bold uppercase tracking-wide bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-2 py-0.5 rounded-full flex items-center gap-1">
                             <CheckCircle2 size={8} /> Preenchida
                         </span>
                     )}
@@ -206,7 +206,7 @@ export default function SecaoMensagemEvento({
                         )}
                         <button
                             onClick={() => setEditando(true)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 bg-bg border border-soft text-muted hover:border-blue-400/40 hover:text-blue-600 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-bg border border-soft text-muted hover:border-blue-400/40 hover:text-blue-600 rounded-xl text-[13px] font-bold uppercase tracking-wide transition-all"
                         >
                             <Edit3 size={11} />
                             {mensagem?.titulo ? 'Editar' : 'Preencher'}
@@ -225,14 +225,14 @@ export default function SecaoMensagemEvento({
                             <div className="w-10 h-10 rounded-2xl bg-blue-500/10 overflow-hidden flex items-center justify-center shrink-0">
                                 {mensagem.pregador.avatar_file
                                     ? <img src={mensagem.pregador.avatar_file} alt="" className="w-full h-full object-cover" />
-                                    : <span className="text-[11px] font-black text-blue-600">
+                                    : <span className="text-[14px] font-bold text-blue-600">
                                         {mensagem.pregador.first_name[0]}{mensagem.pregador.last_name[0]}
                                     </span>
                                 }
                             </div>
                             <div>
-                                <p className="text-[8px] font-black uppercase tracking-widest text-muted">Pregador</p>
-                                <p className="text-sm font-black uppercase text-fg leading-none mt-0.5">
+                                <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Pregador</p>
+                                <p className="text-sm font-bold text-fg leading-none mt-0.5">
                                     {mensagem.pregador.first_name} {mensagem.pregador.last_name}
                                 </p>
                             </div>
@@ -241,10 +241,10 @@ export default function SecaoMensagemEvento({
 
                     {/* TÍTULO */}
                     <div className="bg-blue-500/5 border border-blue-500/15 rounded-2xl px-5 py-4">
-                        <p className="text-[8px] font-black uppercase tracking-widest text-blue-500/70 mb-1">
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-blue-500/70 mb-1">
                             Título da Mensagem
                         </p>
-                        <p className="text-base font-black uppercase italic tracking-tighter text-fg">
+                        <p className="text-base font-bold text-fg">
                             "{mensagem.titulo}"
                         </p>
                     </div>
@@ -254,13 +254,13 @@ export default function SecaoMensagemEvento({
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {mensagem.texto_biblico && (
                                 <div className="bg-bg border border-soft rounded-2xl px-4 py-3">
-                                    <p className="text-[8px] font-black uppercase tracking-widest text-muted mb-1">Texto Bíblico</p>
-                                    <p className="text-sm font-black text-fg">{mensagem.texto_biblico}</p>
+                                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Texto Bíblico</p>
+                                    <p className="text-sm font-bold text-fg">{mensagem.texto_biblico}</p>
                                 </div>
                             )}
                             {mensagem.tema && (
                                 <div className="bg-bg border border-soft rounded-2xl px-4 py-3">
-                                    <p className="text-[8px] font-black uppercase tracking-widest text-muted mb-1">Tema</p>
+                                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Tema</p>
                                     <p className="text-sm font-bold text-fg">{mensagem.tema}</p>
                                 </div>
                             )}
@@ -270,7 +270,7 @@ export default function SecaoMensagemEvento({
                     {/* NOTAS */}
                     {mensagem.notas && (
                         <div className="bg-bg border border-soft rounded-2xl px-4 py-4">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted mb-2 flex items-center gap-1">
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-2 flex items-center gap-1">
                                 <AlignLeft size={9} /> Esboço / Notas
                             </p>
                             <p className="text-sm text-fg font-medium whitespace-pre-wrap leading-relaxed">
@@ -285,13 +285,13 @@ export default function SecaoMensagemEvento({
             {!editando && !mensagem?.titulo && (
                 <div className="px-6 py-6 text-center">
                     <BookOpen size={22} className="mx-auto text-muted/20 mb-2" />
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted">
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">
                         Nenhuma mensagem registada
                     </p>
                     {podeEditar && (
                         <button
                             onClick={() => setEditando(true)}
-                            className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 text-blue-600 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-blue-500/20 transition-all"
+                            className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 text-blue-600 rounded-xl text-[13px] font-bold uppercase tracking-wide hover:bg-blue-500/20 transition-all"
                         >
                             <Edit3 size={11} /> Preencher Mensagem
                         </button>
@@ -305,7 +305,7 @@ export default function SecaoMensagemEvento({
 
                     {/* PREGADOR */}
                     <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                             <Mic size={10} /> Pregador
                         </label>
                         <div className="relative">
@@ -335,7 +335,7 @@ export default function SecaoMensagemEvento({
                                         }}
                                         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-soft/50 transition-colors text-left"
                                     >
-                                        <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0 text-[9px] font-black text-blue-600">
+                                        <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0 text-[13px] font-bold text-blue-600">
                                             {m.first_name[0]}{m.last_name[0]}
                                         </div>
                                         <span className="text-sm font-bold text-fg">
@@ -349,7 +349,7 @@ export default function SecaoMensagemEvento({
                         {pregadorId && pregadorSelecionado && (
                             <div className="flex items-center gap-2 bg-blue-500/5 border border-blue-500/20 rounded-xl px-3 py-2">
                                 <CheckCircle2 size={12} className="text-blue-500 shrink-0" />
-                                <span className="text-[9px] font-black uppercase tracking-widest text-blue-600 flex-1">
+                                <span className="text-[13px] font-bold uppercase tracking-wide text-blue-600 flex-1">
                                     {pregadorSelecionado.first_name} {pregadorSelecionado.last_name}
                                 </span>
                                 <button
@@ -365,7 +365,7 @@ export default function SecaoMensagemEvento({
 
                     {/* TÍTULO */}
                     <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                             <Hash size={10} /> Título da Mensagem *
                         </label>
                         <input
@@ -381,7 +381,7 @@ export default function SecaoMensagemEvento({
                     {/* TEXTO BÍBLICO + TEMA */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                                 <BookOpen size={10} /> Texto Bíblico
                             </label>
                             <input
@@ -393,7 +393,7 @@ export default function SecaoMensagemEvento({
                             />
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                                 <Hash size={10} /> Tema
                             </label>
                             <input
@@ -408,7 +408,7 @@ export default function SecaoMensagemEvento({
 
                     {/* NOTAS */}
                     <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                             <AlignLeft size={10} /> Esboço / Notas
                             <span className="text-muted/50 normal-case font-medium">(opcional)</span>
                         </label>
@@ -426,14 +426,14 @@ export default function SecaoMensagemEvento({
                         <button
                             type="button"
                             onClick={resetForm}
-                            className="flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest bg-bg border border-soft text-muted hover:bg-soft transition-all"
+                            className="flex-1 py-3 rounded-xl text-[13px] font-bold uppercase tracking-wide bg-bg border border-soft text-muted hover:bg-soft transition-all"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={salvando || !titulo.trim()}
-                            className="flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest bg-blue-500 text-white hover:bg-blue-600 transition-all disabled:opacity-40 flex items-center justify-center gap-2 active:scale-95"
+                            className="flex-1 py-3 rounded-xl text-[13px] font-bold uppercase tracking-wide bg-blue-500 text-white hover:bg-blue-600 transition-all disabled:opacity-40 flex items-center justify-center gap-2 active:scale-95"
                         >
                             {salvando
                                 ? <><Loader2 size={13} className="animate-spin" /> A guardar...</>

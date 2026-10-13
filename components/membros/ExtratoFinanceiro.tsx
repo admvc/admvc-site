@@ -16,7 +16,7 @@ export default function ExtratoFinanceiro({ objetivos }: { objetivos: any[] }) {
     if (todosLancamentos.length === 0) {
         return (
             <div className="py-10 border-2 border-dashed border-soft rounded-2xl text-center bg-bg2/30">
-                <p className="text-[10px] font-black text-muted uppercase tracking-widest italic">Nenhum registo financeiro encontrado.</p>
+                <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Nenhum registo financeiro encontrado.</p>
             </div>
         );
     }
@@ -36,14 +36,14 @@ export default function ExtratoFinanceiro({ objetivos }: { objetivos: any[] }) {
                         </div>
 
                         <div>
-                            <p className="text-[10px] font-black text-fg uppercase leading-none">
+                            <p className="text-[14px] font-bold text-fg uppercase leading-none">
                                 {item.objetivoNome}
                             </p>
 
                             {/* ÍCONE E DATA DO LANÇAMENTO */}
                             <div className="flex items-center gap-1.5 text-muted mt-1">
                                 <CalendarDays size={10} className="opacity-50" />
-                                <span className="text-[9px] font-bold uppercase tracking-tight">
+                                <span className="text-[13px] font-bold uppercase tracking-wide">
                                     {new Date(item.data_recebimento).toLocaleDateString('pt-PT')}
                                 </span>
                             </div>
@@ -51,13 +51,13 @@ export default function ExtratoFinanceiro({ objetivos }: { objetivos: any[] }) {
                     </div>
 
                     <div className="text-right">
-                        <span className="text-xs font-black text-figueira italic">
+                        <span className="text-xs font-bold text-figueira">
                             <div className="preco-destaque">
                                 <span className="valor-dinheiro inline-block">{euro(item.valor_pago)}   </span>
                             </div>
                         </span>
                         {/* Status subtil se necessário */}
-                        <p className="text-[7px] font-black text-muted uppercase tracking-tighter opacity-50">Confirmado</p>
+                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide opacity-50">Confirmado</p>
                     </div>
                 </div>
             ))}

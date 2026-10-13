@@ -24,7 +24,7 @@ export default function BotaoRejeitarDespesa({ despesaId }: { despesaId: number 
         <button
             onClick={handleRejeitar}
             disabled={loading}
-            className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white px-4 py-2.5 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 active:scale-95"
+            className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white px-4 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 active:scale-95"
         >
             {loading ? <Loader2 size={14} className="animate-spin" /> : <XCircle size={14} />}
             {loading ? '...' : 'Rejeitar'}

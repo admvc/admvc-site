@@ -167,7 +167,7 @@ function SeletorMembro({
                 {/* MEMBROS */}
                 {membrosFiltrados.length === 0 ? (
                     <div className="py-8 text-center">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted">
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted">
                             Nenhum membro encontrado
                         </p>
                     </div>
@@ -182,7 +182,7 @@ function SeletorMembro({
                                 onClick={() => handleSelecionar(String(m.id))}
                                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-left hover:bg-soft/50 transition-colors ${selecionado ? 'bg-figueira/5' : ''}`}
                             >
-                                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-[10px] font-black ${selecionado ? 'bg-figueira text-white' : 'bg-bg2 border border-soft text-muted'}`}>
+                                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-[14px] font-bold ${selecionado ? 'bg-figueira text-white' : 'bg-bg2 border border-soft text-muted'}`}>
                                     {iniciais.toUpperCase()}
                                 </div>
                                 <span className={`flex-1 truncate ${selecionado ? 'text-figueira' : 'text-fg'}`}>
@@ -198,7 +198,7 @@ function SeletorMembro({
             {/* RODAPÉ */}
             {busca && (
                 <div className="px-4 py-2 border-t border-soft bg-bg2/50">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted">
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">
                         {membrosFiltrados.length} resultado{membrosFiltrados.length !== 1 ? 's' : ''}
                     </p>
                 </div>
@@ -302,7 +302,7 @@ export default function ModalEntradaUnificada({ membros, carnesAtivos, rifaAtiva
                 className="h-11 px-5 bg-fg text-bg rounded-2xl flex items-center gap-2 hover:bg-figueira hover:text-white transition-all active:scale-95 shadow-lg"
             >
                 <PlusCircle size={15} />
-                <span className="text-[9px] font-black uppercase tracking-widest">Lançar Entrada</span>
+                <span className="text-[13px] font-bold uppercase tracking-wide">Lançar Entrada</span>
             </button>
 
             {isOpen && (
@@ -319,10 +319,10 @@ export default function ModalEntradaUnificada({ membros, carnesAtivos, rifaAtiva
                                     <HandCoins size={18} />
                                 </div>
                                 <div>
-                                    <h2 className="text-base font-black uppercase italic tracking-tighter text-fg leading-none">
+                                    <h2 className="text-base font-bold text-fg leading-none">
                                         Registo Financeiro
                                     </h2>
-                                    <p className="text-[9px] font-bold text-muted uppercase tracking-widest mt-0.5">
+                                    <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-0.5">
                                         Lançar nova entrada
                                     </p>
                                 </div>
@@ -339,7 +339,7 @@ export default function ModalEntradaUnificada({ membros, carnesAtivos, rifaAtiva
 
                             {/* PASSO 1 — MEMBRO */}
                             <div className="space-y-2">
-                                <label className="text-[9px] font-black text-muted uppercase tracking-widest flex items-center gap-2">
+                                <label className="text-[13px] font-bold text-muted uppercase tracking-wide flex items-center gap-2">
                                     <User size={11} /> 1. Identificar Membro
                                 </label>
                                 <SeletorMembro
@@ -352,7 +352,7 @@ export default function ModalEntradaUnificada({ membros, carnesAtivos, rifaAtiva
                             {/* PASSO 2 — TIPO */}
                             {membroId && (
                                 <div className="space-y-2 animate-in slide-in-from-top-2 duration-200">
-                                    <label className="text-[9px] font-black text-muted uppercase tracking-widest flex items-center gap-2">
+                                    <label className="text-[13px] font-bold text-muted uppercase tracking-wide flex items-center gap-2">
                                         <ArrowRight size={11} /> 2. Tipo de entrada
                                     </label>
                                     <select
@@ -379,10 +379,10 @@ export default function ModalEntradaUnificada({ membros, carnesAtivos, rifaAtiva
                                 <div className="bg-figueira/5 border border-figueira/20 rounded-2xl p-5 space-y-4 animate-in fade-in duration-200">
                                     <div className="flex items-center gap-2 pb-3 border-b border-figueira/15">
                                         <Receipt size={14} className="text-figueira" />
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-figueira">Detalhes do Carnê</p>
+                                        <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">Detalhes do Carnê</p>
                                     </div>
                                     <div className="space-y-1.5">
-                                        <label className="text-[9px] font-black text-muted uppercase tracking-widest">Campanha</label>
+                                        <label className="text-[13px] font-bold text-muted uppercase tracking-wide">Campanha</label>
                                         <select
                                             className="w-full h-12 px-4 bg-bg border border-soft rounded-2xl text-sm font-bold text-fg focus:border-figueira outline-none cursor-pointer appearance-none"
                                             value={carneSelecionado}
@@ -403,11 +403,11 @@ export default function ModalEntradaUnificada({ membros, carnesAtivos, rifaAtiva
                                     {carneSelecionado && (
                                         <div className="flex items-center justify-between bg-bg border border-soft rounded-2xl px-5 py-3 animate-in slide-in-from-top-2 duration-200">
                                             <div>
-                                                <p className="text-[8px] font-black uppercase tracking-widest text-muted">Valor</p>
-                                                <p className="text-lg font-black text-fg mt-0.5">€{Number(valor).toFixed(2)}</p>
+                                                <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Valor</p>
+                                                <p className="text-lg font-bold text-fg mt-0.5">€{Number(valor).toFixed(2)}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-[8px] font-black uppercase tracking-widest text-muted">Parcelas</p>
+                                                <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Parcelas</p>
                                                 <p className="text-sm font-bold text-fg mt-0.5">1 parcela</p>
                                             </div>
                                         </div>
@@ -420,7 +420,7 @@ export default function ModalEntradaUnificada({ membros, carnesAtivos, rifaAtiva
                                 <div className="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-4 space-y-3 animate-in fade-in duration-200">
                                     <div className="flex items-center gap-2 pb-3 border-b border-blue-500/15">
                                         <Ticket size={14} className="text-blue-500" />
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-blue-600">
+                                        <p className="text-[13px] font-bold uppercase tracking-wide text-blue-600">
                                             {rifaAtiva.nome}
                                         </p>
                                     </div>
@@ -433,14 +433,14 @@ export default function ModalEntradaUnificada({ membros, carnesAtivos, rifaAtiva
                             {/* CENÁRIO C — OFERTAS LIVRES */}
                             {['DIZIMO', 'OFERTA', 'MISSAO'].includes(tipoEntrada) && (
                                 <div className="bg-bg2 border border-soft rounded-2xl p-5 space-y-2 animate-in fade-in duration-200">
-                                    <label className="text-[9px] font-black text-muted uppercase tracking-widest">Valor (€)</label>
+                                    <label className="text-[13px] font-bold text-muted uppercase tracking-wide">Valor (€)</label>
                                     <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-black text-lg">€</span>
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-bold text-lg">€</span>
                                         <input
                                             type="number"
                                             step="0.01"
                                             placeholder="0.00"
-                                            className="w-full h-14 pl-10 pr-4 bg-bg border border-soft rounded-2xl text-2xl font-black text-fg focus:border-figueira outline-none transition-all"
+                                            className="w-full h-14 pl-10 pr-4 bg-bg border border-soft rounded-2xl text-2xl font-bold text-fg focus:border-figueira outline-none transition-all"
                                             value={valor}
                                             onChange={e => setValor(e.target.value)}
                                             autoFocus
@@ -460,7 +460,7 @@ export default function ModalEntradaUnificada({ membros, carnesAtivos, rifaAtiva
                                         (tipoEntrada === 'CARNE' && !carneSelecionado) ||
                                         !valor || Number(valor) <= 0
                                     }
-                                    className="w-full h-13 py-4 flex items-center justify-center gap-2 bg-figueira text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-figueira/90 transition-all active:scale-95 disabled:opacity-40 shadow-md"
+                                    className="w-full h-13 py-4 flex items-center justify-center gap-2 bg-figueira text-white rounded-2xl font-bold uppercase tracking-wide text-[14px] hover:bg-figueira/90 transition-all active:scale-95 disabled:opacity-40 shadow-md"
                                 >
                                     {isPending
                                         ? <><Loader2 size={15} className="animate-spin" /> Processando...</>

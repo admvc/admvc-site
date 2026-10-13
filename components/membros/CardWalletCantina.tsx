@@ -64,7 +64,7 @@ export default function CardWalletCantina({
                         <div className="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center">
                             <Wallet size={15} className="text-figueira" />
                         </div>
-                        <span className="text-[9px] font-black uppercase tracking-widest text-white/50">
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-white/50">
                             Cantina
                         </span>
                     </div>
@@ -87,10 +87,10 @@ export default function CardWalletCantina({
 
                 {/* SALDO */}
                 <div className="relative z-10 space-y-1">
-                    <p className="text-[8px] font-black uppercase tracking-widest text-white/40">
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-white/40">
                         Saldo disponível
                     </p>
-                    <p className="text-4xl font-black italic tracking-tighter leading-none">
+                    <p className="text-4xl font-bold leading-none">
                         {mostrar
                             ? new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(saldo)
                             : '••••••'
@@ -110,7 +110,7 @@ export default function CardWalletCantina({
                         <div className="w-10 h-10 bg-white/8 hover:bg-white/15 rounded-2xl flex items-center justify-center transition-all group-active:scale-95">
                             <Utensils size={16} className="text-white/70" />
                         </div>
-                        <span className="text-[8px] font-black uppercase tracking-widest text-white/40 group-hover:text-white/70 transition-colors">
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-white/40 group-hover:text-white/70 transition-colors">
                             Menu
                         </span>
                     </Link>
@@ -136,7 +136,7 @@ export default function CardWalletCantina({
                                 <div className="w-9 h-9 bg-figueira/10 text-figueira rounded-xl flex items-center justify-center">
                                     <Coffee size={16} />
                                 </div>
-                                <h3 className="text-sm font-black uppercase italic tracking-tighter text-fg">
+                                <h3 className="text-sm font-bold text-fg">
                                     Carregar Saldo
                                 </h3>
                             </div>
@@ -154,8 +154,8 @@ export default function CardWalletCantina({
                                     <CheckCircle2 size={28} className="text-emerald-500" />
                                 </div>
                                 <div>
-                                    <h4 className="text-base font-black uppercase italic text-fg">Pedido Enviado!</h4>
-                                    <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-2 leading-relaxed">
+                                    <h4 className="text-base font-bold text-fg">Pedido Enviado!</h4>
+                                    <p className="text-[14px] text-muted font-bold uppercase tracking-wide mt-2 leading-relaxed">
                                         O tesoureiro irá validar e o saldo ficará disponível em breve.
                                     </p>
                                 </div>
@@ -167,7 +167,7 @@ export default function CardWalletCantina({
 
                                 {/* VALORES RÁPIDOS */}
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                         Valor
                                     </label>
                                     <div className="grid grid-cols-3 gap-2">
@@ -196,7 +196,7 @@ export default function CardWalletCantina({
 
                                 {/* VALOR CUSTOMIZADO */}
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                         Outro valor
                                     </label>
                                     <div className="relative">
@@ -216,7 +216,7 @@ export default function CardWalletCantina({
 
                                 {/* MÉTODO */}
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                         Método de pagamento
                                     </label>
                                     <select
@@ -233,7 +233,7 @@ export default function CardWalletCantina({
                                 <button
                                     type="submit"
                                     disabled={loading || !valor || Number(valor) <= 0}
-                                    className="w-full bg-fg text-bg py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-figueira transition-all flex items-center justify-center gap-2 disabled:opacity-40 active:scale-95 shadow-lg"
+                                    className="w-full bg-fg text-bg py-4 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all flex items-center justify-center gap-2 disabled:opacity-40 active:scale-95 shadow-lg"
                                 >
                                     {loading
                                         ? <Loader2 size={16} className="animate-spin" />

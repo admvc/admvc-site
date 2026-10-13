@@ -30,13 +30,13 @@ export default function BotaoAtualizarPledges() {
             <button
                 onClick={handleClick}
                 disabled={loading}
-                className="h-11 px-5 bg-figueira text-white rounded-xl flex items-center gap-2 hover:bg-figueira/90 transition-all active:scale-95 text-[9px] font-black uppercase tracking-widest disabled:opacity-50"
+                className="h-11 px-5 bg-figueira text-white rounded-xl flex items-center gap-2 hover:bg-figueira/90 transition-all active:scale-95 text-[13px] font-bold uppercase tracking-wide disabled:opacity-50"
             >
                 <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
                 {loading ? 'A atualizar...' : 'Atualizar Cumprimento'}
             </button>
             {msg && (
-                <span className="text-[10px] font-bold text-figueira">{msg}</span>
+                <span className="text-[14px] font-bold text-figueira">{msg}</span>
             )}
         </div>
     )

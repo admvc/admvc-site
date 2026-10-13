@@ -117,12 +117,12 @@ export default function FormEncomendar({ eventoId, eventoNome, eventoData, produ
         return (
             <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-8 text-center space-y-4">
                 <CheckCircle size={48} className="mx-auto text-emerald-400" />
-                <h2 className="text-xl font-black uppercase text-fg">Encomenda Confirmada!</h2>
+                <h2 className="text-xl font-bold text-fg">Encomenda Confirmada!</h2>
                 <p className="text-sm text-muted">
                     A sua encomenda de <span className="text-figueira font-bold">{resultado.total?.toFixed(2)}€</span> para{' '}
                     <span className="font-bold text-fg">{eventoNome}</span> foi registada com sucesso.
                 </p>
-                <p className="text-[10px] text-muted uppercase tracking-widest">O saldo foi debitado da sua conta.</p>
+                <p className="text-[14px] text-muted uppercase tracking-wide">O saldo foi debitado da sua conta.</p>
             </div>
         )
     }
@@ -133,9 +133,9 @@ export default function FormEncomendar({ eventoId, eventoNome, eventoData, produ
             <div className="bg-bg2 border border-soft rounded-2xl p-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Wallet2 size={16} className="text-figueira" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted">Saldo Disponivel</span>
+                    <span className="text-[14px] font-bold uppercase tracking-wide text-muted">Saldo Disponivel</span>
                 </div>
-                <span className="text-lg font-black italic text-figueira">{saldo.toFixed(2)}€</span>
+                <span className="text-lg font-bold text-figueira">{saldo.toFixed(2)}€</span>
             </div>
 
             {/* Erro */}
@@ -149,7 +149,7 @@ export default function FormEncomendar({ eventoId, eventoNome, eventoData, produ
             {/* Produtos por categoria */}
             {categorias.map(([catNome, prods]) => (
                 <section key={catNome} className="space-y-3">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-muted">{catNome}</h3>
+                    <h3 className="text-xs font-bold text-muted">{catNome}</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {prods.map(p => {
                             const inCart = cart.find(i => i.produtoId === p.id)
@@ -161,15 +161,15 @@ export default function FormEncomendar({ eventoId, eventoNome, eventoData, produ
                                         inCart ? 'border-figueira/40 ring-1 ring-figueira/20' : 'border-soft'
                                     }`}
                                 >
-                                    <h4 className="text-sm font-black uppercase text-fg leading-tight">{p.nome}</h4>
-                                    <p className="text-lg font-black italic text-figueira">{p.preco.toFixed(2)}€</p>
+                                    <h4 className="text-sm font-bold text-fg leading-tight">{p.nome}</h4>
+                                    <p className="text-lg font-bold text-figueira">{p.preco.toFixed(2)}€</p>
                                     {inCart && (
-                                        <p className="text-[9px] font-bold uppercase tracking-widest text-figueira">
+                                        <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">
                                             {inCart.quantidade}x no carrinho
                                         </p>
                                     )}
                                     {p.controla_stock && (
-                                        <p className="text-[9px] font-bold uppercase tracking-widest text-muted">
+                                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                             {p.stock} disponivel
                                         </p>
                                     )}
@@ -183,7 +183,7 @@ export default function FormEncomendar({ eventoId, eventoNome, eventoData, produ
             {/* Carrinho */}
             {cart.length > 0 && (
                 <section className="bg-bg2 border border-soft rounded-2xl p-6 space-y-4 sticky bottom-4">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-fg flex items-center gap-2">
+                    <h3 className="text-xs font-bold text-fg flex items-center gap-2">
                         <ShoppingCart size={14} className="text-figueira" /> Carrinho
                     </h3>
 
@@ -201,7 +201,7 @@ export default function FormEncomendar({ eventoId, eventoNome, eventoData, produ
                                     >
                                         <Minus size={12} className="text-fg" />
                                     </button>
-                                    <span className="text-sm font-black text-fg w-6 text-center">{item.quantidade}</span>
+                                    <span className="text-sm font-bold text-fg w-6 text-center">{item.quantidade}</span>
                                     <button
                                         onClick={() => updateQuantidade(item.produtoId, 1)}
                                         className="w-7 h-7 rounded-lg bg-bg border border-soft flex items-center justify-center hover:border-figueira/30 transition-all"
@@ -221,11 +221,11 @@ export default function FormEncomendar({ eventoId, eventoNome, eventoData, produ
 
                     <div className="border-t border-soft pt-4 space-y-2">
                         <div className="flex justify-between items-center">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted">Total</span>
-                            <span className="text-xl font-black italic text-figueira">{total.toFixed(2)}€</span>
+                            <span className="text-[14px] font-bold uppercase tracking-wide text-muted">Total</span>
+                            <span className="text-xl font-bold text-figueira">{total.toFixed(2)}€</span>
                         </div>
                         <div className="flex justify-between items-center">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted">Saldo apos encomenda</span>
+                            <span className="text-[14px] font-bold uppercase tracking-wide text-muted">Saldo apos encomenda</span>
                             <span className={`text-sm font-bold ${saldoRestante >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                                 {saldoRestante.toFixed(2)}€
                             </span>
@@ -233,7 +233,7 @@ export default function FormEncomendar({ eventoId, eventoNome, eventoData, produ
                     </div>
 
                     {saldoRestante < 0 && (
-                        <p className="text-[10px] text-red-400 font-bold uppercase tracking-widest">
+                        <p className="text-[14px] text-red-400 font-bold uppercase tracking-wide">
                             Saldo insuficiente para esta encomenda.
                         </p>
                     )}
@@ -241,7 +241,7 @@ export default function FormEncomendar({ eventoId, eventoNome, eventoData, produ
                     <button
                         onClick={handleSubmit}
                         disabled={loading || saldoRestante < 0 || cart.length === 0}
-                        className="w-full py-3 bg-figueira text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+                        className="w-full py-3 bg-figueira text-white rounded-2xl text-xs font-bold hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
                     >
                         {loading ? (
                             <Loader2 size={14} className="animate-spin" />
@@ -256,7 +256,7 @@ export default function FormEncomendar({ eventoId, eventoNome, eventoData, produ
             {produtos.length === 0 && (
                 <div className="py-20 text-center">
                     <ShoppingCart size={32} className="mx-auto text-muted/20 mb-4" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted">Nenhum produto disponivel de momento</p>
+                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum produto disponivel de momento</p>
                 </div>
             )}
         </div>

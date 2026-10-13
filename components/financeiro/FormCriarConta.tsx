@@ -27,7 +27,7 @@ export default function FormCriarConta() {
         return (
             <button
                 onClick={() => setAberto(true)}
-                className="h-11 px-5 bg-bg2 border border-soft text-fg rounded-xl flex items-center gap-2 hover:bg-bg transition-all active:scale-95 text-[9px] font-black uppercase tracking-widest"
+                className="h-11 px-5 bg-bg2 border border-soft text-fg rounded-xl flex items-center gap-2 hover:bg-bg transition-all active:scale-95 text-[13px] font-bold uppercase tracking-wide"
             >
                 <PlusCircle size={14} />
                 Nova Conta
@@ -38,14 +38,14 @@ export default function FormCriarConta() {
     return (
         <form onSubmit={handleSubmit} className="bg-bg2 border border-soft rounded-2xl p-4 space-y-3 max-w-md">
             <div className="flex items-center justify-between">
-                <h3 className="text-xs font-black uppercase tracking-widest text-fg">Nova Conta Bancaria</h3>
+                <h3 className="text-xs font-bold text-fg">Nova Conta Bancaria</h3>
                 <button type="button" onClick={() => setAberto(false)} className="text-muted hover:text-fg transition-colors">
                     <X size={16} />
                 </button>
             </div>
 
             <div className="space-y-2">
-                <label className="block text-[10px] font-bold uppercase tracking-widest text-muted">Nome *</label>
+                <label className="block text-[14px] font-bold uppercase tracking-wide text-muted">Nome *</label>
                 <input
                     name="nome"
                     required
@@ -56,7 +56,7 @@ export default function FormCriarConta() {
 
             <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-muted">IBAN</label>
+                    <label className="block text-[14px] font-bold uppercase tracking-wide text-muted">IBAN</label>
                     <input
                         name="iban"
                         placeholder="PT50..."
@@ -64,7 +64,7 @@ export default function FormCriarConta() {
                     />
                 </div>
                 <div className="space-y-2">
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-muted">Banco</label>
+                    <label className="block text-[14px] font-bold uppercase tracking-wide text-muted">Banco</label>
                     <input
                         name="banco"
                         placeholder="Ex: CGD"
@@ -76,7 +76,7 @@ export default function FormCriarConta() {
             <button
                 type="submit"
                 disabled={loading}
-                className="h-11 px-5 bg-accent text-white rounded-xl flex items-center gap-2 transition-all active:scale-95 text-[9px] font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
+                className="h-11 px-5 bg-accent text-white rounded-xl flex items-center gap-2 transition-all active:scale-95 text-[13px] font-bold uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
             >
                 {loading ? <Loader2 size={14} className="animate-spin" /> : <PlusCircle size={14} />}
                 {loading ? 'A criar...' : 'Criar Conta'}

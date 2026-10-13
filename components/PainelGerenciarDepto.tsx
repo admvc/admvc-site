@@ -88,8 +88,8 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                 <header className="px-6 pt-6 pb-0 border-b border-soft bg-bg2 shrink-0">
                     <div className="flex justify-between items-center mb-4">
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-figueira mb-1">Departamento</p>
-                            <h2 className="text-xl font-black italic uppercase text-fg leading-none tracking-tighter">
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-figueira mb-1">Ministério</p>
+                            <h2 className="text-xl font-bold text-fg leading-none">
                                 {depto.nome}
                                 {depto.congregacao?.nome && (
                                     <span className="text-muted/40 text-sm ml-2 not-italic">{depto.congregacao.nome}</span>
@@ -106,7 +106,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                             const Icon = a.icon
                             return (
                                 <button key={a.id} onClick={() => setAba(a.id)}
-                                    className={`pb-3 px-3 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest border-b-2 transition-all ${aba === a.id ? 'border-figueira text-fg' : 'border-transparent text-muted hover:text-fg'}`}>
+                                    className={`pb-3 px-3 flex items-center gap-1.5 text-[13px] font-bold uppercase tracking-wide border-b-2 transition-all ${aba === a.id ? 'border-figueira text-fg' : 'border-transparent text-muted hover:text-fg'}`}>
                                     <Icon size={12} /> {a.label}
                                 </button>
                             )
@@ -131,7 +131,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                 else if (res?.error) toast(res.error, 'erro')
                                 setLoading(false)
                             }} className="bg-bg2 p-5 rounded-xl border border-soft space-y-4">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
+                                <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
                                     <UserPlus size={12} className="text-figueira" /> Vincular Integrante
                                 </p>
                                 <input type="hidden" name="departamento_id" value={depto.id} />
@@ -140,20 +140,20 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
 
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <div className="space-y-1.5 relative">
-                                        <label className="text-[8px] font-black uppercase text-muted tracking-widest">Membro</label>
+                                        <label className="text-[13px] font-bold uppercase text-muted tracking-wide">Membro</label>
                                         {membroEquipeSelecionado ? (
                                             <div className="flex items-center justify-between bg-bg border border-figueira/50 px-3 py-2.5 rounded-xl">
-                                                <span className="text-[10px] font-black text-fg uppercase">{membroEquipeSelecionado.first_name} {membroEquipeSelecionado.last_name}</span>
+                                                <span className="text-[14px] font-bold text-fg uppercase">{membroEquipeSelecionado.first_name} {membroEquipeSelecionado.last_name}</span>
                                                 <button type="button" onClick={() => setMembroEquipeSelecionado(null)} className="text-muted hover:text-red-500"><X size={12} /></button>
                                             </div>
                                         ) : (
                                             <div className="relative">
                                                 <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-                                                <input type="text" placeholder="Pesquisar..." value={buscaEquipe} onChange={(e) => setBuscaEquipe(e.target.value)} className="w-full bg-bg border border-soft pl-9 pr-3 py-2.5 rounded-xl text-[10px] font-bold focus:border-figueira outline-none" />
+                                                <input type="text" placeholder="Pesquisar..." value={buscaEquipe} onChange={(e) => setBuscaEquipe(e.target.value)} className="w-full bg-bg border border-soft pl-9 pr-3 py-2.5 rounded-xl text-[14px] font-bold focus:border-figueira outline-none" />
                                                 {membrosEquipeFiltrados.length > 0 && (
                                                     <div className="absolute top-full left-0 right-0 mt-1 bg-bg border border-soft rounded-xl shadow-2xl overflow-hidden z-[100]">
                                                         {membrosEquipeFiltrados.map((m: any) => (
-                                                            <div key={m.id} onClick={() => { setMembroEquipeSelecionado(m); setBuscaEquipe("") }} className="px-3 py-2.5 hover:bg-soft cursor-pointer text-[10px] font-bold uppercase border-b border-soft last:border-0">{m.first_name} {m.last_name}</div>
+                                                            <div key={m.id} onClick={() => { setMembroEquipeSelecionado(m); setBuscaEquipe("") }} className="px-3 py-2.5 hover:bg-soft cursor-pointer text-[14px] font-bold uppercase border-b border-soft last:border-0">{m.first_name} {m.last_name}</div>
                                                         ))}
                                                     </div>
                                                 )}
@@ -161,52 +161,52 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                         )}
                                     </div>
                                     <div className="space-y-1.5">
-                                        <label className="text-[8px] font-black uppercase text-muted tracking-widest">Cargos</label>
+                                        <label className="text-[13px] font-bold uppercase text-muted tracking-wide">Cargos</label>
                                         <div className="flex flex-wrap gap-1.5">
                                             {depto.funcoes?.map((f: any) => {
                                                 const sel = funcoesSelecionadas.includes(f.id)
                                                 return (
                                                     <button key={f.id} type="button" onClick={() => toggleFuncao(f.id)}
-                                                        className={`px-2.5 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest border transition-all ${sel ? 'bg-figueira border-figueira text-white' : 'bg-bg border-soft text-muted hover:border-figueira/30'}`}>
+                                                        className={`px-2.5 py-1.5 rounded-lg text-[13px] font-bold uppercase tracking-wide border transition-all ${sel ? 'bg-figueira border-figueira text-white' : 'bg-bg border-soft text-muted hover:border-figueira/30'}`}>
                                                         {sel ? <CheckCircle2 size={10} className="inline mr-1" /> : null}{f.nome}
                                                     </button>
                                                 )
                                             })}
-                                            {depto.funcoes?.length === 0 && <p className="text-[9px] text-muted italic">Crie cargos na aba "Cargos".</p>}
+                                            {depto.funcoes?.length === 0 && <p className="text-[13px] text-muted">Crie cargos na aba "Cargos".</p>}
                                         </div>
                                     </div>
                                 </div>
                                 <button disabled={loading || !membroEquipeSelecionado || funcoesSelecionadas.length === 0}
-                                    className="w-full bg-fg text-bg py-3 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-figueira disabled:opacity-40 transition-all flex items-center justify-center gap-2">
+                                    className="w-full bg-fg text-bg py-3 rounded-xl font-bold text-[13px] uppercase tracking-wide hover:bg-figueira disabled:opacity-40 transition-all flex items-center justify-center gap-2">
                                     {loading ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />} Confirmar
                                 </button>
                             </form>
 
                             {/* Lista de integrantes */}
                             <div className="space-y-3">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
-                                    <Users size={12} /> Voluntarios <span className="bg-soft px-1.5 py-0.5 rounded text-[8px]">{listaIntegrantesAgrupados.length}</span>
+                                <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
+                                    <Users size={12} /> Voluntarios <span className="bg-soft px-1.5 py-0.5 rounded text-[13px]">{listaIntegrantesAgrupados.length}</span>
                                 </p>
                                 {listaIntegrantesAgrupados.map((grupo: any) => (
                                     <div key={grupo.membro.id} className={`flex items-center justify-between gap-3 p-3 rounded-xl border transition-all ${grupo.membro.id === depto.lider_id ? 'border-figueira/30 bg-figueira/5' : 'bg-bg2 border-soft'}`}>
                                         <div className="flex items-center gap-3 min-w-0">
-                                            <div className="w-8 h-8 rounded-lg bg-bg border border-soft flex items-center justify-center text-[9px] font-black text-muted shrink-0">
+                                            <div className="w-8 h-8 rounded-lg bg-bg border border-soft flex items-center justify-center text-[13px] font-bold text-muted shrink-0">
                                                 {grupo.membro.first_name[0]}{grupo.membro.last_name[0]}
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="text-[10px] font-black uppercase text-fg truncate flex items-center gap-2">
+                                                <p className="text-[14px] font-bold uppercase text-fg truncate flex items-center gap-2">
                                                     {grupo.membro.first_name} {grupo.membro.last_name}
-                                                    {grupo.membro.id === depto.lider_id && <span className="text-[7px] bg-figueira text-white px-1.5 py-0.5 rounded">Lider</span>}
+                                                    {grupo.membro.id === depto.lider_id && <span className="text-[13px] bg-figueira text-white px-1.5 py-0.5 rounded">Lider</span>}
                                                 </p>
                                                 <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                                     {grupo.membro.id !== depto.lider_id && (
                                                         <button disabled={loading} onClick={async () => { setLoading(true); await alternarPermissaoEscala(grupo.integrante_id, grupo.pode_gerir_escalas); setLoading(false) }}
-                                                            className={`text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border transition-all ${grupo.pode_gerir_escalas ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-bg text-muted border-soft'}`}>
+                                                            className={`text-[13px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border transition-all ${grupo.pode_gerir_escalas ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-bg text-muted border-soft'}`}>
                                                             <CalendarDays size={8} className="inline mr-0.5" />{grupo.pode_gerir_escalas ? 'Delegado' : 'Delegar?'}
                                                         </button>
                                                     )}
                                                     <button disabled={loading} onClick={async () => { const ok = await confirmar({ mensagem: `Remover ${grupo.membro.first_name}?`, tipo: 'perigo' }); if (ok) { setLoading(true); await removerMembroTotal(grupo.membro.id, depto.id); setLoading(false) } }}
-                                                        className="text-[7px] font-black uppercase text-red-400 hover:text-red-600 bg-red-500/5 px-1.5 py-0.5 rounded transition-all">
+                                                        className="text-[13px] font-bold uppercase text-red-400 hover:text-red-600 bg-red-500/5 px-1.5 py-0.5 rounded transition-all">
                                                         <UserMinus size={8} className="inline mr-0.5" />Remover
                                                     </button>
                                                 </div>
@@ -217,7 +217,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                                 <button key={a.id} disabled={loading} onClick={async () => { const ok = await confirmar({ mensagem: `Remover ${a.nome}?`, tipo: 'perigo' }); if (ok) { setLoading(true); await removerFuncaoDoMembro(a.id); setLoading(false) } }}
                                                     className="group flex items-center gap-1 bg-bg border border-soft px-2 py-1 rounded-lg hover:bg-red-50 hover:border-red-200 transition-all">
                                                     <span className="w-1 h-1 rounded-full bg-figueira group-hover:bg-red-500" />
-                                                    <span className="text-[8px] font-bold text-fg uppercase group-hover:text-red-700">{a.nome}</span>
+                                                    <span className="text-[13px] font-bold text-fg uppercase group-hover:text-red-700">{a.nome}</span>
                                                     <X size={8} className="text-muted/40 group-hover:text-red-500" />
                                                 </button>
                                             ))}
@@ -226,7 +226,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                 ))}
                                 {listaIntegrantesAgrupados.length === 0 && (
                                     <div className="py-10 text-center border border-dashed border-soft rounded-xl">
-                                        <p className="text-[9px] font-bold text-muted uppercase tracking-widest">Nenhum membro vinculado.</p>
+                                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide">Nenhum membro vinculado.</p>
                                     </div>
                                 )}
                             </div>
@@ -240,17 +240,17 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                 className="bg-bg2 p-5 rounded-xl border border-soft flex gap-3 items-end">
                                 <input type="hidden" name="departamento_id" value={depto.id} />
                                 <div className="flex-1 space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase text-muted tracking-widest">Novo cargo</label>
+                                    <label className="text-[13px] font-bold uppercase text-muted tracking-wide">Novo cargo</label>
                                     <input name="nome" placeholder="Ex: Guitarrista, Sonoplasta..." required className="w-full bg-bg border border-soft px-3 py-2.5 rounded-xl text-sm font-bold outline-none focus:border-figueira" />
                                 </div>
-                                <button disabled={loading} className="bg-figueira text-white px-5 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-widest disabled:opacity-50 flex items-center gap-1.5 shrink-0">
+                                <button disabled={loading} className="bg-figueira text-white px-5 py-2.5 rounded-xl font-bold text-[13px] uppercase tracking-wide disabled:opacity-50 flex items-center gap-1.5 shrink-0">
                                     {loading ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />} Adicionar
                                 </button>
                             </form>
                             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
                                 {depto.funcoes?.map((f: any) => (
                                     <div key={f.id} className="flex justify-between items-center p-3 bg-bg2 border border-soft rounded-xl hover:border-figueira/30 transition-all">
-                                        <span className="text-[10px] font-black uppercase text-fg tracking-widest flex items-center gap-2">
+                                        <span className="text-[14px] font-bold uppercase text-fg tracking-wide flex items-center gap-2">
                                             <span className="w-1.5 h-1.5 rounded-full bg-figueira" /> {f.nome}
                                         </span>
                                         <button onClick={async () => { const ok = await confirmar({ mensagem: 'Excluir esta funcao?', tipo: 'perigo' }); if (ok) removerFuncaoDoDepto(f.id) }} className="w-7 h-7 flex items-center justify-center rounded-lg bg-bg border border-soft hover:bg-red-50 hover:border-red-200 text-muted hover:text-red-500 transition-all">
@@ -258,14 +258,14 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                         </button>
                                     </div>
                                 ))}
-                                {depto.funcoes?.length === 0 && <p className="col-span-full text-[9px] text-center text-muted py-8 font-bold uppercase tracking-widest italic bg-bg2 border border-soft rounded-xl">Nenhum cargo configurado.</p>}
+                                {depto.funcoes?.length === 0 && <p className="col-span-full text-[13px] text-center text-muted py-8 font-bold uppercase tracking-wide bg-bg2 border border-soft rounded-xl">Nenhum cargo configurado.</p>}
                             </div>
                         </div>
                     )}
 
                     {/* ABA INTERESSADOS */}
                     {aba === 'interessados' && (
-                        <InteressadosTab deptoId={depto.id} interesses={depto.interesses || []} />
+                        <InteressadosTab deptoId={depto.id} interesses={depto.interesses || []} funcoes={depto.funcoes || []} />
                     )}
 
                     {/* ABA DEFINIÇÕES */}
@@ -276,13 +276,13 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
 
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase text-muted tracking-widest">Nome</label>
+                                    <label className="text-[13px] font-bold uppercase text-muted tracking-wide">Nome</label>
                                     <input name="nome" defaultValue={depto.nome} required className="w-full bg-bg border border-soft px-3 py-2.5 rounded-xl text-sm font-bold focus:border-figueira outline-none" />
                                 </div>
 
                                 {congregacoes.length > 0 && (
                                     <div className="space-y-1.5">
-                                        <label className="text-[8px] font-black uppercase text-muted tracking-widest flex items-center gap-1">
+                                        <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1">
                                             <Church size={10} /> Congregacao
                                         </label>
                                         <select name="congregacaoId" defaultValue={depto.congregacaoId || ''}
@@ -297,11 +297,11 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                             </div>
 
                             <div className="space-y-1.5 relative">
-                                <label className="text-[8px] font-black uppercase text-muted tracking-widest">Lider</label>
+                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide">Lider</label>
                                 <input type="hidden" name="lider_id" value={liderSelecionado?.id || ""} />
                                 {liderSelecionado ? (
                                     <div className="flex items-center justify-between bg-bg border border-figueira/50 px-3 py-2.5 rounded-xl">
-                                        <span className="text-[10px] font-black text-fg uppercase flex items-center gap-2">
+                                        <span className="text-[14px] font-bold text-fg uppercase flex items-center gap-2">
                                             <ShieldCheck size={13} className="text-figueira" /> {liderSelecionado.first_name} {liderSelecionado.last_name}
                                         </span>
                                         <button type="button" onClick={() => setLiderSelecionado(null)} className="text-muted hover:text-red-500"><X size={12} /></button>
@@ -309,11 +309,11 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                 ) : (
                                     <div className="relative">
                                         <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-                                        <input type="text" placeholder="Pesquisar lider..." value={buscaLider} onChange={(e) => setBuscaLider(e.target.value)} className="w-full bg-bg border border-soft pl-9 pr-3 py-2.5 rounded-xl text-[10px] font-bold focus:border-figueira outline-none" />
+                                        <input type="text" placeholder="Pesquisar lider..." value={buscaLider} onChange={(e) => setBuscaLider(e.target.value)} className="w-full bg-bg border border-soft pl-9 pr-3 py-2.5 rounded-xl text-[14px] font-bold focus:border-figueira outline-none" />
                                         {membrosLiderFiltrados.length > 0 && (
                                             <div className="absolute top-full left-0 right-0 mt-1 bg-bg border border-soft rounded-xl shadow-2xl overflow-hidden z-[100]">
                                                 {membrosLiderFiltrados.map((m: any) => (
-                                                    <div key={m.id} onClick={() => { setLiderSelecionado(m); setBuscaLider("") }} className="px-3 py-2.5 hover:bg-soft cursor-pointer text-[10px] font-bold uppercase border-b border-soft last:border-0">{m.first_name} {m.last_name}</div>
+                                                    <div key={m.id} onClick={() => { setLiderSelecionado(m); setBuscaLider("") }} className="px-3 py-2.5 hover:bg-soft cursor-pointer text-[14px] font-bold uppercase border-b border-soft last:border-0">{m.first_name} {m.last_name}</div>
                                                 ))}
                                             </div>
                                         )}
@@ -322,20 +322,29 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-[8px] font-black uppercase text-muted tracking-widest flex items-center gap-1">
+                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1">
                                     <AlignLeft size={10} /> Notas
                                 </label>
                                 <textarea name="descricao" defaultValue={depto.descricao} rows={3} className="w-full bg-bg border border-soft px-3 py-2.5 rounded-xl text-sm font-bold focus:border-figueira outline-none resize-none" />
                             </div>
 
+                            {/* MINISTERIO DE LOUVOR: tem repertorio e musicas em cada escala */}
+                            <label className="flex items-start gap-3 rounded-xl border border-soft bg-bg p-3 cursor-pointer">
+                                <input type="checkbox" name="e_louvor" defaultChecked={!!depto.e_louvor} className="mt-0.5 h-4 w-4 accent-figueira" />
+                                <span className="text-xs font-bold text-fg">
+                                    Ministério de louvor
+                                    <span className="block text-[14px] font-medium text-muted">Tem repertório e as músicas de cada culto na escala.</span>
+                                </span>
+                            </label>
+
                             {/* FOTO DE CAPA */}
                             <div className="space-y-1.5">
-                                <label className="text-[8px] font-black uppercase text-muted tracking-widest flex items-center gap-1">
+                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1">
                                     <ImagePlus size={10} /> Foto de Capa
                                 </label>
                                 <div className="flex items-center gap-4">
                                     {fotoPreview ? (
-                                        <img src={fotoPreview} alt="Foto do departamento" className="w-20 h-20 rounded-xl object-cover border border-soft" />
+                                        <img src={fotoPreview} alt="Foto do ministério" className="w-20 h-20 rounded-xl object-cover border border-soft" />
                                     ) : (
                                         <div className="w-20 h-20 rounded-xl border border-dashed border-soft bg-bg2 flex items-center justify-center">
                                             <ImagePlus size={16} className="text-muted/40" />
@@ -367,7 +376,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                             type="button"
                                             disabled={uploadingFoto}
                                             onClick={() => fotoInputRef.current?.click()}
-                                            className="flex items-center gap-1.5 bg-bg2 border border-soft px-3 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest text-muted hover:border-figueira/30 hover:text-fg transition-all disabled:opacity-50"
+                                            className="flex items-center gap-1.5 bg-bg2 border border-soft px-3 py-2 rounded-xl text-[13px] font-bold uppercase tracking-wide text-muted hover:border-figueira/30 hover:text-fg transition-all disabled:opacity-50"
                                         >
                                             {uploadingFoto ? <Loader2 size={10} className="animate-spin" /> : <ImagePlus size={10} />}
                                             {uploadingFoto ? 'A enviar...' : 'Escolher Foto'}
@@ -376,7 +385,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                 </div>
                             </div>
 
-                            <button disabled={loading} className="w-full bg-fg text-bg py-3 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-figueira transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                            <button disabled={loading} className="w-full bg-fg text-bg py-3 rounded-xl font-bold text-[13px] uppercase tracking-wide hover:bg-figueira transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                                 {loading ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />} Guardar
                             </button>
                         </form>
@@ -387,7 +396,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
     )
 }
 
-function InteressadosTab({ deptoId, interesses }: { deptoId: number; interesses: any[] }) {
+function InteressadosTab({ deptoId, interesses, funcoes }: { deptoId: number; interesses: any[]; funcoes: { id: number; nome: string }[] }) {
     const confirmar = useConfirm()
     const [loading, setLoading] = useState<number | null>(null)
 
@@ -412,23 +421,29 @@ function InteressadosTab({ deptoId, interesses }: { deptoId: number; interesses:
             {pendentes.length === 0 && processados.length === 0 ? (
                 <div className="py-10 text-center border-2 border-dashed border-soft rounded-2xl">
                     <HeartHandshake size={24} className="mx-auto text-muted/20 mb-2" />
-                    <p className="text-[10px] font-black text-muted uppercase tracking-widest">Nenhum interesse registado.</p>
+                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Nenhum interesse registado.</p>
                 </div>
             ) : (
                 <>
                     {pendentes.length > 0 && (
                         <div className="space-y-2">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-orange-600">Pendentes ({pendentes.length})</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-orange-600">Pendentes ({pendentes.length})</p>
                             {pendentes.map((i: any) => (
                                 <div key={i.id} className="flex items-center justify-between gap-3 bg-orange-500/5 border border-orange-500/20 rounded-xl px-4 py-3">
                                     <div className="min-w-0">
-                                        <p className="text-[11px] font-black uppercase text-fg truncate">
+                                        <p className="text-[14px] font-bold uppercase text-fg truncate">
                                             {i.membro?.first_name} {i.membro?.last_name}
                                         </p>
-                                        {i.mensagem && (
-                                            <p className="text-[9px] text-muted truncate mt-0.5">"{i.mensagem}"</p>
+                                        {i.sugerido_por && (
+                                            <p className="text-[13px] font-bold text-figueira mt-0.5">
+                                                Sugerido por {i.sugerido_por.first_name} {i.sugerido_por.last_name}
+                                                {i.funcoes_ids?.length > 0 && ` · ${funcoes.filter((f) => i.funcoes_ids.includes(f.id)).map((f) => f.nome).join(', ')}`}
+                                            </p>
                                         )}
-                                        <p className="text-[8px] text-muted mt-0.5">
+                                        {i.mensagem && (
+                                            <p className="text-[13px] text-muted truncate mt-0.5">"{i.mensagem}"</p>
+                                        )}
+                                        <p className="text-[13px] text-muted mt-0.5">
                                             {new Date(i.criado_em).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}
                                         </p>
                                     </div>
@@ -457,10 +472,10 @@ function InteressadosTab({ deptoId, interesses }: { deptoId: number; interesses:
 
                     {processados.length > 0 && (
                         <div className="space-y-2">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted">Historico</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Historico</p>
                             {processados.map((i: any) => (
                                 <div key={i.id} className="flex items-center justify-between gap-3 bg-bg border border-soft rounded-xl px-4 py-2.5 opacity-60">
-                                    <p className="text-[10px] font-bold text-fg truncate">
+                                    <p className="text-[14px] font-bold text-fg truncate">
                                         {i.membro?.first_name} {i.membro?.last_name}
                                     </p>
                                     <span className={`text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${

@@ -129,10 +129,10 @@ export default function MapaGrupos({ grupos, altura = '500px', mostrarLegenda = 
                         >
                             <Popup minWidth={200}>
                                 <div className="space-y-1.5 py-1">
-                                    <p className="font-black text-sm uppercase leading-tight">{g.nome}</p>
+                                    <p className="font-bold text-sm leading-tight">{g.nome}</p>
                                     {g.regiao && (
                                         <span style={{ background: cor }}
-                                            className="inline-block text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">
+                                            className="inline-block text-white text-[13px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full">
                                             {g.regiao}
                                         </span>
                                     )}
@@ -152,7 +152,7 @@ export default function MapaGrupos({ grupos, altura = '500px', mostrarLegenda = 
                                         </p>
                                     )}
                                     {g.descricao && (
-                                        <p className="text-xs text-gray-500 italic border-t pt-1 mt-1">
+                                        <p className="text-xs text-gray-500 border-t pt-1 mt-1">
                                             {g.descricao}
                                         </p>
                                     )}
@@ -170,12 +170,12 @@ export default function MapaGrupos({ grupos, altura = '500px', mostrarLegenda = 
                         <div key={regiao} className="flex items-center gap-1.5">
                             <div className="w-3 h-3 rounded-full shrink-0"
                                 style={{ background: COR_REGIAO[regiao!] || '#6b7280' }} />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <span className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 {regiao}
                             </span>
                         </div>
                     ))}
-                    <span className="text-[9px] font-bold text-muted ml-auto">
+                    <span className="text-[13px] font-bold text-muted ml-auto">
                         {gruposComCoords.length} grupo{gruposComCoords.length !== 1 ? 's' : ''} no mapa
                     </span>
                 </div>

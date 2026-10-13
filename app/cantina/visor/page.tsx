@@ -53,12 +53,12 @@ export default function VisorClientePage() {
                 <div className="flex items-center justify-between max-w-2xl mx-auto">
                     <div className="flex items-center gap-3">
                         <Coffee size={24} className="text-figueira" />
-                        <h1 className="text-xl font-black uppercase tracking-widest text-fg">Cantina ADMVC</h1>
+                        <h1 className="text-xl font-bold text-fg">Cantina ADMVC</h1>
                     </div>
                     {data.membro && (
                         <div className="text-right">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-muted">Cliente</p>
-                            <p className="text-sm font-black text-fg">{data.membro}</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Cliente</p>
+                            <p className="text-sm font-bold text-fg">{data.membro}</p>
                         </div>
                     )}
                 </div>
@@ -69,7 +69,7 @@ export default function VisorClientePage() {
                 {data.cart.length === 0 ? (
                     <div className="text-center space-y-4">
                         <ShoppingCart size={48} className="mx-auto text-muted/20" />
-                        <p className="text-sm font-black uppercase tracking-widest text-muted">A aguardar produtos...</p>
+                        <p className="text-sm font-bold text-muted">A aguardar produtos...</p>
                     </div>
                 ) : (
                     <div className="space-y-6">
@@ -78,10 +78,10 @@ export default function VisorClientePage() {
                             {data.cart.map((item, i) => (
                                 <div key={i} className="flex items-center justify-between bg-bg2 border border-soft rounded-2xl px-6 py-4">
                                     <div className="flex items-center gap-4">
-                                        <span className="text-lg font-black text-figueira w-8 text-center">{item.quantidade}x</span>
+                                        <span className="text-lg font-bold text-figueira w-8 text-center">{item.quantidade}x</span>
                                         <span className="text-base font-bold text-fg">{item.nome}</span>
                                     </div>
-                                    <span className="text-base font-black text-fg">{(item.preco * item.quantidade).toFixed(2)}€</span>
+                                    <span className="text-base font-bold text-fg">{(item.preco * item.quantidade).toFixed(2)}€</span>
                                 </div>
                             ))}
                         </div>
@@ -89,8 +89,8 @@ export default function VisorClientePage() {
                         {/* Total */}
                         <div className="border-t-2 border-soft pt-6">
                             <div className="flex items-center justify-between">
-                                <span className="text-lg font-black uppercase tracking-widest text-muted">Total</span>
-                                <span className="text-4xl font-black italic text-figueira">{data.total.toFixed(2)}€</span>
+                                <span className="text-lg font-bold text-muted">Total</span>
+                                <span className="text-4xl font-bold text-figueira">{data.total.toFixed(2)}€</span>
                             </div>
                         </div>
                     </div>
@@ -99,7 +99,7 @@ export default function VisorClientePage() {
 
             {/* Footer */}
             <div className="bg-bg2 border-t border-soft px-8 py-4 text-center">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted">Visor do Cliente — Atualiza automaticamente</p>
+                <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Visor do Cliente — Atualiza automaticamente</p>
             </div>
         </main>
     )

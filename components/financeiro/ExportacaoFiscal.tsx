@@ -132,7 +132,7 @@ export default function ExportacaoFiscal() {
         <div className="space-y-4">
             {/* Seleccao de ano */}
             <div className="bg-bg2 border border-soft rounded-2xl p-5">
-                <label className="block text-xs font-bold text-fg uppercase tracking-wide mb-2">
+                <label className="block text-xs font-bold text-fg mb-2">
                     Ano fiscal
                 </label>
                 <select
@@ -166,7 +166,7 @@ export default function ExportacaoFiscal() {
                             )}
                             <div className="min-w-0">
                                 <p className="text-sm font-bold text-fg">{dataset.label} CSV</p>
-                                <p className="text-[10px] text-muted uppercase tracking-wide">
+                                <p className="text-[14px] text-muted uppercase tracking-wide">
                                     {count !== undefined ? `${count} registos` : 'Clique para exportar'}
                                 </p>
                             </div>
@@ -179,7 +179,7 @@ export default function ExportacaoFiscal() {
             <button
                 onClick={exportarTudo}
                 disabled={!!loadingKey}
-                className="w-full flex items-center justify-center gap-2 bg-figueira text-white rounded-2xl px-6 py-3 font-bold text-sm uppercase tracking-wide hover:bg-figueira/90 transition-all disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 bg-figueira text-white rounded-2xl px-6 py-3 font-bold text-sm hover:bg-figueira/90 transition-all disabled:opacity-50"
             >
                 {loadingKey === 'tudo' ? (
                     <Loader2 size={18} className="animate-spin" />
@@ -199,12 +199,12 @@ export default function ExportacaoFiscal() {
             {/* Resumo apos carregar dados */}
             {dados && (
                 <div className="bg-bg2 border border-soft rounded-2xl p-5">
-                    <h3 className="text-xs font-bold text-fg uppercase tracking-wide mb-3">Resumo {ano}</h3>
+                    <h3 className="text-xs font-bold text-fg mb-3">Resumo {ano}</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {(Object.keys(DATASETS) as DatasetKey[]).map(key => (
                             <div key={key} className="text-center">
-                                <p className="text-lg font-black text-figueira">{dados[key]?.length || 0}</p>
-                                <p className="text-[10px] text-muted uppercase tracking-wide">{DATASETS[key].label}</p>
+                                <p className="text-lg font-bold text-figueira">{dados[key]?.length || 0}</p>
+                                <p className="text-[14px] text-muted uppercase tracking-wide">{DATASETS[key].label}</p>
                             </div>
                         ))}
                     </div>

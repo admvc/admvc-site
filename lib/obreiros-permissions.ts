@@ -54,3 +54,24 @@ export async function exigirObreiros(nivel: 'MEMBRO' | 'RELATORIO') {
     if (!ok) throw new Error('Sem permissão: só para a equipa da Diaconia.')
     return sessao
 }
+
+/**
+ * Quem preenche a "Mensagem do culto" (pregador, tema, texto): um
+ * administrador, ou quem gere um ministerio de Diaconia/Obreiros (o lider ou
+ * alguem nomeado por ele). Antes bastava o papel "LEADER" (qualquer lider).
+ */
+export async function podeEditarMensagemDoCulto(sessao: { membroId: number; role: string; tenantId: number }): Promise<boolean> {
+    const { isAdmin } = await import('@/lib/auth-utils')
+    if (isAdmin(sessao.role)) return true
+    const { getTenantClient } = await import('@/lib/prisma')
+    const { gereDepartamento } = await import('@/lib/escalas-permissoes')
+    const n = await getTenantClient(sessao.tenantId).departamento.count({
+        where: {
+            AND: [
+                { OR: TERMOS_DIACONIA.map((t) => ({ nome: { contains: t, mode: 'insensitive' as const } })) },
+                gereDepartamento(sessao.membroId),
+            ],
+        },
+    })
+    return n > 0
+}

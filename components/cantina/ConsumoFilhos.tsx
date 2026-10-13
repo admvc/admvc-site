@@ -33,7 +33,7 @@ export default function ConsumoFilhos() {
         <div className="bg-bg2 border border-soft rounded-2xl p-6 space-y-3">
             <div className="flex items-center gap-2">
                 <Users size={16} className="text-figueira" />
-                <span className="text-[9px] font-black uppercase tracking-widest text-muted">Consumo da Familia</span>
+                <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Consumo da Familia</span>
             </div>
 
             <div className="space-y-2">
@@ -43,7 +43,7 @@ export default function ConsumoFilhos() {
                             onClick={() => setFilhoAberto(filhoAberto === f.id ? null : f.id)}
                             className="w-full flex items-center justify-between px-4 py-3 hover:bg-soft/20 transition-all"
                         >
-                            <span className="text-[10px] font-black uppercase text-fg">{f.first_name} {f.last_name}</span>
+                            <span className="text-[14px] font-bold uppercase text-fg">{f.first_name} {f.last_name}</span>
                             {filhoAberto === f.id
                                 ? <ChevronUp size={12} className="text-muted" />
                                 : <ChevronDown size={12} className="text-muted" />

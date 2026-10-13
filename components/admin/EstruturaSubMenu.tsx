@@ -20,12 +20,12 @@ export default function EstruturaSubMenu({ cargos: cargosIniciais, regioesInicia
         <>
             <div className="flex items-center gap-2">
                 <button onClick={() => setModalCargos(true)}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-purple-500/50 transition-all text-[9px] font-black uppercase tracking-widest text-fg">
+                    className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-purple-500/50 transition-all text-[13px] font-bold uppercase tracking-wide text-fg">
                     <Briefcase size={14} className="text-purple-500" /> Cargos
-                    <span className="text-[8px] bg-soft/50 px-1.5 py-0.5 rounded text-muted font-bold">{cargosIniciais.length}</span>
+                    <span className="text-[13px] bg-soft/50 px-1.5 py-0.5 rounded text-muted font-bold">{cargosIniciais.length}</span>
                 </button>
                 <button onClick={() => setModalRegioes(true)}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-orange-500/50 transition-all text-[9px] font-black uppercase tracking-widest text-fg">
+                    className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-orange-500/50 transition-all text-[13px] font-bold uppercase tracking-wide text-fg">
                     <MapPin size={14} className="text-orange-500" /> Regioes
                 </button>
             </div>
@@ -81,8 +81,8 @@ function ModalCargos({ cargos, onClose }: { cargos: { id: number; nome: string }
                 <div className="bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl flex-shrink-0">
                     <div className="flex items-center gap-2">
                         <Briefcase size={14} className="text-purple-500" />
-                        <h2 className="text-sm font-black uppercase tracking-widest text-fg">Cargos</h2>
-                        <span className="text-[8px] bg-soft/50 px-1.5 py-0.5 rounded text-muted font-bold">{cargos.length}</span>
+                        <h2 className="text-sm font-bold text-fg">Cargos</h2>
+                        <span className="text-[13px] bg-soft/50 px-1.5 py-0.5 rounded text-muted font-bold">{cargos.length}</span>
                     </div>
                     <button onClick={onClose} className="text-muted hover:text-fg transition-colors"><X size={18} /></button>
                 </div>
@@ -92,7 +92,7 @@ function ModalCargos({ cargos, onClose }: { cargos: { id: number; nome: string }
                     <input value={novoCargo} onChange={e => setNovoCargo(e.target.value)} placeholder="Nome do novo cargo..."
                         className="flex-1 bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-purple-500 transition-colors" />
                     <button type="submit" disabled={loading || !novoCargo.trim()}
-                        className="px-4 py-2.5 bg-purple-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest disabled:opacity-30 hover:bg-purple-700 transition-all flex items-center gap-1.5">
+                        className="px-4 py-2.5 bg-purple-600 text-white rounded-xl text-[13px] font-bold uppercase tracking-wide disabled:opacity-30 hover:bg-purple-700 transition-all flex items-center gap-1.5">
                         {loading ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
                     </button>
                 </form>
@@ -100,11 +100,11 @@ function ModalCargos({ cargos, onClose }: { cargos: { id: number; nome: string }
                 {/* Lista */}
                 <div className="flex-1 overflow-y-auto px-6 py-4 space-y-1.5">
                     {cargos.length === 0 ? (
-                        <p className="text-center text-[10px] text-muted font-bold uppercase tracking-widest py-8">Nenhum cargo registado.</p>
+                        <p className="text-center text-[14px] text-muted font-bold uppercase tracking-wide py-8">Nenhum cargo registado.</p>
                     ) : (
                         cargos.map(c => (
                             <div key={c.id} className="flex items-center justify-between bg-bg border border-soft rounded-xl px-4 py-2.5 group hover:border-purple-500/30 transition-all">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-fg">{c.nome}</span>
+                                <span className="text-[14px] font-bold uppercase tracking-wide text-fg">{c.nome}</span>
                                 <button onClick={() => handleExcluir(c.id, c.nome)} disabled={deletingId === c.id}
                                     className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-all p-1 disabled:opacity-50">
                                     {deletingId === c.id ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
@@ -156,8 +156,8 @@ function ModalRegioes({ regioesIniciais, onClose }: { regioesIniciais: string[];
                 <div className="bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl flex-shrink-0">
                     <div className="flex items-center gap-2">
                         <MapPin size={14} className="text-orange-500" />
-                        <h2 className="text-sm font-black uppercase tracking-widest text-fg">Regioes</h2>
-                        <span className="text-[8px] bg-soft/50 px-1.5 py-0.5 rounded text-muted font-bold">{regioes.length}</span>
+                        <h2 className="text-sm font-bold text-fg">Regioes</h2>
+                        <span className="text-[13px] bg-soft/50 px-1.5 py-0.5 rounded text-muted font-bold">{regioes.length}</span>
                     </div>
                     <button onClick={onClose} className="text-muted hover:text-fg transition-colors"><X size={18} /></button>
                 </div>
@@ -169,7 +169,7 @@ function ModalRegioes({ regioesIniciais, onClose }: { regioesIniciais: string[];
                         placeholder="Nova regiao..."
                         className="flex-1 bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-orange-500 transition-colors" />
                     <button onClick={adicionar} disabled={!nova.trim()}
-                        className="px-4 py-2.5 bg-orange-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest disabled:opacity-30 hover:bg-orange-600 transition-all">
+                        className="px-4 py-2.5 bg-orange-500 text-white rounded-xl text-[13px] font-bold uppercase tracking-wide disabled:opacity-30 hover:bg-orange-600 transition-all">
                         <Plus size={12} />
                     </button>
                 </div>
@@ -180,7 +180,7 @@ function ModalRegioes({ regioesIniciais, onClose }: { regioesIniciais: string[];
                         {regioes.map((r, i) => (
                             <div key={i} className="flex items-center gap-1.5 bg-bg border border-soft px-3 py-2 rounded-xl group hover:border-red-500/30 transition-all">
                                 <MapPin size={10} className="text-orange-500" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-fg">{r}</span>
+                                <span className="text-[14px] font-bold uppercase tracking-wide text-fg">{r}</span>
                                 <button onClick={() => remover(i)} className="text-muted/30 hover:text-red-500 transition-colors">
                                     <X size={10} />
                                 </button>
@@ -188,16 +188,16 @@ function ModalRegioes({ regioesIniciais, onClose }: { regioesIniciais: string[];
                         ))}
                     </div>
                     {regioes.length === 0 && (
-                        <p className="text-center text-[10px] text-muted font-bold uppercase tracking-widest py-8">Nenhuma regiao definida.</p>
+                        <p className="text-center text-[14px] text-muted font-bold uppercase tracking-wide py-8">Nenhuma regiao definida.</p>
                     )}
                 </div>
 
                 {/* Footer */}
                 <div className="px-6 py-4 border-t border-soft flex items-center justify-between flex-shrink-0">
-                    {msg && <p className="text-[9px] font-bold text-emerald-500">{msg}</p>}
+                    {msg && <p className="text-[13px] font-bold text-emerald-500">{msg}</p>}
                     {!msg && <span />}
                     <button onClick={guardar} disabled={saving}
-                        className="px-5 py-2.5 bg-figueira text-white rounded-xl text-[9px] font-black uppercase tracking-widest disabled:opacity-50 hover:opacity-90 transition-all flex items-center gap-1.5">
+                        className="px-5 py-2.5 bg-figueira text-white rounded-xl text-[13px] font-bold uppercase tracking-wide disabled:opacity-50 hover:opacity-90 transition-all flex items-center gap-1.5">
                         {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
                         Guardar
                     </button>

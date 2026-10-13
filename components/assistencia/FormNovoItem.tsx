@@ -31,7 +31,7 @@ export default function FormNovoItem() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Nome */}
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                         Nome do Item
                     </label>
                     <input
@@ -45,7 +45,7 @@ export default function FormNovoItem() {
 
                 {/* Categoria */}
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                         Categoria
                     </label>
                     <select
@@ -63,7 +63,7 @@ export default function FormNovoItem() {
 
                 {/* Unidade */}
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                         Unidade
                     </label>
                     <select
@@ -79,7 +79,7 @@ export default function FormNovoItem() {
 
                 {/* Stock Inicial */}
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                         Stock Inicial
                     </label>
                     <input
@@ -93,7 +93,7 @@ export default function FormNovoItem() {
 
                 {/* Stock Minimo */}
                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                         Stock Minimo (Alerta)
                     </label>
                     <input
@@ -121,7 +121,7 @@ export default function FormNovoItem() {
             <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-2 bg-figueira text-bg px-6 py-3.5 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:brightness-110 transition-all active:scale-95 disabled:opacity-50"
+                className="flex items-center gap-2 bg-figueira text-bg px-6 py-3.5 rounded-2xl font-bold text-[13px] uppercase tracking-wide hover:brightness-110 transition-all active:scale-95 disabled:opacity-50"
             >
                 {loading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
                 Adicionar Item

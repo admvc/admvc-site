@@ -55,7 +55,7 @@ export default function ModalEditarItem({ item, categorias }: { item?: any, cate
                     <Edit3 size={16} />
                 </button>
             ) : (
-                <button onClick={() => setAberto(true)} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg">
+                <button onClick={() => setAberto(true)} className="flex items-center gap-2 bg-blue-600 text-white px-6 py-4 rounded-2xl text-[14px] font-bold uppercase tracking-wide hover:bg-blue-700 transition-all shadow-lg">
                     <Plus size={16} /> Novo Item
                 </button>
             )}
@@ -70,7 +70,7 @@ export default function ModalEditarItem({ item, categorias }: { item?: any, cate
                         )}
 
                         <div className="p-8 border-b border-soft flex justify-between items-center">
-                            <h3 className="text-xl font-black uppercase italic tracking-tighter">
+                            <h3 className="text-xl font-bold">
                                 {item ? 'Editar Item' : 'Novo Item'}
                             </h3>
                             <button onClick={() => !loading && setAberto(false)} className="p-2 hover:bg-red-500 rounded-lg transition-colors">
@@ -88,7 +88,7 @@ export default function ModalEditarItem({ item, categorias }: { item?: any, cate
                                     className={`relative w-32 h-32 rounded-2xl border-2 border-dashed flex items-center justify-center overflow-hidden cursor-pointer transition-all ${loading ? 'opacity-50' : 'hover:border-figueira'}`}
                                 >
                                     {preview ? <img src={preview} className="w-full h-full object-cover" /> : <ImageIcon className="opacity-20" size={32} />}
-                                    <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 flex items-center justify-center text-white text-[8px] font-black uppercase">Trocar Foto</div>
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 flex items-center justify-center text-white text-[13px] font-bold uppercase">Trocar Foto</div>
                                     <input ref={fileInputRef} type="file" name="imagem" className="hidden" accept="image/*" onChange={(e) => {
                                         const file = e.target.files?.[0];
                                         if (file) setPreview(URL.createObjectURL(file));
@@ -108,7 +108,7 @@ export default function ModalEditarItem({ item, categorias }: { item?: any, cate
 
                             <button
                                 disabled={loading}
-                                className={`w-full py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center justify-center gap-2 ${sucesso ? 'bg-green-500 text-white' : 'bg-fg text-bg hover:bg-figueira'}`}
+                                className={`w-full py-5 rounded-2xl font-bold uppercase text-[14px] tracking-wide transition-all flex items-center justify-center gap-2 ${sucesso ? 'bg-green-500 text-white' : 'bg-fg text-bg hover:bg-figueira'}`}
                             >
                                 {sucesso ? <CheckCircle2 size={18} /> : loading ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                                 {sucesso ? 'Sincronizado!' : loading ? `A Enviar (${Math.round(progresso)}%)...` : 'Guardar Alterações'}

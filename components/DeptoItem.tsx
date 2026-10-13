@@ -15,7 +15,7 @@ export default function DeptoItem({ depto, membrosDisponiveis, congregacoes = []
             <div className="bg-bg2 border border-soft rounded-2xl p-5 hover:border-figueira/20 transition-all group">
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-sm font-black overflow-hidden bg-blue-500/10 text-blue-500">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-sm font-bold overflow-hidden bg-blue-500/10 text-blue-500">
                             {depto.foto_url ? (
                                 <Image src={depto.foto_url} alt={depto.nome} width={40} height={40} className="w-full h-full object-cover" />
                             ) : (
@@ -23,10 +23,10 @@ export default function DeptoItem({ depto, membrosDisponiveis, congregacoes = []
                             )}
                         </div>
                         <div>
-                            <h4 className="text-sm font-black uppercase tracking-tight text-fg leading-none">
+                            <h4 className="text-sm font-bold text-fg leading-none">
                                 {depto.nome}
                             </h4>
-                            <p className="text-[9px] font-bold text-muted mt-1">
+                            <p className="text-[13px] font-bold text-muted mt-1">
                                 {depto.lider ? `${depto.lider.first_name} ${depto.lider.last_name}` : 'Sem lider'}
                             </p>
                         </div>
@@ -40,18 +40,18 @@ export default function DeptoItem({ depto, membrosDisponiveis, congregacoes = []
                 </div>
 
                 <div className="flex items-center gap-2 mb-4 flex-wrap">
-                    <span className="text-[9px] font-bold bg-soft/30 px-2 py-1 rounded-lg text-muted flex items-center gap-1">
+                    <span className="text-[13px] font-bold bg-soft/30 px-2 py-1 rounded-lg text-muted flex items-center gap-1">
                         <Users size={10} /> {total} membros
                     </span>
-                    <span className="text-[9px] font-bold bg-soft/30 px-2 py-1 rounded-lg text-muted flex items-center gap-1">
+                    <span className="text-[13px] font-bold bg-soft/30 px-2 py-1 rounded-lg text-muted flex items-center gap-1">
                         <Wrench size={10} /> {depto.funcoes?.length || 0} funcoes
                     </span>
                     {depto.congregacao?.nome ? (
-                        <span className="text-[8px] font-black bg-figueira/10 text-figueira px-2 py-0.5 rounded-lg border border-figueira/20 flex items-center gap-1">
+                        <span className="text-[13px] font-bold bg-figueira/10 text-figueira px-2 py-0.5 rounded-lg border border-figueira/20 flex items-center gap-1">
                             <Church size={8} /> {depto.congregacao.nome}
                         </span>
                     ) : (
-                        <span className="text-[8px] font-black bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded-lg border border-blue-500/20 flex items-center gap-1">
+                        <span className="text-[13px] font-bold bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded-lg border border-blue-500/20 flex items-center gap-1">
                             <Globe size={8} /> Global
                         </span>
                     )}
@@ -59,7 +59,7 @@ export default function DeptoItem({ depto, membrosDisponiveis, congregacoes = []
 
                 <button
                     onClick={() => setPainelAberto(true)}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-bg border border-soft rounded-xl text-[9px] font-black uppercase tracking-widest text-muted hover:bg-fg hover:text-bg transition-all"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-bg border border-soft rounded-xl text-[13px] font-bold uppercase tracking-wide text-muted hover:bg-fg hover:text-bg transition-all"
                 >
                     <Settings2 size={13} /> Gerir Departamento
                 </button>

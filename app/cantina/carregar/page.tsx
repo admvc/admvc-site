@@ -43,15 +43,15 @@ export default async function CarregarSaldoPage() {
             <header className="space-y-4">
                 <Link
                     href="/cantina/menu-local"
-                    className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted hover:text-figueira transition-colors"
+                    className="inline-flex items-center gap-2 text-[14px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors"
                 >
                     <ArrowLeft size={12} /> Voltar ao Menu
                 </Link>
                 <div className="text-center space-y-2 pb-6 border-b border-soft">
-                    <span className="text-figueira font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-2">
+                    <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center justify-center gap-2">
                         <Wallet2 size={14} /> Carregar Saldo
                     </span>
-                    <h1 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h1 className="text-3xl md:text-5xl font-bold text-fg leading-none">
                         Carregar <span className="text-muted/20">saldo.</span>
                     </h1>
                 </div>
@@ -62,8 +62,8 @@ export default async function CarregarSaldoPage() {
                 <div className="flex items-center gap-3">
                     <Wallet2 size={20} className="text-figueira" />
                     <div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-muted block">Saldo Atual</span>
-                        <span className="text-2xl font-black italic text-figueira">{saldo.toFixed(2)}€</span>
+                        <span className="text-[14px] font-bold uppercase tracking-wide text-muted block">Saldo Atual</span>
+                        <span className="text-2xl font-bold text-figueira">{saldo.toFixed(2)}€</span>
                     </div>
                 </div>
             </div>
@@ -74,19 +74,19 @@ export default async function CarregarSaldoPage() {
             {/* Pedidos pendentes */}
             {pedidosPendentes.length > 0 && (
                 <section className="space-y-3">
-                    <h2 className="text-xs font-black uppercase tracking-widest text-muted flex items-center gap-2">
+                    <h2 className="text-xs font-bold text-muted flex items-center gap-2">
                         <Clock size={12} /> Pedidos Pendentes
                     </h2>
                     <div className="space-y-2">
                         {pedidosPendentes.map(p => (
                             <div key={p.id} className="bg-orange-500/5 border border-orange-500/20 rounded-2xl p-4 flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm font-black text-fg">{p.valor.toFixed(2)}€</p>
-                                    <p className="text-[10px] text-muted">
+                                    <p className="text-sm font-bold text-fg">{p.valor.toFixed(2)}€</p>
+                                    <p className="text-[14px] text-muted">
                                         {p.forma_pagamento} · {p.createdAt.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                     </p>
                                 </div>
-                                <span className="text-[9px] font-black uppercase tracking-widest text-orange-500">Pendente</span>
+                                <span className="text-[13px] font-bold uppercase tracking-wide text-orange-500">Pendente</span>
                             </div>
                         ))}
                     </div>
@@ -96,15 +96,15 @@ export default async function CarregarSaldoPage() {
             {/* Historico recente */}
             {pedidosRecentes.length > 0 && (
                 <section className="space-y-3">
-                    <h2 className="text-xs font-black uppercase tracking-widest text-muted flex items-center gap-2">
+                    <h2 className="text-xs font-bold text-muted flex items-center gap-2">
                         <CheckCircle size={12} /> Historico
                     </h2>
                     <div className="space-y-2">
                         {pedidosRecentes.map(p => (
                             <div key={p.id} className="bg-bg2 border border-soft rounded-2xl p-4 flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm font-black text-fg">{p.valor.toFixed(2)}€</p>
-                                    <p className="text-[10px] text-muted">
+                                    <p className="text-sm font-bold text-fg">{p.valor.toFixed(2)}€</p>
+                                    <p className="text-[14px] text-muted">
                                         {p.forma_pagamento} · {p.createdAt.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                     </p>
                                 </div>

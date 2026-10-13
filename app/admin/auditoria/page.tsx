@@ -111,23 +111,23 @@ export default async function AuditoriaPage(
             {/* HEADER */}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-soft">
                 <div className="space-y-2">
-                    <span className="text-figueira font-black text-[10px] md:text-xs uppercase tracking-[0.3em] flex items-center gap-2">
+                    <span className="text-figueira font-bold text-[14px] md:text-xs uppercase tracking-wide flex items-center gap-2">
                         <Shield size={14} /> Governanca e Conformidade
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h1 className="text-4xl md:text-5xl font-bold text-fg leading-none">
                         Auditoria <span className="text-muted/20">do Sistema.</span>
                     </h1>
                 </div>
                 <div className="text-right">
-                    <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">Total de registos</p>
-                    <p className="text-3xl font-black italic text-fg">{total.toLocaleString('pt-PT')}</p>
+                    <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Total de registos</p>
+                    <p className="text-3xl font-bold text-fg">{total.toLocaleString('pt-PT')}</p>
                 </div>
             </header>
 
             {/* KPIs POR CATEGORIA */}
             <div className="flex flex-wrap gap-2">
                 {estatisticas.map(e => (
-                    <div key={e.categoria} className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-[9px] md:text-[11px] font-black uppercase tracking-widest ${COR_CATEGORIA[e.categoria] || COR_CATEGORIA.SISTEMA}`}>
+                    <div key={e.categoria} className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-[13px] md:text-[14px] font-bold uppercase tracking-wide ${COR_CATEGORIA[e.categoria] || COR_CATEGORIA.SISTEMA}`}>
                         {e.categoria}
                         <span className="opacity-60">{e._count.id}</span>
                     </div>
@@ -146,7 +146,7 @@ export default async function AuditoriaPage(
                 {logs.length === 0 ? (
                     <div className="py-16 text-center">
                         <Shield size={28} className="mx-auto text-muted/20 mb-3" />
-                        <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-muted">
+                        <p className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted">
                             Nenhum registo encontrado
                         </p>
                     </div>
@@ -155,12 +155,12 @@ export default async function AuditoriaPage(
                         <table className="w-full text-left min-w-[800px]">
                             <thead>
                                 <tr className="border-b border-soft bg-bg2">
-                                    <th className="px-5 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted w-40">Data / Hora</th>
-                                    <th className="px-5 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted w-32">Acao</th>
-                                    <th className="px-5 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted w-28">Categoria</th>
-                                    <th className="px-5 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted w-36">Executado por</th>
-                                    <th className="px-5 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted">Descricao</th>
-                                    <th className="px-5 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted w-28">IP</th>
+                                    <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted w-40">Data / Hora</th>
+                                    <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted w-32">Acao</th>
+                                    <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted w-28">Categoria</th>
+                                    <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted w-36">Executado por</th>
+                                    <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Descricao</th>
+                                    <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted w-28">IP</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-soft/50">
@@ -172,14 +172,14 @@ export default async function AuditoriaPage(
                                         <tr key={log.id} className="hover:bg-soft/10 transition-colors">
                                             {/* DATA */}
                                             <td className="px-5 py-3.5">
-                                                <p className="text-[10px] md:text-xs font-black text-fg leading-none">
+                                                <p className="text-[14px] md:text-xs font-bold text-fg leading-none">
                                                     {formatarData(log.criado_em)}
                                                 </p>
                                             </td>
 
                                             {/* ACAO */}
                                             <td className="px-5 py-3.5">
-                                                <span className={`flex items-center gap-1.5 text-[8px] md:text-[10px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-lg ${cfg.bg} ${cfg.cor} w-fit`}>
+                                                <span className={`flex items-center gap-1.5 text-[13px] md:text-[14px] font-bold uppercase tracking-wide px-2.5 py-1.5 rounded-lg ${cfg.bg} ${cfg.cor} w-fit`}>
                                                     <IconeAcao size={10} />
                                                     {log.acao.replace('_', ' ')}
                                                 </span>
@@ -187,25 +187,25 @@ export default async function AuditoriaPage(
 
                                             {/* CATEGORIA */}
                                             <td className="px-5 py-3.5">
-                                                <span className={`text-[8px] md:text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg border ${COR_CATEGORIA[log.categoria] || COR_CATEGORIA.SISTEMA}`}>
+                                                <span className={`text-[13px] md:text-[14px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg border ${COR_CATEGORIA[log.categoria] || COR_CATEGORIA.SISTEMA}`}>
                                                     {log.categoria}
                                                 </span>
                                             </td>
 
                                             {/* ACTOR */}
                                             <td className="px-5 py-3.5">
-                                                <p className="text-[10px] md:text-xs font-bold text-fg truncate max-w-[130px]">
+                                                <p className="text-[14px] md:text-xs font-bold text-fg truncate max-w-[130px]">
                                                     {log.actor_nome || (log.actor_id ? `#${log.actor_id}` : 'Sistema')}
                                                 </p>
                                             </td>
 
                                             {/* DESCRICAO */}
                                             <td className="px-5 py-3.5">
-                                                <p className="text-[10px] md:text-xs text-muted font-medium truncate max-w-xs">
+                                                <p className="text-[14px] md:text-xs text-muted font-medium truncate max-w-xs">
                                                     {log.descricao || '—'}
                                                 </p>
                                                 {log.alvo_nome && (
-                                                    <p className="text-[8px] md:text-[10px] text-figueira/70 font-bold uppercase tracking-widest mt-0.5">
+                                                    <p className="text-[13px] md:text-[14px] text-figueira/70 font-bold uppercase tracking-wide mt-0.5">
                                                         Alvo: {log.alvo_nome}
                                                     </p>
                                                 )}
@@ -213,7 +213,7 @@ export default async function AuditoriaPage(
 
                                             {/* IP */}
                                             <td className="px-5 py-3.5">
-                                                <code className="text-[9px] md:text-[11px] font-mono text-muted/70">
+                                                <code className="text-[13px] md:text-[14px] font-mono text-muted/70">
                                                     {log.ip || '—'}
                                                 </code>
                                             </td>
@@ -229,19 +229,19 @@ export default async function AuditoriaPage(
             {/* PAGINACAO */}
             {totalPaginas > 1 && (
                 <div className="flex items-center justify-between">
-                    <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">
+                    <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">
                         Pagina {pagina} de {totalPaginas} ({total} registos)
                     </p>
                     <div className="flex gap-2">
                         {pagina > 1 && (
                             <a href={`?pagina=${pagina - 1}${searchParams.categoria ? `&categoria=${searchParams.categoria}` : ''}${searchParams.q ? `&q=${searchParams.q}` : ''}`}
-                                className="px-4 py-2 bg-bg2 border border-soft rounded-xl text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted hover:border-figueira hover:text-figueira transition-all">
+                                className="px-4 py-2 bg-bg2 border border-soft rounded-xl text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted hover:border-figueira hover:text-figueira transition-all">
                                 Anterior
                             </a>
                         )}
                         {pagina < totalPaginas && (
                             <a href={`?pagina=${pagina + 1}${searchParams.categoria ? `&categoria=${searchParams.categoria}` : ''}${searchParams.q ? `&q=${searchParams.q}` : ''}`}
-                                className="px-4 py-2 bg-figueira text-white rounded-xl text-[9px] md:text-[11px] font-black uppercase tracking-widest hover:bg-figueira/90 transition-all">
+                                className="px-4 py-2 bg-figueira text-white rounded-xl text-[13px] md:text-[14px] font-bold uppercase tracking-wide hover:bg-figueira/90 transition-all">
                                 Seguinte
                             </a>
                         )}

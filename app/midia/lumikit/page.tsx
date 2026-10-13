@@ -21,7 +21,7 @@ export default async function LumikitPage() {
     return (
         <main className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6 animate-in fade-in duration-700 pb-20">
             <header className="space-y-1">
-                <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Iluminacao</h1>
+                <h1 className="text-3xl font-bold text-fg">Iluminacao</h1>
                 <p className="text-xs text-muted">Controlo de cenas via Holyrics + Lumikit.</p>
             </header>
             <LumikitClient

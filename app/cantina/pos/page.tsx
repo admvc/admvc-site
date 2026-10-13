@@ -80,7 +80,7 @@ export default async function POSPage() {
                 <div className="w-16 h-16 bg-red-500/10 text-red-400 rounded-2xl flex items-center justify-center mx-auto">
                     <ShieldCheck size={28} />
                 </div>
-                <h1 className="text-2xl font-black italic uppercase tracking-tighter text-fg">Acesso Restrito</h1>
+                <h1 className="text-2xl font-bold text-fg">Acesso Restrito</h1>
                 <p className="text-sm text-muted max-w-sm mx-auto">
                     O ponto de venda so esta disponivel para membros da Cantina com funcao de caixa,
                     lideres do departamento, ou administradores.

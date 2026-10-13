@@ -54,7 +54,7 @@ export default function FiltroAuditoria({
                 <button
                     onClick={() => aplicarFiltro({ q, categoria: categoriaActual, acao: acaoActual })}
                     disabled={isPending}
-                    className="px-5 py-3 bg-figueira text-white rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-figueira/90 transition-all flex items-center gap-2 disabled:opacity-40"
+                    className="px-5 py-3 bg-figueira text-white rounded-2xl text-[13px] font-bold uppercase tracking-wide hover:bg-figueira/90 transition-all flex items-center gap-2 disabled:opacity-40"
                 >
                     {isPending ? <Loader2 size={13} className="animate-spin" /> : <Filter size={13} />}
                     Filtrar
@@ -62,7 +62,7 @@ export default function FiltroAuditoria({
                 {temFiltros && (
                     <button
                         onClick={limpar}
-                        className="px-4 py-3 bg-bg2 border border-soft text-muted hover:text-red-500 hover:border-red-300 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5"
+                        className="px-4 py-3 bg-bg2 border border-soft text-muted hover:text-red-500 hover:border-red-300 rounded-2xl text-[13px] font-bold uppercase tracking-wide transition-all flex items-center gap-1.5"
                     >
                         <X size={13} /> Limpar
                     </button>
@@ -71,7 +71,7 @@ export default function FiltroAuditoria({
 
             {/* FILTRO CATEGORIA */}
             <div className="flex flex-wrap gap-1.5">
-                <span className="text-[8px] font-black uppercase tracking-widest text-muted self-center mr-1">
+                <span className="text-[13px] font-bold uppercase tracking-wide text-muted self-center mr-1">
                     Categoria:
                 </span>
                 {CATEGORIAS.map(cat => (
@@ -94,7 +94,7 @@ export default function FiltroAuditoria({
 
             {/* FILTRO ACAO */}
             <div className="flex flex-wrap gap-1.5">
-                <span className="text-[8px] font-black uppercase tracking-widest text-muted self-center mr-1">
+                <span className="text-[13px] font-bold uppercase tracking-wide text-muted self-center mr-1">
                     Accao:
                 </span>
                 {ACOES.map(acao => (

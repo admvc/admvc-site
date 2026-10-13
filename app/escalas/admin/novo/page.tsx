@@ -48,16 +48,16 @@ export default async function NovaEscalaPage(props: { searchParams: Promise<{ de
         <main className="max-w-7xl mx-auto py-10 px-6 space-y-8 animate-in fade-in duration-700">
             <header className="flex items-center justify-between">
                 <div className="space-y-1">
-                    <Link href="/membros/dashboard" className="flex items-center gap-2 text-[10px] font-bold text-muted uppercase hover:text-figueira transition-all">
+                    <Link href="/membros/dashboard" className="flex items-center gap-2 text-[14px] font-bold text-muted uppercase hover:text-figueira transition-all">
                         <ChevronLeft size={14} /> Voltar ao Início
                     </Link>
-                    <h1 className="text-4xl font-black uppercase italic tracking-tighter text-fg">
+                    <h1 className="text-4xl font-bold text-fg">
                         Gestão: <span className="text-figueira">{departamento.nome}</span>
                     </h1>
                 </div>
                 <div className="hidden md:flex items-center gap-4 bg-bg2 p-4 rounded-2xl border border-soft">
                     <Users className="text-muted" size={20} />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-fg">
+                    <span className="text-[14px] font-bold uppercase tracking-wide text-fg">
                         {departamento.integrantes.length} Voluntários
                     </span>
                 </div>

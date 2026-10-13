@@ -24,7 +24,7 @@ export default function BotaoPagarDespesa({ despesaId }: { despesaId: number }) 
         <button
             onClick={handlePagar}
             disabled={loading}
-            className="bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white px-4 py-2.5 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 active:scale-95"
+            className="bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white px-4 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 active:scale-95"
         >
             {loading ? <Loader2 size={14} className="animate-spin" /> : <Banknote size={14} />}
             {loading ? '...' : 'Pagar'}

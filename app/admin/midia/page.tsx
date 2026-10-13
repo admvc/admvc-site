@@ -45,7 +45,7 @@ export default async function MidiaConfigPage() {
             <Breadcrumbs items={[{ label: 'Mídia' }]} />
 
             <header className="space-y-1">
-                <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Midia</h1>
+                <h1 className="text-3xl font-bold text-fg">Midia</h1>
                 <p className="text-xs text-muted">Equipamentos de som, iluminacao e projeccao.</p>
             </header>
 
@@ -60,8 +60,8 @@ export default async function MidiaConfigPage() {
                                     <Music2 size={16} />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-black uppercase tracking-widest text-fg">Mesa X32</p>
-                                    <p className="text-[8px] font-bold text-muted">Controlo de faders</p>
+                                    <p className="text-xs font-bold text-fg">Mesa X32</p>
+                                    <p className="text-[13px] font-bold text-muted">Controlo de faders</p>
                                 </div>
                             </div>
                             <ArrowRight size={14} className="text-muted group-hover:text-blue-500 transition-colors" />
@@ -75,8 +75,8 @@ export default async function MidiaConfigPage() {
                                     <Lightbulb size={16} />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-black uppercase tracking-widest text-fg">Lumikit</p>
-                                    <p className="text-[8px] font-bold text-muted">Controlo de cenas</p>
+                                    <p className="text-xs font-bold text-fg">Lumikit</p>
+                                    <p className="text-[13px] font-bold text-muted">Controlo de cenas</p>
                                 </div>
                             </div>
                             <ArrowRight size={14} className="text-muted group-hover:text-amber-500 transition-colors" />
@@ -90,8 +90,8 @@ export default async function MidiaConfigPage() {
                 <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between px-5 py-4 hover:bg-soft/10 transition-colors">
                     <div className="flex items-center gap-2">
                         <Settings size={14} className="text-figueira" />
-                        <h2 className="text-sm font-black uppercase tracking-widest text-fg">Dispositivos</h2>
-                        <span className="text-[8px] bg-soft/50 px-2 py-0.5 rounded text-muted font-bold">
+                        <h2 className="text-sm font-bold text-fg">Dispositivos</h2>
+                        <span className="text-[13px] bg-soft/50 px-2 py-0.5 rounded text-muted font-bold">
                             {[tenant?.holyrics_url, tenant?.x32_ip, tenant?.lumikit_url].filter(Boolean).length}/3 configurados
                         </span>
                     </div>
@@ -108,8 +108,8 @@ export default async function MidiaConfigPage() {
                     <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between px-5 py-4 hover:bg-soft/10 transition-colors">
                         <div className="flex items-center gap-2">
                             <Lightbulb size={14} className="text-amber-500" />
-                            <h2 className="text-sm font-black uppercase tracking-widest text-fg">Botoes Iluminacao</h2>
-                            <span className="text-[8px] bg-soft/50 px-2 py-0.5 rounded text-muted font-bold">{lumikitCenas.scenes.length}</span>
+                            <h2 className="text-sm font-bold text-fg">Botoes Iluminacao</h2>
+                            <span className="text-[13px] bg-soft/50 px-2 py-0.5 rounded text-muted font-bold">{lumikitCenas.scenes.length}</span>
                         </div>
                         <ChevronDown size={14} className="text-muted group-open:rotate-180 transition-transform" />
                     </summary>
@@ -125,8 +125,8 @@ export default async function MidiaConfigPage() {
                     <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between px-5 py-4 hover:bg-soft/10 transition-colors">
                         <div className="flex items-center gap-2">
                             <Music2 size={14} className="text-blue-500" />
-                            <h2 className="text-sm font-black uppercase tracking-widest text-fg">Presets Mesa de Som</h2>
-                            <span className="text-[8px] bg-soft/50 px-2 py-0.5 rounded text-muted font-bold">{x32Cenas.scenes.length}</span>
+                            <h2 className="text-sm font-bold text-fg">Presets Mesa de Som</h2>
+                            <span className="text-[13px] bg-soft/50 px-2 py-0.5 rounded text-muted font-bold">{x32Cenas.scenes.length}</span>
                         </div>
                         <ChevronDown size={14} className="text-muted group-open:rotate-180 transition-transform" />
                     </summary>
@@ -142,8 +142,8 @@ export default async function MidiaConfigPage() {
                     <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between px-5 py-4 hover:bg-soft/10 transition-colors">
                         <div className="flex items-center gap-2">
                             <Terminal size={14} className="text-figueira" />
-                            <h2 className="text-sm font-black uppercase tracking-widest text-fg">Proxy Local (X32)</h2>
-                            <span className="text-[8px] bg-soft/50 px-2 py-0.5 rounded text-muted font-bold">Avancado</span>
+                            <h2 className="text-sm font-bold text-fg">Proxy Local (X32)</h2>
+                            <span className="text-[13px] bg-soft/50 px-2 py-0.5 rounded text-muted font-bold">Avancado</span>
                         </div>
                         <ChevronDown size={14} className="text-muted group-open:rotate-180 transition-transform" />
                     </summary>
@@ -153,32 +153,32 @@ export default async function MidiaConfigPage() {
                         </p>
 
                         <div className="bg-bg border border-soft rounded-xl p-4 space-y-3">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-figueira">Script (Node.js)</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">Script (Node.js)</p>
                             <div className="bg-black/50 rounded-lg px-3 py-2 font-mono text-emerald-400 text-xs space-y-1">
                                 <p>npm install ws</p>
                                 <p>node x32-proxy.js</p>
                             </div>
-                            <p className="text-[9px] text-muted">Apos iniciar, conecte com <code className="bg-soft px-1.5 rounded text-[10px]">ws://localhost:8080</code></p>
+                            <p className="text-[13px] text-muted">Apos iniciar, conecte com <code className="bg-soft px-1.5 rounded text-[14px]">ws://localhost:8080</code></p>
                         </div>
 
                         <div className="space-y-2">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted">Downloads:</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Downloads:</p>
                             <div className="grid grid-cols-3 gap-2">
                                 <a href="https://tjlntjdqtemsmz7i.public.blob.vercel-storage.com/proxy/admvc-x32-proxy-win.exe" download
-                                    className="flex flex-col items-center gap-1 py-3 rounded-xl bg-fg text-bg text-[8px] font-black uppercase tracking-widest hover:bg-figueira transition-all">
+                                    className="flex flex-col items-center gap-1 py-3 rounded-xl bg-fg text-bg text-[13px] font-bold uppercase tracking-wide hover:bg-figueira transition-all">
                                     <Download size={14} /> Windows
                                 </a>
                                 <a href="https://tjlntjdqtemsmz7i.public.blob.vercel-storage.com/proxy/admvc-x32-proxy-macos" download
-                                    className="flex flex-col items-center gap-1 py-3 rounded-xl bg-bg border border-soft text-muted text-[8px] font-black uppercase tracking-widest hover:text-fg hover:border-figueira/30 transition-all">
+                                    className="flex flex-col items-center gap-1 py-3 rounded-xl bg-bg border border-soft text-muted text-[13px] font-bold uppercase tracking-wide hover:text-fg hover:border-figueira/30 transition-all">
                                     <Download size={14} /> macOS
                                 </a>
                                 <a href="https://tjlntjdqtemsmz7i.public.blob.vercel-storage.com/proxy/admvc-x32-proxy-linux" download
-                                    className="flex flex-col items-center gap-1 py-3 rounded-xl bg-bg border border-soft text-muted text-[8px] font-black uppercase tracking-widest hover:text-fg hover:border-figueira/30 transition-all">
+                                    className="flex flex-col items-center gap-1 py-3 rounded-xl bg-bg border border-soft text-muted text-[13px] font-bold uppercase tracking-wide hover:text-fg hover:border-figueira/30 transition-all">
                                     <Download size={14} /> Linux
                                 </a>
                             </div>
                             <a href="https://tjlntjdqtemsmz7i.public.blob.vercel-storage.com/proxy/x32-proxy.js" download="x32-proxy.js"
-                                className="flex items-center justify-center gap-2 w-full py-2 rounded-lg text-[8px] font-bold uppercase tracking-widest text-muted hover:text-fg transition-all">
+                                className="flex items-center justify-center gap-2 w-full py-2 rounded-lg text-[13px] font-bold uppercase tracking-wide text-muted hover:text-fg transition-all">
                                 <Download size={10} /> Ou descarregar script .js
                             </a>
                         </div>

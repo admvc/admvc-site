@@ -94,7 +94,7 @@ export const modulosAtivosDaIgreja = memoPorPedido(async (): Promise<Modulo[]> =
  * Para layouts e paginas: se o modulo estiver desligado, volta ao inicio
  * (em vez de mostrar uma area que a igreja nao usa).
  */
-export async function exigirModuloAtivo(modulo: Modulo) {
+export async function exigirModuloAtivo(modulo: Modulo, destino = '/membros/dashboard') {
     const ativos = await modulosAtivosDaIgreja()
-    if (!ativos.includes(modulo)) redirect('/membros/dashboard')
+    if (!ativos.includes(modulo)) redirect(destino)
 }

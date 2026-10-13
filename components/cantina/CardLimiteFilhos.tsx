@@ -54,7 +54,7 @@ export default function CardLimiteFilhos() {
         <div className="bg-bg2 border border-soft rounded-2xl p-6 space-y-4">
             <div className="flex items-center gap-2">
                 <Shield size={16} className="text-figueira" />
-                <span className="text-[9px] font-black uppercase tracking-widest text-muted">Limites Cantina (Familia)</span>
+                <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Limites Cantina (Familia)</span>
             </div>
 
             <div className="space-y-2">
@@ -62,10 +62,10 @@ export default function CardLimiteFilhos() {
                     <div key={f.id} className="bg-bg border border-soft rounded-xl px-4 py-3">
                         {editando === f.id ? (
                             <div className="space-y-3">
-                                <p className="text-[10px] font-black uppercase text-fg">{f.first_name} {f.last_name}</p>
+                                <p className="text-[14px] font-bold uppercase text-fg">{f.first_name} {f.last_name}</p>
                                 <div className="grid grid-cols-2 gap-2">
                                     <div className="space-y-1">
-                                        <label className="text-[8px] font-black uppercase tracking-widest text-muted">Limite Diario (€)</label>
+                                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Limite Diario (€)</label>
                                         <input
                                             type="number"
                                             step="0.50"
@@ -77,7 +77,7 @@ export default function CardLimiteFilhos() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[8px] font-black uppercase tracking-widest text-muted">Limite Semanal (€)</label>
+                                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Limite Semanal (€)</label>
                                         <input
                                             type="number"
                                             step="0.50"
@@ -93,14 +93,14 @@ export default function CardLimiteFilhos() {
                                     <button
                                         onClick={() => salvar(f.id)}
                                         disabled={salvando}
-                                        className="flex items-center gap-1 bg-figueira text-white px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest disabled:opacity-50"
+                                        className="flex items-center gap-1 bg-figueira text-white px-3 py-1.5 rounded-lg text-[13px] font-bold uppercase tracking-wide disabled:opacity-50"
                                     >
                                         {salvando ? <Loader2 size={10} className="animate-spin" /> : <Check size={10} />}
                                         Guardar
                                     </button>
                                     <button
                                         onClick={() => setEditando(null)}
-                                        className="flex items-center gap-1 text-muted hover:text-fg text-[9px] font-black uppercase tracking-widest"
+                                        className="flex items-center gap-1 text-muted hover:text-fg text-[13px] font-bold uppercase tracking-wide"
                                     >
                                         <X size={10} /> Cancelar
                                     </button>
@@ -109,8 +109,8 @@ export default function CardLimiteFilhos() {
                         ) : (
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-[10px] font-black uppercase text-fg">{f.first_name} {f.last_name}</p>
-                                    <p className="text-[9px] text-muted mt-0.5">
+                                    <p className="text-[14px] font-bold uppercase text-fg">{f.first_name} {f.last_name}</p>
+                                    <p className="text-[13px] text-muted mt-0.5">
                                         {f.limite_diario || f.limite_semanal ? (
                                             <>
                                                 {f.limite_diario && <span>Diario: {f.limite_diario.toFixed(2)}€</span>}
@@ -118,7 +118,7 @@ export default function CardLimiteFilhos() {
                                                 {f.limite_semanal && <span>Semanal: {f.limite_semanal.toFixed(2)}€</span>}
                                             </>
                                         ) : (
-                                            <span className="italic">Sem limite definido</span>
+                                            <span className="">Sem limite definido</span>
                                         )}
                                     </p>
                                 </div>

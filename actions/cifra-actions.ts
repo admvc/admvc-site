@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from '@/lib/prisma'
+import { getTenantClient } from '@/lib/prisma'
 import { requireLouvorPermission } from '@/lib/louvor-permissoes'
 import { revalidatePath } from 'next/cache'
 import { importarCifraClub } from '@/lib/cifra'
@@ -11,7 +11,7 @@ import { importarCifraClub } from '@/lib/cifra'
  */
 export async function importarCifraDeUrlAction(musicaId: string, url: string) {
     try {
-        await requireLouvorPermission()
+        const sessao = await requireLouvorPermission()
 
         // So https e so os sites de cifras (o servidor vai buscar o endereco:
         // nunca um endereco qualquer que "contenha" o nome do site).
@@ -20,6 +20,10 @@ export async function importarCifraDeUrlAction(musicaId: string, url: string) {
         const hostsPermitidos = ['cifraclub.com.br', 'cifraclub.com', 'cifras.com.br']
         if (destino.protocol !== 'https:' || !hostsPermitidos.some(h => destino.hostname === h || destino.hostname.endsWith('.' + h))) {
             return { ok: false, error: 'URL inválida. Use um link do CifraClub.' }
+        }
+        // Tem de ser a pagina de uma musica (cifraclub.com.br/artista/musica/), nao o site ou um artista
+        if (destino.pathname.split('/').filter(Boolean).length < 2) {
+            return { ok: false, error: 'O link de cifra não é de uma música. Abra a música no CifraClub e copie o endereço dessa página.' }
         }
 
         // 1. Buscar a página HTML
@@ -31,8 +35,11 @@ export async function importarCifraDeUrlAction(musicaId: string, url: string) {
             next: { revalidate: 0 }
         })
 
+        if (res.status === 404) {
+            return { ok: false, error: 'Essa página não existe no CifraClub. Confirme o link da cifra (Editar música).' }
+        }
         if (!res.ok) {
-            return { ok: false, error: `Erro ao aceder ao CifraClub (${res.status})` }
+            return { ok: false, error: `O CifraClub não respondeu (${res.status}). Tente mais tarde.` }
         }
 
         const html = await res.text()
@@ -48,7 +55,7 @@ export async function importarCifraDeUrlAction(musicaId: string, url: string) {
         const cifraConvertida = importarCifraClub(cifraTexto)
 
         // 4. Guardar na BD
-        await prisma.musica.update({
+        await getTenantClient(sessao.tenantId).musica.update({
             where: { id: musicaId },
             data: { cifra_interna: cifraConvertida }
         })
@@ -73,9 +80,10 @@ function extrairCifraDoHTML(html: string): string {
     // Método 1: Conteúdo dentro de <pre> tags (formato mais comum)
     const preMatch = html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/gi)
     if (preMatch && preMatch.length > 0) {
-        // Usar o maior <pre> (normalmente é a cifra)
+        // Usar o maior <pre> (normalmente é a cifra), sem as tablaturas
+        // (no CifraClub vem cada uma em <span class="tab">…</span>)
         const maior = preMatch.sort((a, b) => b.length - a.length)[0]
-        return limparHTML(maior)
+        return limparHTML(maior.replace(/<span[^>]*class="[^"]*\btab\b[^"]*"[^>]*>[\s\S]*?<\/span>/gi, ''))
     }
 
     // Método 2: Div com classe cifra_cnt

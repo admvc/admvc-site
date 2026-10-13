@@ -38,10 +38,10 @@ export default function LoginPage() {
         <main className="min-h-screen bg-bg flex items-center justify-center p-6 animate-in fade-in duration-500">
             <div className="w-full max-w-md space-y-8">
                 <div className="text-center space-y-2">
-                    <h1 className="text-5xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h1 className="text-5xl font-bold text-fg leading-none">
                         ADMVC <span className="text-figueira">Acesso.</span>
                     </h1>
-                    <p className="text-[10px] font-bold text-muted uppercase tracking-[0.3em]">Gestão Unificada</p>
+                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Gestão Unificada</p>
                 </div>
 
                 <form action={handleSubmit} className="bg-bg2 border border-soft p-10 rounded-[4rem] shadow-2xl space-y-6 relative overflow-hidden">
@@ -51,20 +51,20 @@ export default function LoginPage() {
 
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">E-mail</label>
+                            <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">E-mail</label>
                             <input name="email" type="email" onChange={() => setError(null)} required className="w-full bg-bg border border-soft rounded-2xl px-6 py-4 text-xs font-bold outline-none focus:border-figueira transition-all" placeholder="exemplo@igreja.pt" />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Palavra-passe</label>
+                            <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Palavra-passe</label>
                             <input name="password" type="password" onChange={() => setError(null)} required className="w-full bg-bg border border-soft rounded-2xl px-6 py-4 text-xs font-bold outline-none focus:border-figueira transition-all" />
                             <div className="text-right pr-4">
-                                <Link href="/membros/recuperar" className="text-[11px] font-bold text-muted underline hover:text-figueira">Esqueci-me da palavra-passe</Link>
+                                <Link href="/membros/recuperar" className="text-[14px] font-bold text-muted underline hover:text-figueira">Esqueci-me da palavra-passe</Link>
                             </div>
                         </div>
                     </div>
 
                     {error && (
-                        <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase text-red-500 bg-red-500/10 py-3 rounded-2xl animate-in fade-in zoom-in-95 slide-in-from-top-2">
+                        <div className="flex items-center justify-center gap-2 text-[14px] font-bold uppercase text-red-500 bg-red-500/10 py-3 rounded-2xl animate-in fade-in zoom-in-95 slide-in-from-top-2">
                             {error}
                         </div>
                     )}
@@ -105,7 +105,7 @@ export default function LoginPage() {
                 </form>
 
                 <p className="text-center">
-                    <Link href="/privacidade" className="text-[11px] font-bold text-muted underline">Política de privacidade</Link>
+                    <Link href="/privacidade" className="text-[14px] font-bold text-muted underline">Política de privacidade</Link>
                 </p>
             </div>
         </main>

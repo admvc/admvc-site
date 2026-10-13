@@ -43,7 +43,7 @@ export default async function PaginaDonativo({ params }: { params: Promise<{ slu
                     )}
                     <div className="text-center">
                         <h1 className="text-xl font-bold text-gray-900">{tenant.nome}</h1>
-                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Donativo Online</p>
+                        <p className="text-xs text-gray-500 font-medium">Donativo Online</p>
                     </div>
                 </div>
             </header>

@@ -76,7 +76,7 @@ export default function ModalCarregarCantina({ membroId }: { membroId: number })
             {/* BOTÃO CARREGAR SALDO (Original) */}
             <button
                 onClick={() => setAberto(true)}
-                className="bg-fg hover:bg-figueira text-bg px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 active:scale-95 shadow-xl w-full md:w-auto"
+                className="bg-fg hover:bg-figueira text-bg px-6 py-4 rounded-2xl text-[14px] font-bold uppercase tracking-wide transition-all flex items-center justify-center gap-3 active:scale-95 shadow-xl w-full md:w-auto"
             >
                 <Euro size={16} /> Carregar Saldo
             </button>
@@ -99,7 +99,7 @@ export default function ModalCarregarCantina({ membroId }: { membroId: number })
                     <div className="bg-bg2 border border-soft w-full max-w-sm rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
 
                         <div className="flex justify-between items-center p-6 border-b border-soft">
-                            <h3 className="text-lg font-black uppercase italic tracking-tighter text-fg flex items-center gap-2">
+                            <h3 className="text-lg font-bold text-fg flex items-center gap-2">
                                 <Coffee className="text-figueira" /> Adicionar Saldo
                             </h3>
                             <button onClick={() => setAberto(false)} className="text-muted hover:text-red-500 bg-soft/50 hover:bg-soft p-2 rounded-xl transition-all">
@@ -111,7 +111,7 @@ export default function ModalCarregarCantina({ membroId }: { membroId: number })
                             <div className="p-8 text-center space-y-4 animate-in zoom-in-50 duration-500">
                                 <CheckCircle2 size={56} className="text-green-500 mx-auto" strokeWidth={1.5} />
                                 <div>
-                                    <h4 className="text-xl font-black italic text-fg uppercase">Pedido Enviado!</h4>
+                                    <h4 className="text-xl font-bold text-fg">Pedido Enviado!</h4>
                                     <p className="text-xs text-muted mt-2 leading-relaxed">O tesoureiro irá validar o seu pagamento e o saldo ficará disponível em breve.</p>
                                 </div>
                             </div>
@@ -121,7 +121,7 @@ export default function ModalCarregarCantina({ membroId }: { membroId: number })
                                 <input type="hidden" name="valor" value={valorSelecionado} />
 
                                 <div>
-                                    <label className="text-[9px] font-black uppercase text-muted ml-2 tracking-widest">Selecione o Valor</label>
+                                    <label className="text-[13px] font-bold uppercase text-muted ml-2 tracking-wide">Selecione o Valor</label>
                                     <div className="grid grid-cols-3 gap-3 mt-3">
                                         {opcoesPadrao.map(val => {
                                             const isAtivo = !isCustom && Number(valorSelecionado) === val;
@@ -147,7 +147,7 @@ export default function ModalCarregarCantina({ membroId }: { membroId: number })
 
                                     <div className="flex items-center gap-3 py-4">
                                         <div className="h-[1px] flex-1 bg-soft"></div>
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-muted">Ou Customizado</span>
+                                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Ou Customizado</span>
                                         <div className="h-[1px] flex-1 bg-soft"></div>
                                     </div>
 
@@ -169,7 +169,7 @@ export default function ModalCarregarCantina({ membroId }: { membroId: number })
                                 </div>
 
                                 <div>
-                                    <label className="text-[9px] font-black uppercase text-muted ml-2 tracking-widest">Método de Envio</label>
+                                    <label className="text-[13px] font-bold uppercase text-muted ml-2 tracking-wide">Método de Envio</label>
                                     <select name="forma_pagamento" required className="w-full bg-bg border-2 border-soft p-4 rounded-xl text-xs font-bold outline-none focus:border-figueira mt-2 transition-colors appearance-none cursor-pointer">
                                         <option value="MBWAY">MB WAY</option>
                                         <option value="Transferencia">Transferência Bancária</option>
@@ -179,7 +179,7 @@ export default function ModalCarregarCantina({ membroId }: { membroId: number })
 
                                 <button
                                     disabled={loading || !valorSelecionado || Number(valorSelecionado) <= 0}
-                                    className="w-full bg-fg text-bg py-5 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-figueira transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group active:scale-95 shadow-xl"
+                                    className="w-full bg-fg text-bg py-5 rounded-xl font-bold uppercase text-[14px] tracking-wide hover:bg-figueira transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group active:scale-95 shadow-xl"
                                 >
                                     {loading ? (
                                         <Loader2 className="animate-spin" size={18} />

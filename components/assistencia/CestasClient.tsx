@@ -101,13 +101,13 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
             {/* RESUMO */}
             <div className="flex items-center gap-4">
                 <div className="text-center">
-                    <p className="text-xl font-black italic text-fg">{tiposCesta.length}</p>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-muted">Tipos</p>
+                    <p className="text-xl font-bold text-fg">{tiposCesta.length}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Tipos</p>
                 </div>
                 <div className="w-px h-6 bg-soft" />
                 <div className="text-center">
-                    <p className="text-xl font-black italic text-fg">{entregas.length}</p>
-                    <p className="text-[8px] font-black uppercase tracking-widest text-muted">Entregas</p>
+                    <p className="text-xl font-bold text-fg">{entregas.length}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Entregas</p>
                 </div>
             </div>
 
@@ -116,7 +116,7 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
                 <div className="space-y-3">
                     {!criarAberto ? (
                         <button onClick={() => setCriarAberto(true)}
-                            className="flex items-center gap-2 bg-figueira text-white px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest active:scale-95 transition-all">
+                            className="flex items-center gap-2 bg-figueira text-white px-4 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide active:scale-95 transition-all">
                             <Plus size={14} /> Novo Tipo de Cesta
                         </button>
                     ) : (
@@ -127,9 +127,9 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
                                 className="w-full bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs font-bold text-fg focus:border-figueira outline-none" />
                             <div className="flex gap-2">
                                 <button type="button" onClick={() => setCriarAberto(false)}
-                                    className="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest bg-bg border border-soft text-muted">Cancelar</button>
+                                    className="flex-1 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide bg-bg border border-soft text-muted">Cancelar</button>
                                 <button type="submit" disabled={loading}
-                                    className="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest bg-figueira text-white flex items-center justify-center gap-2 disabled:opacity-50">
+                                    className="flex-1 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide bg-figueira text-white flex items-center justify-center gap-2 disabled:opacity-50">
                                     {loading ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />} Criar
                                 </button>
                             </div>
@@ -157,13 +157,13 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
                                         <Package size={18} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="text-[11px] font-black uppercase italic text-fg truncate">{cesta.nome}</h3>
+                                        <h3 className="text-[14px] font-bold uppercase text-fg truncate">{cesta.nome}</h3>
                                         <div className="flex items-center gap-2 mt-0.5">
-                                            <span className="text-[8px] font-bold text-muted">{cesta.itens.length} itens</span>
-                                            <span className="text-[8px] font-bold text-muted">·</span>
-                                            <span className="text-[8px] font-bold text-muted">{cesta._count.entregas} entregas</span>
-                                            <span className="text-[8px] font-bold text-muted">·</span>
-                                            <span className={`text-[8px] font-black ${capacidade > 0 ? 'text-emerald-500' : 'text-red-400'}`}>
+                                            <span className="text-[13px] font-bold text-muted">{cesta.itens.length} itens</span>
+                                            <span className="text-[13px] font-bold text-muted">·</span>
+                                            <span className="text-[13px] font-bold text-muted">{cesta._count.entregas} entregas</span>
+                                            <span className="text-[13px] font-bold text-muted">·</span>
+                                            <span className={`text-[13px] font-bold ${capacidade > 0 ? 'text-emerald-500' : 'text-red-400'}`}>
                                                 {capacidade > 0 ? `${capacidade} disponivel` : 'Sem stock'}
                                             </span>
                                         </div>
@@ -173,18 +173,18 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
 
                                 <div className="border-t border-soft p-4 space-y-4">
                                     {cesta.descricao && (
-                                        <p className="text-[10px] text-muted italic">{cesta.descricao}</p>
+                                        <p className="text-[14px] text-muted">{cesta.descricao}</p>
                                     )}
 
                                     {/* ITENS DA CESTA */}
                                     <div className="space-y-1.5">
-                                        <p className="text-[8px] font-black uppercase tracking-widest text-muted">Composicao</p>
+                                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Composicao</p>
                                         {cesta.itens.length > 0 ? (
                                             cesta.itens.map((ic: any) => (
                                                 <div key={ic.id} className="flex items-center justify-between bg-bg rounded-xl px-3 py-2 border border-soft/50">
                                                     <div className="min-w-0">
-                                                        <span className="text-[10px] font-bold text-fg">{ic.quantidade}x {ic.item.nome}</span>
-                                                        <span className={`text-[8px] ml-2 ${ic.item.stock >= ic.quantidade ? 'text-emerald-500' : 'text-red-400'}`}>
+                                                        <span className="text-[14px] font-bold text-fg">{ic.quantidade}x {ic.item.nome}</span>
+                                                        <span className={`text-[13px] ml-2 ${ic.item.stock >= ic.quantidade ? 'text-emerald-500' : 'text-red-400'}`}>
                                                             (stock: {ic.item.stock})
                                                         </span>
                                                     </div>
@@ -196,7 +196,7 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
                                                 </div>
                                             ))
                                         ) : (
-                                            <p className="text-[9px] text-muted text-center py-2">Nenhum item na cesta</p>
+                                            <p className="text-[13px] text-muted text-center py-2">Nenhum item na cesta</p>
                                         )}
                                     </div>
 
@@ -217,7 +217,7 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
                                         )}
                                         {podeGerir && (
                                             <button onClick={() => handleEliminarCesta(cesta.id, cesta.nome)}
-                                                className="px-3 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest bg-bg border border-soft text-muted hover:text-red-500 hover:border-red-300 transition-all">
+                                                className="px-3 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide bg-bg border border-soft text-muted hover:text-red-500 hover:border-red-300 transition-all">
                                                 <Trash2 size={12} />
                                             </button>
                                         )}
@@ -226,7 +226,7 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
                                     {/* FORM MONTAR */}
                                     {isMontando && (
                                         <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-emerald-600">Entregar Cesta</p>
+                                            <p className="text-[13px] font-bold uppercase tracking-wide text-emerald-600">Entregar Cesta</p>
                                             <input value={destinatario} onChange={e => setDestinatario(e.target.value)}
                                                 placeholder="Nome da familia / destinatario *"
                                                 className="w-full bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs font-bold text-fg focus:border-emerald-500 outline-none" />
@@ -235,9 +235,9 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
                                                 className="w-full bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs font-bold text-fg focus:border-emerald-500 outline-none" />
                                             <div className="flex gap-2">
                                                 <button onClick={() => setMontarId(null)}
-                                                    className="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest bg-bg border border-soft text-muted">Cancelar</button>
+                                                    className="flex-1 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide bg-bg border border-soft text-muted">Cancelar</button>
                                                 <button onClick={handleMontarCesta} disabled={loading || !destinatario.trim()}
-                                                    className="flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest bg-emerald-500 text-white flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95">
+                                                    className="flex-1 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide bg-emerald-500 text-white flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95">
                                                     {loading ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle2 size={12} />} Confirmar
                                                 </button>
                                             </div>
@@ -256,8 +256,8 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
                     <summary className="flex items-center justify-between p-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden select-none">
                         <div className="flex items-center gap-2">
                             <History size={14} className="text-figueira" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-fg">Ultimas Entregas</span>
-                            <span className="text-[8px] font-bold text-muted bg-soft px-2 py-0.5 rounded-lg">{entregas.length}</span>
+                            <span className="text-[14px] font-bold uppercase tracking-wide text-fg">Ultimas Entregas</span>
+                            <span className="text-[13px] font-bold text-muted bg-soft px-2 py-0.5 rounded-lg">{entregas.length}</span>
                         </div>
                         <ChevronDown size={14} className="text-muted" />
                     </summary>
@@ -265,10 +265,10 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
                         {entregas.map((e: any) => (
                             <div key={e.id} className="px-4 py-3 flex items-center justify-between">
                                 <div className="min-w-0">
-                                    <p className="text-[10px] font-bold text-fg truncate">{e.destinatario}</p>
-                                    <p className="text-[8px] text-muted">{e.tipoCesta.nome}</p>
+                                    <p className="text-[14px] font-bold text-fg truncate">{e.destinatario}</p>
+                                    <p className="text-[13px] text-muted">{e.tipoCesta.nome}</p>
                                 </div>
-                                <span className="text-[8px] font-bold text-muted shrink-0">
+                                <span className="text-[13px] font-bold text-muted shrink-0">
                                     {new Date(e.criado_em).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}
                                 </span>
                             </div>
@@ -295,7 +295,7 @@ function AddItemForm({ cestaId, itensStock, itensExistentes, onAdd }: {
     if (!aberto) {
         return (
             <button onClick={() => setAberto(true)}
-                className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-soft text-[9px] font-black uppercase tracking-widest text-muted hover:border-figueira hover:text-figueira transition-all">
+                className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-soft text-[13px] font-bold uppercase tracking-wide text-muted hover:border-figueira hover:text-figueira transition-all">
                 <Plus size={11} /> Adicionar Item
             </button>
         )
@@ -305,7 +305,7 @@ function AddItemForm({ cestaId, itensStock, itensExistentes, onAdd }: {
         <div className="flex gap-2 items-end">
             <div className="flex-1">
                 <select value={itemId} onChange={e => setItemId(e.target.value)}
-                    className="w-full bg-bg border border-soft rounded-xl px-3 py-2 text-[10px] font-bold text-fg outline-none focus:border-figueira appearance-none">
+                    className="w-full bg-bg border border-soft rounded-xl px-3 py-2 text-[14px] font-bold text-fg outline-none focus:border-figueira appearance-none">
                     <option value="">Selecionar item...</option>
                     {itensDisponiveis.map(i => (
                         <option key={i.id} value={i.id}>{i.nome} (stock: {i.stock})</option>
@@ -313,7 +313,7 @@ function AddItemForm({ cestaId, itensStock, itensExistentes, onAdd }: {
                 </select>
             </div>
             <input type="number" min="1" value={qtd} onChange={e => setQtd(e.target.value)}
-                className="w-16 bg-bg border border-soft rounded-xl px-3 py-2 text-[10px] font-bold text-fg text-center outline-none focus:border-figueira" />
+                className="w-16 bg-bg border border-soft rounded-xl px-3 py-2 text-[14px] font-bold text-fg text-center outline-none focus:border-figueira" />
             <button
                 disabled={loading || !itemId}
                 onClick={async () => {
@@ -321,7 +321,7 @@ function AddItemForm({ cestaId, itensStock, itensExistentes, onAdd }: {
                     await onAdd(cestaId, Number(itemId), Number(qtd) || 1)
                     setItemId(''); setQtd('1'); setAberto(false); setLoading(false)
                 }}
-                className="px-3 py-2 rounded-xl bg-figueira text-white text-[9px] font-black disabled:opacity-50">
+                className="px-3 py-2 rounded-xl bg-figueira text-white text-[13px] font-bold disabled:opacity-50">
                 {loading ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
             </button>
             <button onClick={() => setAberto(false)} className="px-2 py-2 text-muted hover:text-fg">

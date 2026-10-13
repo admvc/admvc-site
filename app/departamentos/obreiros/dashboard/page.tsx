@@ -1,20 +1,23 @@
-import { getDb } from '@/lib/db'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getSessionData } from '@/lib/auth-utils'
-import { getObreirosRole, podeGerirObreiros, type ObreirosRole } from '@/lib/obreiros-permissions'
+import { getTenantClient } from '@/lib/prisma'
+import { getObreirosRole, podeGerirObreiros } from '@/lib/obreiros-permissions'
 import {
     Users, Calendar, BarChart3, MessageCircle, ChevronRight,
-    Shield, ArrowLeft, Phone
+    Shield, ArrowLeft, Phone,
 } from 'lucide-react'
 import SeccaoColapsavel from '@/components/acolhimento/SeccaoColapsavel'
 
 const TERMOS_DIACONIA = ['diaconia', 'diácono', 'diacono', 'obreiro']
 
+export const dynamic = 'force-dynamic'
+
 export default async function ObreirosDashboard() {
-    const db = await getDb()
     const session = await getSessionData()
     if (!session) redirect('/membros/login')
+
+    const db = getTenantClient(session.tenantId)
 
     const membroLogado = await db.membro.findUnique({
         where: { id: session.membroId },
@@ -32,15 +35,14 @@ export default async function ObreirosDashboard() {
 
     const isLiderOuAdmin = podeGerirObreiros(obreirosRole)
 
-    // Encontrar departamento da Diaconia
     const deptos = await db.departamento.findMany({ select: { id: true, nome: true } })
     const depto = deptos.find((d: any) => TERMOS_DIACONIA.some(t => d.nome.toLowerCase().includes(t)))
     if (!depto) {
         return (
-            <div className="flex items-center justify-center min-h-screen px-4">
+            <div className="app-novo min-h-screen flex items-center justify-center px-4">
                 <div className="text-center space-y-2">
-                    <Shield size={32} className="mx-auto text-muted/30" />
-                    <p className="text-sm font-black uppercase text-muted">Departamento de Diaconia nao encontrado</p>
+                    <Shield size={32} className="mx-auto a-suave" />
+                    <p className="text-[15px] font-semibold a-suave">Ministério de Diaconia não encontrado</p>
                 </div>
             </div>
         )
@@ -90,7 +92,6 @@ export default async function ObreirosDashboard() {
         }),
     ])
 
-    // Contagem de servicos por membro
     const servicosPorMembro: Record<number, number> = {}
     for (const e of escalasEsteMes) {
         servicosPorMembro[e.membro_id] = (servicosPorMembro[e.membro_id] || 0) + 1
@@ -123,105 +124,81 @@ export default async function ObreirosDashboard() {
         : null
 
     return (
-        <div className="min-h-screen bg-bg pb-28">
-            {/* Header */}
-            <div className="sticky top-0 z-30 bg-bg2 border-b border-soft px-4 py-3 pt-[calc(env(safe-area-inset-top)+12px)]">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <Link href="/membros/dashboard" className="w-9 h-9 flex items-center justify-center bg-soft rounded-xl text-muted hover:text-fg transition-all">
-                            <ArrowLeft size={16} />
-                        </Link>
-                        <div>
-                            <h1 className="text-base font-black uppercase italic tracking-tighter text-fg">Obreiros</h1>
-                            <p className="text-[7px] font-black uppercase tracking-widest text-figueira">Ministerio de Diaconia</p>
-                        </div>
-                    </div>
-                    {isLiderOuAdmin && (
-                        <Link href="/departamentos/obreiros/relatorio" className="w-9 h-9 flex items-center justify-center bg-figueira/10 text-figueira rounded-xl hover:bg-figueira hover:text-white transition-all">
-                            <BarChart3 size={16} />
-                        </Link>
-                    )}
-                </div>
-            </div>
+        <div className="app-novo min-h-screen pb-28">
+            <main className="mx-auto max-w-3xl px-4 pt-20 pb-28 md:pt-8 space-y-5">
+                <Link href="/membros/dashboard" className="a-foco inline-flex min-h-[44px] items-center gap-2 text-[16px] font-semibold" style={{ color: 'var(--a-destaque)' }}>
+                    <ArrowLeft size={20} aria-hidden /> Início
+                </Link>
 
-            <div className="px-4 pt-5 space-y-5">
+                <header>
+                    <h1 className="text-[24px] font-bold leading-tight">Obreiros</h1>
+                    <p className="text-[16px] a-suave">Ministério de Diaconia</p>
+                </header>
+
                 {/* KPIs */}
                 <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-bg2 border border-soft rounded-2xl p-4 flex flex-col items-center gap-1 min-h-[72px]">
-                        <Users size={20} className="text-figueira" />
-                        <span className="text-xl font-black text-fg">{obreiros.length}</span>
-                        <span className="text-[7px] font-black uppercase tracking-widest text-muted">Obreiros</span>
-                    </div>
-                    <div className="bg-bg2 border border-soft rounded-2xl p-4 flex flex-col items-center gap-1 min-h-[72px]">
-                        <Calendar size={20} className="text-blue-400" />
-                        <span className="text-xl font-black text-fg">{escalasEsteMes.length}</span>
-                        <span className="text-[7px] font-black uppercase tracking-widest text-muted">Servicos</span>
-                    </div>
-                    <div className="bg-bg2 border border-soft rounded-2xl p-4 flex flex-col items-center gap-1 min-h-[72px]">
-                        <Shield size={20} className="text-emerald-500" />
-                        <span className="text-xl font-black text-fg">{taxaPresenca}%</span>
-                        <span className="text-[7px] font-black uppercase tracking-widest text-muted">Presenca</span>
-                    </div>
+                    {[
+                        { icone: Users, valor: obreiros.length, label: 'Obreiros', cor: 'var(--a-destaque)' },
+                        { icone: Calendar, valor: escalasEsteMes.length, label: 'Serviços', cor: 'var(--a-info)' },
+                        { icone: Shield, valor: `${taxaPresenca}%`, label: 'Presença', cor: 'var(--a-ok)' },
+                    ].map(({ icone: Ic, valor, label, cor }) => (
+                        <div key={label} className="a-card flex flex-col items-center gap-1 p-4 text-center">
+                            <Ic size={20} style={{ color: cor }} />
+                            <span className="text-[22px] font-bold">{valor}</span>
+                            <span className="text-[13px] font-semibold a-suave">{label}</span>
+                        </div>
+                    ))}
                 </div>
 
-                {/* Botoes de acao */}
+                {/* Ações */}
                 {isLiderOuAdmin && (
                     <div className="grid grid-cols-2 gap-3">
-                        <Link
-                            href={`/escalas/gestao/${depto.id}`}
-                            className="h-14 flex items-center justify-center gap-2 bg-figueira text-white rounded-2xl text-sm font-black uppercase tracking-widest active:scale-95 transition-all"
-                        >
-                            <Calendar size={18} />
-                            Escalar
+                        <Link href={`/escalas?equipa=${depto.id}`}
+                            className="a-botao a-botao-principal justify-center gap-2">
+                            <Calendar size={18} /> Escalar
                         </Link>
-                        <Link
-                            href="/departamentos/obreiros/relatorio"
-                            className="h-14 flex items-center justify-center gap-2 bg-bg2 border border-soft text-fg rounded-2xl text-sm font-black uppercase tracking-widest active:scale-95 transition-all hover:border-figueira/30"
-                        >
-                            <BarChart3 size={18} />
-                            Relatorio
+                        <Link href="/departamentos/obreiros/relatorio"
+                            className="a-botao a-botao-secundario justify-center gap-2">
+                            <BarChart3 size={18} /> Relatório
                         </Link>
                     </div>
                 )}
 
-                {/* Proximo Evento */}
+                {/* Próximo Evento */}
                 {eventoFormatado && (
                     <SeccaoColapsavel
-                        titulo="Proximo Evento"
-                        icon={<Calendar size={16} className="text-blue-400" />}
+                        titulo="Próximo Evento"
+                        icon={<Calendar size={16} style={{ color: 'var(--a-info)' }} />}
                         badge={
-                            <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                            <span className="rounded-lg px-2 py-0.5 text-[13px] font-semibold"
+                                style={{ background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }}>
                                 {eventoFormatado.data}
                             </span>
                         }
                         defaultOpen
                     >
                         <div className="px-5 py-4 space-y-3">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <h3 className="text-sm font-black uppercase italic text-fg">{eventoFormatado.nome}</h3>
-                                    <p className="text-xs text-muted font-bold mt-0.5">
-                                        {eventoFormatado.escalados} escalados · {eventoFormatado.confirmados} confirmados
-                                    </p>
-                                </div>
+                            <div>
+                                <h3 className="text-[15px] font-bold">{eventoFormatado.nome}</h3>
+                                <p className="text-[14px] a-suave mt-0.5">
+                                    {eventoFormatado.escalados} escalados · {eventoFormatado.confirmados} confirmados
+                                </p>
                             </div>
-                            {/* Barra de progresso */}
                             <div className="space-y-1">
-                                <div className="h-2 bg-soft rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-figueira rounded-full transition-all"
-                                        style={{ width: `${obreiros.length > 0 ? Math.round((eventoFormatado.escalados / obreiros.length) * 100) : 0}%` }}
-                                    />
+                                <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--a-borda)' }}>
+                                    <div className="h-full rounded-full" style={{
+                                        background: 'var(--a-destaque)',
+                                        width: `${obreiros.length > 0 ? Math.round((eventoFormatado.escalados / obreiros.length) * 100) : 0}%`,
+                                    }} />
                                 </div>
-                                <p className="text-[8px] font-bold text-muted text-right">
+                                <p className="text-[13px] font-semibold a-suave text-right">
                                     {eventoFormatado.escalados}/{obreiros.length} obreiros escalados
                                 </p>
                             </div>
                             {isLiderOuAdmin && (
-                                <Link
-                                    href={`/escalas/gestao/${depto.id}`}
-                                    className="flex items-center justify-center gap-2 w-full h-12 bg-figueira/10 text-figueira rounded-xl text-xs font-black uppercase tracking-widest hover:bg-figueira hover:text-white transition-all active:scale-95"
-                                >
+                                <Link href={`/escalas?equipa=${depto.id}`}
+                                    className="a-foco flex min-h-[44px] items-center justify-center gap-2 rounded-[12px] text-[15px] font-semibold"
+                                    style={{ background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }}>
                                     Gerir Escalas <ChevronRight size={14} />
                                 </Link>
                             )}
@@ -232,29 +209,30 @@ export default async function ObreirosDashboard() {
                 {/* Lista de Obreiros */}
                 <SeccaoColapsavel
                     titulo="Obreiros"
-                    icon={<Users size={16} className="text-figueira" />}
+                    icon={<Users size={16} style={{ color: 'var(--a-destaque)' }} />}
                     badge={
-                        <span className="text-[8px] font-black px-2 py-0.5 rounded-lg bg-figueira/10 text-figueira">
+                        <span className="rounded-lg px-2 py-0.5 text-[13px] font-semibold"
+                            style={{ background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }}>
                             {obreiros.length}
                         </span>
                     }
                     defaultOpen
                 >
-                    <div className="divide-y divide-soft">
+                    <div className="a-divide">
                         {obreiros.length > 0 ? obreiros.map((obr: any) => (
                             <div key={obr.id} className="flex items-center gap-3 px-5 py-3.5">
-                                {/* Avatar */}
-                                <div className="w-11 h-11 flex items-center justify-center rounded-full bg-figueira text-white text-xs font-black shrink-0">
+                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[14px] font-bold"
+                                    style={{ background: 'var(--a-destaque)', color: 'var(--a-sobre-destaque)' }}>
                                     {obr.iniciais}
                                 </div>
 
-                                {/* Info */}
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-black uppercase italic text-fg truncate">{obr.nome}</p>
+                                <div className="min-w-0 flex-1">
+                                    <p className="truncate text-[15px] font-semibold">{obr.nome}</p>
                                     {obr.funcoes.length > 0 && (
                                         <div className="flex flex-wrap gap-1 mt-1">
                                             {obr.funcoes.map((f: string) => (
-                                                <span key={f} className="text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md bg-soft text-muted">
+                                                <span key={f} className="rounded-md px-1.5 py-0.5 text-[13px] font-semibold a-suave"
+                                                    style={{ background: 'var(--a-borda)' }}>
                                                     {f}
                                                 </span>
                                             ))}
@@ -262,28 +240,26 @@ export default async function ObreirosDashboard() {
                                     )}
                                 </div>
 
-                                {/* Servicos badge */}
                                 <div className="flex items-center gap-2 shrink-0">
-                                    <span className={`text-xs font-black px-2 py-1 rounded-lg ${obr.servicosEsteMes > 0 ? 'bg-figueira/10 text-figueira' : 'bg-soft text-muted'}`}>
+                                    <span className={`rounded-lg px-2 py-1 text-[13px] font-semibold ${obr.servicosEsteMes > 0 ? '' : 'a-suave'}`}
+                                        style={obr.servicosEsteMes > 0
+                                            ? { background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }
+                                            : { background: 'var(--a-borda)' }}>
                                         {obr.servicosEsteMes}x
                                     </span>
 
-                                    {/* WhatsApp */}
                                     {obr.telefone && (
-                                        <a
-                                            href={`https://wa.me/${obr.telefone.replace(/\D/g, '')}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="w-11 h-11 flex items-center justify-center bg-green-500/10 text-green-500 rounded-xl hover:bg-green-500 hover:text-white transition-all active:scale-95"
-                                        >
+                                        <a href={`https://wa.me/${obr.telefone.replace(/\D/g, '')}`}
+                                            target="_blank" rel="noopener noreferrer"
+                                            className="a-foco flex h-10 w-10 items-center justify-center rounded-[12px]"
+                                            style={{ background: 'rgba(34,197,94,.1)', color: 'rgb(34,197,94)' }}>
                                             <MessageCircle size={18} />
                                         </a>
                                     )}
                                     {obr.telefone && (
-                                        <a
-                                            href={`tel:${obr.telefone}`}
-                                            className="w-11 h-11 flex items-center justify-center bg-blue-500/10 text-blue-500 rounded-xl hover:bg-blue-500 hover:text-white transition-all active:scale-95"
-                                        >
+                                        <a href={`tel:${obr.telefone}`}
+                                            className="a-foco flex h-10 w-10 items-center justify-center rounded-[12px]"
+                                            style={{ background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }}>
                                             <Phone size={18} />
                                         </a>
                                     )}
@@ -291,13 +267,13 @@ export default async function ObreirosDashboard() {
                             </div>
                         )) : (
                             <div className="text-center py-8 px-5">
-                                <Users size={28} className="mx-auto text-muted/20 mb-2" />
-                                <p className="text-xs font-black uppercase tracking-widest text-muted">Nenhum obreiro registado</p>
+                                <Users size={28} className="mx-auto a-suave mb-2" style={{ opacity: .3 }} />
+                                <p className="text-[15px] font-semibold a-suave">Nenhum obreiro registado</p>
                             </div>
                         )}
                     </div>
                 </SeccaoColapsavel>
-            </div>
+            </main>
         </div>
     )
 }

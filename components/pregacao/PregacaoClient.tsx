@@ -183,7 +183,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
             >
                 {/* Header */}
                 <div className="sticky top-0 z-10 bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl">
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">Novo Sermao</h2>
+                    <h2 className="text-sm font-bold text-fg">Novo Sermao</h2>
                     <button onClick={() => setModalAberto(false)} className="text-muted hover:text-fg transition-colors">
                         <X size={18} />
                     </button>
@@ -192,7 +192,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                 <form onSubmit={handleCriar} className="p-6 space-y-4">
                     {/* Titulo */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Titulo *</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Titulo *</label>
                         <input
                             name="titulo"
                             required
@@ -204,7 +204,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                     {/* Pregador + Data */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Pregador *</label>
+                            <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Pregador *</label>
                             <select
                                 name="pregador_id"
                                 required
@@ -219,7 +219,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Data *</label>
+                            <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Data *</label>
                             <input
                                 name="data_pregacao"
                                 type="date"
@@ -231,7 +231,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
 
                     {/* Evento */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Evento (opcional)</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Evento (opcional)</label>
                         <select
                             name="evento_id"
                             className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg focus:outline-none focus:border-figueira transition-colors"
@@ -247,7 +247,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
 
                     {/* Tags */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Tags (separadas por virgula)</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Tags (separadas por virgula)</label>
                         <input
                             name="tags"
                             className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors"
@@ -257,7 +257,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
 
                     {/* Texto corpo */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Texto do Sermao</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Texto do Sermao</label>
                         <textarea
                             name="texto_corpo"
                             rows={8}
@@ -268,7 +268,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
 
                     {/* Referencias Biblicas */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Referencias Biblicas</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Referencias Biblicas</label>
                         <div className="flex gap-2">
                             <input
                                 value={refInput}
@@ -280,7 +280,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                             <button
                                 type="button"
                                 onClick={adicionarRef}
-                                className="px-4 py-2 bg-figueira text-white text-[9px] font-black uppercase tracking-widest rounded-2xl hover:opacity-90 transition-opacity"
+                                className="px-4 py-2 bg-figueira text-white text-[13px] font-bold uppercase tracking-wide rounded-2xl hover:opacity-90 transition-opacity"
                             >
                                 +
                             </button>
@@ -288,7 +288,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                         {refs.length > 0 && (
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {refs.map((ref, i) => (
-                                    <span key={i} className="inline-flex items-center gap-1 bg-figueira/10 text-figueira text-[9px] font-bold px-3 py-1 rounded-full">
+                                    <span key={i} className="inline-flex items-center gap-1 bg-figueira/10 text-figueira text-[13px] font-bold px-3 py-1 rounded-full">
                                         {formatarRef(ref)}
                                         <button type="button" onClick={() => removerRef(i)} className="hover:text-red-400 transition-colors">
                                             <X size={10} />
@@ -302,14 +302,14 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                     {/* Publicado */}
                     <label className="flex items-center gap-3 cursor-pointer">
                         <input name="publicado" type="checkbox" className="w-4 h-4 rounded border-soft accent-figueira" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-muted">Publicar imediatamente</span>
+                        <span className="text-[14px] font-bold uppercase tracking-wide text-muted">Publicar imediatamente</span>
                     </label>
 
                     {/* Botao */}
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3 bg-figueira text-white text-[10px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="w-full py-3 bg-figueira text-white text-[14px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                         {loading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
                         {loading ? 'A criar...' : 'Criar Sermao'}
@@ -326,9 +326,9 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
             <header className="space-y-4">
                 <div className="flex items-center gap-2 text-figueira">
                     <BookOpen size={16} />
-                    <span className="font-black text-[10px] uppercase tracking-[0.3em]">Pregacao</span>
+                    <span className="font-bold text-[14px] uppercase tracking-wide">Pregacao</span>
                 </div>
-                <h1 className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                <h1 className="text-4xl sm:text-5xl font-bold text-fg leading-none">
                     Sermoes<span className="text-muted/20">.</span>
                 </h1>
             </header>
@@ -339,8 +339,8 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                     <ChevronLeft size={18} />
                 </button>
                 <div className="text-center">
-                    <p className="text-sm font-black uppercase tracking-widest text-fg">{MESES[mes - 1]}</p>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted">{ano}</p>
+                    <p className="text-sm font-bold text-fg">{MESES[mes - 1]}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">{ano}</p>
                 </div>
                 <button onClick={mesSeguinte} className="p-2 hover:bg-bg rounded-xl transition-colors text-muted hover:text-fg">
                     <ChevronRight size={18} />
@@ -349,13 +349,13 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
 
             {/* Action bar */}
             <div className="flex items-center justify-between">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted">
+                <p className="text-[14px] font-bold uppercase tracking-wide text-muted">
                     {sermoes.length} {sermoes.length === 1 ? 'sermao' : 'sermoes'}
                 </p>
                 {podeGerir && (
                     <button
                         onClick={() => setModalAberto(true)}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[9px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[13px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity"
                     >
                         <Plus size={12} />
                         Novo Sermao
@@ -367,7 +367,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
             {sermoes.length === 0 ? (
                 <div className="py-20 text-center border-2 border-dashed border-soft rounded-[2.5rem]">
                     <BookOpen size={32} className="mx-auto text-muted/30 mb-4" />
-                    <p className="text-xs font-black uppercase text-muted tracking-widest">Nenhum sermao neste mes.</p>
+                    <p className="text-xs font-bold text-muted">Nenhum sermao neste mes.</p>
                 </div>
             ) : (
                 <div className="space-y-3">
@@ -380,18 +380,18 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                                 <summary className="cursor-pointer px-5 py-4 flex items-center gap-4 list-none [&::-webkit-details-marker]:hidden">
                                     {/* Date badge */}
                                     <div className="flex-shrink-0 w-12 h-12 bg-bg border border-soft rounded-xl flex flex-col items-center justify-center">
-                                        <span className="text-[10px] font-black text-figueira leading-none">
+                                        <span className="text-[14px] font-bold text-figueira leading-none">
                                             {new Date(s.data_pregacao).getDate()}
                                         </span>
-                                        <span className="text-[8px] font-bold text-muted uppercase">
+                                        <span className="text-[13px] font-bold text-muted uppercase">
                                             {new Date(s.data_pregacao).toLocaleDateString('pt-PT', { month: 'short' })}
                                         </span>
                                     </div>
 
                                     {/* Info */}
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="text-xs font-black uppercase tracking-wide text-fg truncate">{s.titulo}</h3>
-                                        <p className="text-[9px] font-bold text-muted mt-0.5">
+                                        <h3 className="text-xs font-bold text-fg truncate">{s.titulo}</h3>
+                                        <p className="text-[13px] font-bold text-muted mt-0.5">
                                             <User size={9} className="inline mr-1" />
                                             {s.pregador.first_name} {s.pregador.last_name}
                                             {s.evento && (
@@ -406,7 +406,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                                     {/* Tags + Status */}
                                     <div className="hidden sm:flex items-center gap-2">
                                         {tags.slice(0, 2).map((tag: string, i: number) => (
-                                            <span key={i} className="text-[8px] font-bold uppercase tracking-wider bg-figueira/10 text-figueira px-2 py-0.5 rounded-full">
+                                            <span key={i} className="text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira px-2 py-0.5 rounded-full">
                                                 {tag}
                                             </span>
                                         ))}
@@ -425,10 +425,10 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                                     {/* References */}
                                     {refsArr.length > 0 && (
                                         <div>
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-muted mb-1">Referencias</p>
+                                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Referencias</p>
                                             <div className="flex flex-wrap gap-1.5">
                                                 {refsArr.map((ref: any, i: number) => (
-                                                    <span key={i} className="text-[9px] font-bold bg-bg border border-soft px-2.5 py-1 rounded-full text-fg">
+                                                    <span key={i} className="text-[13px] font-bold bg-bg border border-soft px-2.5 py-1 rounded-full text-fg">
                                                         {formatarRef(ref)}
                                                     </span>
                                                 ))}
@@ -439,8 +439,8 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                                     {/* Excerpt */}
                                     {s.texto_corpo && (
                                         <div>
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-muted mb-1">Excerto</p>
-                                            <p className="text-[11px] text-fg/80 leading-relaxed line-clamp-3">
+                                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Excerto</p>
+                                            <p className="text-[14px] text-fg/80 leading-relaxed line-clamp-3">
                                                 {s.texto_corpo.replace(/<[^>]*>/g, '').substring(0, 300)}
                                                 {s.texto_corpo.length > 300 ? '...' : ''}
                                             </p>
@@ -452,7 +452,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                                         {podeGerir && (
                                             <Link
                                                 href={`/pregacao/editor/${s.id}`}
-                                                className="flex items-center gap-1.5 px-4 py-2 bg-bg border border-soft rounded-2xl text-[9px] font-black uppercase tracking-widest text-fg hover:border-figueira/50 transition-colors"
+                                                className="flex items-center gap-1.5 px-4 py-2 bg-bg border border-soft rounded-2xl text-[13px] font-bold uppercase tracking-wide text-fg hover:border-figueira/50 transition-colors"
                                             >
                                                 <Edit3 size={10} />
                                                 Editar
@@ -460,7 +460,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                                         )}
                                         <button
                                             onClick={() => handleWhatsApp(s.id)}
-                                            className="flex items-center gap-1.5 px-4 py-2 bg-green-600/10 border border-green-600/20 rounded-2xl text-[9px] font-black uppercase tracking-widest text-green-500 hover:bg-green-600/20 transition-colors"
+                                            className="flex items-center gap-1.5 px-4 py-2 bg-green-600/10 border border-green-600/20 rounded-2xl text-[13px] font-bold uppercase tracking-wide text-green-500 hover:bg-green-600/20 transition-colors"
                                         >
                                             <MessageCircle size={10} />
                                             WhatsApp
@@ -468,7 +468,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                                         {podeGerir && (
                                             <Link
                                                 href={`/ensino?sermao_id=${s.id}`}
-                                                className="flex items-center gap-1.5 px-4 py-2 bg-blue-600/10 border border-blue-600/20 rounded-2xl text-[9px] font-black uppercase tracking-widest text-blue-400 hover:bg-blue-600/20 transition-colors"
+                                                className="flex items-center gap-1.5 px-4 py-2 bg-blue-600/10 border border-blue-600/20 rounded-2xl text-[13px] font-bold uppercase tracking-wide text-blue-400 hover:bg-blue-600/20 transition-colors"
                                             >
                                                 <GraduationCap size={10} />
                                                 Usar na EBD
@@ -477,7 +477,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                                         {podeGerir && (
                                             <button
                                                 onClick={() => handleRemover(s.id)}
-                                                className="flex items-center gap-1.5 px-4 py-2 bg-red-600/10 border border-red-600/20 rounded-2xl text-[9px] font-black uppercase tracking-widest text-red-400 hover:bg-red-600/20 transition-colors ml-auto"
+                                                className="flex items-center gap-1.5 px-4 py-2 bg-red-600/10 border border-red-600/20 rounded-2xl text-[13px] font-bold uppercase tracking-wide text-red-400 hover:bg-red-600/20 transition-colors ml-auto"
                                             >
                                                 <Trash2 size={10} />
                                                 Remover

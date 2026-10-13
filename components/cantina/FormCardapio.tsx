@@ -126,7 +126,7 @@ export default function FormCardapio({ eventos, produtos }: Props) {
         <div className="space-y-8">
             {/* Selecionar evento */}
             <section className="space-y-3">
-                <h2 className="text-xs font-black uppercase tracking-widest text-muted flex items-center gap-2">
+                <h2 className="text-xs font-bold text-muted flex items-center gap-2">
                     <Calendar size={12} /> Selecionar Evento
                 </h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -144,14 +144,14 @@ export default function FormCardapio({ eventos, produtos }: Props) {
                                         : 'border-soft hover:border-figueira/20'
                                 }`}
                             >
-                                <p className="text-sm font-black uppercase text-fg truncate">{ev.nome}</p>
-                                <p className="text-[10px] text-muted">{dia} · {hora}</p>
+                                <p className="text-sm font-bold text-fg truncate">{ev.nome}</p>
+                                <p className="text-[14px] text-muted">{dia} · {hora}</p>
                                 {ev.cardapio ? (
-                                    <span className="inline-block text-[8px] font-black uppercase tracking-widest bg-figueira/10 text-figueira border border-figueira/20 px-2 py-0.5 rounded-lg">
+                                    <span className="inline-block text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira border border-figueira/20 px-2 py-0.5 rounded-lg">
                                         Cardapio definido ({ev.cardapio.itens.length} itens)
                                     </span>
                                 ) : (
-                                    <span className="inline-block text-[8px] font-black uppercase tracking-widest text-muted">
+                                    <span className="inline-block text-[13px] font-bold uppercase tracking-wide text-muted">
                                         Sem cardapio
                                     </span>
                                 )}
@@ -164,7 +164,7 @@ export default function FormCardapio({ eventos, produtos }: Props) {
             {eventos.length === 0 && (
                 <div className="py-20 text-center">
                     <Calendar size={32} className="mx-auto text-muted/20 mb-4" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted">Nenhum evento nos proximos 30 dias</p>
+                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum evento nos proximos 30 dias</p>
                 </div>
             )}
 
@@ -172,10 +172,10 @@ export default function FormCardapio({ eventos, produtos }: Props) {
             {evento && (
                 <section className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xs font-black uppercase tracking-widest text-fg flex items-center gap-2">
+                        <h2 className="text-xs font-bold text-fg flex items-center gap-2">
                             <UtensilsCrossed size={12} className="text-figueira" /> Produtos para {evento.nome}
                         </h2>
-                        <span className="text-[10px] font-bold text-muted">
+                        <span className="text-[14px] font-bold text-muted">
                             {produtosSelecionados.length} selecionado{produtosSelecionados.length !== 1 ? 's' : ''}
                         </span>
                     </div>
@@ -196,7 +196,7 @@ export default function FormCardapio({ eventos, produtos }: Props) {
 
                     {Array.from(categorias.entries()).map(([catNome, prods]) => (
                         <div key={catNome} className="space-y-2">
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-muted">{catNome}</h3>
+                            <h3 className="text-[14px] font-bold uppercase tracking-wide text-muted">{catNome}</h3>
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                                 {prods.map(p => {
                                     const selecionado = produtosSelecionados.includes(p.id)
@@ -211,7 +211,7 @@ export default function FormCardapio({ eventos, produtos }: Props) {
                                                 }`}
                                             >
                                                 <p className="text-xs font-bold text-fg truncate">{p.nome}</p>
-                                                <p className="text-sm font-black italic text-figueira">{p.preco.toFixed(2)}&euro;</p>
+                                                <p className="text-sm font-bold text-figueira">{p.preco.toFixed(2)}&euro;</p>
                                             </button>
                                             {selecionado && (
                                                 <input
@@ -221,7 +221,7 @@ export default function FormCardapio({ eventos, produtos }: Props) {
                                                     value={quantidades[p.id] ?? ''}
                                                     onChange={(e) => setQuantidade(p.id, e.target.value)}
                                                     onClick={(e) => e.stopPropagation()}
-                                                    className="w-full bg-bg border border-soft rounded-lg px-2 py-1.5 text-[10px] font-bold text-fg focus:border-figueira outline-none placeholder:text-muted2"
+                                                    className="w-full bg-bg border border-soft rounded-lg px-2 py-1.5 text-[14px] font-bold text-fg focus:border-figueira outline-none placeholder:text-muted2"
                                                 />
                                             )}
                                         </div>
@@ -236,7 +236,7 @@ export default function FormCardapio({ eventos, produtos }: Props) {
                         <button
                             onClick={handleSalvar}
                             disabled={loading || produtosSelecionados.length === 0}
-                            className="flex-1 py-3 bg-figueira text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+                            className="flex-1 py-3 bg-figueira text-white rounded-2xl text-xs font-bold hover:opacity-90 transition-all disabled:opacity-40 flex items-center justify-center gap-2"
                         >
                             {loading ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle size={14} />}
                             {loading ? 'A guardar...' : 'Guardar Cardapio'}
@@ -245,7 +245,7 @@ export default function FormCardapio({ eventos, produtos }: Props) {
                             <button
                                 onClick={handleRemover}
                                 disabled={loading}
-                                className="px-6 py-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-500/20 transition-all disabled:opacity-40 flex items-center gap-2"
+                                className="px-6 py-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl text-xs font-bold hover:bg-red-500/20 transition-all disabled:opacity-40 flex items-center gap-2"
                             >
                                 <Trash2 size={14} />
                                 Remover

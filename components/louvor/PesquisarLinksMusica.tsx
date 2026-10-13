@@ -96,7 +96,7 @@ export default function PesquisarLinksMusica({
                 type="button"
                 onClick={pesquisar}
                 disabled={isPending || !titulo.trim()}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-figueira/40 text-figueira bg-figueira/5 hover:bg-figueira/10 font-black text-[9px] uppercase tracking-widest transition-all disabled:opacity-40"
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-figueira/40 text-figueira bg-figueira/5 hover:bg-figueira/10 font-bold text-[13px] uppercase tracking-wide transition-all disabled:opacity-40"
             >
                 {isPending
                     ? <><Loader2 size={12} className="animate-spin" /> A pesquisar...</>
@@ -107,7 +107,7 @@ export default function PesquisarLinksMusica({
             {erro && (
                 <div className="flex items-center gap-2 bg-red-500/8 border border-red-500/20 rounded-xl px-3 py-2">
                     <AlertCircle size={12} className="text-red-500 shrink-0" />
-                    <p className="text-[9px] font-bold text-red-600">{erro}</p>
+                    <p className="text-[13px] font-bold text-red-600">{erro}</p>
                 </div>
             )}
 
@@ -117,7 +117,7 @@ export default function PesquisarLinksMusica({
 
                     {/* CIFRA + LETRA — links directos */}
                     <div className="bg-bg2 border border-soft rounded-2xl p-3 space-y-2">
-                        <p className="text-[8px] font-black uppercase tracking-widest text-muted mb-1">
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-1">
                             Links Directos
                         </p>
 
@@ -127,8 +127,8 @@ export default function PesquisarLinksMusica({
                                 <Guitar size={13} />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-[9px] font-black text-fg">CifraClub</p>
-                                <p className="text-[8px] text-muted truncate">cifraclub.com.br/...</p>
+                                <p className="text-[13px] font-bold text-fg">CifraClub</p>
+                                <p className="text-[13px] text-muted truncate">cifraclub.com.br/...</p>
                             </div>
                             <a href={resultados.links_directos.cifra} target="_blank" rel="noopener noreferrer"
                                 className="p-1.5 text-muted hover:text-orange-500 transition-colors shrink-0" title="Abrir para verificar">
@@ -145,8 +145,8 @@ export default function PesquisarLinksMusica({
                                 <FileText size={13} />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-[9px] font-black text-fg">Letras.mus.br</p>
-                                <p className="text-[8px] text-muted truncate">letras.mus.br/...</p>
+                                <p className="text-[13px] font-bold text-fg">Letras.mus.br</p>
+                                <p className="text-[13px] text-muted truncate">letras.mus.br/...</p>
                             </div>
                             <a href={resultados.links_directos.letra} target="_blank" rel="noopener noreferrer"
                                 className="p-1.5 text-muted hover:text-blue-500 transition-colors shrink-0" title="Abrir para verificar">
@@ -157,7 +157,7 @@ export default function PesquisarLinksMusica({
                                 cor="bg-blue-500/10 text-blue-700 border border-blue-500/20 hover:bg-blue-500 hover:text-white" />
                         </div>
 
-                        <p className="text-[7px] text-muted/60 font-medium pt-1">
+                        <p className="text-[13px] text-muted/60 font-medium pt-1">
                             ⚠️ Abre o link para confirmar antes de usar
                         </p>
                     </div>
@@ -167,7 +167,7 @@ export default function PesquisarLinksMusica({
                         <div className="bg-bg2 border border-soft rounded-2xl p-3 space-y-2">
                             <div className="flex items-center gap-1.5 mb-1">
                                 <Headphones size={11} className="text-green-500" />
-                                <p className="text-[8px] font-black uppercase tracking-widest text-muted">
+                                <p className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                     Spotify
                                 </p>
                             </div>
@@ -177,8 +177,8 @@ export default function PesquisarLinksMusica({
                                         <img src={track.imagem} alt="" className="w-8 h-8 rounded-lg object-cover shrink-0" />
                                     )}
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[9px] font-black text-fg truncate leading-none">{track.titulo}</p>
-                                        <p className="text-[8px] text-muted truncate mt-0.5">
+                                        <p className="text-[13px] font-bold text-fg truncate leading-none">{track.titulo}</p>
+                                        <p className="text-[13px] text-muted truncate mt-0.5">
                                             {track.artista} · {formatarDuracao(track.duracao_ms)}
                                         </p>
                                     </div>
@@ -199,7 +199,7 @@ export default function PesquisarLinksMusica({
                         <div className="bg-bg2 border border-soft rounded-2xl p-3 space-y-2">
                             <div className="flex items-center gap-1.5 mb-1">
                                 <Youtube size={11} className="text-red-500" />
-                                <p className="text-[8px] font-black uppercase tracking-widest text-muted">
+                                <p className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                     YouTube
                                 </p>
                             </div>
@@ -209,8 +209,8 @@ export default function PesquisarLinksMusica({
                                         <img src={video.imagem} alt="" className="w-12 h-8 rounded-lg object-cover shrink-0" />
                                     )}
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[9px] font-black text-fg truncate leading-none">{video.titulo}</p>
-                                        <p className="text-[8px] text-muted truncate mt-0.5">{video.canal}</p>
+                                        <p className="text-[13px] font-bold text-fg truncate leading-none">{video.titulo}</p>
+                                        <p className="text-[13px] text-muted truncate mt-0.5">{video.canal}</p>
                                     </div>
                                     <a href={video.url} target="_blank" rel="noopener noreferrer"
                                         className="p-1.5 text-muted hover:text-red-500 transition-colors shrink-0">
@@ -228,10 +228,10 @@ export default function PesquisarLinksMusica({
                     {resultados.spotify.length === 0 && resultados.youtube.length === 0 && (
                         <div className="bg-bg2 border border-soft rounded-xl px-4 py-4 text-center">
                             <Music size={18} className="mx-auto text-muted/30 mb-1.5" />
-                            <p className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Sem resultados Spotify/YouTube
                             </p>
-                            <p className="text-[8px] text-muted/60 mt-0.5">
+                            <p className="text-[13px] text-muted/60 mt-0.5">
                                 Usa os links directos acima ou preenche manualmente
                             </p>
                         </div>

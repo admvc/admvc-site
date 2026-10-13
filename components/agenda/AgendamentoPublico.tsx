@@ -72,8 +72,8 @@ export default function AgendamentoPublico({ agendaId, compromissosOcupados }: {
             {step < 4 && (
                 <div className="mb-8 flex items-center justify-between">
                     <div>
-                        <span className="text-figueira font-black text-[9px] uppercase tracking-[0.3em]">Passo {step} de 3</span>
-                        <h2 className="text-2xl font-black uppercase italic tracking-tighter text-fg mt-1">
+                        <span className="text-figueira font-bold text-[13px] uppercase tracking-wide">Passo {step} de 3</span>
+                        <h2 className="text-2xl font-bold text-fg mt-1">
                             {step === 1 && "Qual o motivo?"}
                             {step === 2 && "Escolha a Data e Hora"}
                             {step === 3 && "Os seus detalhes"}
@@ -99,7 +99,7 @@ export default function AgendamentoPublico({ agendaId, compromissosOcupados }: {
                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${cat.bg} ${cat.cor} ${cat.border} border group-hover:scale-110 transition-transform`}>
                                 <cat.icone size={20} />
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-fg text-center">
+                            <span className="text-[14px] font-bold uppercase tracking-wide text-fg text-center">
                                 {cat.label}
                             </span>
                         </button>
@@ -111,7 +111,7 @@ export default function AgendamentoPublico({ agendaId, compromissosOcupados }: {
             {step === 2 && (
                 <div className="space-y-6">
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2">
+                        <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                             <CalendarDays size={12} /> Selecione o Dia
                         </label>
                         <input 
@@ -119,13 +119,13 @@ export default function AgendamentoPublico({ agendaId, compromissosOcupados }: {
                             min={hoje}
                             value={data}
                             onChange={(e) => { setData(e.target.value); setHora(''); }}
-                            className="w-full bg-bg border-2 border-soft rounded-2xl px-5 py-4 text-sm font-black text-fg focus:border-figueira outline-none cursor-pointer transition-colors" 
+                            className="w-full bg-bg border-2 border-soft rounded-2xl px-5 py-4 text-sm font-bold text-fg focus:border-figueira outline-none cursor-pointer transition-colors" 
                         />
                     </div>
 
                     {data && (
                         <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                            <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2">
+                            <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                 <Clock size={12} /> Selecione a Hora
                             </label>
                             
@@ -146,7 +146,7 @@ export default function AgendamentoPublico({ agendaId, compromissosOcupados }: {
                             </div>
                             
                             {hora && (
-                                <button onClick={() => setStep(3)} className="w-full mt-6 flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-sm active:scale-95 animate-in fade-in slide-in-from-bottom-2">
+                                <button onClick={() => setStep(3)} className="w-full mt-6 flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-sm active:scale-95 animate-in fade-in slide-in-from-bottom-2">
                                     Continuar <ArrowRight size={14} />
                                 </button>
                             )}
@@ -166,27 +166,27 @@ export default function AgendamentoPublico({ agendaId, compromissosOcupados }: {
                                 <CalendarDays size={18} />
                             </div>
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-figueira">A sua marcação</p>
-                                <p className="text-sm font-bold text-fg italic">{new Date(data).toLocaleDateString('pt-PT')} às {hora}</p>
+                                <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">A sua marcação</p>
+                                <p className="text-sm font-bold text-fg">{new Date(data).toLocaleDateString('pt-PT')} às {hora}</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2"><User size={12} /> O seu Nome</label>
-                        <input name="nome" required placeholder="Ex: João Silva" className="w-full bg-bg border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none transition-colors" />
+                        <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2"><User size={12} /> O seu Nome</label>
+                        <input name="nome" required placeholder="Ex: João Silva" className="w-full bg-bg border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none transition-colors" />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2"><Mail size={12} /> O seu E-mail</label>
-                        <input name="email" type="email" required placeholder="Ex: joao@email.com" className="w-full bg-bg border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none transition-colors" />
+                        <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2"><Mail size={12} /> O seu E-mail</label>
+                        <input name="email" type="email" required placeholder="Ex: joao@email.com" className="w-full bg-bg border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none transition-colors" />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2"><Phone size={12} /> Telemóvel (WhatsApp)</label>
-                        <input name="telefone" required type="tel" placeholder="Ex: 912 345 678" className="w-full bg-bg border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none transition-colors" />
+                        <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2"><Phone size={12} /> Telemóvel (WhatsApp)</label>
+                        <input name="telefone" required type="tel" placeholder="Ex: 912 345 678" className="w-full bg-bg border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none transition-colors" />
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2"><AlignLeft size={12} /> Assunto / Notas (Opcional)</label>
+                        <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2"><AlignLeft size={12} /> Assunto / Notas (Opcional)</label>
                         <textarea name="observacoes" rows={3} placeholder="Quer adiantar o assunto da reunião?" className="w-full bg-bg border-2 border-soft rounded-2xl px-5 py-4 text-xs font-medium text-fg focus:border-figueira outline-none resize-none transition-colors" />
                     </div>
 
@@ -198,7 +198,7 @@ export default function AgendamentoPublico({ agendaId, compromissosOcupados }: {
                         </span>
                     </label>
 
-                    <button disabled={isPending} type="submit" className="w-full mt-2 flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50">
+                    <button disabled={isPending} type="submit" className="w-full mt-2 flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50">
                         {isPending ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}
                         {isPending ? "A Confirmar..." : "Confirmar Agendamento"}
                     </button>
@@ -212,12 +212,12 @@ export default function AgendamentoPublico({ agendaId, compromissosOcupados }: {
                         <div className="absolute inset-0 border-2 border-figueira rounded-2xl animate-ping opacity-20"></div>
                         <CheckCircle2 size={40} />
                     </div>
-                    <h2 className="text-3xl font-black uppercase italic tracking-tighter text-fg mb-2">Pedido Enviado!</h2>
-                    <p className="text-[11px] font-medium text-muted leading-relaxed max-w-sm mx-auto mb-8">
+                    <h2 className="text-3xl font-bold text-fg mb-2">Pedido Enviado!</h2>
+                    <p className="text-[14px] font-medium text-muted leading-relaxed max-w-sm mx-auto mb-8">
                         O seu pedido de marcação para dia <strong className="text-fg">{new Date(data).toLocaleDateString('pt-PT')}</strong> às <strong className="text-fg">{hora}</strong> foi registado com sucesso. O Gabinete entrará em contacto para confirmar.
                     </p>
                     
-                    <button onClick={() => window.location.reload()} className="px-8 py-4 bg-soft text-fg rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-fg hover:text-bg transition-all active:scale-95">
+                    <button onClick={() => window.location.reload()} className="px-8 py-4 bg-soft text-fg rounded-2xl text-[14px] font-bold uppercase tracking-wide hover:bg-fg hover:text-bg transition-all active:scale-95">
                         Fazer nova marcação
                     </button>
                 </div>

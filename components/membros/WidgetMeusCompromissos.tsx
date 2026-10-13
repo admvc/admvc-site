@@ -35,8 +35,8 @@ export default async function WidgetMeusCompromissos({ membroId }: { membroId: n
                     <CalendarDays size={18} />
                 </div>
                 <div>
-                    <h3 className="text-lg font-black uppercase italic tracking-tighter text-fg">As Minhas Marcações</h3>
-                    <p className="text-[9px] font-bold text-muted uppercase tracking-widest mt-0.5">Com o Gabinete Pastoral</p>
+                    <h3 className="text-lg font-bold text-fg">As Minhas Marcações</h3>
+                    <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-0.5">Com o Gabinete Pastoral</p>
                 </div>
             </div>
 
@@ -53,24 +53,24 @@ export default async function WidgetMeusCompromissos({ membroId }: { membroId: n
                             <div className="flex items-center gap-4">
                                 {/* DATA (Estilo Calendário rasgado) */}
                                 <div className="flex flex-col items-center justify-center min-w-[50px] border-r border-soft pr-4">
-                                    <span className="text-[9px] font-black uppercase text-muted tracking-widest">{data.toLocaleDateString('pt-PT', { weekday: 'short' })}</span>
-                                    <span className="text-xl font-black italic text-fg leading-none my-0.5">{data.getDate()}</span>
-                                    <span className="text-[9px] font-bold text-muted">{data.toLocaleDateString('pt-PT', { month: 'short' })}</span>
+                                    <span className="text-[13px] font-bold uppercase text-muted tracking-wide">{data.toLocaleDateString('pt-PT', { weekday: 'short' })}</span>
+                                    <span className="text-xl font-bold text-fg leading-none my-0.5">{data.getDate()}</span>
+                                    <span className="text-[13px] font-bold text-muted">{data.toLocaleDateString('pt-PT', { month: 'short' })}</span>
                                 </div>
 
                                 {/* DETALHES */}
                                 <div>
-                                    <h4 className="text-sm font-black uppercase tracking-tight text-fg truncate">
+                                    <h4 className="text-sm font-bold text-fg truncate">
                                         {comp.titulo}
                                     </h4>
                                     <div className="flex flex-wrap items-center gap-2 mt-1">
-                                        <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border flex items-center gap-1 ${estilo.bg} ${estilo.cor} ${estilo.border}`}>
+                                        <span className={`text-[13px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md border flex items-center gap-1 ${estilo.bg} ${estilo.cor} ${estilo.border}`}>
                                             <Icone size={10} /> {estilo.label}
                                         </span>
-                                        <span className="text-[9px] font-bold text-muted uppercase tracking-widest flex items-center gap-1">
+                                        <span className="text-[13px] font-bold text-muted uppercase tracking-wide flex items-center gap-1">
                                             <Clock size={10} /> {data.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
                                         </span>
-                                        <span className="text-[9px] font-bold text-muted uppercase tracking-widest flex items-center gap-1">
+                                        <span className="text-[13px] font-bold text-muted uppercase tracking-wide flex items-center gap-1">
                                             • Com {comp.agenda.dono.first_name}
                                         </span>
                                     </div>
@@ -80,11 +80,11 @@ export default async function WidgetMeusCompromissos({ membroId }: { membroId: n
                             {/* STATUS */}
                             <div className="hidden sm:flex shrink-0">
                                 {isPendente ? (
-                                    <span className="bg-orange-500/10 text-orange-500 border border-orange-500/20 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl flex items-center gap-1.5 animate-pulse">
+                                    <span className="bg-orange-500/10 text-orange-500 border border-orange-500/20 text-[13px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-xl flex items-center gap-1.5 animate-pulse">
                                         <Clock3 size={12} /> Aguardar
                                     </span>
                                 ) : (
-                                    <span className="bg-figueira/10 text-figueira border border-figueira/20 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+                                    <span className="bg-figueira/10 text-figueira border border-figueira/20 text-[13px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-xl flex items-center gap-1.5">
                                         <CheckCircle2 size={12} /> Confirmado
                                     </span>
                                 )}

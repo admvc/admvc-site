@@ -18,7 +18,7 @@ export default function VisitantePipelineBar({ status }: { status: string }) {
         }
         return (
             <div className="flex items-center gap-1.5">
-                <span className="text-[7px] font-black uppercase tracking-widest text-red-500 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
+                <span className="text-[13px] font-bold uppercase tracking-wide text-red-500 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
                     {labels[status] || status}
                 </span>
             </div>

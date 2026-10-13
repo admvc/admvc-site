@@ -11,6 +11,7 @@ import {
     HeartHandshake, UserPlus, ArrowRight, Briefcase
 } from 'lucide-react'
 import BotaoModalDocumentos from '@/components/admin/BotaoModalDocumentos'
+import { modulosAtivosDaIgreja } from '@/lib/modulos'
 
 export default async function AdminDashboard({ searchParams }: { searchParams: Promise<{ congregacao?: string }> }) {
     const params = await searchParams
@@ -18,6 +19,10 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
     if (!session) redirect('/membros/login')
 
     const db = await getDb()
+    // So o que a igreja tem ligado (Super Admin → Modulos)
+    const modulos = await modulosAtivosDaIgreja()
+    const temEscalas = modulos.includes('escalas')
+    const temAcolhimento = modulos.includes('acolhimento')
     const tenantId = await getTenantIdFromHeaders()
 
     const congFilter = session.role === 'CONGREGATION_ADMIN' && session.congregacaoId
@@ -105,10 +110,10 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
 
             {/* HEADER */}
             <header className="space-y-1">
-                <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                <h1 className="text-3xl font-bold text-fg leading-none">
                     {saudacao}, {adminLogado?.first_name || 'Admin'}.
                 </h1>
-                <p className="text-[10px] md:text-xs text-muted">Visao geral da sua igreja.</p>
+                <p className="text-[14px] md:text-xs text-muted">Visao geral da sua igreja.</p>
             </header>
 
             {/* ALERTA COMPLIANCE */}
@@ -116,7 +121,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                 <div className="bg-orange-500/5 border border-orange-500/20 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                         <AlertTriangle size={16} className="text-orange-500 shrink-0" />
-                        <p className="text-[10px] md:text-xs font-bold text-orange-600 uppercase tracking-widest">
+                        <p className="text-[14px] md:text-xs font-bold text-orange-600 uppercase tracking-wide">
                             {membrosPendentesDocs.length} membro{membrosPendentesDocs.length !== 1 ? 's' : ''} com documentos pendentes
                         </p>
                     </div>
@@ -129,7 +134,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                 <Kpi label="Membros" value={totalMembros} icon={<Users size={14} />} />
                 <Kpi label="Familias" value={totalFamilias} icon={<Home size={14} />} />
                 <Kpi label="Batizados" value={`${taxaBatismo}%`} icon={<CheckCircle2 size={14} />} cor="emerald" />
-                <Kpi label="Escalas Pendentes" value={escalasPendentesConfirmacao} icon={<Clock size={14} />} cor={escalasPendentesConfirmacao > 0 ? 'orange' : 'emerald'} />
+                {temEscalas && <Kpi label="Escalas Pendentes" value={escalasPendentesConfirmacao} icon={<Clock size={14} />} cor={escalasPendentesConfirmacao > 0 ? 'orange' : 'emerald'} />}
                 <Kpi label="Aprovacao" value={pendentesCount} icon={<AlertTriangle size={14} />} cor={pendentesCount > 0 ? 'red' : 'emerald'} />
             </section>
 
@@ -141,9 +146,9 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                     <div className="flex items-center justify-between px-5 py-4 border-b border-soft">
                         <div className="flex items-center gap-2">
                             <Calendar size={14} className="text-figueira" />
-                            <h2 className="text-xs md:text-sm font-black uppercase tracking-widest text-fg">Proximos Eventos</h2>
+                            <h2 className="text-xs md:text-sm font-bold text-fg">Proximos Eventos</h2>
                         </div>
-                        <Link href="/escalas/admin" className="text-[9px] md:text-[11px] font-bold uppercase tracking-widest text-muted hover:text-figueira transition-colors flex items-center gap-1">
+                        <Link href={temEscalas ? "/admin/escalas" : "/admin/eventos"} className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors flex items-center gap-1">
                             Ver todos <ArrowUpRight size={11} />
                         </Link>
                     </div>
@@ -151,7 +156,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                     <div className="divide-y divide-soft">
                         {proximasEscalas.length === 0 ? (
                             <div className="py-10 text-center">
-                                <p className="text-[10px] md:text-xs font-bold text-muted uppercase tracking-widest">Nenhum evento programado</p>
+                                <p className="text-[14px] md:text-xs font-bold text-muted uppercase tracking-wide">Nenhum evento programado</p>
                             </div>
                         ) : proximasEscalas.map((ev) => {
                             const dataEv = new Date(ev.data)
@@ -159,26 +164,26 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                             const diasFaltam = Math.ceil((dataEv.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
 
                             return (
-                                <Link key={ev.id} href="/escalas/admin"
+                                <Link key={ev.id} href={temEscalas ? "/admin/escalas" : "/admin/eventos"}
                                     className="flex items-center gap-4 px-5 py-3.5 hover:bg-soft/10 transition-all group">
                                     <div className={`w-11 h-11 rounded-xl flex flex-col items-center justify-center shrink-0 font-black text-[9px]
                                         ${isHoje ? 'bg-figueira text-white' : 'bg-bg border border-soft text-fg'}`}>
-                                        <span className="uppercase tracking-widest opacity-70 text-[7px]">
+                                        <span className="uppercase tracking-wide opacity-70 text-[13px]">
                                             {format(dataEv, 'MMM', { locale: pt })}
                                         </span>
-                                        <span className="text-base italic leading-none">{format(dataEv, 'dd')}</span>
+                                        <span className="text-base leading-none">{format(dataEv, 'dd')}</span>
                                     </div>
 
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[11px] md:text-xs font-black uppercase text-fg truncate group-hover:text-figueira transition-colors">
+                                        <p className="text-[14px] md:text-xs font-bold uppercase text-fg truncate group-hover:text-figueira transition-colors">
                                             {ev.nome}
                                         </p>
                                         <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                            <span className="text-[8px] md:text-[10px] font-bold text-muted uppercase tracking-widest">
+                                            <span className="text-[13px] md:text-[14px] font-bold text-muted uppercase tracking-wide">
                                                 {format(dataEv, "EEEE 'as' HH:mm", { locale: pt })}
                                             </span>
                                             {ev.mensagemEvento?.titulo && (
-                                                <span className="text-[7px] md:text-[9px] font-bold bg-figueira/10 text-figueira px-1.5 py-0.5 rounded flex items-center gap-1">
+                                                <span className="text-[13px] font-bold bg-figueira/10 text-figueira px-1.5 py-0.5 rounded flex items-center gap-1">
                                                     <BookOpen size={10} /> {ev.mensagemEvento.titulo}
                                                 </span>
                                             )}
@@ -186,9 +191,9 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                                     </div>
 
                                     <div className="flex items-center gap-1.5 shrink-0">
-                                        {isHoje && <span className="text-[7px] md:text-[9px] font-black bg-figueira text-white px-1.5 py-0.5 rounded">Hoje</span>}
-                                        {!isHoje && diasFaltam <= 7 && <span className="text-[7px] md:text-[9px] font-bold bg-orange-500/10 text-orange-600 px-1.5 py-0.5 rounded">{diasFaltam}d</span>}
-                                        <span className="text-[8px] md:text-[10px] font-bold bg-bg border border-soft px-2 py-0.5 rounded text-muted">{ev._count.escalas}</span>
+                                        {isHoje && <span className="text-[13px] font-bold bg-figueira text-white px-1.5 py-0.5 rounded">Hoje</span>}
+                                        {!isHoje && diasFaltam <= 7 && <span className="text-[13px] font-bold bg-orange-500/10 text-orange-600 px-1.5 py-0.5 rounded">{diasFaltam}d</span>}
+                                        <span className="text-[13px] md:text-[14px] font-bold bg-bg border border-soft px-2 py-0.5 rounded text-muted">{ev._count.escalas}</span>
                                     </div>
                                 </Link>
                             )
@@ -199,10 +204,10 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                 {/* ANIVERSARIANTES */}
                 <section className="lg:col-span-5 bg-bg2 border border-soft rounded-2xl overflow-hidden">
                     <div className="flex items-center justify-between px-5 py-4 border-b border-soft">
-                        <h3 className="text-xs md:text-sm font-black uppercase tracking-widest text-fg">
+                        <h3 className="text-xs md:text-sm font-bold text-fg">
                             Aniversariantes
                         </h3>
-                        <span className="text-[8px] md:text-[10px] font-bold bg-figueira/10 text-figueira px-2 py-0.5 rounded">
+                        <span className="text-[13px] md:text-[14px] font-bold bg-figueira/10 text-figueira px-2 py-0.5 rounded">
                             {format(new Date(), 'MMMM', { locale: pt })}
                         </span>
                     </div>
@@ -210,7 +215,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                     <div className="divide-y divide-soft">
                         {aniversariantesDoMes.length === 0 ? (
                             <div className="py-10 text-center">
-                                <p className="text-[10px] md:text-xs font-bold text-muted uppercase tracking-widest">Nenhum este mes</p>
+                                <p className="text-[14px] md:text-xs font-bold text-muted uppercase tracking-wide">Nenhum este mes</p>
                             </div>
                         ) : aniversariantesDoMes.map((m, i) => {
                             const dia = new Date(m.birthdate!).getDate()
@@ -222,11 +227,11 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                                             ${isHoje ? 'bg-figueira text-white' : 'bg-bg border border-soft text-muted'}`}>
                                             {m.first_name[0]}
                                         </div>
-                                        <p className={`text-[11px] md:text-xs font-bold ${isHoje ? 'text-figueira' : 'text-fg'}`}>
+                                        <p className={`text-[14px] md:text-xs font-bold ${isHoje ? 'text-figueira' : 'text-fg'}`}>
                                             {m.first_name} {m.last_name}
                                         </p>
                                     </div>
-                                    <span className="text-[8px] md:text-[10px] font-bold bg-bg border border-soft px-2 py-0.5 rounded text-muted">
+                                    <span className="text-[13px] md:text-[14px] font-bold bg-bg border border-soft px-2 py-0.5 rounded text-muted">
                                         {isHoje ? 'Hoje' : `Dia ${dia}`}
                                     </span>
                                 </div>
@@ -237,13 +242,24 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
             </div>
 
             {/* PIPELINE DE INTEGRACAO */}
-            {(visitantesNovos > 0 || visitantesEmContacto > 0 || visitantesReuniao > 0 || visitantesConsolidados > 0 || interessesPendentes > 0) && (
+            {/* PEDIDOS PARA SERVIR (membros e sugestoes dos lideres) — aprovar em Estrutura */}
+            {interessesPendentes > 0 && (
+                <Link href="/admin/configuracoes" className="flex items-center gap-3 bg-orange-500/5 border border-orange-500/20 rounded-xl px-4 py-3 hover:bg-orange-500/10 transition-all">
+                    <Briefcase size={14} className="text-orange-600 shrink-0" />
+                    <p className="text-[14px] font-bold text-orange-600 flex-1">
+                        {interessesPendentes} pedido{interessesPendentes !== 1 ? 's' : ''} para servir por aprovar (inclui sugestões dos líderes)
+                    </p>
+                    <ArrowRight size={12} className="text-orange-600" />
+                </Link>
+            )}
+
+            {temAcolhimento && (visitantesNovos > 0 || visitantesEmContacto > 0 || visitantesReuniao > 0 || visitantesConsolidados > 0) && (
                 <section className="bg-bg2 border border-soft rounded-2xl p-5 space-y-4">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xs md:text-sm font-black uppercase tracking-widest text-fg flex items-center gap-2">
+                        <h2 className="text-xs md:text-sm font-bold text-fg flex items-center gap-2">
                             <HeartHandshake size={14} className="text-figueira" /> Pipeline de Integracao
                         </h2>
-                        <Link href="/departamentos/acolhimento/dashboard" className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-figueira hover:text-fg transition-colors flex items-center gap-1">
+                        <Link href="/departamentos/acolhimento/dashboard" className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-figueira hover:text-fg transition-colors flex items-center gap-1">
                             Acolhimento <ArrowUpRight size={10} />
                         </Link>
                     </div>
@@ -266,23 +282,13 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                                         : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600'
                                         : 'bg-bg border-soft text-muted'
                                 }`}>
-                                    <p className="text-lg font-black italic leading-none">{step.value}</p>
-                                    <p className="text-[7px] md:text-[9px] font-black uppercase tracking-widest mt-0.5">{step.label}</p>
+                                    <p className="text-lg font-bold leading-none">{step.value}</p>
+                                    <p className="text-[13px] font-bold uppercase tracking-wide mt-0.5">{step.label}</p>
                                 </div>
                             </div>
                         ))}
                     </div>
 
-                    {/* INTERESSES PENDENTES */}
-                    {interessesPendentes > 0 && (
-                        <Link href="/admin/configuracoes" className="flex items-center gap-3 bg-orange-500/5 border border-orange-500/20 rounded-xl px-4 py-3 hover:bg-orange-500/10 transition-all">
-                            <Briefcase size={14} className="text-orange-600 shrink-0" />
-                            <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-orange-600 flex-1">
-                                {interessesPendentes} interesse{interessesPendentes !== 1 ? 's' : ''} em servir pendente{interessesPendentes !== 1 ? 's' : ''}
-                            </p>
-                            <ArrowRight size={12} className="text-orange-600" />
-                        </Link>
-                    )}
                 </section>
             )}
 
@@ -299,10 +305,10 @@ function Kpi({ label, value, icon, cor }: { label: string; value: any; icon: Rea
     return (
         <div className={`p-4 rounded-2xl border flex flex-col gap-2 ${cor ? cores[cor] : 'bg-bg2 border-soft text-fg'}`}>
             <div className="flex items-center justify-between">
-                <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-70">{label}</p>
+                <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide opacity-70">{label}</p>
                 <div className="opacity-40">{icon}</div>
             </div>
-            <p className="text-xl font-black italic tracking-tighter leading-none">{value}</p>
+            <p className="text-xl font-bold leading-none">{value}</p>
         </div>
     )
 }

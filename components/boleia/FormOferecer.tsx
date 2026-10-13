@@ -43,7 +43,7 @@ export default function FormOferecer({ eventos }: { eventos: Evento[] }) {
 
             {/* Evento */}
             <div className="space-y-1.5">
-                <label htmlFor="evento_id" className="text-[9px] font-black uppercase text-muted tracking-widest ml-4">
+                <label htmlFor="evento_id" className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">
                     Para qual evento? (opcional)
                 </label>
                 <select
@@ -63,7 +63,7 @@ export default function FormOferecer({ eventos }: { eventos: Evento[] }) {
 
             {/* Data e Hora */}
             <div className="space-y-1.5">
-                <label htmlFor="data_hora_saida" className="text-[9px] font-black uppercase text-muted tracking-widest ml-4">
+                <label htmlFor="data_hora_saida" className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">
                     Data e hora de saida
                 </label>
                 <input
@@ -77,7 +77,7 @@ export default function FormOferecer({ eventos }: { eventos: Evento[] }) {
 
             {/* Morada */}
             <div className="space-y-1.5">
-                <label htmlFor="endereco_partida" className="text-[9px] font-black uppercase text-muted tracking-widest ml-4">
+                <label htmlFor="endereco_partida" className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">
                     Morada de partida (so visivel para quem reservar)
                 </label>
                 <input
@@ -92,7 +92,7 @@ export default function FormOferecer({ eventos }: { eventos: Evento[] }) {
 
             {/* Zona */}
             <div className="space-y-1.5">
-                <label htmlFor="zona_partida" className="text-[9px] font-black uppercase text-muted tracking-widest ml-4">
+                <label htmlFor="zona_partida" className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">
                     Zona/Bairro (visivel para todos)
                 </label>
                 <input
@@ -106,7 +106,7 @@ export default function FormOferecer({ eventos }: { eventos: Evento[] }) {
 
             {/* Vagas */}
             <div className="space-y-1.5">
-                <label htmlFor="vagas_total" className="text-[9px] font-black uppercase text-muted tracking-widest ml-4">
+                <label htmlFor="vagas_total" className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">
                     Quantos lugares oferece?
                 </label>
                 <select
@@ -122,7 +122,7 @@ export default function FormOferecer({ eventos }: { eventos: Evento[] }) {
 
             {/* Nota */}
             <div className="space-y-1.5">
-                <label htmlFor="nota" className="text-[9px] font-black uppercase text-muted tracking-widest ml-4">
+                <label htmlFor="nota" className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">
                     Nota adicional (opcional)
                 </label>
                 <textarea
@@ -137,7 +137,7 @@ export default function FormOferecer({ eventos }: { eventos: Evento[] }) {
             <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-figueira text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:brightness-110 transition-all shadow-xl shadow-figueira/20 active:scale-95 disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 bg-figueira text-white py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:brightness-110 transition-all shadow-xl shadow-figueira/20 active:scale-95 disabled:opacity-50"
             >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <Car size={16} />}
                 {loading ? 'A criar...' : 'Publicar Boleia'}

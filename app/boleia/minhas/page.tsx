@@ -51,22 +51,22 @@ export default async function MinhasBoleiasPage() {
 
             {/* HEADER */}
             <header className="space-y-4">
-                <Link href="/boleia" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted hover:text-fg transition-colors">
+                <Link href="/boleia" className="inline-flex items-center gap-2 text-[14px] font-bold uppercase tracking-wide text-muted hover:text-fg transition-colors">
                     <ArrowLeft size={14} /> Voltar
                 </Link>
 
                 <div className="flex flex-col md:flex-row justify-between md:items-end gap-4">
                     <div>
-                        <span className="text-figueira font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2 mb-2">
+                        <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center gap-2 mb-2">
                             <Car size={14} /> As Minhas Boleias
                         </span>
-                        <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                        <h1 className="text-3xl md:text-4xl font-bold text-fg leading-none">
                             Ofertas & Reservas
                         </h1>
                     </div>
                     <Link
                         href="/boleia/oferecer"
-                        className="inline-flex items-center gap-2 bg-figueira text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-figueira/90 transition-all shadow-lg shadow-figueira/20 active:scale-95"
+                        className="inline-flex items-center gap-2 bg-figueira text-white px-6 py-3 rounded-2xl text-[14px] font-bold uppercase tracking-wide hover:bg-figueira/90 transition-all shadow-lg shadow-figueira/20 active:scale-95"
                     >
                         <Plus size={14} /> Nova Oferta
                     </Link>
@@ -75,7 +75,7 @@ export default async function MinhasBoleiasPage() {
 
             {/* MINHAS OFERTAS ATIVAS */}
             <section className="space-y-4">
-                <h2 className="text-sm font-black uppercase tracking-widest text-fg flex items-center gap-3">
+                <h2 className="text-sm font-bold text-fg flex items-center gap-3">
                     <Car size={16} className="text-figueira" />
                     Boleias que Ofereco ({ofertasAtivas.length})
                 </h2>
@@ -90,21 +90,21 @@ export default async function MinhasBoleiasPage() {
                                 <div key={oferta.id} className="bg-bg2 border border-soft rounded-2xl p-6 space-y-4">
                                     <div className="flex items-start justify-between gap-4">
                                         <div className="space-y-2">
-                                            <div className="flex items-center gap-2 text-[11px] text-fg font-medium">
+                                            <div className="flex items-center gap-2 text-[14px] text-fg font-medium">
                                                 <Clock size={12} className="text-figueira" />
                                                 {dataFormatada} as {horaFormatada}
                                             </div>
-                                            <div className="flex items-center gap-2 text-[11px] text-muted">
+                                            <div className="flex items-center gap-2 text-[14px] text-muted">
                                                 <MapPin size={12} />
                                                 {oferta.endereco_partida}
                                             </div>
                                             {oferta.evento && (
-                                                <div className="flex items-center gap-2 text-[11px] text-muted">
+                                                <div className="flex items-center gap-2 text-[14px] text-muted">
                                                     <Calendar size={12} />
                                                     {oferta.evento.nome}
                                                 </div>
                                             )}
-                                            <div className="flex items-center gap-2 text-[11px] text-muted">
+                                            <div className="flex items-center gap-2 text-[14px] text-muted">
                                                 <Users size={12} />
                                                 {oferta.reservas.length}/{oferta.vagas_total} lugares ocupados
                                             </div>
@@ -115,18 +115,18 @@ export default async function MinhasBoleiasPage() {
                                     {/* Passageiros */}
                                     {oferta.reservas.length > 0 && (
                                         <div className="border-t border-soft pt-4 space-y-2">
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-muted">Passageiros:</p>
+                                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Passageiros:</p>
                                             {oferta.reservas.map(r => (
                                                 <div key={r.id} className="flex items-center justify-between bg-bg border border-soft rounded-xl px-4 py-3">
                                                     <div>
-                                                        <p className="text-[11px] font-black uppercase text-fg">
+                                                        <p className="text-[14px] font-bold uppercase text-fg">
                                                             {r.passageiro.first_name} {r.passageiro.last_name}
                                                         </p>
                                                         {r.passageiro.phone_1 && (
-                                                            <p className="text-[10px] text-muted">{r.passageiro.phone_1}</p>
+                                                            <p className="text-[14px] text-muted">{r.passageiro.phone_1}</p>
                                                         )}
                                                     </div>
-                                                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+                                                    <span className="text-[13px] font-bold uppercase tracking-wide text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
                                                         Confirmado
                                                     </span>
                                                 </div>
@@ -138,7 +138,7 @@ export default async function MinhasBoleiasPage() {
                                     {oferta.reservas.length > 0 && (
                                         <Link
                                             href={`/boleia/tracking/${oferta.id}`}
-                                            className="flex items-center justify-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-500 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all active:scale-95"
+                                            className="flex items-center justify-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-500 py-3 rounded-xl font-bold text-[14px] uppercase tracking-wide hover:bg-blue-500 hover:text-white transition-all active:scale-95"
                                         >
                                             <Navigation size={14} /> Tracking em Tempo Real
                                         </Link>
@@ -149,14 +149,14 @@ export default async function MinhasBoleiasPage() {
                     </div>
                 ) : (
                     <div className="bg-bg2 border border-soft rounded-2xl p-8 text-center">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted">Nenhuma oferta ativa</p>
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhuma oferta ativa</p>
                     </div>
                 )}
             </section>
 
             {/* MINHAS RESERVAS */}
             <section className="space-y-4">
-                <h2 className="text-sm font-black uppercase tracking-widest text-fg flex items-center gap-3">
+                <h2 className="text-sm font-bold text-fg flex items-center gap-3">
                     <Users size={16} className="text-figueira" />
                     Boleias que Reservei ({minhasReservas.length})
                 </h2>
@@ -171,25 +171,25 @@ export default async function MinhasBoleiasPage() {
                             return (
                                 <div key={reserva.id} className="bg-bg2 border border-soft rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div className="space-y-2">
-                                        <p className="text-sm font-black uppercase text-fg">
+                                        <p className="text-sm font-bold text-fg">
                                             Boleia com {oferta.motorista.first_name} {oferta.motorista.last_name}
                                         </p>
-                                        <div className="flex items-center gap-2 text-[11px] text-muted">
+                                        <div className="flex items-center gap-2 text-[14px] text-muted">
                                             <Clock size={12} />
                                             {dataFormatada} as {horaFormatada}
                                         </div>
-                                        <div className="flex items-center gap-2 text-[11px] text-muted">
+                                        <div className="flex items-center gap-2 text-[14px] text-muted">
                                             <MapPin size={12} />
                                             {oferta.endereco_partida}
                                         </div>
                                         {oferta.motorista.phone_1 && (
-                                            <p className="text-[10px] text-muted">Contacto: {oferta.motorista.phone_1}</p>
+                                            <p className="text-[14px] text-muted">Contacto: {oferta.motorista.phone_1}</p>
                                         )}
                                     </div>
                                     <div className="flex flex-col gap-2 shrink-0">
                                         <Link
                                             href={`/boleia/tracking/${oferta.id}`}
-                                            className="flex items-center justify-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-500 px-4 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all active:scale-95"
+                                            className="flex items-center justify-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-500 px-4 py-2.5 rounded-xl font-bold text-[13px] uppercase tracking-wide hover:bg-blue-500 hover:text-white transition-all active:scale-95"
                                         >
                                             <Navigation size={12} /> Tracking
                                         </Link>
@@ -201,7 +201,7 @@ export default async function MinhasBoleiasPage() {
                     </div>
                 ) : (
                     <div className="bg-bg2 border border-soft rounded-2xl p-8 text-center">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted">Nenhuma reserva ativa</p>
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhuma reserva ativa</p>
                     </div>
                 )}
             </section>
@@ -209,14 +209,14 @@ export default async function MinhasBoleiasPage() {
             {/* HISTORICO */}
             {ofertasPassadas.length > 0 && (
                 <section className="space-y-4 opacity-60">
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">Historico ({ofertasPassadas.length})</h2>
+                    <h2 className="text-sm font-bold text-fg">Historico ({ofertasPassadas.length})</h2>
                     <div className="grid gap-2">
                         {ofertasPassadas.slice(0, 5).map(oferta => (
                             <div key={oferta.id} className="bg-bg2 border border-soft rounded-xl px-4 py-3 flex items-center justify-between">
-                                <div className="text-[10px] text-muted">
+                                <div className="text-[14px] text-muted">
                                     {new Date(oferta.data_hora_saida).toLocaleDateString('pt-PT')} — {oferta.endereco_partida}
                                 </div>
-                                <span className="text-[8px] font-black uppercase tracking-widest text-muted bg-soft px-2 py-0.5 rounded">
+                                <span className="text-[13px] font-bold uppercase tracking-wide text-muted bg-soft px-2 py-0.5 rounded">
                                     {oferta.status}
                                 </span>
                             </div>

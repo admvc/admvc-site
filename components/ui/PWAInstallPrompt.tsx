@@ -48,11 +48,11 @@ export default function PWAInstallPrompt() {
                 </div>
                 <div className="flex-1 min-w-0">
                     <p className="text-xs font-bold text-fg">Instalar ADMVC</p>
-                    <p className="text-[9px] text-muted">Acesso rapido a partir do ecra inicial.</p>
+                    <p className="text-[13px] text-muted">Acesso rapido a partir do ecra inicial.</p>
                 </div>
                 <button
                     onClick={handleInstall}
-                    className="shrink-0 px-4 py-2 bg-figueira text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:brightness-110 transition-all"
+                    className="shrink-0 px-4 py-2 bg-figueira text-white rounded-xl text-[13px] font-bold uppercase tracking-wide hover:brightness-110 transition-all"
                 >
                     Instalar
                 </button>

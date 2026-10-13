@@ -63,7 +63,7 @@ export default async function ProdutosPage() {
             <header className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                     <div className="space-y-1">
-                        <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-fg">
+                        <h1 className="text-4xl md:text-5xl font-bold text-fg">
                             Gestao de Produtos
                         </h1>
                         <p className="text-xs text-muted">
@@ -76,16 +76,16 @@ export default async function ProdutosPage() {
                 {/* Stats */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <div className="bg-bg2 border border-soft rounded-2xl p-5 space-y-1">
-                        <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">
+                        <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">
                             Total Produtos
                         </p>
-                        <p className="text-3xl font-black text-fg">{totalProdutos}</p>
+                        <p className="text-3xl font-bold text-fg">{totalProdutos}</p>
                     </div>
                     <div className="bg-bg2 border border-soft rounded-2xl p-5 space-y-1">
-                        <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">
+                        <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">
                             Categorias
                         </p>
-                        <p className="text-3xl font-black text-fg">{totalCategorias}</p>
+                        <p className="text-3xl font-bold text-fg">{totalCategorias}</p>
                     </div>
                     <div
                         className={`bg-bg2 border rounded-2xl p-5 space-y-1 ${
@@ -94,7 +94,7 @@ export default async function ProdutosPage() {
                                 : 'border-soft'
                         }`}
                     >
-                        <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                        <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                             {alertasStock > 0 && (
                                 <AlertTriangle size={10} className="text-orange-500" />
                             )}
@@ -115,7 +115,7 @@ export default async function ProdutosPage() {
             <section className="space-y-6 pt-6 border-t border-soft">
                 <div className="flex items-center gap-4">
                     <Package size={20} className="text-figueira" />
-                    <h2 className="text-2xl font-black uppercase italic tracking-tighter text-fg">
+                    <h2 className="text-2xl font-bold text-fg">
                         Categorias
                     </h2>
                     <div className="h-[1px] flex-1 bg-soft" />
@@ -130,7 +130,7 @@ export default async function ProdutosPage() {
                                 className="flex items-center gap-2 bg-bg2 border border-soft rounded-2xl px-4 py-2.5"
                             >
                                 <span className="text-sm font-bold text-fg">{cat.nome}</span>
-                                <span className="text-[9px] md:text-[11px] font-black text-muted">
+                                <span className="text-[13px] md:text-[14px] font-bold text-muted">
                                     ({produtos.filter((p) => p.categoria_id === cat.id).length})
                                 </span>
                                 <BotaoEliminarCategoria categoriaId={cat.id} />
@@ -149,7 +149,7 @@ export default async function ProdutosPage() {
             <section className="space-y-6 pt-6 border-t border-soft">
                 <div className="flex items-center gap-4">
                     <Package size={20} className="text-figueira" />
-                    <h2 className="text-2xl font-black uppercase italic tracking-tighter text-fg">
+                    <h2 className="text-2xl font-bold text-fg">
                         Produtos
                     </h2>
                     <div className="h-[1px] flex-1 bg-soft" />
@@ -166,28 +166,28 @@ export default async function ProdutosPage() {
                     <div className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                         {/* Desktop table header */}
                         <div className="hidden md:grid grid-cols-[1fr_100px_70px_90px_90px_auto_auto_auto] gap-4 px-6 py-3 border-b border-soft">
-                            <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">
+                            <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">
                                 Produto
                             </p>
-                            <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">
+                            <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">
                                 Categoria
                             </p>
-                            <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted text-right">
+                            <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-right">
                                 Preco
                             </p>
-                            <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted text-center">
+                            <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-center">
                                 Stock
                             </p>
-                            <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted text-center">
+                            <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-center">
                                 Status
                             </p>
-                            <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted text-center">
+                            <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-center">
                                 Promos
                             </p>
-                            <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted text-center">
+                            <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-center">
                                 Acoes
                             </p>
-                            <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted" />
+                            <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted" />
                         </div>
 
                         {/* Product rows */}
@@ -217,7 +217,7 @@ export default async function ProdutosPage() {
                                             <p className="text-sm font-bold text-fg">
                                                 {produto.nome}
                                             </p>
-                                            <p className="text-[10px] text-muted2 md:hidden">
+                                            <p className="text-[14px] text-muted2 md:hidden">
                                                 {produto.categoria?.nome || 'Sem categoria'} &middot;{' '}
                                                 {produto.preco.toFixed(2)} EUR
                                             </p>
@@ -230,7 +230,7 @@ export default async function ProdutosPage() {
                                     </p>
 
                                     {/* Preco (desktop) */}
-                                    <p className="hidden md:block text-sm font-black text-fg text-right">
+                                    <p className="hidden md:block text-sm font-bold text-fg text-right">
                                         {produto.preco.toFixed(2)}
                                     </p>
 
@@ -262,14 +262,14 @@ export default async function ProdutosPage() {
                                             promocoes.map((promo, i) => (
                                                 <span
                                                     key={i}
-                                                    className="inline-flex items-center gap-0.5 bg-figueira/10 text-figueira border border-figueira/20 rounded-lg px-2 py-0.5 text-[10px] md:text-xs font-black"
+                                                    className="inline-flex items-center gap-0.5 bg-figueira/10 text-figueira border border-figueira/20 rounded-lg px-2 py-0.5 text-[14px] md:text-xs font-bold"
                                                 >
                                                     <Tag size={8} />
                                                     {promo.quantidade}&rarr;{promo.preco_total.toFixed(0)}&euro;
                                                 </span>
                                             ))
                                         ) : (
-                                            <span className="text-[10px] md:text-xs text-muted2 font-bold">--</span>
+                                            <span className="text-[14px] md:text-xs text-muted2 font-bold">--</span>
                                         )}
                                     </div>
 
@@ -292,7 +292,7 @@ export default async function ProdutosPage() {
             <section className="space-y-6 pt-6 border-t border-soft">
                 <div className="flex items-center gap-4">
                     <Package size={20} className="text-figueira" />
-                    <h2 className="text-2xl font-black uppercase italic tracking-tighter text-fg">
+                    <h2 className="text-2xl font-bold text-fg">
                         Novo Produto
                     </h2>
                     <div className="h-[1px] flex-1 bg-soft" />

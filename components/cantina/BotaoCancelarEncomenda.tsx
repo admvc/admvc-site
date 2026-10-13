@@ -24,7 +24,7 @@ export default function BotaoCancelarEncomenda({ encomendaId }: { encomendaId: n
 
     if (done) {
         return (
-            <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-red-400">
+            <span className="inline-flex items-center gap-1 text-[13px] font-bold uppercase tracking-wide text-red-400">
                 <XCircle size={12} /> Cancelada
             </span>
         )
@@ -34,7 +34,7 @@ export default function BotaoCancelarEncomenda({ encomendaId }: { encomendaId: n
         <button
             onClick={handleCancelar}
             disabled={loading}
-            className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-all disabled:opacity-40 inline-flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-[13px] font-bold uppercase tracking-wide hover:bg-red-500/20 transition-all disabled:opacity-40 inline-flex items-center gap-1.5"
         >
             {loading ? <Loader2 size={11} className="animate-spin" /> : <XCircle size={11} />}
             Cancelar

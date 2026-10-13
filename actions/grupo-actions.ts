@@ -3,7 +3,7 @@
 //import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { getTenantClient } from '@/lib/prisma'
-import { getSessionData, requireRole, requireAuth } from '@/lib/auth-utils'
+import { getSessionData, requireAuth, isAdmin } from '@/lib/auth-utils'
 import { invalidateGrupos } from '@/lib/cache'
 import { audit } from '@/lib/audit'
 import { getTenantIdFromHeaders } from '@/lib/db'
@@ -15,11 +15,24 @@ async function getDb() {
     return { db: getTenantClient(Number(tenantId)), tenantId: Number(tenantId) }
 }
 
+/**
+ * Gere um grupo: um administrador, ou um dos lideres DESTE grupo. (O papel
+ * "LEADER" sozinho nao chega: e o lider de um ministerio, nao do grupo.)
+ */
+async function exigirGestorDoGrupo(grupoId: number) {
+    const sessao = await requireAuth()
+    if (isAdmin(sessao.role)) return sessao
+    const { db } = await getDb()
+    const lidera = await db.grupo.count({ where: { id: grupoId, lideres: { some: { id: sessao.membroId } } } })
+    if (!lidera) throw new Error('Só os líderes deste grupo (ou um administrador) podem fazer isto.')
+    return sessao
+}
+
 
 export async function registrarEncontroAction(formData: FormData, presentesIds: number[]) {
     try {
-        await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'LEADER'])
         const grupo_id = Number(formData.get('grupo_id'));
+        await exigirGestorDoGrupo(grupo_id)
         const data = new Date(formData.get('data') as string);
         const tema = formData.get('tema') as string;
 
@@ -51,14 +64,14 @@ export async function registrarEncontroAction(formData: FormData, presentesIds: 
         return { sucesso: true };
     } catch (error: any) {
         console.error("Erro ao registar encontro:", error);
-        return { sucesso: false, erro: "Falha ao gravar o encontro." };
+        return { sucesso: false, erro: error?.message?.startsWith("Só os líderes") ? error.message : "Falha ao gravar o encontro." };
     }
 }
 
 export async function atualizarDadosGrupoAction(formData: FormData) {
     try {
-        await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'LEADER'])
         const id = Number(formData.get('grupo_id'));
+        await exigirGestorDoGrupo(id)
         const dia_semana = formData.get('dia_semana') as string;
         const horario = formData.get('horario') as string;
         const endereco = formData.get('endereco') as string;
@@ -86,14 +99,17 @@ export async function atualizarDadosGrupoAction(formData: FormData) {
         invalidateGrupos(await getTenantIdFromHeaders()).catch(() => {})
         return { sucesso: true };
     } catch (error) {
-        return { sucesso: false, erro: "Erro ao atualizar dados." };
+        return { sucesso: false, erro: error instanceof Error ? error.message : "Erro ao atualizar dados." };
     }
 }
 
 export async function gerirMembroGrupoAction(grupoId: number, membroId: number, acao: 'ADICIONAR' | 'REMOVER') {
     try {
-        await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'LEADER'])
+        await exigirGestorDoGrupo(grupoId)
         const tenantId = await getTenantIdFromHeaders()
+        // A pessoa tem de ser desta igreja
+        const daIgreja = await (await getDb()).db.membro.count({ where: { id: membroId } })
+        if (!daIgreja) return { sucesso: false, erro: 'Membro não encontrado.' }
         if (acao === 'ADICIONAR') {
             await (await getDb()).db.grupo.update({
                 where: { id: grupoId },
@@ -109,7 +125,7 @@ export async function gerirMembroGrupoAction(grupoId: number, membroId: number, 
         revalidatePath(`/grupos/gestao/${grupoId}`);
         return { sucesso: true };
     } catch (error) {
-        return { sucesso: false, erro: "Erro ao processar membro." };
+        return { sucesso: false, erro: error instanceof Error ? error.message : "Erro ao processar membro." };
     }
 }
 

@@ -18,7 +18,7 @@ export default async function DiagnosticoLoyversePage() {
             <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-8 animate-in fade-in duration-700 pb-32">
                 <div className="bg-orange-500/5 border border-orange-500/20 p-8 rounded-2xl text-center space-y-2">
                     <AlertTriangle className="mx-auto text-orange-500" size={32} />
-                    <h2 className="text-lg font-black uppercase text-orange-700">Loyverse nao configurado</h2>
+                    <h2 className="text-lg font-bold text-orange-700">Loyverse nao configurado</h2>
                     <p className="text-sm text-orange-600">Configure o token Loyverse nas definicoes do tenant para utilizar esta funcionalidade.</p>
                 </div>
             </main>
@@ -61,10 +61,10 @@ export default async function DiagnosticoLoyversePage() {
             {/* HEADER */}
             <header className="flex flex-col md:flex-row justify-between md:items-end gap-6 pb-6 border-b border-soft">
                 <div>
-                    <span className="text-figueira font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2 mb-2">
+                    <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center gap-2 mb-2">
                         <ShieldCheck size={14} /> Integração Loyverse
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h1 className="text-4xl md:text-5xl font-bold text-fg leading-none">
                         Sincronização <span className="text-muted/20">Cantina.</span>
                     </h1>
                 </div>
@@ -83,10 +83,10 @@ export default async function DiagnosticoLoyversePage() {
                             <AlertTriangle size={18} />
                         </div>
                         <div>
-                            <h3 className="text-sm font-black uppercase italic tracking-tighter text-orange-700 leading-none">
+                            <h3 className="text-sm font-bold text-orange-700 leading-none">
                                 {matchesAutomaticos.length} match{matchesAutomaticos.length !== 1 ? 'es' : ''} automático{matchesAutomaticos.length !== 1 ? 's' : ''} encontrado{matchesAutomaticos.length !== 1 ? 's' : ''}
                             </h3>
-                            <p className="text-[9px] font-bold uppercase tracking-widest text-orange-600/80 mt-1">
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-orange-600/80 mt-1">
                                 Email coincide mas ainda não está vinculado — clica para confirmar
                             </p>
                         </div>
@@ -97,14 +97,14 @@ export default async function DiagnosticoLoyversePage() {
                             <div key={membro.id} className="bg-bg border border-orange-500/20 rounded-2xl p-4 flex items-center justify-between gap-4">
                                 <div className="min-w-0">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <span className="text-[7px] font-black uppercase tracking-widest bg-orange-500/10 text-orange-600 border border-orange-500/20 px-2 py-0.5 rounded-full">
+                                        <span className="text-[13px] font-bold uppercase tracking-wide bg-orange-500/10 text-orange-600 border border-orange-500/20 px-2 py-0.5 rounded-full">
                                             Match por email
                                         </span>
                                     </div>
-                                    <p className="text-sm font-black uppercase text-fg leading-none truncate">
+                                    <p className="text-sm font-bold text-fg leading-none truncate">
                                         {membro.first_name} {membro.last_name}
                                     </p>
-                                    <p className="text-[9px] font-bold text-muted lowercase tracking-widest mt-0.5 truncate">
+                                    <p className="text-[13px] font-bold text-muted lowercase mt-0.5 truncate">
                                         {membro.email}
                                     </p>
                                 </div>
@@ -122,7 +122,7 @@ export default async function DiagnosticoLoyversePage() {
             {matchesAutomaticos.length === 0 && clientesLoyverse && (
                 <div className="bg-emerald-500/5 border border-emerald-500/20 p-5 rounded-2xl flex items-center gap-3">
                     <CheckCircle2 size={18} className="text-emerald-500 shrink-0" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700">
+                    <p className="text-[14px] font-bold uppercase tracking-wide text-emerald-700">
                         Todos os emails correspondentes já estão sincronizados.
                     </p>
                 </div>
@@ -133,15 +133,15 @@ export default async function DiagnosticoLoyversePage() {
                 <section className="space-y-4">
                     <div className="flex items-center gap-3 pb-2 border-b border-soft">
                         <Link2 size={16} className="text-figueira" />
-                        <h2 className="text-sm font-black uppercase tracking-widest text-fg">
+                        <h2 className="text-sm font-bold text-fg">
                             Relacionamento Manual
                         </h2>
-                        <span className="text-[9px] font-black bg-bg2 border border-soft px-2.5 py-1 rounded-lg text-muted">
+                        <span className="text-[13px] font-bold bg-bg2 border border-soft px-2.5 py-1 rounded-lg text-muted">
                             {semVinculo.length} membro{semVinculo.length !== 1 ? 's' : ''} sem vínculo
                         </span>
                     </div>
 
-                    <p className="text-[10px] text-muted font-bold uppercase tracking-widest">
+                    <p className="text-[14px] text-muted font-bold uppercase tracking-wide">
                         Liga manualmente cada membro da app ao seu cliente Loyverse correspondente.
                     </p>
 
@@ -150,15 +150,15 @@ export default async function DiagnosticoLoyversePage() {
                             <div key={membro.id} className="bg-bg2 border border-soft rounded-2xl p-4 flex items-center justify-between gap-4 hover:border-figueira/30 transition-all">
                                 <div className="flex items-center gap-3 min-w-0">
                                     <div className="w-9 h-9 bg-soft rounded-xl flex items-center justify-center shrink-0">
-                                        <span className="text-[10px] font-black text-muted uppercase">
+                                        <span className="text-[14px] font-bold text-muted uppercase">
                                             {membro.first_name[0]}{membro.last_name[0]}
                                         </span>
                                     </div>
                                     <div className="min-w-0">
-                                        <p className="text-[11px] font-black uppercase text-fg leading-none truncate">
+                                        <p className="text-[14px] font-bold uppercase text-fg leading-none truncate">
                                             {membro.first_name} {membro.last_name}
                                         </p>
-                                        <p className="text-[8px] font-bold text-muted lowercase tracking-widest mt-0.5 truncate">
+                                        <p className="text-[13px] font-bold text-muted lowercase mt-0.5 truncate">
                                             {membro.email}
                                         </p>
                                     </div>
@@ -178,7 +178,7 @@ export default async function DiagnosticoLoyversePage() {
             <section className="space-y-4">
                 <div className="flex items-center gap-3 pb-2 border-b border-soft">
                     <User size={16} className="text-muted" />
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">Diretório Completo</h2>
+                    <h2 className="text-sm font-bold text-fg">Diretório Completo</h2>
                 </div>
 
                 <div className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
@@ -186,10 +186,10 @@ export default async function DiagnosticoLoyversePage() {
                         <table className="w-full text-left min-w-[700px]">
                             <thead>
                                 <tr className="border-b border-soft bg-bg2">
-                                    <th className="px-6 py-4 text-[8px] font-black uppercase tracking-widest text-muted border-r border-soft/50 w-1/4">Nome Loyverse</th>
-                                    <th className="px-6 py-4 text-[8px] font-black uppercase tracking-widest text-muted w-1/4">Membro App</th>
-                                    <th className="px-6 py-4 text-[8px] font-black uppercase tracking-widest text-muted w-1/6">Estado</th>
-                                    <th className="px-6 py-4 text-[8px] font-black uppercase tracking-widest text-muted">UUID Loyverse</th>
+                                    <th className="px-6 py-4 text-[13px] font-bold uppercase tracking-wide text-muted border-r border-soft/50 w-1/4">Nome Loyverse</th>
+                                    <th className="px-6 py-4 text-[13px] font-bold uppercase tracking-wide text-muted w-1/4">Membro App</th>
+                                    <th className="px-6 py-4 text-[13px] font-bold uppercase tracking-wide text-muted w-1/6">Estado</th>
+                                    <th className="px-6 py-4 text-[13px] font-bold uppercase tracking-wide text-muted">UUID Loyverse</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-soft/50">
@@ -203,38 +203,38 @@ export default async function DiagnosticoLoyversePage() {
                                     return (
                                         <tr key={c.id} className="hover:bg-soft/10 transition-colors">
                                             <td className="px-6 py-4 border-r border-soft/50">
-                                                <p className="text-[11px] font-black uppercase text-fg leading-none">{c.name}</p>
-                                                <p className="text-[9px] font-bold text-muted lowercase mt-0.5">{c.email || '—'}</p>
+                                                <p className="text-[14px] font-bold uppercase text-fg leading-none">{c.name}</p>
+                                                <p className="text-[13px] font-bold text-muted lowercase mt-0.5">{c.email || '—'}</p>
                                             </td>
                                             <td className="px-6 py-4">
                                                 {membroExibicao ? (
                                                     <div>
-                                                        <p className={`text-[11px] font-black uppercase leading-none ${membroVinculado ? 'text-fg' : 'text-orange-600'}`}>
+                                                        <p className={`text-[14px] font-bold uppercase leading-none ${membroVinculado ? 'text-fg' : 'text-orange-600'}`}>
                                                             {membroExibicao.first_name} {membroExibicao.last_name}
                                                         </p>
-                                                        <p className="text-[9px] font-bold text-muted lowercase mt-0.5">{membroExibicao.email}</p>
+                                                        <p className="text-[13px] font-bold text-muted lowercase mt-0.5">{membroExibicao.email}</p>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-[9px] font-bold text-muted/40 italic">Não encontrado</span>
+                                                    <span className="text-[13px] font-bold text-muted/40">Não encontrado</span>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4">
                                                 {membroVinculado ? (
-                                                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+                                                    <span className="text-[13px] font-bold uppercase tracking-wide text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
                                                         Sincronizado
                                                     </span>
                                                 ) : membroSugerido ? (
-                                                    <span className="text-[8px] font-black uppercase tracking-widest text-orange-600 bg-orange-500/10 border border-orange-500/20 px-2.5 py-1 rounded-lg">
+                                                    <span className="text-[13px] font-bold uppercase tracking-wide text-orange-600 bg-orange-500/10 border border-orange-500/20 px-2.5 py-1 rounded-lg">
                                                         Pendente
                                                     </span>
                                                 ) : (
-                                                    <span className="text-[8px] font-black uppercase tracking-widest text-muted bg-soft px-2.5 py-1 rounded-lg">
+                                                    <span className="text-[13px] font-bold uppercase tracking-wide text-muted bg-soft px-2.5 py-1 rounded-lg">
                                                         Sem vínculo
                                                     </span>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <code className="bg-bg border border-soft px-2.5 py-1 rounded-lg text-[9px] font-mono text-figueira select-all">
+                                                <code className="bg-bg border border-soft px-2.5 py-1 rounded-lg text-[13px] font-mono text-figueira select-all">
                                                     {c.id}
                                                 </code>
                                             </td>
@@ -248,7 +248,7 @@ export default async function DiagnosticoLoyversePage() {
                     {!clientesLoyverse && (
                         <div className="p-16 text-center space-y-3">
                             <RefreshCw className="mx-auto text-muted animate-spin" size={24} />
-                            <p className="text-[10px] font-black uppercase text-muted tracking-widest">
+                            <p className="text-[14px] font-bold uppercase text-muted tracking-wide">
                                 A aguardar resposta da API Loyverse...
                             </p>
                         </div>
@@ -273,8 +273,8 @@ function StatBox({ label, value, cor }: {
 
     return (
         <div className={`px-5 py-4 rounded-2xl border text-right ${cor ? styles[cor] : base}`}>
-            <p className="text-[8px] font-black uppercase tracking-widest opacity-70">{label}</p>
-            <p className="text-2xl font-black italic leading-none mt-1">{value}</p>
+            <p className="text-[13px] font-bold uppercase tracking-wide opacity-70">{label}</p>
+            <p className="text-2xl font-bold leading-none mt-1">{value}</p>
         </div>
     )
 }

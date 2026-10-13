@@ -63,7 +63,7 @@ export default function MenuClient({ produtos }: { produtos: any[] }) {
 
                             {/* Alerta de Escassez */}
                             {p.stock > 0 && p.stock < 5 && (
-                                <div className="absolute top-4 left-4 bg-orange-500 text-white px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg flex items-center gap-1">
+                                <div className="absolute top-4 left-4 bg-orange-500 text-white px-3 py-1.5 rounded-xl text-[13px] font-bold uppercase tracking-wide shadow-lg flex items-center gap-1">
                                     <Flame size={12} /> Últimos {Math.floor(p.stock)}
                                 </div>
                             )}
@@ -72,16 +72,16 @@ export default function MenuClient({ produtos }: { produtos: any[] }) {
                         {/* INFORMAÇÕES */}
                         <div className="px-2 pb-2 flex-1 flex flex-col justify-between">
                             <div>
-                                <h3 className="text-lg font-black uppercase italic tracking-tighter text-fg leading-tight">
+                                <h3 className="text-lg font-bold text-fg leading-tight">
                                     {p.nome}
                                 </h3>
-                                <p className="text-[9px] font-bold text-muted uppercase tracking-widest mt-1">
+                                <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-1">
                                     {p.categoria}
                                 </p>
                             </div>
 
                             <div className="mt-4 flex items-end justify-between">
-                                <span className="text-3xl font-black text-figueira italic tracking-tighter">
+                                <span className="text-3xl font-bold text-figueira">
                                     {euro(p.preco)}
                                 </span>
                             </div>
@@ -94,7 +94,7 @@ export default function MenuClient({ produtos }: { produtos: any[] }) {
             {produtosFiltrados.length === 0 && (
                 <div className="text-center py-20 bg-bg2 border border-dashed border-soft rounded-[3rem]">
                     <Coffee size={40} className="text-muted mx-auto mb-4 opacity-50" />
-                    <h3 className="text-lg font-black uppercase tracking-widest text-fg">Categoria Vazia</h3>
+                    <h3 className="text-lg font-bold text-fg">Categoria Vazia</h3>
                     <p className="text-xs text-muted font-medium mt-2">Nenhum produto disponível nesta categoria de momento.</p>
                 </div>
             )}

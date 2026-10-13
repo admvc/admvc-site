@@ -31,9 +31,14 @@ model Musica {
   link_cifra  String? // cifraclub.com.br, ultimate-guitar.com
   link_audio  String? // Spotify, SoundCloud, YouTube Music
   cifra_interna String? // Cifra com acordes no formato [Am]letra[G]letra
-  holyrics_id String?            @unique
+  holyrics_id String?
+  tenant_id   Int                // Repertorio de cada igreja
+  criado_em   DateTime           @default(now())
   eventos     RepertorioEvento[]
+  tenant      Tenant             @relation(fields: [tenant_id], references: [id])
 
+  @@unique([tenant_id, holyrics_id])
+  @@index([tenant_id])
   @@map("musicas")
 }
 
@@ -51,6 +56,7 @@ model Tenant {
   onboarding_completo      Boolean                   @default(false)
   onboarding_checklist     Json?                     // { membros: false, departamentos: false, escalas: false }
   cor_primaria             String                    @default("#3F6B4F")
+  tema                     String                    @default("verde") // Tema do portal: "verde" ou "louveapp" (claro/escuro segue o telemovel)
   cor_secundaria           String                    @default("#7FAE93")
   cor_fundo                String                    @default("#0b0d0c")
   logo_url                 String?
@@ -90,6 +96,7 @@ model Tenant {
   pedidosCantina           PedidoSaldoCantina[]
   projetosObra             ProjetoObra[]
   repertorios              RepertorioEvento[]
+  musicas                  Musica[]
   rifas                    Rifa[]
   rifaNumeros              RifaNumero[]
   acompanhamentos          AcompanhamentoVisitante[]
@@ -283,6 +290,7 @@ model Membro {
   qr_code                    String?                    @unique  // Codigo QR unico para identificacao rapida
   visitante_id               Int?                       // Referencia ao visitante original (conversao automatica)
   interessesDepartamento     InteresseDepartamento[]    @relation("MembroInteresse")
+  sugestoes_feitas       InteresseDepartamento[] @relation("SugestaoInteresse")
 
   @@index([tenant_id])
   @@map("membros")
@@ -307,6 +315,7 @@ model Departamento {
   compromissoId    Int?
   congregacaoId    Int?
   is_global        Boolean                  @default(false)
+  e_louvor         Boolean                  @default(false) // Ministerio de louvor: tem repertorio e setlist
   foto_url         String?
   tenant_id        Int
   avisoMurals      AvisoMural[]
@@ -351,6 +360,9 @@ model InteresseDepartamento {
   criado_em       DateTime     @default(now())
   tenant_id       Int
   membro          Membro       @relation("MembroInteresse", fields: [membro_id], references: [id], onDelete: Cascade)
+  sugerido_por_id Int?         // Lider (ou nomeado) que sugeriu a pessoa; null = a propria pessoa pediu
+  sugerido_por    Membro?      @relation("SugestaoInteresse", fields: [sugerido_por_id], references: [id], onDelete: SetNull)
+  funcoes_ids     Int[]        @default([]) // Funcoes sugeridas (entram ao aprovar)
   departamento    Departamento @relation("InteresseDepartamento", fields: [departamento_id], references: [id], onDelete: Cascade)
   tenant          Tenant       @relation(fields: [tenant_id], references: [id])
 

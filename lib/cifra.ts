@@ -129,7 +129,7 @@ export const TONS_DISPONIVEIS = NOTAS
 
 // Regex para validar se um token é um acorde musical
 // Aceita: C, Am, F#m7, Bb7, Cmaj7, G7M, Dsus4, Em/B, Cm7(9), Ab7M, Eb/G, Cm7M, etc.
-const ACORDE_REGEX = /^[A-G][#b]?(?:m|M|dim|aug|sus[24]?|add[0-9]*|maj|min|°|ø)?[0-9]*(?:M)?(?:\([0-9b#/]+\))?(?:\/[A-G][#b]?)?$/
+const ACORDE_REGEX = /^[A-G][#b]?(?:m|M|dim|aug|sus[24]?|add[0-9]*|maj|min|°|ø)?[0-9]*(?:M)?(?:\([0-9b#/+-]+\))?(?:\/[A-G][#b]?)?$/
 
 /**
  * Limpa um token removendo parênteses de agrupamento à volta.

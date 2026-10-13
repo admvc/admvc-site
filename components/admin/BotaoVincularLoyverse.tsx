@@ -25,7 +25,7 @@ export default function BotaoVincularLoyverse({ membroId, loyverseId, membroNome
 
     if (sucesso) {
         return (
-            <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 text-green-600 rounded-xl text-[9px] font-black uppercase tracking-widest border border-green-500/20">
+            <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 text-green-600 rounded-xl text-[13px] font-bold uppercase tracking-wide border border-green-500/20">
                 <CheckCircle2 size={14} /> Vinculado
             </div>
         )
@@ -35,7 +35,7 @@ export default function BotaoVincularLoyverse({ membroId, loyverseId, membroNome
         <button
             onClick={handleVincular}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 bg-figueira text-white hover:bg-figueira/90 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-sm disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-figueira text-white hover:bg-figueira/90 rounded-xl text-[13px] font-bold uppercase tracking-wide transition-all active:scale-95 shadow-sm disabled:opacity-50"
             title={`Vincular a ${membroNome}`}
         >
             {loading ? <Loader2 size={14} className="animate-spin" /> : <Link2 size={14} />}

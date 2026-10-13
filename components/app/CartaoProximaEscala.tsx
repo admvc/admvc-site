@@ -4,8 +4,9 @@
 // "Nao posso" pede um motivo com um toque (as razoes mais comuns).
 
 import { useState, useTransition } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { CalendarDays, Check, X } from 'lucide-react'
+import { CalendarDays, Check, ChevronRight, X } from 'lucide-react'
 import { confirmarEscala, recusarEscala } from '@/actions/escalas-actions'
 import type { MinhaEscala } from '@/lib/escalas-app'
 import { diaPorExtenso, hora } from './datas'
@@ -13,7 +14,7 @@ import Estado from './Estado'
 
 const MOTIVOS = ['Estou doente', 'Vou viajar', 'Trabalho', 'Compromisso de família']
 
-export default function CartaoProximaEscala({ escala, titulo = 'A sua próxima escala', compacto = false }: { escala: MinhaEscala; titulo?: string; compacto?: boolean }) {
+export default function CartaoProximaEscala({ escala, titulo = 'A sua próxima escala', compacto = false, href }: { escala: MinhaEscala; titulo?: string; compacto?: boolean; href?: string }) {
     const router = useRouter()
     const [pendente, iniciar] = useTransition()
     const [pedirMotivo, setPedirMotivo] = useState(false)
@@ -102,6 +103,13 @@ export default function CartaoProximaEscala({ escala, titulo = 'A sua próxima e
             )}
 
             {erro && <p role="alert" className="text-[15px]" style={{ color: 'var(--a-erro)' }}>{erro}</p>}
+
+            {href && (
+                <Link href={href} className="a-foco flex min-h-[44px] items-center justify-between border-t pt-3 text-[16px] font-semibold"
+                    style={{ borderColor: 'var(--a-borda)', color: 'var(--a-destaque)' }}>
+                    Ver a escala (equipa e músicas) <ChevronRight size={20} aria-hidden />
+                </Link>
+            )}
         </section>
     )
 }

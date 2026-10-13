@@ -224,7 +224,7 @@ export default function SetlistPalco({ evento }: Props) {
 
     return (
         <div
-            className="fixed inset-0 bg-black text-white flex flex-col overflow-hidden select-none"
+            className="manter-escuro fixed inset-0 z-[70] bg-black text-white flex flex-col overflow-hidden select-none"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}

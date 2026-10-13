@@ -180,13 +180,13 @@ export default function ImportExportPage() {
 
             {/* HEADER */}
             <header className="flex flex-col gap-2 pb-6 border-b border-soft">
-                <span className="text-figueira font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2">
+                <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center gap-2">
                     <FileSpreadsheet size={14} /> Gestao de Dados em Massa
                 </span>
-                <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                <h1 className="text-4xl md:text-5xl font-bold text-fg leading-none">
                     Importar <span className="text-muted/30">/ Exportar.</span>
                 </h1>
-                <p className="text-[10px] text-muted font-bold uppercase tracking-widest">
+                <p className="text-[14px] text-muted font-bold uppercase tracking-wide">
                     Gerencie membros em lote via ficheiro CSV — separador ponto-e-virgula (;)
                 </p>
             </header>
@@ -199,8 +199,8 @@ export default function ImportExportPage() {
                             <CheckCircle2 size={22} />
                         </div>
                         <div>
-                            <p className="text-sm font-black uppercase italic text-emerald-700">Importacao concluida!</p>
-                            <p className="text-[9px] font-bold uppercase tracking-widest text-emerald-600/80 mt-0.5">
+                            <p className="text-sm font-bold text-emerald-700">Importacao concluida!</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-emerald-600/80 mt-0.5">
                                 {sucesso.count} membro{sucesso.count !== 1 ? 's' : ''} adicionado{sucesso.count !== 1 ? 's' : ''} ao sistema
                             </p>
                         </div>
@@ -222,8 +222,8 @@ export default function ImportExportPage() {
                                 <Download size={20} />
                             </div>
                             <div>
-                                <h3 className="text-sm font-black uppercase tracking-tight text-fg">Exportar Membros</h3>
-                                <p className="text-[9px] text-muted font-bold uppercase tracking-widest mt-0.5">
+                                <h3 className="text-sm font-bold text-fg">Exportar Membros</h3>
+                                <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-0.5">
                                     Download de todos os membros em CSV
                                 </p>
                             </div>
@@ -231,17 +231,17 @@ export default function ImportExportPage() {
                     </div>
                     <div className="p-6 space-y-4">
                         <div className="bg-blue-500/5 border border-blue-500/15 rounded-xl p-4 space-y-2">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-blue-700 flex items-center gap-1.5">
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-blue-700 flex items-center gap-1.5">
                                 <Info size={10} /> Campos exportados ({CABECALHOS_CSV.length})
                             </p>
-                            <p className="text-[9px] text-blue-600/80 font-medium leading-relaxed">
+                            <p className="text-[13px] text-blue-600/80 font-medium leading-relaxed">
                                 {CABECALHOS_CSV.slice(0, 8).join(', ')}... e mais {CABECALHOS_CSV.length - 8} campos
                             </p>
                         </div>
                         <button
                             onClick={handleExport}
                             disabled={loadingExport}
-                            className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-4 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg active:scale-95 disabled:opacity-50"
+                            className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-4 rounded-2xl text-[13px] font-bold uppercase tracking-wide hover:bg-blue-700 transition-all shadow-lg active:scale-95 disabled:opacity-50"
                         >
                             {loadingExport ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
                             {loadingExport ? 'A exportar...' : 'Exportar CSV'}
@@ -257,8 +257,8 @@ export default function ImportExportPage() {
                                 <Upload size={20} />
                             </div>
                             <div>
-                                <h3 className="text-sm font-black uppercase tracking-tight text-fg">Importar Membros</h3>
-                                <p className="text-[9px] text-muted font-bold uppercase tracking-widest mt-0.5">
+                                <h3 className="text-sm font-bold text-fg">Importar Membros</h3>
+                                <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-0.5">
                                     Envie um CSV com separador ; (ponto-e-virgula)
                                 </p>
                             </div>
@@ -268,7 +268,7 @@ export default function ImportExportPage() {
                         {/* TEMPLATE */}
                         <button
                             onClick={handleDownloadTemplate}
-                            className="w-full flex items-center justify-center gap-2 bg-bg border border-soft text-muted py-3 rounded-xl text-[9px] font-black uppercase tracking-widest hover:border-figueira/40 hover:text-figueira transition-all"
+                            className="w-full flex items-center justify-center gap-2 bg-bg border border-soft text-muted py-3 rounded-xl text-[13px] font-bold uppercase tracking-wide hover:border-figueira/40 hover:text-figueira transition-all"
                         >
                             <Download size={13} /> Descarregar Template CSV
                         </button>
@@ -289,15 +289,15 @@ export default function ImportExportPage() {
                                     {file ? (
                                         <div className="space-y-1">
                                             <CheckCircle2 size={20} className="mx-auto text-figueira" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-figueira">{file.name}</p>
-                                            <p className="text-[8px] text-muted font-bold uppercase">
+                                            <p className="text-[14px] font-bold uppercase tracking-wide text-figueira">{file.name}</p>
+                                            <p className="text-[13px] text-muted font-bold uppercase">
                                                 {(file.size / 1024).toFixed(1)} KB — Clica para trocar
                                             </p>
                                         </div>
                                     ) : (
                                         <div className="space-y-2">
                                             <Upload size={20} className="mx-auto text-muted/40" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-muted">
+                                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted">
                                                 Clica para seleccionar o ficheiro CSV
                                             </p>
                                         </div>
@@ -306,7 +306,7 @@ export default function ImportExportPage() {
                                 <button
                                     type="submit"
                                     disabled={!file || loadingImport}
-                                    className="w-full flex items-center justify-center gap-2 bg-fg text-bg py-4 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-figueira transition-all shadow-lg active:scale-95 disabled:opacity-50"
+                                    className="w-full flex items-center justify-center gap-2 bg-fg text-bg py-4 rounded-2xl text-[13px] font-bold uppercase tracking-wide hover:bg-figueira transition-all shadow-lg active:scale-95 disabled:opacity-50"
                                 >
                                     {loadingImport ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} />}
                                     {loadingImport ? 'A analisar...' : 'Analisar Ficheiro'}
@@ -325,7 +325,7 @@ export default function ImportExportPage() {
                 >
                     <div className="flex items-center gap-3">
                         <Info size={14} className="text-muted" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-fg">
+                        <span className="text-[14px] font-bold uppercase tracking-wide text-fg">
                             Dicionario de Campos ({CABECALHOS_CSV.length} campos)
                         </span>
                     </div>
@@ -336,7 +336,7 @@ export default function ImportExportPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                             {CABECALHOS_CSV.map((campo, i) => (
                                 <div key={campo} className="flex items-start gap-2 p-2.5 rounded-xl bg-bg border border-soft/50">
-                                    <span className="text-[7px] font-black text-muted/50 w-5 shrink-0 mt-0.5">
+                                    <span className="text-[13px] font-bold text-muted/50 w-5 shrink-0 mt-0.5">
                                         {String(i + 1).padStart(2, '0')}
                                     </span>
                                     <div className="min-w-0">
@@ -345,14 +345,14 @@ export default function ImportExportPage() {
                                             {campo}
                                             {CAMPOS_OBRIGATORIOS.includes(campo) && ' *'}
                                         </p>
-                                        <p className="text-[8px] text-muted font-medium mt-0.5 truncate">
+                                        <p className="text-[13px] text-muted font-medium mt-0.5 truncate">
                                             {LABELS_CAMPOS[campo] || campo}
                                         </p>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <p className="text-[8px] font-bold text-figueira uppercase tracking-widest mt-4 flex items-center gap-1">
+                        <p className="text-[13px] font-bold text-figueira uppercase tracking-wide mt-4 flex items-center gap-1">
                             <AlertTriangle size={9} /> Campos marcados com * sao obrigatorios
                         </p>
                     </div>
@@ -366,20 +366,20 @@ export default function ImportExportPage() {
                     {/* CABECALHO */}
                     <div className="p-6 border-b border-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                            <h3 className="text-sm font-black uppercase tracking-tight text-fg">Relatorio de Analise</h3>
-                            <p className="text-[9px] text-muted font-bold uppercase tracking-widest mt-1">
+                            <h3 className="text-sm font-bold text-fg">Relatorio de Analise</h3>
+                            <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-1">
                                 {analise.length} linha{analise.length !== 1 ? 's' : ''} processada{analise.length !== 1 ? 's' : ''}
                             </p>
                         </div>
                         <div className="flex gap-2">
                             <button onClick={() => { setAnalise(null); setFile(null) }}
-                                className="px-4 py-2.5 border border-soft rounded-xl text-[9px] font-black uppercase tracking-widest text-muted hover:bg-soft transition-all">
+                                className="px-4 py-2.5 border border-soft rounded-xl text-[13px] font-bold uppercase tracking-wide text-muted hover:bg-soft transition-all">
                                 Cancelar
                             </button>
                             <button
                                 onClick={handleConfirm}
                                 disabled={prontos === 0 || loadingImport}
-                                className="flex items-center gap-2 bg-figueira text-white px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-figueira/90 transition-all shadow-lg active:scale-95 disabled:opacity-50"
+                                className="flex items-center gap-2 bg-figueira text-white px-5 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide hover:bg-figueira/90 transition-all shadow-lg active:scale-95 disabled:opacity-50"
                             >
                                 {loadingImport ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
                                 {loadingImport ? 'A importar...' : `Importar ${prontos}`}
@@ -395,8 +395,8 @@ export default function ImportExportPage() {
                             { label: 'Erros', value: erros, cor: 'text-red-600 bg-red-500/8' },
                         ].map(k => (
                             <div key={k.label} className={`px-6 py-4 text-center ${k.cor}`}>
-                                <p className="text-2xl font-black italic">{k.value}</p>
-                                <p className="text-[8px] font-black uppercase tracking-widest opacity-70">{k.label}</p>
+                                <p className="text-2xl font-bold">{k.value}</p>
+                                <p className="text-[13px] font-bold uppercase tracking-wide opacity-70">{k.label}</p>
                             </div>
                         ))}
                     </div>
@@ -420,12 +420,12 @@ export default function ImportExportPage() {
                         <table className="w-full text-left min-w-[700px]">
                             <thead className="sticky top-0 bg-bg z-10">
                                 <tr className="border-b border-soft">
-                                    <th className="px-5 py-3 text-[8px] font-black uppercase tracking-widest text-muted w-12">Ln</th>
-                                    <th className="px-5 py-3 text-[8px] font-black uppercase tracking-widest text-muted w-28">Estado</th>
-                                    <th className="px-5 py-3 text-[8px] font-black uppercase tracking-widest text-muted">Nome</th>
-                                    <th className="px-5 py-3 text-[8px] font-black uppercase tracking-widest text-muted">E-mail</th>
-                                    <th className="px-5 py-3 text-[8px] font-black uppercase tracking-widest text-muted">Telemovel</th>
-                                    <th className="px-5 py-3 text-[8px] font-black uppercase tracking-widest text-muted">Detalhe</th>
+                                    <th className="px-5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted w-12">Ln</th>
+                                    <th className="px-5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted w-28">Estado</th>
+                                    <th className="px-5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted">Nome</th>
+                                    <th className="px-5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted">E-mail</th>
+                                    <th className="px-5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted">Telemovel</th>
+                                    <th className="px-5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted">Detalhe</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-soft/50">
@@ -434,45 +434,45 @@ export default function ImportExportPage() {
                                         ${item.status === 'ERRO' ? 'bg-red-500/3' : ''}
                                         ${item.status === 'DUPLICADO' ? 'bg-orange-500/3' : ''}`}>
 
-                                        <td className="px-5 py-3 text-[9px] font-bold text-muted">{item.linha}</td>
+                                        <td className="px-5 py-3 text-[13px] font-bold text-muted">{item.linha}</td>
 
                                         <td className="px-5 py-3">
                                             {item.status === 'PRONTO' && (
-                                                <span className="bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 px-2 py-1 rounded-lg text-[7px] font-black uppercase tracking-widest">
+                                                <span className="bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 px-2 py-1 rounded-lg text-[13px] font-bold uppercase tracking-wide">
                                                     Pronto
                                                 </span>
                                             )}
                                             {item.status === 'DUPLICADO' && (
-                                                <span className="bg-orange-500/10 text-orange-700 border border-orange-500/20 px-2 py-1 rounded-lg text-[7px] font-black uppercase tracking-widest">
+                                                <span className="bg-orange-500/10 text-orange-700 border border-orange-500/20 px-2 py-1 rounded-lg text-[13px] font-bold uppercase tracking-wide">
                                                     Duplicado
                                                 </span>
                                             )}
                                             {item.status === 'ERRO' && (
-                                                <span className="bg-red-500/10 text-red-700 border border-red-500/20 px-2 py-1 rounded-lg text-[7px] font-black uppercase tracking-widest">
+                                                <span className="bg-red-500/10 text-red-700 border border-red-500/20 px-2 py-1 rounded-lg text-[13px] font-bold uppercase tracking-wide">
                                                     Erro
                                                 </span>
                                             )}
                                         </td>
 
                                         <td className="px-5 py-3">
-                                            <p className="text-[10px] font-black text-fg uppercase leading-none">
+                                            <p className="text-[14px] font-bold text-fg uppercase leading-none">
                                                 {item.dados?.first_name} {item.dados?.last_name}
                                             </p>
                                             {item.dados?.church_role && (
-                                                <p className="text-[8px] text-muted font-bold uppercase tracking-widest mt-0.5">
+                                                <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-0.5">
                                                     {item.dados.church_role}
                                                 </p>
                                             )}
                                         </td>
 
                                         <td className="px-5 py-3">
-                                            <p className="text-[9px] text-muted font-medium truncate max-w-[160px]">
+                                            <p className="text-[13px] text-muted font-medium truncate max-w-[160px]">
                                                 {item.dados?.email || '—'}
                                             </p>
                                         </td>
 
                                         <td className="px-5 py-3">
-                                            <p className="text-[9px] text-muted font-medium">
+                                            <p className="text-[13px] text-muted font-medium">
                                                 {item.dados?.phone_1 || '—'}
                                             </p>
                                         </td>
@@ -481,23 +481,23 @@ export default function ImportExportPage() {
                                             {item.status === 'PRONTO' ? (
                                                 <div className="flex flex-wrap gap-1">
                                                     {item.dados?.id_city && (
-                                                        <span className="text-[7px] font-bold text-muted bg-soft px-1.5 py-0.5 rounded">
+                                                        <span className="text-[13px] font-bold text-muted bg-soft px-1.5 py-0.5 rounded">
                                                             {item.dados.id_city}
                                                         </span>
                                                     )}
                                                     {item.dados?.status && (
-                                                        <span className="text-[7px] font-bold text-muted bg-soft px-1.5 py-0.5 rounded">
+                                                        <span className="text-[13px] font-bold text-muted bg-soft px-1.5 py-0.5 rounded">
                                                             {item.dados.status}
                                                         </span>
                                                     )}
                                                     {item.dados?.baptism_status && (
-                                                        <span className="text-[7px] font-bold text-muted bg-soft px-1.5 py-0.5 rounded">
+                                                        <span className="text-[13px] font-bold text-muted bg-soft px-1.5 py-0.5 rounded">
                                                             {item.dados.baptism_status}
                                                         </span>
                                                     )}
                                                 </div>
                                             ) : (
-                                                <p className="text-[9px] text-red-600 font-bold italic">
+                                                <p className="text-[13px] text-red-600 font-bold">
                                                     {item.motivo || '—'}
                                                 </p>
                                             )}
@@ -510,11 +510,11 @@ export default function ImportExportPage() {
 
                     {/* RODAPE */}
                     <div className="px-6 py-4 border-t border-soft flex items-center justify-between bg-bg">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-muted">
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">
                             A mostrar {analiseVisiveis.length} de {analise.length} linha{analise.length !== 1 ? 's' : ''}
                         </p>
                         {prontos > 0 && (
-                            <p className="text-[9px] font-black uppercase tracking-widest text-emerald-600">
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-emerald-600">
                                 {prontos} membro{prontos !== 1 ? 's' : ''} pronto{prontos !== 1 ? 's' : ''} para importar
                             </p>
                         )}

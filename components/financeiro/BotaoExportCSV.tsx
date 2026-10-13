@@ -57,7 +57,7 @@ export default function BotaoExportCSV({ data }: { data: CSVData }) {
     return (
         <button
             onClick={gerarCSV}
-            className="flex items-center gap-2 bg-bg2 border border-soft rounded-2xl px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-muted hover:text-fg hover:border-figueira/30 transition-all"
+            className="flex items-center gap-2 bg-bg2 border border-soft rounded-2xl px-4 py-2.5 text-[14px] font-bold uppercase tracking-wide text-muted hover:text-fg hover:border-figueira/30 transition-all"
         >
             <FileSpreadsheet size={14} />
             Exportar CSV

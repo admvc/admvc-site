@@ -67,15 +67,15 @@ export default async function EncomendarPage({ params }: { params: Promise<{ eve
             <header className="space-y-4">
                 <Link
                     href="/cantina/menu-local"
-                    className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted hover:text-figueira transition-colors"
+                    className="inline-flex items-center gap-2 text-[14px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors"
                 >
                     <ArrowLeft size={12} /> Voltar ao Menu
                 </Link>
                 <div className="text-center space-y-2 pb-6 border-b border-soft">
-                    <span className="text-figueira font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-2">
+                    <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center justify-center gap-2">
                         <ShoppingCart size={14} /> Pre-Encomenda
                     </span>
-                    <h1 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h1 className="text-3xl md:text-5xl font-bold text-fg leading-none">
                         {evento.nome}
                     </h1>
                     <p className="text-xs text-muted capitalize">{eventoData}</p>
@@ -84,7 +84,7 @@ export default async function EncomendarPage({ params }: { params: Promise<{ eve
 
             {cardapio && (
                 <div className="bg-figueira/5 border border-figueira/20 rounded-2xl p-4 text-center">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-figueira">
+                    <p className="text-[14px] font-bold uppercase tracking-wide text-figueira">
                         Cardapio do Dia — Menu especial preparado para este evento
                     </p>
                 </div>
@@ -93,10 +93,10 @@ export default async function EncomendarPage({ params }: { params: Promise<{ eve
             {saldo <= 0 && (
                 <Link href="/cantina/carregar" className="bg-orange-500/5 border border-orange-500/20 rounded-2xl p-4 flex items-center justify-between">
                     <div>
-                        <p className="text-xs font-black uppercase text-orange-600">Saldo insuficiente</p>
-                        <p className="text-[10px] text-muted">Carregue o seu saldo para poder encomendar.</p>
+                        <p className="text-xs font-bold text-orange-600">Saldo insuficiente</p>
+                        <p className="text-[14px] text-muted">Carregue o seu saldo para poder encomendar.</p>
                     </div>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-orange-500">Carregar →</span>
+                    <span className="text-[13px] font-bold uppercase tracking-wide text-orange-500">Carregar →</span>
                 </Link>
             )}
 

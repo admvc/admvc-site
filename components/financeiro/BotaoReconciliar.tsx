@@ -27,7 +27,7 @@ export function BotaoReconciliar({ movimentoId }: { movimentoId: number }) {
         return (
             <button
                 onClick={() => setAberto(true)}
-                className="bg-orange-500/10 text-orange-400 hover:bg-orange-500 hover:text-white px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-1"
+                className="bg-orange-500/10 text-orange-400 hover:bg-orange-500 hover:text-white px-3 py-1.5 rounded-lg text-[13px] font-bold uppercase tracking-wide transition-all active:scale-95 flex items-center gap-1"
             >
                 <Link2 size={12} />
                 Reconciliar
@@ -78,7 +78,7 @@ export function BotaoDesreconciliar({ movimentoId }: { movimentoId: number }) {
         <button
             onClick={handleClick}
             disabled={loading}
-            className="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white p-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 flex items-center gap-1"
+            className="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white p-1.5 rounded-lg text-[13px] font-bold uppercase tracking-wide transition-all active:scale-95 disabled:opacity-50 flex items-center gap-1"
             title="Desreconciliar"
         >
             {loading ? <Loader2 size={12} className="animate-spin" /> : <Unlink size={12} />}

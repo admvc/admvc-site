@@ -38,33 +38,33 @@ export default function BoasVindasPage() {
 
     if (enviado) {
         return (
-            <main className="min-h-screen bg-gradient-to-b from-[#0b0d0c] to-[#1a2e1f] flex items-center justify-center p-6">
+            <main className="min-h-screen bg-bg flex items-center justify-center p-6">
                 <div className="max-w-md w-full text-center space-y-8 animate-in fade-in zoom-in-95 duration-500">
-                    <div className="w-20 h-20 bg-emerald-500/20 rounded-3xl flex items-center justify-center mx-auto">
-                        <CheckCircle2 size={40} className="text-emerald-400" />
+                    <div className="w-20 h-20 bg-figueira/10 rounded-3xl flex items-center justify-center mx-auto">
+                        <CheckCircle2 size={40} className="text-figueira" />
                     </div>
 
                     <div className="space-y-3">
-                        <h1 className="text-3xl font-black italic uppercase tracking-tighter text-white">
+                        <h1 className="text-3xl font-bold text-fg">
                             Bem-vindo, {nome.split(' ')[0]}!
                         </h1>
-                        <p className="text-sm text-white/60 leading-relaxed">
+                        <p className="text-sm text-muted leading-relaxed">
                             Que alegria ter-te connosco! A tua presenca e uma bencao para toda a nossa familia.
                         </p>
                     </div>
 
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-3">
-                        <p className="text-xs text-white/40 uppercase tracking-widest font-black">Versiculo do dia</p>
-                        <p className="text-base text-white/80 italic leading-relaxed">
+                    <div className="bg-bg2 border border-soft rounded-2xl p-6 space-y-3">
+                        <p className="text-xs text-muted font-bold">Versiculo do dia</p>
+                        <p className="text-base text-muted leading-relaxed">
                             "Porque onde estiverem dois ou tres reunidos em meu nome, ali eu estou no meio deles."
                         </p>
-                        <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">Mateus 18:20</p>
+                        <p className="text-[14px] text-muted font-bold uppercase tracking-wide">Mateus 18:20</p>
                     </div>
 
                     <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-5 flex items-center gap-4">
                         <Coffee size={24} className="text-amber-400 shrink-0" />
                         <div className="text-left">
-                            <p className="text-sm font-black text-amber-300 uppercase tracking-widest">Mimo Especial</p>
+                            <p className="text-sm font-bold text-amber-300">Mimo Especial</p>
                             <p className="text-xs text-amber-200/60 mt-0.5">
                                 Passa pela cantina e diz que es visitante — temos um mimo preparado para ti!
                             </p>
@@ -73,18 +73,18 @@ export default function BoasVindasPage() {
 
                     <div className="flex gap-3">
                         <a href="https://www.igrejaadmvc.org" target="_blank" rel="noopener noreferrer"
-                            className="flex-1 flex items-center justify-center gap-2 bg-white/5 border border-white/10 hover:border-emerald-500/40 text-white py-3.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all active:scale-95">
-                            <Globe size={16} className="text-emerald-400" />
+                            className="flex-1 flex items-center justify-center gap-2 bg-bg2 border border-soft hover:border-emerald-500/40 text-fg py-3.5 rounded-xl font-bold text-[13px] uppercase tracking-wide transition-all active:scale-95">
+                            <Globe size={16} className="text-figueira" />
                             Site Oficial
                         </a>
                         <a href="https://www.youtube.com/watch?v=rHNERaeiZPs&t=12s" target="_blank" rel="noopener noreferrer"
-                            className="flex-1 flex items-center justify-center gap-2 bg-white/5 border border-white/10 hover:border-red-500/40 text-white py-3.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all active:scale-95">
+                            className="flex-1 flex items-center justify-center gap-2 bg-bg2 border border-soft hover:border-red-500/40 text-fg py-3.5 rounded-xl font-bold text-[13px] uppercase tracking-wide transition-all active:scale-95">
                             <Play size={16} className="text-red-400" />
                             Conhece-nos
                         </a>
                     </div>
 
-                    <p className="text-[10px] text-white/20 uppercase tracking-widest font-bold">
+                    <p className="text-[14px] text-muted uppercase tracking-wide font-bold">
                         ADMVC — Se muito bem-vindo, fica para sempre!
                     </p>
                 </div>
@@ -93,64 +93,64 @@ export default function BoasVindasPage() {
     }
 
     return (
-        <main className="min-h-screen bg-gradient-to-b from-[#0b0d0c] to-[#1a2e1f] flex items-center justify-center p-6">
+        <main className="min-h-screen bg-bg flex items-center justify-center p-6">
             <div className="max-w-md w-full space-y-8 animate-in fade-in duration-700">
 
                 <div className="text-center space-y-3">
-                    <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mx-auto">
-                        <Church size={28} className="text-emerald-400" />
+                    <div className="w-16 h-16 bg-bg2 border border-soft rounded-2xl flex items-center justify-center mx-auto">
+                        <Church size={28} className="text-figueira" />
                     </div>
-                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-white">
+                    <h1 className="text-3xl font-bold text-fg">
                         Boas-Vindas
                     </h1>
-                    <p className="text-sm text-white/50">
+                    <p className="text-sm text-muted">
                         E uma alegria receber-te! Preenche os teus dados para que possamos acompanhar-te.
                     </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase tracking-widest text-white/40">Nome completo</label>
+                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Nome completo</label>
                         <input type="text" value={nome} onChange={e => setNome(e.target.value)} required
                             placeholder="O teu nome"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-bold text-white outline-none focus:border-emerald-500/50 placeholder:text-white/20 transition-all" />
+                            className="w-full bg-bg2 border border-soft rounded-xl px-4 py-3.5 text-sm font-bold text-fg outline-none focus:border-figueira placeholder:text-muted transition-all" />
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase tracking-widest text-white/40">Telefone / WhatsApp</label>
+                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Telefone / WhatsApp</label>
                         <input type="tel" value={telefone} onChange={e => setTelefone(e.target.value)} required
                             placeholder="+351 912 345 678"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-bold text-white outline-none focus:border-emerald-500/50 placeholder:text-white/20 transition-all" />
+                            className="w-full bg-bg2 border border-soft rounded-xl px-4 py-3.5 text-sm font-bold text-fg outline-none focus:border-figueira placeholder:text-muted transition-all" />
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase tracking-widest text-white/40">Pedido de oracao (opcional)</label>
+                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Pedido de oracao (opcional)</label>
                         <textarea value={pedido} onChange={e => setPedido(e.target.value)} rows={3}
                             placeholder="Se quiseres partilhar um pedido de oracao..."
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-sm font-bold text-white outline-none focus:border-emerald-500/50 placeholder:text-white/20 resize-none transition-all" />
+                            className="w-full bg-bg2 border border-soft rounded-xl px-4 py-3.5 text-sm font-bold text-fg outline-none focus:border-figueira placeholder:text-muted resize-none transition-all" />
                     </div>
 
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-3">
-                        <p className="text-xs leading-relaxed text-white/70">
+                    <div className="rounded-xl border border-soft bg-bg2 p-4 space-y-3">
+                        <p className="text-xs leading-relaxed text-muted">
                             Usamos estes dados só para te acolher e contactar. Quem os vê é a equipa de acolhimento.
                             Guardamo-los até 12 meses sem visitas; o pedido de oração, 3 meses.{' '}
-                            <a href="/privacidade" className="underline text-white">Política de privacidade</a>
+                            <a href="/privacidade" className="underline text-fg">Política de privacidade</a>
                         </p>
-                        <label className="flex items-start gap-3 text-xs font-bold text-white">
+                        <label className="flex items-start gap-3 text-xs font-bold text-fg">
                             <input type="checkbox" checked={consentimento} onChange={e => setConsentimento(e.target.checked)} required
-                                className="mt-0.5 h-4 w-4 shrink-0 accent-emerald-500" />
+                                className="mt-0.5 h-4 w-4 shrink-0 accent-figueira" />
                             Aceito que a igreja guarde estes dados (incluindo o pedido de oração, se o escrever) para me contactar.
                         </label>
                     </div>
 
                     <button type="submit" disabled={enviando || !nome.trim() || !telefone.trim() || !consentimento}
-                        className="w-full flex items-center justify-center gap-3 bg-emerald-500 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-600 transition-all disabled:opacity-50 shadow-lg shadow-emerald-500/20 active:scale-95">
+                        className="w-full flex items-center justify-center gap-3 bg-figueira text-white py-4 rounded-xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira/90 transition-all disabled:opacity-50 shadow-sm active:scale-95">
                         {enviando ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                         {enviando ? 'A enviar...' : 'Enviar'}
                     </button>
                 </form>
 
-                <p className="text-center text-[9px] text-white/15 uppercase tracking-widest font-bold">
+                <p className="text-center text-[13px] text-muted uppercase tracking-wide font-bold">
                     ADMVC — Assembleia de Deus Ministerio Visao de Conquista
                 </p>
             </div>

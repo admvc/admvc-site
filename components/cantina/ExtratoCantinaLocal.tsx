@@ -70,7 +70,7 @@ export default function ExtratoCantinaLocal({ membroId, nome }: { membroId: numb
                 onClick={() => setAberto(!aberto)}
                 className="w-full flex items-center justify-between py-2"
             >
-                <span className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
+                <span className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
                     <Receipt size={12} /> {nome ? `Consumos de ${nome}` : 'Extrato Cantina'} ({transacoes.length})
                 </span>
                 {aberto ? <ChevronUp size={12} className="text-muted" /> : <ChevronDown size={12} className="text-muted" />}
@@ -85,19 +85,19 @@ export default function ExtratoCantinaLocal({ membroId, nome }: { membroId: numb
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         {icone(t.tipo)}
-                                        <span className="text-[10px] font-bold text-fg">{t.descricao || t.tipo}</span>
+                                        <span className="text-[14px] font-bold text-fg">{t.descricao || t.tipo}</span>
                                     </div>
-                                    <span className={`text-[11px] font-black ${corValor(t.tipo)}`}>
+                                    <span className={`text-[14px] font-bold ${corValor(t.tipo)}`}>
                                         {t.valor > 0 ? '+' : ''}{t.valor.toFixed(2)}€
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-[9px] text-muted">{data} · {t.forma_pagamento}</span>
+                                    <span className="text-[13px] text-muted">{data} · {t.forma_pagamento}</span>
                                     <a
                                         href={`https://wa.me/?text=${gerarTextoWhatsApp(t)}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-[8px] font-black uppercase tracking-widest text-figueira hover:text-fg transition-colors"
+                                        className="text-[13px] font-bold uppercase tracking-wide text-figueira hover:text-fg transition-colors"
                                     >
                                         WhatsApp
                                     </a>

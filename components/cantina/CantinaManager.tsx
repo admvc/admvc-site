@@ -31,23 +31,23 @@ export default function CantinaManager({ produtos, categorias }: { produtos: any
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="bg-bg2 border border-soft rounded-2xl p-4 text-center">
                     <Package size={16} className="mx-auto text-figueira mb-1" />
-                    <p className="text-lg font-black text-fg">{produtos.length}</p>
-                    <p className="text-[8px] font-bold uppercase tracking-widest text-muted">Produtos</p>
+                    <p className="text-lg font-bold text-fg">{produtos.length}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Produtos</p>
                 </div>
                 <div className={`rounded-2xl p-4 text-center border ${esgotadosCount > 0 ? 'bg-red-500/5 border-red-500/20' : 'bg-bg2 border-soft'}`}>
                     <AlertCircle size={16} className={`mx-auto mb-1 ${esgotadosCount > 0 ? 'text-red-500' : 'text-emerald-500'}`} />
-                    <p className={`text-lg font-black ${esgotadosCount > 0 ? 'text-red-500' : 'text-fg'}`}>{esgotadosCount}</p>
-                    <p className={`text-[8px] font-bold uppercase tracking-widest ${esgotadosCount > 0 ? 'text-red-400' : 'text-muted'}`}>Esgotados</p>
+                    <p className={`text-lg font-bold ${esgotadosCount > 0 ? 'text-red-500' : 'text-fg'}`}>{esgotadosCount}</p>
+                    <p className={`text-[13px] font-bold uppercase tracking-wide ${esgotadosCount > 0 ? 'text-red-400' : 'text-muted'}`}>Esgotados</p>
                 </div>
                 <div className="bg-bg2 border border-soft rounded-2xl p-4 text-center">
                     <Star size={16} className="mx-auto text-yellow-500 mb-1" />
-                    <p className="text-lg font-black text-fg">{destaquesCount}</p>
-                    <p className="text-[8px] font-bold uppercase tracking-widest text-muted">Destaques</p>
+                    <p className="text-lg font-bold text-fg">{destaquesCount}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Destaques</p>
                 </div>
                 <div className="bg-bg2 border border-soft rounded-2xl p-4 text-center">
                     <EyeOff size={16} className="mx-auto text-muted mb-1" />
-                    <p className="text-lg font-black text-fg">{ocultosCount}</p>
-                    <p className="text-[8px] font-bold uppercase tracking-widest text-muted">Fora de Venda</p>
+                    <p className="text-lg font-bold text-fg">{ocultosCount}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Fora de Venda</p>
                 </div>
             </div>
 
@@ -58,12 +58,12 @@ export default function CantinaManager({ produtos, categorias }: { produtos: any
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                    <button onClick={() => setFiltroAtivo('TODOS')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filtroAtivo === 'TODOS' ? 'bg-fg text-bg shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-fg'}`}>Todos</button>
-                    <button onClick={() => setFiltroAtivo('DESTAQUES')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${filtroAtivo === 'DESTAQUES' ? 'bg-yellow-500 text-white shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-yellow-500'}`}><Star size={12} /> Destaques</button>
-                    <button onClick={() => setFiltroAtivo('ESGOTADOS')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${filtroAtivo === 'ESGOTADOS' ? 'bg-red-500 text-white shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-red-500'}`}><AlertCircle size={12} /> Esgotados</button>
-                    <button onClick={() => setFiltroAtivo('DESPENSA')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${filtroAtivo === 'DESPENSA' ? 'bg-blue-500 text-white shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-blue-500'}`}><Package size={12} /> Despensa</button>
-                    <button onClick={() => setFiltroAtivo('ASSISTENCIA')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${filtroAtivo === 'ASSISTENCIA' ? 'bg-orange-500 text-white shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-orange-500'}`}><HeartHandshake size={12} /> Assistência</button>
-                    <button onClick={() => setFiltroAtivo('OCULTOS')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-1.5 ${filtroAtivo === 'OCULTOS' ? 'bg-gray-700 text-white shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-gray-500'}`}><EyeOff size={12} /> Fora de Venda</button>
+                    <button onClick={() => setFiltroAtivo('TODOS')} className={`px-4 py-2 rounded-xl text-[14px] font-bold uppercase tracking-wide transition-all ${filtroAtivo === 'TODOS' ? 'bg-fg text-bg shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-fg'}`}>Todos</button>
+                    <button onClick={() => setFiltroAtivo('DESTAQUES')} className={`px-4 py-2 rounded-xl text-[14px] font-bold uppercase tracking-wide transition-all flex items-center gap-1.5 ${filtroAtivo === 'DESTAQUES' ? 'bg-yellow-500 text-white shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-yellow-500'}`}><Star size={12} /> Destaques</button>
+                    <button onClick={() => setFiltroAtivo('ESGOTADOS')} className={`px-4 py-2 rounded-xl text-[14px] font-bold uppercase tracking-wide transition-all flex items-center gap-1.5 ${filtroAtivo === 'ESGOTADOS' ? 'bg-red-500 text-white shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-red-500'}`}><AlertCircle size={12} /> Esgotados</button>
+                    <button onClick={() => setFiltroAtivo('DESPENSA')} className={`px-4 py-2 rounded-xl text-[14px] font-bold uppercase tracking-wide transition-all flex items-center gap-1.5 ${filtroAtivo === 'DESPENSA' ? 'bg-blue-500 text-white shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-blue-500'}`}><Package size={12} /> Despensa</button>
+                    <button onClick={() => setFiltroAtivo('ASSISTENCIA')} className={`px-4 py-2 rounded-xl text-[14px] font-bold uppercase tracking-wide transition-all flex items-center gap-1.5 ${filtroAtivo === 'ASSISTENCIA' ? 'bg-orange-500 text-white shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-orange-500'}`}><HeartHandshake size={12} /> Assistência</button>
+                    <button onClick={() => setFiltroAtivo('OCULTOS')} className={`px-4 py-2 rounded-xl text-[14px] font-bold uppercase tracking-wide transition-all flex items-center gap-1.5 ${filtroAtivo === 'OCULTOS' ? 'bg-gray-700 text-white shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-gray-500'}`}><EyeOff size={12} /> Fora de Venda</button>
                 </div>
             </div>
 
@@ -71,7 +71,7 @@ export default function CantinaManager({ produtos, categorias }: { produtos: any
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse min-w-[700px]">
                         <thead>
-                            <tr className="bg-soft/30 border-b border-soft text-[9px] font-black uppercase tracking-widest text-muted">
+                            <tr className="bg-soft/30 border-b border-soft text-[13px] font-bold uppercase tracking-wide text-muted">
                                 <th className="p-5 pl-8">Produto</th>
                                 <th className="p-5">Categoria & Preço</th>
                                 <th className="p-5 text-center">Configurações</th>
@@ -93,18 +93,18 @@ export default function CantinaManager({ produtos, categorias }: { produtos: any
                                                     </div>
                                                 )}
                                                 <div className="flex flex-col">
-                                                    <span className="font-black uppercase text-sm text-fg flex items-center gap-2">
+                                                    <span className="font-bold text-sm text-fg flex items-center gap-2">
                                                         {p.nome}
                                                     </span>
-                                                    {!p.isAvailable && <span className="text-[9px] font-bold text-red-500 uppercase tracking-widest mt-0.5">Oculto na Venda</span>}
+                                                    {!p.isAvailable && <span className="text-[13px] font-bold text-red-500 uppercase tracking-wide mt-0.5">Oculto na Venda</span>}
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="p-5 space-y-1">
-                                            <div className="bg-soft text-muted px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest inline-block">
+                                            <div className="bg-soft text-muted px-3 py-1 rounded-lg text-[13px] font-bold uppercase tracking-wide inline-block">
                                                 {p.categoria}
                                             </div>
-                                            <div className="font-black text-xs text-fg">
+                                            <div className="font-bold text-xs text-fg">
                                                 {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(p.preco)}
                                             </div>
                                         </td>
@@ -124,7 +124,7 @@ export default function CantinaManager({ produtos, categorias }: { produtos: any
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={4} className="p-10 text-center text-muted text-xs font-black uppercase tracking-widest">
+                                    <td colSpan={4} className="p-10 text-center text-muted text-xs font-bold">
                                         Nenhum produto encontrado.
                                     </td>
                                 </tr>
@@ -195,7 +195,7 @@ function AjustadorStock({ itemId, variantId, stockAtual, trackStock }: any) {
     if (!trackStock) {
         return (
             <div className="flex justify-end">
-                <button onClick={handleAtivarControlo} disabled={isSaving} className="text-[9px] font-black uppercase tracking-widest bg-orange-50 text-orange-500 p-2.5 rounded-xl flex items-center gap-1.5 hover:bg-orange-500 hover:text-white transition-all shadow-sm border border-orange-100">
+                <button onClick={handleAtivarControlo} disabled={isSaving} className="text-[13px] font-bold uppercase tracking-wide bg-orange-50 text-orange-500 p-2.5 rounded-xl flex items-center gap-1.5 hover:bg-orange-500 hover:text-white transition-all shadow-sm border border-orange-100">
                     {isSaving ? <Loader2 size={14} className="animate-spin" /> : <AlertCircle size={14} />} Ativar Controlo
                 </button>
             </div>
@@ -218,7 +218,7 @@ function AjustadorStock({ itemId, variantId, stockAtual, trackStock }: any) {
                 <button type="button" onClick={() => setValor(v => Math.max(0, v - 1))} className="p-2.5 text-muted hover:text-fg hover:bg-soft transition-colors active:bg-soft/50" disabled={isSaving}>
                     <Minus size={14} />
                 </button>
-                <input type="number" value={valor} onChange={(e) => setValor(Math.max(0, parseInt(e.target.value) || 0))} className="w-12 text-center text-xs font-black text-fg outline-none bg-transparent appearance-none" disabled={isSaving} />
+                <input type="number" value={valor} onChange={(e) => setValor(Math.max(0, parseInt(e.target.value) || 0))} className="w-12 text-center text-xs font-bold text-fg outline-none bg-transparent appearance-none" disabled={isSaving} />
                 <button type="button" onClick={() => setValor(v => v + 1)} className="p-2.5 text-muted hover:text-fg hover:bg-soft transition-colors active:bg-soft/50" disabled={isSaving}>
                     <Plus size={14} />
                 </button>

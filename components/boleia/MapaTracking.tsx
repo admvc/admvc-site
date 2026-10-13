@@ -88,7 +88,7 @@ export default function MapaTracking({ posicoes, meuMembroId, latitudePartida, l
         <div className="w-full h-[50vh] rounded-2xl overflow-hidden border border-soft relative">
             {!temPosicoes && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-bg2/80 backdrop-blur-sm">
-                    <p className="text-xs font-black uppercase tracking-widest text-muted">
+                    <p className="text-xs font-bold text-muted">
                         Aguardando localizações...
                     </p>
                 </div>

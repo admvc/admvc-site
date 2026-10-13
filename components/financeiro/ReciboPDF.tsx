@@ -94,7 +94,7 @@ export default function ReciboPDF({ recibo, trigger }: { recibo: ReciboData; tri
                         <div className="p-8 sm:p-12 text-black bg-white" id="recibo-print-area">
                             {/* Header line */}
                             <div className="border-t-2 border-b-2 border-black py-3 mb-8 text-center">
-                                <h1 className="text-xl font-bold tracking-wide uppercase">
+                                <h1 className="text-xl font-bold">
                                     Recibo de Donativo
                                 </h1>
                                 <p className="text-sm text-gray-600 mt-1">
@@ -104,7 +104,7 @@ export default function ReciboPDF({ recibo, trigger }: { recibo: ReciboData; tri
 
                             {/* Entidade emissora */}
                             <div className="mb-6">
-                                <h2 className="text-xs font-bold uppercase text-gray-500 tracking-wider mb-2">
+                                <h2 className="text-xs font-bold text-gray-500 mb-2">
                                     Entidade Emissora
                                 </h2>
                                 <p className="text-base font-semibold">{igreja.nome || '---'}</p>
@@ -118,7 +118,7 @@ export default function ReciboPDF({ recibo, trigger }: { recibo: ReciboData; tri
 
                             {/* Doador */}
                             <div className="mb-8">
-                                <h2 className="text-xs font-bold uppercase text-gray-500 tracking-wider mb-2">
+                                <h2 className="text-xs font-bold text-gray-500 mb-2">
                                     Doador
                                 </h2>
                                 <p className="text-base font-semibold">{nomeMembro}</p>
@@ -133,15 +133,15 @@ export default function ReciboPDF({ recibo, trigger }: { recibo: ReciboData; tri
                             {/* Valor */}
                             <div className="border border-gray-300 rounded-lg p-5 mb-8 bg-gray-50">
                                 <div className="flex justify-between items-center mb-2">
-                                    <span className="text-sm font-medium text-gray-600 uppercase">
+                                    <span className="text-sm font-medium text-gray-600">
                                         Valor Total dos Donativos
                                     </span>
-                                    <span className="text-2xl font-black text-black">
+                                    <span className="text-2xl font-bold text-black">
                                         {euro(recibo.valor_total)}
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm font-medium text-gray-600 uppercase">
+                                    <span className="text-sm font-medium text-gray-600">
                                         Ano Fiscal
                                     </span>
                                     <span className="text-lg font-bold text-black">
@@ -175,7 +175,7 @@ export default function ReciboPDF({ recibo, trigger }: { recibo: ReciboData; tri
 
                             {/* Bottom line */}
                             <div className="border-t-2 border-black mt-10 pt-2">
-                                <p className="text-[10px] text-gray-400 text-center">
+                                <p className="text-[14px] text-gray-400 text-center">
                                     Documento emitido eletronicamente por {igreja.nome || 'a igreja'}.
                                 </p>
                             </div>

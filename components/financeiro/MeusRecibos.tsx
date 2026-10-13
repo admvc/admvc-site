@@ -86,7 +86,7 @@ export default function MeusRecibos() {
                 <div className="text-center py-8">
                     <FileText className="w-10 h-10 text-muted/30 mx-auto mb-2" />
                     <p className="text-xs text-muted">Nenhum recibo disponivel.</p>
-                    <p className="text-[10px] text-muted/60 mt-1">
+                    <p className="text-[14px] text-muted/60 mt-1">
                         Os recibos sao emitidos pela tesouraria apos o encerramento do ano fiscal.
                     </p>
                 </div>
@@ -105,7 +105,7 @@ export default function MeusRecibos() {
                                     <p className="text-sm font-semibold text-fg">
                                         {euro(r.valor_total)}
                                     </p>
-                                    <p className="text-[10px] text-muted">
+                                    <p className="text-[14px] text-muted">
                                         {r.numero_recibo || 'Recibo'} &middot; Emitido em{' '}
                                         {new Date(r.emitido_em).toLocaleDateString('pt-PT')}
                                     </p>

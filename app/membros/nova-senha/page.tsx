@@ -13,7 +13,7 @@ export default async function NovaSenhaPage(props: { searchParams: Promise<{ t?:
     return (
         <main className="min-h-screen bg-bg flex items-center justify-center p-6">
             <div className="w-full max-w-md space-y-6">
-                <h1 className="text-3xl font-black text-fg text-center">Definir palavra-passe</h1>
+                <h1 className="text-3xl font-bold text-fg text-center">Definir palavra-passe</h1>
                 {valido ? (
                     <FormNovaSenha token={token} minimo={SENHA_MINIMO} />
                 ) : (

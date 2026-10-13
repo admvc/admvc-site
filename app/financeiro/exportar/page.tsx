@@ -19,7 +19,7 @@ export default async function ExportarPage() {
                     <FileDown size={24} className="text-figueira" />
                 </div>
                 <div>
-                    <h1 className="text-xl font-black uppercase tracking-tight text-fg">
+                    <h1 className="text-xl font-bold text-fg">
                         Exportacao Fiscal
                     </h1>
                     <p className="text-xs text-muted">
@@ -30,7 +30,7 @@ export default async function ExportarPage() {
 
             {/* Descricao */}
             <div className="bg-bg2 border border-soft rounded-2xl p-5 space-y-3">
-                <h2 className="text-sm font-bold text-fg uppercase tracking-wide">Ficheiros disponiveis</h2>
+                <h2 className="text-sm font-bold text-fg">Ficheiros disponiveis</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-muted">
                     <div className="space-y-1">
                         <p className="font-bold text-fg">Contribuicoes</p>

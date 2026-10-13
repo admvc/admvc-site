@@ -56,7 +56,7 @@ export default function ModalNovoCompromisso({
 
     return (
         <>
-            <button onClick={() => setIsOpen(true)} className="bg-fg text-bg px-6 py-4 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-figueira transition-all shadow-sm flex items-center gap-2 active:scale-95">
+            <button onClick={() => setIsOpen(true)} className="bg-fg text-bg px-6 py-4 rounded-2xl text-[13px] font-bold uppercase tracking-wide hover:bg-figueira transition-all shadow-sm flex items-center gap-2 active:scale-95">
                 <CalendarPlus size={14} /> Nova Marcação
             </button>
 
@@ -66,8 +66,8 @@ export default function ModalNovoCompromisso({
                         
                         <div className="p-8 border-b border-soft flex justify-between items-center bg-bg2">
                             <div className="space-y-1">
-                                <span className="text-figueira font-black text-[9px] uppercase tracking-[0.3em]">Secretariado</span>
-                                <h3 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Agendar <span className="text-muted/20">Compromisso.</span></h3>
+                                <span className="text-figueira font-bold text-[13px] uppercase tracking-wide">Secretariado</span>
+                                <h3 className="text-3xl font-bold text-fg">Agendar <span className="text-muted/20">Compromisso.</span></h3>
                             </div>
                             <button onClick={() => !isPending && setIsOpen(false)} className="p-4 bg-soft text-fg rounded-2xl hover:bg-red-500 hover:text-white transition-all">
                                 <X size={20} strokeWidth={3} />
@@ -85,15 +85,15 @@ export default function ModalNovoCompromisso({
                             {/* O RESTO DOS CAMPOS (Agenda, Categoria, Titulo) */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2">Agenda (Pastor/Líder)</label>
-                                    <select name="agenda_id" required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none cursor-pointer">
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2">Agenda (Pastor/Líder)</label>
+                                    <select name="agenda_id" required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer">
                                         <option value="">Selecione a agenda...</option>
                                         {agendas.map(a => <option key={a.id} value={a.id}>{a.nome}</option>)}
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2">Tipo de Compromisso</label>
-                                    <select name="categoria" required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none cursor-pointer">
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2">Tipo de Compromisso</label>
+                                    <select name="categoria" required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer">
                                         <option value="CAFE">☕ Café com Pastor</option>
                                         <option value="PERMANECER">🌱 Plano Permanecer</option>
                                         <option value="DISCIPULADO">📖 Discipulado</option>
@@ -105,13 +105,13 @@ export default function ModalNovoCompromisso({
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2"><Type size={12}/> Título / Assunto</label>
-                                <input name="titulo" required placeholder="Ex: Reunião Equipa de Louvor" className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none" />
+                                <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2"><Type size={12}/> Título / Assunto</label>
+                                <input name="titulo" required placeholder="Ex: Reunião Equipa de Louvor" className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none" />
                             </div>
 
                             {/* --- NOVO BUSCADOR DE PARTICIPANTES --- */}
                             <div className="bg-bg2 p-6 rounded-2xl border border-soft space-y-4">
-                                <label className="text-[10px] font-black uppercase text-fg tracking-[0.2em] flex items-center gap-2">
+                                <label className="text-[14px] font-bold uppercase text-fg tracking-wide flex items-center gap-2">
                                     <Users size={12} className="text-figueira"/> Adicionar Participantes (Membros, Visitantes, Deptos)
                                 </label>
                                 
@@ -138,7 +138,7 @@ export default function ModalNovoCompromisso({
                                                     className="w-full text-left px-4 py-3 text-xs font-bold text-fg hover:bg-soft/30 flex justify-between items-center transition-colors border-b border-soft last:border-0"
                                                 >
                                                     {op.nome}
-                                                    <span className="text-[8px] font-black tracking-widest uppercase text-muted bg-soft/30 px-2 py-1 rounded-md">{op.tipo}</span>
+                                                    <span className="text-[13px] font-bold tracking-wide uppercase text-muted bg-soft/30 px-2 py-1 rounded-md">{op.tipo}</span>
                                                 </button>
                                             ))}
                                         </div>
@@ -149,7 +149,7 @@ export default function ModalNovoCompromisso({
                                 {selecionados.length > 0 && (
                                     <div className="flex flex-wrap gap-2 pt-2">
                                         {selecionados.map((s, i) => (
-                                            <div key={i} className="flex items-center gap-2 bg-figueira/10 border border-figueira/20 text-figueira px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest">
+                                            <div key={i} className="flex items-center gap-2 bg-figueira/10 border border-figueira/20 text-figueira px-3 py-1.5 rounded-lg text-[13px] font-bold uppercase tracking-wide">
                                                 <span>{s.nome}</span>
                                                 <button type="button" onClick={() => removerParticipante(s)} className="hover:text-red-500 transition-colors"><X size={12} /></button>
                                             </div>
@@ -159,7 +159,7 @@ export default function ModalNovoCompromisso({
 
                                 {/* PESSOAS EXTERNAS */}
                                 <div className="pt-2 border-t border-soft">
-                                    <label className="text-[9px] font-bold uppercase text-muted tracking-widest ml-1 mb-1 block">Alguém de fora? (Separado por vírgulas)</label>
+                                    <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-1 mb-1 block">Alguém de fora? (Separado por vírgulas)</label>
                                     <input name="externos" placeholder="Ex: Pastor Carlos, Banda XYZ" className="w-full bg-bg border border-soft rounded-xl px-4 py-3 text-xs font-medium text-fg focus:border-figueira outline-none" />
                                 </div>
                             </div>
@@ -167,26 +167,26 @@ export default function ModalNovoCompromisso({
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2"><CalendarDays size={12}/> Data</label>
-                                    <input type="date" name="data" required min={new Date().toISOString().split('T')[0]} className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none" />
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2"><CalendarDays size={12}/> Data</label>
+                                    <input type="date" name="data" required min={new Date().toISOString().split('T')[0]} className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2"><Clock size={12}/> Início</label>
-                                    <input type="time" name="hora_inicio" required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none" />
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2"><Clock size={12}/> Início</label>
+                                    <input type="time" name="hora_inicio" required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2"><Clock size={12}/> Fim</label>
-                                    <input type="time" name="hora_fim" required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none" />
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2"><Clock size={12}/> Fim</label>
+                                    <input type="time" name="hora_fim" required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none" />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2"><AlignLeft size={12}/> Observações Adicionais</label>
+                                <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2"><AlignLeft size={12}/> Observações Adicionais</label>
                                 <textarea name="observacoes" rows={2} placeholder="Detalhes do encontro..." className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-medium text-fg focus:border-figueira outline-none resize-none" />
                             </div>
 
                             <div className="pt-4 border-t border-soft mt-6">
-                                <button disabled={isPending} type="submit" className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50">
+                                <button disabled={isPending} type="submit" className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50">
                                     {isPending ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
                                     {isPending ? "A Marcar..." : "Confirmar Marcação"}
                                 </button>

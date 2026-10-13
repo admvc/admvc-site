@@ -4,6 +4,7 @@ import { getDb, getTenantIdFromHeaders } from '@/lib/db'
 import { getSessionData } from '@/lib/auth-utils'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import CongregacaoFilter from '@/components/admin/CongregacaoFilter'
+import { modulosAtivosDaIgreja } from '@/lib/modulos'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
     const session = await getSessionData()
@@ -15,6 +16,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     let admin: any = null
     let tenant: any = null
     let congregacoes: any[] = []
+    let modulos: string[] = []
+    let louvorId: number | null = null
+    let obreiros = false
 
     try {
         const db = await getDb()
@@ -34,10 +38,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 select: { id: true, nome: true, cidade: true },
                 orderBy: { nome: 'asc' }
             }) : [],
+            modulosAtivosDaIgreja(),
+            db.departamento.findFirst({ where: { e_louvor: true }, select: { id: true }, orderBy: { id: 'asc' } }),
+            // Ha um ministerio de Diaconia/Obreiros? (a pagina dos Obreiros procura-o pelo nome)
+            db.departamento.count({ where: { OR: ['diaconia', 'diácono', 'diacono', 'obreiro'].map((t) => ({ nome: { contains: t, mode: 'insensitive' as const } })) } }),
         ])
         admin = results[0]
         tenant = results[1]
         congregacoes = results[2] as any[]
+        modulos = results[3] as string[]
+        louvorId = (results[4] as { id: number } | null)?.id ?? null
+        obreiros = (results[5] as number) > 0
     } catch (err) {
         console.error('[ADMIN LAYOUT] Erro ao carregar dados:', err)
     }
@@ -53,6 +64,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 logoUrl={tenant?.logo_url}
                 congregacaoNome={admin?.congregacao?.nome}
                 role={session.role}
+                modulos={modulos}
+                louvorHref={louvorId ? `/escalas?equipa=${louvorId}` : null}
+                obreiros={obreiros}
                 congregacaoFilter={
                     congregacoes.length > 0 ? (
                         <CongregacaoFilter

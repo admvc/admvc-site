@@ -18,10 +18,10 @@ export default function FormCriarDepartamento({ congregacoes }: Props) {
         startTransition(async () => {
             try {
                 await criarDepartamento(fd)
-                toast('Departamento criado com sucesso!', 'sucesso')
+                toast('Ministério criado.', 'sucesso')
                 formRef.current?.reset()
             } catch {
-                toast('Erro ao criar departamento.', 'erro')
+                toast('Erro ao criar o ministério.', 'erro')
             }
         })
     }
@@ -30,14 +30,14 @@ export default function FormCriarDepartamento({ congregacoes }: Props) {
         <form ref={formRef} action={handleAction} className="space-y-3">
             <input
                 name="nome"
-                placeholder="Nome do departamento..."
+                placeholder="Nome do ministério (ex.: Louvor, Diaconia)..."
                 className="w-full bg-bg border border-soft rounded-xl p-3 text-sm outline-none focus:border-figueira transition-all"
                 required
                 disabled={isPending}
             />
             {congregacoes.length > 0 && (
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                         <Church size={10} /> Congregacao (opcional)
                     </label>
                     <select
@@ -55,9 +55,9 @@ export default function FormCriarDepartamento({ congregacoes }: Props) {
             <button
                 type="submit"
                 disabled={isPending}
-                className="w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-xs uppercase hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50"
+                className="w-full bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-xs hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50"
             >
-                {isPending ? 'A criar...' : 'Criar Departamento'}
+                {isPending ? 'A criar...' : 'Criar ministério'}
             </button>
         </form>
     )

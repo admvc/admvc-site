@@ -203,7 +203,7 @@ export default function MembrosListClient({ membros, kpis }: Props) {
         return (
             <th
                 onClick={() => handleOrdem(campo)}
-                className={`px-5 py-4 text-[8px] font-black text-muted uppercase tracking-widest cursor-pointer select-none hover:text-fg transition-colors group ${className}`}
+                className={`px-5 py-4 text-[13px] font-bold text-muted uppercase tracking-wide cursor-pointer select-none hover:text-fg transition-colors group ${className}`}
             >
                 <div className="flex items-center gap-1.5">
                     {label}
@@ -239,7 +239,7 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                 <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 px-5 py-4 rounded-2xl flex items-center justify-between animate-in slide-in-from-top-4 duration-300">
                     <div className="flex items-center gap-3">
                         <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Membro registado com sucesso!</span>
+                        <span className="text-[14px] font-bold uppercase tracking-wide">Membro registado com sucesso!</span>
                     </div>
                     <button onClick={() => setShowToast(false)} className="text-emerald-600 hover:bg-emerald-500/20 p-1.5 rounded-lg transition-all">
                         <X size={14} />
@@ -251,17 +251,17 @@ export default function MembrosListClient({ membros, kpis }: Props) {
             {/* HEADER */}
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Membros</h1>
+                    <h1 className="text-3xl font-bold text-fg">Membros</h1>
                     <p className="text-xs text-muted">{kpis.total} registados · {kpis.ativos} activos</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 shrink-0">
                     <BotoesImpressao membros={membrosFiltradosOrdenados} />
                     <Link href="/admin/membros/importar"
-                        className="flex items-center gap-2 bg-bg2 border border-soft text-muted px-4 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-widest hover:text-fg hover:border-figueira/30 transition-all">
+                        className="flex items-center gap-2 bg-bg2 border border-soft text-muted px-4 py-2.5 rounded-xl font-bold text-[13px] uppercase tracking-wide hover:text-fg hover:border-figueira/30 transition-all">
                         <Download size={13} /> Importar
                     </Link>
                     <Link href="/admin/membros/cadastro"
-                        className="flex items-center gap-2 bg-fg text-bg px-4 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-figueira transition-all shadow-sm active:scale-95">
+                        className="flex items-center gap-2 bg-fg text-bg px-4 py-2.5 rounded-xl font-bold text-[13px] uppercase tracking-wide hover:bg-figueira transition-all shadow-sm active:scale-95">
                         <Plus size={13} /> Novo Membro
                     </Link>
                 </div>
@@ -276,8 +276,8 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                     { label: 'Sem Familia', value: kpis.semFamilia, cor: kpis.semFamilia > 0 ? 'text-orange-600' : 'text-fg' },
                 ].map(k => (
                     <div key={k.label} className="bg-bg2 border border-soft rounded-2xl px-5 py-4">
-                        <p className="text-[8px] font-black uppercase tracking-widest text-muted">{k.label}</p>
-                        <p className={`text-2xl font-black italic ${k.cor}`}>{k.value}</p>
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">{k.label}</p>
+                        <p className={`text-2xl font-bold ${k.cor}`}>{k.value}</p>
                     </div>
                 ))}
             </div>
@@ -307,7 +307,7 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                     >
                         <SlidersHorizontal size={13} />
                         Filtros
-                        {temFiltrosActivos && <span className="bg-white/30 text-white rounded-full w-4 h-4 flex items-center justify-center text-[7px] font-black">!</span>}
+                        {temFiltrosActivos && <span className="bg-white/30 text-white rounded-full w-4 h-4 flex items-center justify-center text-[13px] font-bold">!</span>}
                     </button>
                     <div className="flex border border-soft rounded-xl overflow-hidden bg-bg2">
                         <button onClick={() => setVista('tabela')} className={`px-3 py-3 transition-all ${vista === 'tabela' ? 'bg-fg text-bg' : 'text-muted hover:text-fg'}`}>
@@ -332,9 +332,9 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                                 { label: 'Familia', value: filtroFamilia, set: setFiltroFamilia, options: [['TODOS', 'Todos'], ['COM', 'Com Familia'], ['SEM', 'Sem Familia']] },
                             ].map(f => (
                                 <div key={f.label} className="space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">{f.label}</label>
+                                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">{f.label}</label>
                                     <select value={f.value} onChange={e => f.set(e.target.value)}
-                                        className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                                        className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                                         {f.options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                                     </select>
                                 </div>
@@ -342,10 +342,10 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                         </div>
                         {temFiltrosActivos && (
                             <div className="flex items-center justify-between pt-2 border-t border-soft">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-muted">
+                                <p className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                     {membrosFiltradosOrdenados.length} resultado{membrosFiltradosOrdenados.length !== 1 ? 's' : ''}
                                 </p>
-                                <button onClick={limparFiltros} className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors">
+                                <button onClick={limparFiltros} className="flex items-center gap-1.5 text-[13px] font-bold uppercase tracking-wide text-red-500 hover:text-red-700 transition-colors">
                                     <X size={11} /> Limpar filtros
                                 </button>
                             </div>
@@ -356,13 +356,13 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                 {/* INDICADOR DE ORDENACAO ACTIVA */}
                 {ordemCampo !== 'nome' || ordemDir !== 'asc' ? (
                     <div className="flex items-center gap-2">
-                        <span className="text-[8px] font-black uppercase tracking-widest text-muted">Ordenado por:</span>
-                        <span className="flex items-center gap-1 text-[8px] font-black uppercase tracking-widest text-figueira bg-figueira/10 border border-figueira/20 px-2.5 py-1 rounded-lg">
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Ordenado por:</span>
+                        <span className="flex items-center gap-1 text-[13px] font-bold uppercase tracking-wide text-figueira bg-figueira/10 border border-figueira/20 px-2.5 py-1 rounded-lg">
                             {ordemCampo} {ordemDir === 'asc' ? <ArrowUp size={9} /> : <ArrowDown size={9} />}
                         </span>
                         <button
                             onClick={() => { setOrdemCampo('nome'); setOrdemDir('asc') }}
-                            className="text-[8px] font-black uppercase tracking-widest text-muted hover:text-red-500 transition-colors flex items-center gap-1"
+                            className="text-[13px] font-bold uppercase tracking-wide text-muted hover:text-red-500 transition-colors flex items-center gap-1"
                         >
                             <X size={9} /> Repor
                         </button>
@@ -383,7 +383,7 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                                     <ThOrdenavel campo="status" label="Status / Role" />
                                     <ThOrdenavel campo="compliance" label="Docs" className="text-center" />
                                     {/* Cabeçalho de acções sem ordenação */}
-                                    <th className="px-5 py-4 text-[8px] font-black text-muted uppercase tracking-widest text-right">
+                                    <th className="px-5 py-4 text-[13px] font-bold text-muted uppercase tracking-wide text-right">
                                         Accoes
                                     </th>
                                 </tr>
@@ -393,7 +393,7 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                                     <tr>
                                         <td colSpan={6} className="py-16 text-center">
                                             <Users size={24} className="mx-auto text-muted/20 mb-3" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-muted">Nenhum membro encontrado</p>
+                                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum membro encontrado</p>
                                         </td>
                                     </tr>
                                 ) : paginatedMembros.map(m => (
@@ -404,14 +404,14 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                                                 <div className="w-9 h-9 rounded-xl overflow-hidden bg-soft border border-soft/50 shrink-0 flex items-center justify-center">
                                                     {m.avatar_file
                                                         ? <Image src={m.avatar_file} alt="" width={36} height={36} className="w-full h-full object-cover" />
-                                                        : <span className="text-[9px] font-black text-muted">{m.first_name[0]}{m.last_name[0]}</span>
+                                                        : <span className="text-[13px] font-bold text-muted">{m.first_name[0]}{m.last_name[0]}</span>
                                                     }
                                                 </div>
                                                 <div>
-                                                    <p className="text-[11px] font-black uppercase tracking-tight text-fg leading-none">
+                                                    <p className="text-[14px] font-bold uppercase tracking-wide text-fg leading-none">
                                                         {m.first_name} {m.last_name}
                                                     </p>
-                                                    <p className="text-[8px] text-muted font-bold uppercase tracking-widest mt-0.5">
+                                                    <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-0.5">
                                                         #{m.id}{m.church_role ? ` · ${m.church_role}` : ''}
                                                     </p>
                                                 </div>
@@ -423,12 +423,12 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                                                 {m.phone_1 && (
                                                     <div className="flex items-center gap-1.5">
                                                         <Phone size={9} className="text-figueira shrink-0" />
-                                                        <span className="text-[10px] font-bold text-fg">{m.phone_1}</span>
+                                                        <span className="text-[14px] font-bold text-fg">{m.phone_1}</span>
                                                     </div>
                                                 )}
                                                 <div className="flex items-center gap-1.5">
                                                     <Mail size={9} className="text-muted shrink-0" />
-                                                    <span className="text-[9px] text-muted truncate max-w-[150px]">{m.email}</span>
+                                                    <span className="text-[13px] text-muted truncate max-w-[150px]">{m.email}</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -436,19 +436,19 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                                         <td className="px-5 py-3.5">
                                             <div className="flex items-center gap-1.5 text-muted">
                                                 <MapPin size={10} className="shrink-0" />
-                                                <span className="text-[10px] font-bold uppercase tracking-widest">{m.id_city || '—'}</span>
+                                                <span className="text-[14px] font-bold uppercase tracking-wide">{m.id_city || '—'}</span>
                                             </div>
                                         </td>
 
                                         <td className="px-5 py-3.5">
                                             <div className="flex flex-wrap gap-1">
                                                 {m.status && (
-                                                    <span className={`text-[7px] font-black uppercase tracking-widest px-2 py-1 rounded-lg border ${COR_STATUS[m.status] || 'bg-soft text-muted border-soft'}`}>
+                                                    <span className={`text-[13px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg border ${COR_STATUS[m.status] || 'bg-soft text-muted border-soft'}`}>
                                                         {m.status}
                                                     </span>
                                                 )}
                                                 {m.role && m.role !== 'USER' && (
-                                                    <span className={`text-[7px] font-black uppercase tracking-widest px-2 py-1 rounded-lg border ${COR_ROLE[m.role] || 'bg-soft text-muted border-soft'}`}>
+                                                    <span className={`text-[13px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg border ${COR_ROLE[m.role] || 'bg-soft text-muted border-soft'}`}>
                                                         {m.role}
                                                     </span>
                                                 )}
@@ -494,18 +494,18 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                             <select
                                 value={itemsPerPage}
                                 onChange={e => setItemsPerPage(e.target.value === 'ALL' ? 'ALL' : Number(e.target.value))}
-                                className="bg-bg2 border border-soft text-fg text-[9px] font-black uppercase py-1.5 px-3 rounded-lg outline-none appearance-none"
+                                className="bg-bg2 border border-soft text-fg text-[13px] font-bold uppercase py-1.5 px-3 rounded-lg outline-none appearance-none"
                             >
                                 {[10, 25, 50, 100].map(n => <option key={n} value={n}>{n}</option>)}
                                 <option value="ALL">Todos</option>
                             </select>
-                            <span className="text-[9px] font-black text-muted uppercase tracking-widest">
+                            <span className="text-[13px] font-bold text-muted uppercase tracking-wide">
                                 {membrosFiltradosOrdenados.length} membro{membrosFiltradosOrdenados.length !== 1 ? 's' : ''}
                             </span>
                         </div>
                         {itemsPerPage !== 'ALL' && totalPages > 1 && (
                             <div className="flex items-center gap-3">
-                                <span className="text-[9px] font-bold text-muted uppercase tracking-widest">{currentPage} / {totalPages}</span>
+                                <span className="text-[13px] font-bold text-muted uppercase tracking-wide">{currentPage} / {totalPages}</span>
                                 <div className="flex gap-1">
                                     <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}
                                         className="w-8 h-8 flex items-center justify-center border border-soft rounded-lg disabled:opacity-20 hover:border-figueira/30 transition-all">
@@ -528,7 +528,7 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                     {paginatedMembros.length === 0 ? (
                         <div className="py-16 text-center bg-bg2 border border-soft rounded-2xl">
                             <Users size={24} className="mx-auto text-muted/20 mb-3" />
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted">Nenhum membro encontrado</p>
+                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum membro encontrado</p>
                         </div>
                     ) : (
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -539,33 +539,33 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                                             <div className="w-11 h-11 rounded-2xl overflow-hidden bg-soft border border-soft/50 shrink-0 flex items-center justify-center">
                                                 {m.avatar_file
                                                     ? <Image src={m.avatar_file} alt="" width={44} height={44} className="w-full h-full object-cover" />
-                                                    : <span className="text-[10px] font-black text-muted">{m.first_name[0]}{m.last_name[0]}</span>
+                                                    : <span className="text-[14px] font-bold text-muted">{m.first_name[0]}{m.last_name[0]}</span>
                                                 }
                                             </div>
                                             <div>
-                                                <p className="text-[11px] font-black uppercase tracking-tight text-fg leading-none">{m.first_name} {m.last_name}</p>
-                                                <p className="text-[8px] text-muted font-bold uppercase tracking-widest mt-0.5">#{m.id}</p>
+                                                <p className="text-[14px] font-bold uppercase tracking-wide text-fg leading-none">{m.first_name} {m.last_name}</p>
+                                                <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-0.5">#{m.id}</p>
                                             </div>
                                         </div>
                                         {m.status && (
-                                            <span className={`text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border shrink-0 ${COR_STATUS[m.status] || 'bg-soft text-muted border-soft'}`}>
+                                            <span className={`text-[13px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-lg border shrink-0 ${COR_STATUS[m.status] || 'bg-soft text-muted border-soft'}`}>
                                                 {m.status}
                                             </span>
                                         )}
                                     </div>
                                     <div className="space-y-1.5 mb-4">
                                         {m.phone_1 && (
-                                            <div className="flex items-center gap-2 text-[10px] text-fg">
+                                            <div className="flex items-center gap-2 text-[14px] text-fg">
                                                 <Phone size={10} className="text-figueira shrink-0" />
                                                 {m.phone_1}
                                             </div>
                                         )}
-                                        <div className="flex items-center gap-2 text-[9px] text-muted">
+                                        <div className="flex items-center gap-2 text-[13px] text-muted">
                                             <Mail size={10} className="shrink-0" />
                                             <span className="truncate">{m.email}</span>
                                         </div>
                                         {m.id_city && (
-                                            <div className="flex items-center gap-2 text-[9px] text-muted">
+                                            <div className="flex items-center gap-2 text-[13px] text-muted">
                                                 <MapPin size={10} className="shrink-0" />
                                                 {m.id_city}
                                             </div>
@@ -598,12 +598,12 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                     {itemsPerPage !== 'ALL' && totalPages > 1 && (
                         <div className="flex items-center justify-center gap-3 pt-2">
                             <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}
-                                className="px-4 py-2 border border-soft rounded-xl text-[9px] font-black uppercase tracking-widest text-muted disabled:opacity-20 transition-all">
+                                className="px-4 py-2 border border-soft rounded-xl text-[13px] font-bold uppercase tracking-wide text-muted disabled:opacity-20 transition-all">
                                 Anterior
                             </button>
-                            <span className="text-[9px] font-black text-muted uppercase tracking-widest">{currentPage} / {totalPages}</span>
+                            <span className="text-[13px] font-bold text-muted uppercase tracking-wide">{currentPage} / {totalPages}</span>
                             <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
-                                className="px-4 py-2 bg-figueira text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-figueira/90 disabled:opacity-20 transition-all">
+                                className="px-4 py-2 bg-figueira text-white rounded-xl text-[13px] font-bold uppercase tracking-wide hover:bg-figueira/90 disabled:opacity-20 transition-all">
                                 Seguinte
                             </button>
                         </div>
@@ -620,10 +620,10 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                                 <AlertTriangle size={24} />
                             </div>
                             <div>
-                                <h3 className="text-lg font-black uppercase italic tracking-tighter text-fg">Confirmar Exclusao</h3>
-                                <p className="text-[10px] text-muted font-bold uppercase tracking-widest mt-2 leading-relaxed">
+                                <h3 className="text-lg font-bold text-fg">Confirmar Exclusao</h3>
+                                <p className="text-[14px] text-muted font-bold uppercase tracking-wide mt-2 leading-relaxed">
                                     Remover permanentemente:<br />
-                                    <span className="text-red-500 text-[11px]">{membroParaExcluir.first_name} {membroParaExcluir.last_name}</span>
+                                    <span className="text-red-500 text-[14px]">{membroParaExcluir.first_name} {membroParaExcluir.last_name}</span>
                                 </p>
                             </div>
                             <div className="flex flex-col gap-2 pt-2">
@@ -636,13 +636,13 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                                         else toast(res.error, 'erro')
                                         setExcluindoId(null)
                                     }}
-                                    className="w-full bg-red-500 text-white py-4 rounded-2xl font-black uppercase text-[9px] tracking-widest hover:bg-red-600 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
+                                    className="w-full bg-red-500 text-white py-4 rounded-2xl font-bold uppercase text-[13px] tracking-wide hover:bg-red-600 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
                                 >
                                     {excluindoId ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
                                     {excluindoId ? 'A eliminar...' : 'Confirmar Exclusao'}
                                 </button>
                                 <button onClick={() => setMembroParaExcluir(null)}
-                                    className="w-full bg-bg border border-soft text-muted py-4 rounded-2xl font-black uppercase text-[9px] tracking-widest hover:bg-soft transition-all">
+                                    className="w-full bg-bg border border-soft text-muted py-4 rounded-2xl font-bold uppercase text-[13px] tracking-wide hover:bg-soft transition-all">
                                     Cancelar
                                 </button>
                             </div>

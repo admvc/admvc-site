@@ -79,15 +79,15 @@ export default function FormLancamentoOferta({ membros, objetivos }: { membros: 
                     <Receipt size={20} />
                 </div>
                 <div>
-                    <h3 className="text-sm font-black uppercase italic tracking-tighter text-fg leading-none">Receber Pagamento</h3>
-                    <p className="text-[9px] font-bold text-muted uppercase tracking-widest mt-0.5">Carnês e Rifas</p>
+                    <h3 className="text-sm font-bold text-fg leading-none">Receber Pagamento</h3>
+                    <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-0.5">Carnês e Rifas</p>
                 </div>
             </div>
 
             <div className="space-y-4 flex-1">
                 {/* 1. SELECIONAR O MEMBRO (NOVO SISTEMA DE PESQUISA) */}
                 <div>
-                    <label className="text-[9px] font-black uppercase text-muted ml-2 tracking-widest">Membro</label>
+                    <label className="text-[13px] font-bold uppercase text-muted ml-2 tracking-wide">Membro</label>
                     <div className="relative mt-1">
                         <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted/50" />
                         <input
@@ -109,7 +109,7 @@ export default function FormLancamentoOferta({ membros, objetivos }: { membros: 
 
                 {/* 2. SELECIONAR A CAMPANHA */}
                 <div>
-                    <label className="text-[9px] font-black uppercase text-muted ml-2 tracking-widest">Campanha / Carnê</label>
+                    <label className="text-[13px] font-bold uppercase text-muted ml-2 tracking-wide">Campanha / Carnê</label>
                     <select
                         name="objetivo_id"
                         value={objetivoId}
@@ -124,7 +124,7 @@ export default function FormLancamentoOferta({ membros, objetivos }: { membros: 
                         ))}
                     </select>
                     {membroId && objetivosDoMembro.length === 0 && (
-                        <p className="text-[9px] text-red-500 font-bold ml-2 mt-2 uppercase tracking-widest animate-in fade-in">Este membro não tem carnês ativos.</p>
+                        <p className="text-[13px] text-red-500 font-bold ml-2 mt-2 uppercase tracking-wide animate-in fade-in">Este membro não tem carnês ativos.</p>
                     )}
                 </div>
 
@@ -135,8 +135,8 @@ export default function FormLancamentoOferta({ membros, objetivos }: { membros: 
                         {/* Caixa de Resumo do Plano */}
                         <div className="bg-figueira/5 border border-figueira/20 p-4 rounded-2xl flex justify-between items-center">
                             <div>
-                                <span className="text-[8px] font-black uppercase text-figueira tracking-widest block mb-1">Status do Carnê</span>
-                                <p className="text-xs font-black text-fg italic">
+                                <span className="text-[13px] font-bold uppercase text-figueira tracking-wide block mb-1">Status do Carnê</span>
+                                <p className="text-xs font-bold text-fg">
                                     Pagou {objetivoSelecionado.parcelas_pagas} de {objetivoSelecionado.parcelas_total} parcelas
                                 </p>
                             </div>
@@ -147,7 +147,7 @@ export default function FormLancamentoOferta({ membros, objetivos }: { membros: 
 
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="text-[9px] font-black uppercase text-muted ml-2 tracking-widest">Valor</label>
+                                <label className="text-[13px] font-bold uppercase text-muted ml-2 tracking-wide">Valor</label>
                                 <div className="relative mt-1">
                                     <Euro size={12} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
                                     <input
@@ -163,7 +163,7 @@ export default function FormLancamentoOferta({ membros, objetivos }: { membros: 
                             </div>
 
                             <div>
-                                <label className="text-[9px] font-black uppercase text-muted ml-2 tracking-widest">Método</label>
+                                <label className="text-[13px] font-bold uppercase text-muted ml-2 tracking-wide">Método</label>
                                 <select
                                     name="forma_pagamento"
                                     required
@@ -182,7 +182,7 @@ export default function FormLancamentoOferta({ membros, objetivos }: { membros: 
 
             <button
                 disabled={loading || !objetivoSelecionado}
-                className="w-full bg-fg text-bg py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-figueira transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-xl active:scale-95 mt-4"
+                className="w-full bg-fg text-bg py-5 rounded-2xl font-bold uppercase text-[14px] tracking-wide hover:bg-figueira transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-xl active:scale-95 mt-4"
             >
                 {loading ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}
                 {loading ? 'A Registar...' : 'Confirmar Pagamento'}

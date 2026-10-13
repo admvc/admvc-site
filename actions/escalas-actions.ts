@@ -8,6 +8,7 @@ import { motivoIndisponivel } from '@/lib/indisponibilidade'
 import { enviarNotificacaoEscala } from '@/lib/email-escalas'
 import { sendPushToMembro } from '@/lib/web-push'
 import { audit } from '@/lib/audit'
+import { podeEditarMensagemDoCulto } from '@/lib/obreiros-permissions'
 import { getTenantIdFromHeaders } from '@/lib/db'
 
 async function getDb() {
@@ -477,9 +478,12 @@ export async function buscarMensagemEventoAction(eventoId: number) {
 
 // ── GUARDAR / ACTUALIZAR MENSAGEM ─────────────────────────────────────────────
 export async function salvarMensagemEventoAction(formData: FormData) {
-    console.log('=== MENSAGEM ACTION ===')
     try {
-        await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'LEADER'])
+        // Admin, ou quem gere a Diaconia/Obreiros (antes: qualquer papel LEADER)
+        const sessao = await requireAuth()
+        if (!(await podeEditarMensagemDoCulto(sessao))) {
+            return { sucesso: false, error: 'Só a liderança da Diaconia (ou um administrador) preenche a mensagem do culto.' }
+        }
 
         const evento_id = Number(formData.get('evento_id'))
         const pregador_id = formData.get('pregador_id') ? Number(formData.get('pregador_id')) : null
@@ -497,6 +501,10 @@ export async function salvarMensagemEventoAction(formData: FormData) {
             select: { tenant_id: true }
         })
         if (!evento) return { sucesso: false, error: 'Evento nao encontrado.' }
+        // O pregador tem de ser desta igreja
+        if (pregador_id && !(await db.membro.count({ where: { id: pregador_id } }))) {
+            return { sucesso: false, error: 'Pregador nao encontrado.' }
+        }
 
         await db.mensagemEvento.upsert({
             where: { evento_id },

@@ -119,11 +119,11 @@ export default function CantinaTV({ produtos, categorias }: Props) {
                         <Coffee size={tamanho === 'extra' ? 40 : tamanho === 'grande' ? 32 : 24} className="text-white/10" />
                     </div>
                 )}
-                <h3 className={`${sz.text} font-black uppercase text-white leading-tight truncate`}>{p.nome}</h3>
+                <h3 className={`${sz.text} font-bold text-white leading-tight truncate`}>{p.nome}</h3>
                 <div className="flex items-end gap-2">
-                    <p className={`${sz.preco} font-black italic text-figueira`}>{p.preco.toFixed(2)}€</p>
+                    <p className={`${sz.preco} font-bold text-figueira`}>{p.preco.toFixed(2)}€</p>
                     {promo && (
-                        <span className="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-lg bg-amber-500 text-black mb-1 shrink-0">
+                        <span className="text-[13px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg bg-amber-500 text-black mb-1 shrink-0">
                             {promo.quantidade}x {promo.preco_total?.toFixed(2)}€
                         </span>
                     )}
@@ -164,8 +164,8 @@ export default function CantinaTV({ produtos, categorias }: Props) {
                             <Coffee size={24} className="text-white" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-black uppercase tracking-[0.2em]">Cantina</h1>
-                            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-figueira">Menu do Dia</p>
+                            <h1 className="text-2xl font-bold">Cantina</h1>
+                            <p className="text-[14px] font-bold uppercase tracking-wide text-figueira">Menu do Dia</p>
                         </div>
                     </div>
 
@@ -173,7 +173,7 @@ export default function CantinaTV({ produtos, categorias }: Props) {
                         {/* Tamanho */}
                         <button
                             onClick={ciclarTamanho}
-                            className="h-10 px-3 flex items-center gap-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all text-xs font-black uppercase tracking-widest"
+                            className="h-10 px-3 flex items-center gap-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all text-xs font-bold"
                             title="Alterar tamanho"
                         >
                             {tamanho === 'extra' ? <ZoomOut size={16} /> : <ZoomIn size={16} />}
@@ -222,7 +222,7 @@ export default function CantinaTV({ produtos, categorias }: Props) {
                                     .filter(c => c.prods.length > 0)
                                     .map(cat => (
                                         <div key={cat.id} className="mb-8">
-                                            <h2 className="text-sm font-black uppercase tracking-[0.3em] text-figueira mb-4 border-b border-white/10 pb-2">
+                                            <h2 className="text-sm font-bold text-figueira mb-4 border-b border-white/10 pb-2">
                                                 {cat.nome}
                                             </h2>
                                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -250,7 +250,7 @@ export default function CantinaTV({ produtos, categorias }: Props) {
                         <div className="flex items-center justify-center h-full">
                             <div className="text-center space-y-4">
                                 <Coffee size={64} className="mx-auto text-white/10" />
-                                <p className="text-lg font-black uppercase tracking-widest text-white/20">Nenhum produto disponivel</p>
+                                <p className="text-lg font-bold text-white/20">Nenhum produto disponivel</p>
                             </div>
                         </div>
                     )}
@@ -261,7 +261,7 @@ export default function CantinaTV({ produtos, categorias }: Props) {
                     <div className="bg-[#111] border-t border-white/5 px-6 py-3 shrink-0">
                         <div className="flex items-center gap-2 mb-2">
                             <Star size={12} className="text-amber-500" />
-                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500">
+                            <span className="text-[13px] font-bold uppercase tracking-wide text-amber-500">
                                 {destaques.length > 0 ? 'Promocoes' : 'Destaques'}
                             </span>
                         </div>
@@ -281,11 +281,11 @@ export default function CantinaTV({ produtos, categorias }: Props) {
                                             </div>
                                         )}
                                         <div className="min-w-0">
-                                            <h4 className="text-xs font-black uppercase text-white truncate">{p.nome}</h4>
+                                            <h4 className="text-xs font-bold text-white truncate">{p.nome}</h4>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-base font-black italic text-figueira">{p.preco.toFixed(2)}€</span>
+                                                <span className="text-base font-bold text-figueira">{p.preco.toFixed(2)}€</span>
                                                 {promo && (
-                                                    <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded bg-amber-500 text-black">
+                                                    <span className="text-[13px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-500 text-black">
                                                         {promo.quantidade}x {promo.preco_total?.toFixed(2)}€
                                                     </span>
                                                 )}

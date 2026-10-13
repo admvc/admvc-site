@@ -36,8 +36,8 @@ export default function ModalEditarEvento({ evento, congregacoes = [] }: { event
 
                         <div className="px-6 py-4 border-b border-soft flex justify-between items-center bg-bg2">
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-figueira">Editar</p>
-                                <h3 className="text-lg font-black italic uppercase tracking-tighter text-fg">{evento.nome}</h3>
+                                <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">Editar</p>
+                                <h3 className="text-lg font-bold text-fg">{evento.nome}</h3>
                             </div>
                             <button onClick={() => !isPending && setIsOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-bg border border-soft text-muted hover:text-red-500 transition-all">
                                 <X size={14} />
@@ -48,7 +48,7 @@ export default function ModalEditarEvento({ evento, congregacoes = [] }: { event
                             <input type="hidden" name="id" value={evento.id} />
 
                             <div className="space-y-1.5">
-                                <label className="text-[8px] font-black uppercase text-muted tracking-widest flex items-center gap-1.5">
+                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1.5">
                                     <Type size={10} /> Nome
                                 </label>
                                 <input type="text" name="nome" required defaultValue={evento.nome}
@@ -57,14 +57,14 @@ export default function ModalEditarEvento({ evento, congregacoes = [] }: { event
 
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase text-muted tracking-widest flex items-center gap-1.5">
+                                    <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1.5">
                                         <CalendarDays size={10} /> Data
                                     </label>
                                     <input type="date" name="data" required defaultValue={defaultData}
                                         className="w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-sm font-bold text-fg focus:border-figueira outline-none cursor-pointer" />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase text-muted tracking-widest flex items-center gap-1.5">
+                                    <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1.5">
                                         <Clock size={10} /> Hora
                                     </label>
                                     <input type="time" name="horario" required defaultValue={defaultHora}
@@ -74,7 +74,7 @@ export default function ModalEditarEvento({ evento, congregacoes = [] }: { event
 
                             {congregacoes.length > 0 && (
                                 <div className="space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase text-muted tracking-widest flex items-center gap-1.5">
+                                    <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1.5">
                                         <Church size={10} /> Congregacao
                                     </label>
                                     <select name="congregacao_id" defaultValue={evento.congregacao_id || ''}
@@ -88,7 +88,7 @@ export default function ModalEditarEvento({ evento, congregacoes = [] }: { event
                             )}
 
                             <div className="space-y-1.5">
-                                <label className="text-[8px] font-black uppercase text-muted tracking-widest flex items-center gap-1.5">
+                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1.5">
                                     <AlignLeft size={10} /> Descricao (opcional)
                                 </label>
                                 <textarea name="descricao" defaultValue={evento.descricao || ''} rows={2}
@@ -96,7 +96,7 @@ export default function ModalEditarEvento({ evento, congregacoes = [] }: { event
                             </div>
 
                             <button type="submit" disabled={isPending}
-                                className="w-full flex items-center justify-center gap-2 bg-fg text-bg py-3 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-figueira transition-all disabled:opacity-50">
+                                className="w-full flex items-center justify-center gap-2 bg-fg text-bg py-3 rounded-xl font-bold text-[13px] uppercase tracking-wide hover:bg-figueira transition-all disabled:opacity-50">
                                 {isPending ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
                                 {isPending ? "A guardar..." : "Guardar"}
                             </button>

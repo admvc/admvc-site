@@ -88,14 +88,14 @@ export default function HolyricsLogPanel({ holyricsUrl, holyricsToken }: Props) 
                 <div className="flex items-center gap-3">
                     <div className={`w-2 h-2 rounded-full ${statusColor} ${status === 'checking' ? 'animate-pulse' : ''}`} />
                     <MonitorPlay size={14} className="text-figueira" />
-                    <h2 className="text-xs font-black uppercase tracking-widest text-fg">Holyrics</h2>
-                    <span className={`text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${status === 'online' ? 'bg-green-500/10 text-green-600' : status === 'offline' ? 'bg-red-500/10 text-red-500' : 'bg-soft text-muted'}`}>
+                    <h2 className="text-xs font-bold text-fg">Holyrics</h2>
+                    <span className={`text-[13px] font-bold uppercase tracking-wide px-2 py-0.5 rounded ${status === 'online' ? 'bg-green-500/10 text-green-600' : status === 'offline' ? 'bg-red-500/10 text-red-500' : 'bg-soft text-muted'}`}>
                         {statusLabel}
                     </span>
                 </div>
                 <div className="flex items-center gap-2">
                     {logs.length > 0 && (
-                        <span className="text-[8px] font-bold bg-soft px-2 py-0.5 rounded text-muted">{logs.length} logs</span>
+                        <span className="text-[13px] font-bold bg-soft px-2 py-0.5 rounded text-muted">{logs.length} logs</span>
                     )}
                     {open ? <ChevronUp size={14} className="text-muted" /> : <ChevronDown size={14} className="text-muted" />}
                 </div>
@@ -107,7 +107,7 @@ export default function HolyricsLogPanel({ holyricsUrl, holyricsToken }: Props) 
                     <div className="flex items-center justify-between px-5 py-2 border-b border-soft/50 bg-soft/5">
                         <div className="flex items-center gap-2">
                             <TerminalSquare size={12} className="text-muted" />
-                            <span className="text-[8px] font-bold uppercase tracking-widest text-muted">
+                            <span className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 {ip ? ip.replace(/^https?:\/\//, '') : 'Nao configurado'}
                             </span>
                         </div>
@@ -115,14 +115,14 @@ export default function HolyricsLogPanel({ holyricsUrl, holyricsToken }: Props) 
                             <button
                                 onClick={() => checkConnection(ip, token)}
                                 disabled={!ip || status === 'checking'}
-                                className="text-[8px] font-bold uppercase tracking-widest text-muted hover:text-figueira transition-colors flex items-center gap-1 disabled:opacity-30"
+                                className="text-[13px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors flex items-center gap-1 disabled:opacity-30"
                             >
                                 {status === 'checking' ? <Loader2 size={10} className="animate-spin" /> : <Wifi size={10} />}
                                 Testar
                             </button>
                             <button
                                 onClick={() => setLogs([])}
-                                className="text-[8px] font-bold uppercase tracking-widest text-muted hover:text-red-500 transition-colors flex items-center gap-1"
+                                className="text-[13px] font-bold uppercase tracking-wide text-muted hover:text-red-500 transition-colors flex items-center gap-1"
                             >
                                 <Trash2 size={10} /> Limpar
                             </button>
@@ -130,9 +130,9 @@ export default function HolyricsLogPanel({ holyricsUrl, holyricsToken }: Props) 
                     </div>
 
                     {/* Log entries */}
-                    <div className="bg-black/95 p-3 max-h-48 overflow-y-auto font-mono text-[9px] space-y-1 scrollbar-hide">
+                    <div className="bg-black/95 p-3 max-h-48 overflow-y-auto font-mono text-[13px] space-y-1 scrollbar-hide">
                         {logs.length === 0 ? (
-                            <p className="text-white/30 text-center italic py-6">Sem logs</p>
+                            <p className="text-white/30 text-center py-6">Sem logs</p>
                         ) : (
                             logs.map((log) => (
                                 <div key={log.id} className="flex gap-2 leading-relaxed border-b border-white/5 pb-1">

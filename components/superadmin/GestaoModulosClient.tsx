@@ -6,7 +6,8 @@ import {
     ArrowLeft, Building, CheckCircle2, Loader2, Save,
     Calendar, Users, Music, Wallet, Coffee, HeartHandshake,
     Package, BookOpen, MessageSquare, BarChart3, Shield,
-    Crown, Zap, Rocket, Globe, ToggleLeft, ToggleRight, Palette
+    Crown, Zap, Rocket, Globe, ToggleLeft, ToggleRight, Palette,
+    Car, BookMarked, GraduationCap, HandHeart
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -43,6 +44,10 @@ const MODULOS_UI = [
     { id: 'cifras', nome: 'Cifras Internas', desc: 'Editor de cifras com transposicao e importacao', icon: Music, planos: ['PRO', 'ENTERPRISE'] },
     { id: 'mesa_som', nome: 'Mesa de Som (X32)', desc: 'Controlo remoto da Behringer X32 via OSC', icon: Music, planos: ['ENTERPRISE'] },
     { id: 'lumikit', nome: 'Lumikit', desc: 'Controlo de iluminacao e cenas DMX', icon: Music, planos: ['ENTERPRISE'] },
+    { id: 'boleia', nome: 'Boleias', desc: 'Boleias para o culto: oferecer e reservar lugar (como um Uber da igreja)', icon: Car, planos: ['PRO', 'ENTERPRISE'] },
+    { id: 'pregacao', nome: 'Pregacoes', desc: 'Sermoes, escala de pregadores e esbocos', icon: BookMarked, planos: ['PRO', 'ENTERPRISE'] },
+    { id: 'ebd', nome: 'Cursos / EBD', desc: 'Escola biblica, cursos, turmas e presencas', icon: GraduationCap, planos: ['PRO', 'ENTERPRISE'] },
+    { id: 'assistencia', nome: 'Assistencia social', desc: 'Despensa, cestas basicas e entregas', icon: HandHeart, planos: ['PRO', 'ENTERPRISE'] },
 ]
 
 // Mapa de planos → módulos (espelha lib/planos.ts)

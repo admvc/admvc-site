@@ -41,7 +41,7 @@ export default function HorariosEditor({
     return (
         <div className="space-y-3">
             {horarios.length === 0 && (
-                <p className="text-[9px] font-bold text-muted uppercase tracking-widest italic">
+                <p className="text-[13px] font-bold text-muted uppercase tracking-wide">
                     Nenhum horário definido.
                 </p>
             )}
@@ -52,7 +52,7 @@ export default function HorariosEditor({
                     <select
                         value={h.dia_semana}
                         onChange={e => atualizarSlot(i, 'dia_semana', Number(e.target.value))}
-                        className="bg-bg border border-soft rounded-xl px-2 py-1.5 text-[10px] font-black uppercase tracking-widest text-fg outline-none focus:border-figueira"
+                        className="bg-bg border border-soft rounded-xl px-2 py-1.5 text-[14px] font-bold uppercase tracking-wide text-fg outline-none focus:border-figueira"
                     >
                         {DIAS_SEMANA.map((dia, idx) => (
                             <option key={idx} value={idx}>{dia}</option>
@@ -64,17 +64,17 @@ export default function HorariosEditor({
                         type="time"
                         value={h.hora_inicio}
                         onChange={e => atualizarSlot(i, 'hora_inicio', e.target.value)}
-                        className="bg-bg border border-soft rounded-xl px-2 py-1.5 text-[10px] font-bold text-fg outline-none focus:border-figueira"
+                        className="bg-bg border border-soft rounded-xl px-2 py-1.5 text-[14px] font-bold text-fg outline-none focus:border-figueira"
                     />
 
-                    <span className="text-[9px] text-muted font-bold">até</span>
+                    <span className="text-[13px] text-muted font-bold">até</span>
 
                     {/* Hora fim */}
                     <input
                         type="time"
                         value={h.hora_fim}
                         onChange={e => atualizarSlot(i, 'hora_fim', e.target.value)}
-                        className="bg-bg border border-soft rounded-xl px-2 py-1.5 text-[10px] font-bold text-fg outline-none focus:border-figueira"
+                        className="bg-bg border border-soft rounded-xl px-2 py-1.5 text-[14px] font-bold text-fg outline-none focus:border-figueira"
                     />
 
                     {/* Remover */}
@@ -91,7 +91,7 @@ export default function HorariosEditor({
             <div className="flex items-center gap-2 pt-1">
                 <button
                     onClick={adicionarSlot}
-                    className="flex items-center gap-1.5 bg-bg border border-soft rounded-xl px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-muted hover:text-figueira hover:border-figueira/30 transition-all"
+                    className="flex items-center gap-1.5 bg-bg border border-soft rounded-xl px-3 py-1.5 text-[13px] font-bold uppercase tracking-wide text-muted hover:text-figueira hover:border-figueira/30 transition-all"
                 >
                     <Plus size={10} /> Adicionar
                 </button>
@@ -99,14 +99,14 @@ export default function HorariosEditor({
                 <button
                     onClick={guardar}
                     disabled={saving}
-                    className="flex items-center gap-1.5 bg-figueira/10 border border-figueira/20 rounded-xl px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-figueira hover:bg-figueira hover:text-white transition-all disabled:opacity-50"
+                    className="flex items-center gap-1.5 bg-figueira/10 border border-figueira/20 rounded-xl px-3 py-1.5 text-[13px] font-bold uppercase tracking-wide text-figueira hover:bg-figueira hover:text-white transition-all disabled:opacity-50"
                 >
                     {saving ? <Loader2 size={10} className="animate-spin" /> : <Save size={10} />}
                     Guardar
                 </button>
 
                 {msg && (
-                    <span className={`text-[9px] font-bold uppercase tracking-widest ${msg === 'Guardado!' ? 'text-emerald-500' : 'text-red-500'}`}>
+                    <span className={`text-[13px] font-bold uppercase tracking-wide ${msg === 'Guardado!' ? 'text-emerald-500' : 'text-red-500'}`}>
                         {msg}
                     </span>
                 )}

@@ -101,15 +101,28 @@ export default function CifraViewer({ cifra, titulo, artista, tomOriginal, tomTo
         return () => { wakeLock?.release?.() }
     }, [])
 
-    // Auto-scroll
-    const scroll = useCallback(() => {
-        if (!scrollRef.current || !scrolling) return
-        scrollRef.current.scrollTop += velocidade * 0.5
+    // Auto-scroll. A posicao conta-se com casas decimais (posRef): o browser
+    // arredonda scrollTop a pixeis inteiros, e somar menos de 1 px por imagem
+    // (velocidades baixas) nao movia nada. Pelo tempo decorrido, para a
+    // velocidade ser igual a 60 ou 120 imagens/s: 1.0x = 30 px por segundo.
+    const posRef = useRef(0)
+    const ultimoRef = useRef<number | null>(null)
+    const scroll = useCallback((agora: number) => {
+        const el = scrollRef.current
+        if (!el || !scrolling) return
+        // Se a pessoa rolou a mao, continua dali
+        if (Math.abs(el.scrollTop - posRef.current) > 2) posRef.current = el.scrollTop
+        const dt = ultimoRef.current === null ? 0 : Math.min(100, agora - ultimoRef.current)
+        ultimoRef.current = agora
+        posRef.current = Math.min(posRef.current + velocidade * 30 * (dt / 1000), el.scrollHeight - el.clientHeight)
+        el.scrollTop = posRef.current
         rafRef.current = requestAnimationFrame(scroll)
     }, [scrolling, velocidade])
 
     useEffect(() => {
         if (scrolling) {
+            if (scrollRef.current) posRef.current = scrollRef.current.scrollTop
+            ultimoRef.current = null
             rafRef.current = requestAnimationFrame(scroll)
         }
         return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current) }
@@ -128,7 +141,7 @@ export default function CifraViewer({ cifra, titulo, artista, tomOriginal, tomTo
     }, [onClose])
 
     return (
-        <div className="fixed inset-0 z-[200] bg-black text-white flex flex-col">
+        <div className="manter-escuro fixed inset-0 z-[200] bg-black text-white flex flex-col">
             {/* HEADER */}
             <div className="flex items-center justify-between px-4 pt-4 pb-2 shrink-0 border-b border-white/10">
                 <button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 text-white/60 hover:bg-white/20 active:scale-90">

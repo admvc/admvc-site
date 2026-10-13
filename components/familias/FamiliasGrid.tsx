@@ -40,7 +40,7 @@ export default function FamiliasGrid({ familias }: { familias: any[] }) {
 
             {/* RESULTADO */}
             {busca.length >= 2 && (
-                <p className="text-[9px] font-bold text-muted uppercase tracking-widest">
+                <p className="text-[13px] font-bold text-muted uppercase tracking-wide">
                     {filtradas.length} resultado{filtradas.length !== 1 ? 's' : ''} para &quot;{busca}&quot;
                 </p>
             )}
@@ -55,7 +55,7 @@ export default function FamiliasGrid({ familias }: { familias: any[] }) {
             ) : (
                 <div className="py-16 text-center border border-dashed border-soft rounded-2xl bg-bg2/30">
                     <Home size={24} className="mx-auto text-muted/30 mb-2" />
-                    <p className="text-[10px] font-bold text-muted uppercase tracking-widest">
+                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide">
                         {busca ? 'Nenhuma familia encontrada.' : 'Nenhuma familia registada.'}
                     </p>
                 </div>

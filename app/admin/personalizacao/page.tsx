@@ -3,6 +3,7 @@ import { getDb, getTenantIdFromHeaders } from '@/lib/db'
 import { redirect } from 'next/navigation'
 import PersonalizacaoClient from '@/components/admin/PersonalizacaoClient'
 import Breadcrumbs from '@/components/Breadcrumbs'
+import { temaValido } from '@/lib/branding'
 
 export default async function PersonalizacaoPage() {
     const db = await getDb()
@@ -12,9 +13,7 @@ export default async function PersonalizacaoPage() {
     const tenant = await db.tenant.findUnique({
         where: { id: tenantId },
         select: {
-            cor_primaria: true,
-            cor_secundaria: true,
-            cor_fundo: true,
+            tema: true,
             logo_url: true,
             nome: true,
             youtube_channel_id: true,
@@ -27,7 +26,7 @@ export default async function PersonalizacaoPage() {
     return (
         <>
             <Breadcrumbs items={[{ label: 'Personalização' }]} />
-            <PersonalizacaoClient tenant={tenant} />
+            <PersonalizacaoClient tenant={{ ...tenant, tema: temaValido(tenant.tema) }} />
         </>
     )
 }

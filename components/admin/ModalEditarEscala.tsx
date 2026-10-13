@@ -42,8 +42,8 @@ export default function ModalEditarEscala({ escala }: { escala: any }) {
                         {/* HEADER */}
                         <div className="p-8 border-b border-soft flex justify-between items-center bg-bg2 relative">
                             <div className="space-y-1">
-                                <span className="text-figueira font-black text-[9px] uppercase tracking-[0.3em]">Gestão de Equipas</span>
-                                <h3 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Editar <span className="text-muted/20">Escala.</span></h3>
+                                <span className="text-figueira font-bold text-[13px] uppercase tracking-wide">Gestão de Equipas</span>
+                                <h3 className="text-3xl font-bold text-fg">Editar <span className="text-muted/20">Escala.</span></h3>
                             </div>
                             <button
                                 onClick={() => !isPending && setIsOpen(false)}
@@ -61,7 +61,7 @@ export default function ModalEditarEscala({ escala }: { escala: any }) {
 
                             {/* FUNÇÃO (Ex: Bateria, Recepção) */}
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2">
+                                <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                     <Briefcase size={12} /> Função / Tarefa
                                 </label>
                                 <input
@@ -70,26 +70,26 @@ export default function ModalEditarEscala({ escala }: { escala: any }) {
                                     required
                                     defaultValue={escala.funcao}
                                     placeholder="Ex: Câmera 1, Bateria..."
-                                    className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none transition-colors"
+                                    className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none transition-colors"
                                 />
                             </div>
 
                             {/* HORÁRIO (Ex: 18:00) */}
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2">
+                                <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                     <Clock size={12} /> Horário de Chegada
                                 </label>
                                 <input
                                     type="time"
                                     name="horario"
                                     defaultValue={escala.horario || ''}
-                                    className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none cursor-pointer transition-colors"
+                                    className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer transition-colors"
                                 />
                             </div>
 
                             {/* MENSAGEM INFORMATIVA */}
                             <div className="bg-figueira/5 border border-figueira/10 p-4 rounded-2xl">
-                                <p className="text-[9px] font-bold text-figueira uppercase tracking-widest leading-relaxed text-center">
+                                <p className="text-[13px] font-bold text-figueira uppercase tracking-wide leading-relaxed text-center">
                                     O membro será notificado desta alteração automaticamente.
                                 </p>
                             </div>
@@ -99,7 +99,7 @@ export default function ModalEditarEscala({ escala }: { escala: any }) {
                                 <button
                                     type="submit"
                                     disabled={isPending}
-                                    className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50"
+                                    className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50"
                                 >
                                     {isPending ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
                                     {isPending ? "A Atualizar..." : "Guardar Alterações"}

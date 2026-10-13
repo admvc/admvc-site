@@ -135,9 +135,9 @@ function StatCard({ label, value, icon, color, bg }: any) {
         <div className={`${bg} rounded-2xl p-4 border border-soft space-y-2`}>
             <div className={`${color} flex items-center gap-1.5`}>
                 {icon}
-                <span className="text-[8px] font-black uppercase tracking-widest">{label}</span>
+                <span className="text-[13px] font-bold uppercase tracking-wide">{label}</span>
             </div>
-            <p className={`text-xl font-black italic tracking-tighter ${color}`}>{value}</p>
+            <p className={`text-xl font-bold ${color}`}>{value}</p>
         </div>
     )
 }
@@ -147,7 +147,7 @@ function SectionLabel({ icon, label }: { icon: React.ReactNode; label: string })
     return (
         <div className="flex items-center gap-2 pb-1">
             <span className="text-muted">{icon}</span>
-            <span className="text-[9px] font-black uppercase tracking-widest text-muted">{label}</span>
+            <span className="text-[13px] font-bold uppercase tracking-wide text-muted">{label}</span>
             <div className="flex-1 h-px bg-soft" />
         </div>
     )
@@ -157,7 +157,7 @@ function SectionLabel({ icon, label }: { icon: React.ReactNode; label: string })
 function Empty({ label }: { label: string }) {
     return (
         <div className="py-8 border-2 border-dashed border-soft rounded-2xl text-center">
-            <p className="text-[9px] font-black text-muted uppercase tracking-widest">{label}</p>
+            <p className="text-[13px] font-bold text-muted uppercase tracking-wide">{label}</p>
         </div>
     )
 }
@@ -177,13 +177,13 @@ function GrupoContribuicao({ mes, lista, euro }: { mes: string; lista: any[]; eu
                 <div className="flex items-center gap-3">
                     <div className={`w-2 h-2 rounded-full ${aberto ? 'bg-emerald-500' : 'bg-soft'}`} />
                     <div className="text-left">
-                        <p className="text-[11px] font-black uppercase tracking-tight text-fg">{mes}</p>
-                        <p className="text-[8px] font-bold text-muted uppercase tracking-widest">{lista.length} registo{lista.length !== 1 ? 's' : ''}</p>
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-fg">{mes}</p>
+                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide">{lista.length} registo{lista.length !== 1 ? 's' : ''}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
-                        <p className="text-sm font-black italic text-fg">
+                        <p className="text-sm font-bold text-fg">
                             {mostrar ? euro(total) : '••••••'}
                         </p>
                         <button
@@ -207,14 +207,14 @@ function GrupoContribuicao({ mes, lista, euro }: { mes: string; lista: any[]; eu
                                     <HeartHandshake size={12} className="text-emerald-600" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-wide text-fg">{c.tipo}</p>
-                                    <p className="text-[8px] font-bold text-muted uppercase tracking-widest flex items-center gap-1">
+                                    <p className="text-[14px] font-bold uppercase tracking-wide text-fg">{c.tipo}</p>
+                                    <p className="text-[13px] font-bold text-muted uppercase tracking-wide flex items-center gap-1">
                                         <CalendarDays size={8} />
                                         {new Date(c.data || c.createdAt).toLocaleDateString('pt-PT')}
                                     </p>
                                 </div>
                             </div>
-                            <p className="text-sm font-black text-fg">
+                            <p className="text-sm font-bold text-fg">
                                 {mostrar ? euro(c.valor) : '•••'}
                             </p>
                         </div>
@@ -259,18 +259,18 @@ function CarneItem({ obj, euro }: { obj: any; euro: (v: number) => string }) {
                     <div className={`w-2 h-2 rounded-full ${concluido ? 'bg-emerald-500' : 'bg-blue-500'}`} />
                     <div className="text-left">
                         <div className="flex items-center gap-2">
-                            <p className="text-[11px] font-black uppercase tracking-tight text-fg">{obj.nome}</p>
+                            <p className="text-[14px] font-bold uppercase tracking-wide text-fg">{obj.nome}</p>
                             {concluido && <CheckCircle2 size={12} className="text-emerald-500 shrink-0" />}
                         </div>
-                        <p className="text-[8px] font-bold text-muted uppercase tracking-widest">
+                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide">
                             {parcelas}/{obj.parcelas_total} parcelas · Vence dia {obj.data_pagamento}
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="text-right hidden sm:block">
-                        <p className="text-[9px] font-black text-fg">{Math.round(pct)}%</p>
-                        <p className="text-[8px] text-muted font-bold">{euro(totalPago)}</p>
+                        <p className="text-[13px] font-bold text-fg">{Math.round(pct)}%</p>
+                        <p className="text-[13px] text-muted font-bold">{euro(totalPago)}</p>
                     </div>
                     <ChevronDown size={13} className={`text-muted transition-transform duration-200 ${aberto ? 'rotate-180' : ''}`} />
                 </div>
@@ -281,8 +281,8 @@ function CarneItem({ obj, euro }: { obj: any; euro: (v: number) => string }) {
                     {/* PROGRESSO DETALHADO */}
                     <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                            <span className="text-[8px] font-black uppercase tracking-widest text-muted">Progresso</span>
-                            <span className="text-[8px] font-black uppercase tracking-widest text-fg">{euro(totalPago)} / {euro(meta)}</span>
+                            <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Progresso</span>
+                            <span className="text-[13px] font-bold uppercase tracking-wide text-fg">{euro(totalPago)} / {euro(meta)}</span>
                         </div>
                         <div className="h-2 bg-soft rounded-full overflow-hidden">
                             <div
@@ -294,12 +294,12 @@ function CarneItem({ obj, euro }: { obj: any; euro: (v: number) => string }) {
 
                     <div className="grid grid-cols-2 gap-3">
                         <div className="bg-bg border border-soft rounded-xl p-3">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted">Valor Mensal</p>
-                            <p className="text-sm font-black text-fg mt-1">{euro(obj.valor_mensal)}</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Valor Mensal</p>
+                            <p className="text-sm font-bold text-fg mt-1">{euro(obj.valor_mensal)}</p>
                         </div>
                         <div className="bg-bg border border-soft rounded-xl p-3">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted">Parcelas</p>
-                            <p className="text-sm font-black text-fg mt-1">{parcelas} <span className="text-muted text-[10px]">de {obj.parcelas_total}</span></p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Parcelas</p>
+                            <p className="text-sm font-bold text-fg mt-1">{parcelas} <span className="text-muted text-[14px]">de {obj.parcelas_total}</span></p>
                         </div>
                     </div>
 
@@ -307,14 +307,14 @@ function CarneItem({ obj, euro }: { obj: any; euro: (v: number) => string }) {
                         <div className="flex items-center gap-3 bg-orange-500/5 border border-orange-500/15 rounded-xl px-4 py-3">
                             <Clock size={13} className="text-orange-500 shrink-0" />
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-orange-600">{euro(pendente)} em validação</p>
-                                <p className="text-[8px] text-muted font-bold uppercase tracking-widest">A aguardar confirmação do tesoureiro</p>
+                                <p className="text-[13px] font-bold uppercase tracking-wide text-orange-600">{euro(pendente)} em validação</p>
+                                <p className="text-[13px] text-muted font-bold uppercase tracking-wide">A aguardar confirmação do tesoureiro</p>
                             </div>
                         </div>
                     )}
 
                     {ultimaData && (
-                        <p className="text-[8px] font-bold text-muted uppercase tracking-widest flex items-center gap-1.5">
+                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide flex items-center gap-1.5">
                             <CalendarDays size={10} /> Último pagamento: {ultimaData}
                         </p>
                     )}
@@ -345,22 +345,22 @@ function RifaItem({ item, euro }: { item: any; euro: (v: number) => string }) {
                     <div className={`w-2 h-2 rounded-full ${vencedor ? 'bg-figueira' : encerrada ? 'bg-soft' : 'bg-orange-400'}`} />
                     <div className="text-left">
                         <div className="flex items-center gap-2">
-                            <p className="text-[11px] font-black uppercase tracking-tight text-fg">{item.rifa?.nome || 'Rifa'}</p>
+                            <p className="text-[14px] font-bold uppercase tracking-wide text-fg">{item.rifa?.nome || 'Rifa'}</p>
                             {vencedor && <Trophy size={12} className="text-figueira shrink-0" />}
                         </div>
-                        <p className="text-[8px] font-bold text-muted uppercase tracking-widest">
+                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide">
                             {item.numeros.length} número{item.numeros.length !== 1 ? 's' : ''} · {euro(valorTotal)}
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
                     {vencedor && (
-                        <span className="text-[7px] font-black uppercase tracking-widest bg-figueira text-white px-2 py-1 rounded-lg">
+                        <span className="text-[13px] font-bold uppercase tracking-wide bg-figueira text-white px-2 py-1 rounded-lg">
                             Vencedor
                         </span>
                     )}
                     {encerrada && !vencedor && (
-                        <span className="text-[7px] font-black uppercase tracking-widest bg-soft text-muted px-2 py-1 rounded-lg">
+                        <span className="text-[13px] font-bold uppercase tracking-wide bg-soft text-muted px-2 py-1 rounded-lg">
                             Encerrada
                         </span>
                     )}
@@ -374,14 +374,14 @@ function RifaItem({ item, euro }: { item: any; euro: (v: number) => string }) {
                         <div className="flex items-center gap-3 bg-figueira/8 border border-figueira/15 rounded-xl px-4 py-3">
                             <Trophy size={16} className="text-figueira shrink-0" />
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-figueira">Parabéns!</p>
-                                <p className="text-[9px] text-fg font-bold uppercase">O teu número <span className="font-black text-figueira">#{numeroVencedor}</span> foi sorteado.</p>
+                                <p className="text-[14px] font-bold uppercase tracking-wide text-figueira">Parabéns!</p>
+                                <p className="text-[13px] text-fg font-bold uppercase">O teu número <span className="font-bold text-figueira">#{numeroVencedor}</span> foi sorteado.</p>
                             </div>
                         </div>
                     )}
 
                     <div>
-                        <p className="text-[8px] font-black uppercase tracking-widest text-muted mb-2">
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-2">
                             Meus números ({item.numeros.length})
                         </p>
                         <div className="flex flex-wrap gap-1.5">
@@ -398,18 +398,18 @@ function RifaItem({ item, euro }: { item: any; euro: (v: number) => string }) {
 
                     <div className="grid grid-cols-2 gap-3">
                         <div className="bg-bg border border-soft rounded-xl p-3">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted">Prémio</p>
-                            <p className="text-[10px] font-black text-fg mt-1">{item.rifa?.premio || '—'}</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Prémio</p>
+                            <p className="text-[14px] font-bold text-fg mt-1">{item.rifa?.premio || '—'}</p>
                         </div>
                         <div className="bg-bg border border-soft rounded-xl p-3">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted">Data de Compra</p>
-                            <p className="text-[10px] font-black text-fg mt-1">{dataCompra}</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Data de Compra</p>
+                            <p className="text-[14px] font-bold text-fg mt-1">{dataCompra}</p>
                         </div>
                     </div>
 
                     {encerrada && !vencedor && numeroVencedor && (
-                        <p className="text-[8px] font-bold text-center text-muted uppercase tracking-widest pt-1">
-                            Número sorteado: <span className="font-black text-fg">#{numeroVencedor}</span>
+                        <p className="text-[13px] font-bold text-center text-muted uppercase tracking-wide pt-1">
+                            Número sorteado: <span className="font-bold text-fg">#{numeroVencedor}</span>
                         </p>
                     )}
                 </div>

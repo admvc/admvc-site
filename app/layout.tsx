@@ -3,8 +3,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { SITE_NAME } from "@/lib/constants";
-import BrandingProvider from "@/components/ui/BrandingProvider";
+import { getTenantBranding } from "@/lib/branding";
 import ServiceWorkerRegister from "@/components/ui/ServiceWorkerRegister";
+import IndicadorNavegacao from "@/components/ui/IndicadorNavegacao";
+import { Suspense } from "react";
 import PWAInstallPrompt from "@/components/ui/PWAInstallPrompt";
 import { ConfirmProvider, ToastProvider } from "@/components/ui/ConfirmDialog";
 
@@ -41,18 +43,19 @@ export const viewport = {
   viewportFit: 'cover' as const,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Tema da igreja (um so para todo o portal); claro/escuro segue o telemovel
+  const { tema } = await getTenantBranding()
   return (
-    <html lang="pt-PT" className="dark">
+    <html lang="pt-PT" data-tema={tema}>
       <body className="min-h-dvh bg-bg text-fg antialiased">
         <ConfirmProvider>
           <ToastProvider>
-            <BrandingProvider>
-              {children}
-            </BrandingProvider>
+            {children}
           </ToastProvider>
         </ConfirmProvider>
         <ServiceWorkerRegister />
+        <Suspense fallback={null}><IndicadorNavegacao /></Suspense>
         <PWAInstallPrompt />
       </body>
     </html>

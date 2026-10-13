@@ -67,15 +67,15 @@ export default async function CardapioPage() {
             <header className="space-y-4">
                 <Link
                     href="/cantina/dashboard"
-                    className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted hover:text-figueira transition-colors"
+                    className="inline-flex items-center gap-2 text-[14px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors"
                 >
                     <ArrowLeft size={12} /> Voltar
                 </Link>
                 <div className="text-center space-y-2 pb-6 border-b border-soft">
-                    <span className="text-figueira font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-2">
+                    <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center justify-center gap-2">
                         <UtensilsCrossed size={14} /> Cardapio
                     </span>
-                    <h1 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h1 className="text-4xl md:text-6xl font-bold text-fg leading-none">
                         Gerir <span className="text-muted/20">cardapios.</span>
                     </h1>
                 </div>

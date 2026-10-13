@@ -75,7 +75,7 @@ export function BotaoAssinarDocumento({ membroId, tipo, nomeDocumento }: Props) 
 
     if (sucesso) {
         return (
-            <div className="w-full flex items-center justify-center gap-2 bg-green-500/10 text-green-600 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border border-green-500/20">
+            <div className="w-full flex items-center justify-center gap-2 bg-green-500/10 text-green-600 px-8 py-4 rounded-2xl text-[14px] font-bold uppercase tracking-wide border border-green-500/20">
                 <CheckCircle2 size={16} /> Assinado com Sucesso
             </div>
         )
@@ -85,7 +85,7 @@ export function BotaoAssinarDocumento({ membroId, tipo, nomeDocumento }: Props) 
         <button
             onClick={handleAssinar}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-lg active:scale-95 disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-4 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-lg active:scale-95 disabled:opacity-50"
         >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <PenLine size={16} />}
             {loading ? 'A Registar...' : `Assinar ${nomeDocumento}`}

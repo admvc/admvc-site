@@ -91,7 +91,7 @@ export default function BotaoVincularManual({ membroId, membroNome, clientesLoyv
 
     if (sucesso) {
         return (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 text-emerald-600 rounded-xl text-[8px] font-black uppercase tracking-widest border border-emerald-500/20 shrink-0">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 text-emerald-600 rounded-xl text-[13px] font-bold uppercase tracking-wide border border-emerald-500/20 shrink-0">
                 <CheckCircle2 size={12} /> Vinculado
             </div>
         )
@@ -126,7 +126,7 @@ export default function BotaoVincularManual({ membroId, membroNome, clientesLoyv
             <div className="max-h-56 overflow-y-auto">
                 {clientesFiltrados.length === 0 ? (
                     <div className="py-8 text-center">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted">Nenhum cliente encontrado</p>
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum cliente encontrado</p>
                     </div>
                 ) : (
                     clientesFiltrados.map((c: any) => {
@@ -143,12 +143,12 @@ export default function BotaoVincularManual({ membroId, membroNome, clientesLoyv
                                 }}
                                 className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-soft/50 transition-colors ${sel ? 'bg-figueira/5' : ''}`}
                             >
-                                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-[9px] font-black ${sel ? 'bg-figueira text-white' : 'bg-bg2 border border-soft text-muted'}`}>
+                                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-[13px] font-bold ${sel ? 'bg-figueira text-white' : 'bg-bg2 border border-soft text-muted'}`}>
                                     {c.name?.[0]?.toUpperCase() || '?'}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className={`text-[11px] font-black uppercase truncate ${sel ? 'text-figueira' : 'text-fg'}`}>{c.name}</p>
-                                    <p className="text-[9px] font-bold text-muted lowercase truncate">{c.email || '—'}</p>
+                                    <p className={`text-[14px] font-bold uppercase truncate ${sel ? 'text-figueira' : 'text-fg'}`}>{c.name}</p>
+                                    <p className="text-[13px] font-bold text-muted lowercase truncate">{c.email || '—'}</p>
                                 </div>
                                 {sel && <Check size={13} className="text-figueira shrink-0" />}
                             </button>
@@ -159,7 +159,7 @@ export default function BotaoVincularManual({ membroId, membroNome, clientesLoyv
 
             {busca && (
                 <div className="px-4 py-2 border-t border-soft bg-bg2/50">
-                    <p className="text-[8px] font-black uppercase tracking-widest text-muted">
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">
                         {clientesFiltrados.length} resultado{clientesFiltrados.length !== 1 ? 's' : ''}
                     </p>
                 </div>
@@ -171,7 +171,7 @@ export default function BotaoVincularManual({ membroId, membroNome, clientesLoyv
         <>
             <button
                 onClick={() => setPopupAberto(true)}
-                className="flex items-center gap-2 px-3 py-2 bg-bg border border-soft text-muted hover:border-figueira/40 hover:text-figueira rounded-xl text-[8px] font-black uppercase tracking-widest transition-all active:scale-95 shrink-0"
+                className="flex items-center gap-2 px-3 py-2 bg-bg border border-soft text-muted hover:border-figueira/40 hover:text-figueira rounded-xl text-[13px] font-bold uppercase tracking-wide transition-all active:scale-95 shrink-0"
                 title={`Vincular ${membroNome} manualmente`}
             >
                 <Link2 size={12} /> Vincular
@@ -195,10 +195,10 @@ export default function BotaoVincularManual({ membroId, membroNome, clientesLoyv
                                     <Link2 size={16} />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-black uppercase italic tracking-tighter text-fg leading-none">
+                                    <h3 className="text-sm font-bold text-fg leading-none">
                                         Vincular Manualmente
                                     </h3>
-                                    <p className="text-[9px] font-bold text-muted uppercase tracking-widest mt-0.5">
+                                    <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-0.5">
                                         {membroNome}
                                     </p>
                                 </div>
@@ -214,7 +214,7 @@ export default function BotaoVincularManual({ membroId, membroNome, clientesLoyv
                         <div className="p-6 space-y-5">
                             {/* SELETOR LOYVERSE */}
                             <div className="space-y-2">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                     Selecionar cliente Loyverse
                                 </label>
                                 <button
@@ -236,25 +236,25 @@ export default function BotaoVincularManual({ membroId, membroNome, clientesLoyv
                             {/* CONFIRMAÇÃO */}
                             {loyverseIdSelecionado && (
                                 <div className="bg-figueira/5 border border-figueira/20 rounded-2xl px-4 py-3 animate-in fade-in duration-200">
-                                    <p className="text-[8px] font-black uppercase tracking-widest text-muted">A vincular</p>
-                                    <p className="text-[11px] font-black uppercase text-fg mt-1">
+                                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">A vincular</p>
+                                    <p className="text-[14px] font-bold uppercase text-fg mt-1">
                                         {membroNome} <span className="text-muted font-medium">→</span> {loyverseNomeSelecionado}
                                     </p>
-                                    <code className="text-[8px] font-mono text-figueira/70 mt-1 block truncate">{loyverseIdSelecionado}</code>
+                                    <code className="text-[13px] font-mono text-figueira/70 mt-1 block truncate">{loyverseIdSelecionado}</code>
                                 </div>
                             )}
 
                             <div className="grid grid-cols-2 gap-2">
                                 <button
                                     onClick={() => { setPopupAberto(false); setLoyverseIdSelecionado(''); setLoyverseNomeSelecionado('') }}
-                                    className="py-3 rounded-xl text-[9px] font-black uppercase tracking-widest bg-bg2 border border-soft text-muted hover:bg-soft transition-all"
+                                    className="py-3 rounded-xl text-[13px] font-bold uppercase tracking-wide bg-bg2 border border-soft text-muted hover:bg-soft transition-all"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     onClick={handleVincular}
                                     disabled={loading || !loyverseIdSelecionado}
-                                    className="py-3 rounded-xl text-[9px] font-black uppercase tracking-widest bg-figueira text-white hover:bg-figueira/90 transition-all disabled:opacity-40 flex items-center justify-center gap-2 active:scale-95"
+                                    className="py-3 rounded-xl text-[13px] font-bold uppercase tracking-wide bg-figueira text-white hover:bg-figueira/90 transition-all disabled:opacity-40 flex items-center justify-center gap-2 active:scale-95"
                                 >
                                     {loading
                                         ? <><Loader2 size={13} className="animate-spin" /> A gravar...</>

@@ -127,7 +127,7 @@ export default function X32Client({ ip, port }: Props) {
         return (
             <div className="bg-bg2 border border-soft rounded-2xl p-8 text-center space-y-4">
                 <WifiOff size={32} className="mx-auto text-muted/30" />
-                <p className="text-sm font-black uppercase tracking-widest text-muted">Mesa nao configurada</p>
+                <p className="text-sm font-bold text-muted">Mesa nao configurada</p>
                 <p className="text-xs text-muted/60">Configure o IP nas <Link href="/admin/midia" className="text-figueira underline">configuracoes de midia</Link>.</p>
             </div>
         )
@@ -149,9 +149,9 @@ export default function X32Client({ ip, port }: Props) {
                     </div>
                     <input type="text" value={proxyUrl} onChange={e => setProxyUrl(e.target.value)}
                         placeholder="ws://localhost:8080"
-                        className="flex-1 min-w-0 bg-bg border border-soft rounded-lg px-3 py-1.5 text-[10px] font-mono text-fg outline-none focus:border-figueira" />
+                        className="flex-1 min-w-0 bg-bg border border-soft rounded-lg px-3 py-1.5 text-[14px] font-mono text-fg outline-none focus:border-figueira" />
                     <button onClick={connect} disabled={connecting}
-                        className="px-3 py-1.5 rounded-lg bg-figueira text-white text-[8px] font-black uppercase tracking-widest hover:bg-figueira/90 transition-all disabled:opacity-50 flex items-center gap-1.5 shrink-0">
+                        className="px-3 py-1.5 rounded-lg bg-figueira text-white text-[13px] font-bold uppercase tracking-wide hover:bg-figueira/90 transition-all disabled:opacity-50 flex items-center gap-1.5 shrink-0">
                         {connecting ? <Loader2 size={10} className="animate-spin" /> : <Wifi size={10} />}
                         Conectar
                     </button>
@@ -160,12 +160,12 @@ export default function X32Client({ ip, port }: Props) {
                 <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-4 py-2 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600">
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-emerald-600">
                             Conectado — {ip}:{port}
                         </span>
                     </div>
                     <button onClick={disconnect}
-                        className="text-[8px] font-black uppercase tracking-widest text-red-400 hover:text-red-500 transition-colors">
+                        className="text-[13px] font-bold uppercase tracking-wide text-red-400 hover:text-red-500 transition-colors">
                         Desligar
                     </button>
                 </div>
@@ -179,7 +179,7 @@ export default function X32Client({ ip, port }: Props) {
                     { id: 'master' as const, label: 'Master', count: 2 },
                 ].map(t => (
                     <button key={t.id} onClick={() => { setVista(t.id); setOffsetCh(0) }}
-                        className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${vista === t.id ? 'bg-fg text-bg' : 'text-muted hover:bg-soft/30'}`}>
+                        className={`px-4 py-2 rounded-lg text-[13px] font-bold uppercase tracking-wide transition-all ${vista === t.id ? 'bg-fg text-bg' : 'text-muted hover:bg-soft/30'}`}>
                         {t.label} <span className="opacity-50 ml-1">{t.count}</span>
                     </button>
                 ))}
@@ -189,18 +189,18 @@ export default function X32Client({ ip, port }: Props) {
             {vista === 'channels' && (
                 <div className="flex items-center gap-2">
                     <button onClick={() => setOffsetCh(Math.max(0, offsetCh - visiveisCh))} disabled={offsetCh === 0}
-                        className="px-3 py-1.5 rounded-lg bg-bg2 border border-soft text-[9px] font-black uppercase text-muted disabled:opacity-30">
+                        className="px-3 py-1.5 rounded-lg bg-bg2 border border-soft text-[13px] font-bold uppercase text-muted disabled:opacity-30">
                         ←
                     </button>
-                    <span className="text-[8px] font-bold text-muted uppercase tracking-widest">
+                    <span className="text-[13px] font-bold text-muted uppercase tracking-wide">
                         CH {offsetCh + 1}-{Math.min(offsetCh + visiveisCh, 32)}
                     </span>
                     <button onClick={() => setOffsetCh(Math.min(32 - visiveisCh, offsetCh + visiveisCh))} disabled={offsetCh + visiveisCh >= 32}
-                        className="px-3 py-1.5 rounded-lg bg-bg2 border border-soft text-[9px] font-black uppercase text-muted disabled:opacity-30">
+                        className="px-3 py-1.5 rounded-lg bg-bg2 border border-soft text-[13px] font-bold uppercase text-muted disabled:opacity-30">
                         →
                     </button>
                     <select value={visiveisCh} onChange={e => { setVisiveisCh(Number(e.target.value)); setOffsetCh(0) }}
-                        className="ml-auto bg-bg2 border border-soft rounded-lg px-2 py-1.5 text-[9px] font-bold text-muted outline-none">
+                        className="ml-auto bg-bg2 border border-soft rounded-lg px-2 py-1.5 text-[13px] font-bold text-muted outline-none">
                         <option value={8}>8</option>
                         <option value={16}>16</option>
                         <option value={32}>32</option>
@@ -215,7 +215,7 @@ export default function X32Client({ ip, port }: Props) {
                         const displayLabel = fader.syncLabel || fader.label
                         return (
                             <div key={fader.id} className="flex flex-col items-center gap-2 w-16 shrink-0">
-                                <span className="text-[8px] font-black text-muted uppercase tracking-widest">
+                                <span className="text-[13px] font-bold text-muted uppercase tracking-wide">
                                     {Math.round(fader.value * 100)}%
                                 </span>
 
@@ -233,11 +233,11 @@ export default function X32Client({ ip, port }: Props) {
                                 </div>
 
                                 <button onClick={() => sendMute(fader.id)}
-                                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all text-[7px] font-black ${fader.muted ? 'bg-red-500 text-white' : 'bg-bg border border-soft text-muted hover:border-red-500/30'}`}>
+                                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all text-[13px] font-bold ${fader.muted ? 'bg-red-500 text-white' : 'bg-bg border border-soft text-muted hover:border-red-500/30'}`}>
                                     {fader.muted ? <VolumeX size={12} /> : <Volume2 size={12} />}
                                 </button>
 
-                                <span className="text-[7px] font-black uppercase tracking-widest text-muted text-center leading-tight w-16 truncate" title={displayLabel}>
+                                <span className="text-[13px] font-bold uppercase tracking-wide text-muted text-center leading-tight w-16 truncate" title={displayLabel}>
                                     {displayLabel}
                                 </span>
                             </div>
@@ -247,8 +247,8 @@ export default function X32Client({ ip, port }: Props) {
             </div>
 
             {/* INFO */}
-            <div className="bg-bg2 border border-soft rounded-2xl p-4 text-[9px] text-muted/60 space-y-1">
-                <p className="font-black uppercase tracking-widest text-muted text-[8px]">Como conectar:</p>
+            <div className="bg-bg2 border border-soft rounded-2xl p-4 text-[13px] text-muted/60 space-y-1">
+                <p className="font-bold uppercase tracking-wide text-muted text-[13px]">Como conectar:</p>
                 <p>1. Descarregue e execute o proxy no PC da igreja (mesma rede que o X32)</p>
                 <p>2. Clique "Conectar" com o endereco do proxy (default: ws://localhost:8080)</p>
                 <p>3. Os nomes dos canais, faders e mutes sincronizam automaticamente</p>

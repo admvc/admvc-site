@@ -47,7 +47,7 @@ export default function BotaoExcluirFamilia({ familiaId, nomeFamilia, qtdMembros
                             <AlertTriangle size={32} />
                         </div>
 
-                        <h3 className="text-xl font-black uppercase italic tracking-tighter text-fg">
+                        <h3 className="text-xl font-bold text-fg">
                             Excluir Família?
                         </h3>
                         <p className="text-sm font-bold text-fg mt-1">Família {nomeFamilia}</p>
@@ -55,7 +55,7 @@ export default function BotaoExcluirFamilia({ familiaId, nomeFamilia, qtdMembros
                         {/* MENSAGEM CONDICIONAL DE ACORDO COM A QUANTIDADE DE MEMBROS */}
                         {qtdMembros > 0 ? (
                             <div className="mt-6 bg-orange-50 border border-orange-100 p-4 rounded-2xl text-left shadow-sm">
-                                <p className="text-[10px] font-black uppercase text-orange-600 tracking-widest mb-1.5 flex items-center gap-1.5">
+                                <p className="text-[14px] font-bold uppercase text-orange-600 tracking-wide mb-1.5 flex items-center gap-1.5">
                                     <AlertTriangle size={14} /> Atenção
                                 </p>
                                 <p className="text-xs text-orange-800 font-medium leading-relaxed">
@@ -73,14 +73,14 @@ export default function BotaoExcluirFamilia({ familiaId, nomeFamilia, qtdMembros
                             <button
                                 onClick={() => setAberto(false)}
                                 disabled={loading}
-                                className="py-4 bg-soft text-fg rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-soft/80 transition-all"
+                                className="py-4 bg-soft text-fg rounded-2xl text-[14px] font-bold uppercase tracking-wide hover:bg-soft/80 transition-all"
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={handleExcluir}
                                 disabled={loading}
-                                className="py-4 bg-red-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 hover:bg-red-600 transition-all active:scale-95"
+                                className="py-4 bg-red-500 text-white rounded-2xl text-[14px] font-bold uppercase tracking-wide shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 hover:bg-red-600 transition-all active:scale-95"
                             >
                                 {loading ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
                                 Confirmar

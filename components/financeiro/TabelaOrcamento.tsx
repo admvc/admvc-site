@@ -151,7 +151,7 @@ export default function TabelaOrcamento({
         <div className="space-y-6">
             {/* Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <h1 className="text-xl font-black uppercase tracking-tight text-fg">
+                <h1 className="text-xl font-bold text-fg">
                     Orcamento Anual
                 </h1>
                 <div className="flex items-center gap-2">
@@ -161,7 +161,7 @@ export default function TabelaOrcamento({
                     >
                         <ChevronLeft size={18} />
                     </button>
-                    <span className="text-lg font-black text-fg min-w-[4ch] text-center">
+                    <span className="text-lg font-bold text-fg min-w-[4ch] text-center">
                         {ano}
                     </span>
                     <button
@@ -221,7 +221,7 @@ export default function TabelaOrcamento({
                 <div className="overflow-x-auto rounded-xl border border-soft">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="bg-soft/20 text-[10px] font-black uppercase tracking-widest text-muted">
+                            <tr className="bg-soft/20 text-[14px] font-bold uppercase tracking-wide text-muted">
                                 <th className="text-left px-4 py-3">Categoria</th>
                                 <th className="text-right px-4 py-3">Previsto</th>
                                 <th className="text-right px-4 py-3">Real</th>
@@ -297,8 +297,8 @@ export default function TabelaOrcamento({
                             })}
 
                             {/* Totals row */}
-                            <tr className="border-t-2 border-soft bg-soft/10 font-black">
-                                <td className="px-4 py-3 text-fg uppercase text-xs tracking-widest">
+                            <tr className="border-t-2 border-soft bg-soft/10 font-bold">
+                                <td className="px-4 py-3 text-fg text-xs">
                                     Total
                                 </td>
                                 <td className="px-4 py-3 text-right text-fg">

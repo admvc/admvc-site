@@ -149,14 +149,14 @@ export default async function DashboardCantinaPage() {
             {/* ── HEADER ─────────────────────────────────────────────── */}
             <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div className="space-y-1">
-                    <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-fg">
+                    <h1 className="text-3xl md:text-4xl font-bold text-fg">
                         Dashboard Cantina
                     </h1>
                     <p className="text-xs text-muted">{todayStr}</p>
                 </div>
                 <div className="flex items-center gap-2 text-figueira">
                     <BarChart3 size={18} />
-                    <span className="text-[9px] md:text-[11px] font-black uppercase tracking-widest">Analise de Vendas</span>
+                    <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide">Analise de Vendas</span>
                 </div>
             </header>
 
@@ -164,41 +164,41 @@ export default async function DashboardCantinaPage() {
             <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 {/* Vendas Hoje */}
                 <div className="bg-bg2 border border-soft rounded-2xl p-5 space-y-1">
-                    <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                    <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                         <ShoppingCart size={10} className="text-figueira" />
                         Vendas Hoje
                     </p>
-                    <p className="text-3xl font-black text-fg">{todayCount}</p>
+                    <p className="text-3xl font-bold text-fg">{todayCount}</p>
                     <p className="text-xs font-bold text-figueira">{fmt(todayTotal)} EUR</p>
                 </div>
 
                 {/* Vendas Semana */}
                 <div className="bg-bg2 border border-soft rounded-2xl p-5 space-y-1">
-                    <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                    <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                         <TrendingUp size={10} className="text-figueira" />
                         Vendas Semana
                     </p>
-                    <p className="text-3xl font-black text-fg">{weekCount}</p>
+                    <p className="text-3xl font-bold text-fg">{weekCount}</p>
                     <p className="text-xs font-bold text-figueira">{fmt(weekTotal)} EUR</p>
                 </div>
 
                 {/* Vendas Mes */}
                 <div className="bg-bg2 border border-soft rounded-2xl p-5 space-y-1">
-                    <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                    <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                         <BarChart3 size={10} className="text-figueira" />
                         Vendas Mes
                     </p>
-                    <p className="text-3xl font-black text-fg">{monthCount}</p>
+                    <p className="text-3xl font-bold text-fg">{monthCount}</p>
                     <p className="text-xs font-bold text-figueira">{fmt(monthTotal)} EUR</p>
                 </div>
 
                 {/* Ticket Medio */}
                 <div className="bg-bg2 border border-soft rounded-2xl p-5 space-y-1">
-                    <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                    <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                         <CreditCard size={10} className="text-figueira" />
                         Ticket Medio
                     </p>
-                    <p className="text-3xl font-black text-fg">{fmt(ticketMedio)}</p>
+                    <p className="text-3xl font-bold text-fg">{fmt(ticketMedio)}</p>
                     <p className="text-xs font-bold text-muted">EUR / venda</p>
                 </div>
             </section>
@@ -207,11 +207,11 @@ export default async function DashboardCantinaPage() {
             <section className="space-y-4 pt-6 border-t border-soft">
                 <div className="flex items-center gap-4">
                     <CreditCard size={20} className="text-figueira" />
-                    <h2 className="text-2xl font-black uppercase italic tracking-tighter text-fg">
+                    <h2 className="text-2xl font-bold text-fg">
                         Formas de Pagamento
                     </h2>
                     <div className="h-[1px] flex-1 bg-soft" />
-                    <span className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">Este Mes</span>
+                    <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Este Mes</span>
                 </div>
 
                 <div className="bg-bg2 border border-soft rounded-2xl p-6 space-y-4">
@@ -221,10 +221,10 @@ export default async function DashboardCantinaPage() {
                         paymentBreakdown.map((p) => (
                             <div key={p.label} className="space-y-1.5">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-fg">
+                                    <span className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-fg">
                                         {p.label}
                                     </span>
-                                    <span className="text-sm font-black text-figueira">
+                                    <span className="text-sm font-bold text-figueira">
                                         {fmt(p.value)} EUR
                                     </span>
                                 </div>
@@ -244,11 +244,11 @@ export default async function DashboardCantinaPage() {
             <section className="space-y-4 pt-6 border-t border-soft">
                 <div className="flex items-center gap-4">
                     <Coffee size={20} className="text-figueira" />
-                    <h2 className="text-2xl font-black uppercase italic tracking-tighter text-fg">
+                    <h2 className="text-2xl font-bold text-fg">
                         Top 5 Produtos
                     </h2>
                     <div className="h-[1px] flex-1 bg-soft" />
-                    <span className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">Ultimos 30 Dias</span>
+                    <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Ultimos 30 Dias</span>
                 </div>
 
                 <div className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
@@ -257,20 +257,20 @@ export default async function DashboardCantinaPage() {
                     ) : (
                         <>
                             <div className="hidden sm:grid grid-cols-[auto_1fr_100px_100px] gap-4 px-6 py-3 border-b border-soft">
-                                <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted w-8">#</p>
-                                <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">Produto</p>
-                                <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted text-right">Qtd</p>
-                                <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted text-right">Receita</p>
+                                <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted w-8">#</p>
+                                <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Produto</p>
+                                <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-right">Qtd</p>
+                                <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-right">Receita</p>
                             </div>
                             {top5.map((p, i) => (
                                 <div
                                     key={i}
                                     className="grid grid-cols-[auto_1fr_auto] sm:grid-cols-[auto_1fr_100px_100px] gap-4 px-6 py-4 border-b border-soft last:border-b-0 items-center"
                                 >
-                                    <span className="text-lg font-black text-figueira w-8">{i + 1}</span>
+                                    <span className="text-lg font-bold text-figueira w-8">{i + 1}</span>
                                     <p className="text-sm font-bold text-fg">{p.nome}</p>
-                                    <p className="text-sm font-black text-fg text-right">{p.qty}</p>
-                                    <p className="hidden sm:block text-sm font-black text-figueira text-right">
+                                    <p className="text-sm font-bold text-fg text-right">{p.qty}</p>
+                                    <p className="hidden sm:block text-sm font-bold text-figueira text-right">
                                         {fmt(p.revenue)} EUR
                                     </p>
                                 </div>
@@ -284,7 +284,7 @@ export default async function DashboardCantinaPage() {
             <section className="space-y-4 pt-6 border-t border-soft">
                 <div className="flex items-center gap-4">
                     <ShoppingCart size={20} className="text-figueira" />
-                    <h2 className="text-2xl font-black uppercase italic tracking-tighter text-fg">
+                    <h2 className="text-2xl font-bold text-fg">
                         Ultimas Transacoes
                     </h2>
                     <div className="h-[1px] flex-1 bg-soft" />
@@ -297,11 +297,11 @@ export default async function DashboardCantinaPage() {
                         <>
                             {/* Desktop header */}
                             <div className="hidden lg:grid grid-cols-[110px_1fr_1fr_90px_110px] gap-4 px-6 py-3 border-b border-soft">
-                                <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">Data</p>
-                                <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">Cliente</p>
-                                <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">Itens</p>
-                                <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted text-right">Total</p>
-                                <p className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted text-right">Pagamento</p>
+                                <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Data</p>
+                                <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Cliente</p>
+                                <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Itens</p>
+                                <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-right">Total</p>
+                                <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-right">Pagamento</p>
                             </div>
                             {lastTx.map((tx) => {
                                 const memberName = tx.membro
@@ -321,10 +321,10 @@ export default async function DashboardCantinaPage() {
                                         </p>
                                         <p className="text-sm font-bold text-fg">{memberName}</p>
                                         <p className="text-xs text-muted truncate">{itemsDesc || '-'}</p>
-                                        <p className="text-sm font-black text-fg text-right">
+                                        <p className="text-sm font-bold text-fg text-right">
                                             {fmt(Math.abs(tx.valor))} EUR
                                         </p>
-                                        <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-muted text-right">
+                                        <p className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">
                                             {paymentLabels[tx.forma_pagamento] || tx.forma_pagamento}
                                         </p>
                                     </div>
@@ -343,7 +343,7 @@ export default async function DashboardCantinaPage() {
                     headerExtra={
                         <Link
                             href="/cantina/relatorio-financeiro"
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[9px] md:text-[11px] font-black uppercase tracking-widest bg-figueira/10 text-figueira border border-figueira/20 hover:bg-figueira/20 transition-all active:scale-95"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[13px] md:text-[14px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira border border-figueira/20 hover:bg-figueira/20 transition-all active:scale-95"
                         >
                             <BarChart3 size={12} />
                             Relatorio P&L
@@ -363,25 +363,25 @@ export default async function DashboardCantinaPage() {
             <section className="flex flex-wrap gap-2 pt-6 border-t border-soft">
                 <Link
                     href="/cantina/turnos"
-                    className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[9px] md:text-[11px] font-black uppercase tracking-widest text-fg"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-fg"
                 >
                     <BarChart3 size={14} className="text-figueira" /> Turnos
                 </Link>
                 <Link
                     href="/cantina/pos"
-                    className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[9px] md:text-[11px] font-black uppercase tracking-widest text-fg"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-fg"
                 >
                     <ShoppingCart size={14} className="text-figueira" /> Ponto de Venda
                 </Link>
                 <Link
                     href="/cantina/produtos"
-                    className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[9px] md:text-[11px] font-black uppercase tracking-widest text-fg"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-fg"
                 >
                     <Coffee size={14} className="text-figueira" /> Produtos
                 </Link>
                 <Link
                     href="/cantina/relatorio-financeiro"
-                    className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[9px] md:text-[11px] font-black uppercase tracking-widest text-fg"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-fg"
                 >
                     <DollarSign size={14} className="text-figueira" /> Relatorio Financeiro
                 </Link>

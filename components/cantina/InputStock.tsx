@@ -36,7 +36,7 @@ export default function InputStock({ produtoId, stockAtual }: Props) {
                 <button
                     onClick={handleSave}
                     disabled={loading}
-                    className="px-2 py-1.5 rounded-xl bg-figueira text-bg text-[9px] font-black uppercase tracking-widest hover:brightness-110 transition-all active:scale-95 disabled:opacity-50"
+                    className="px-2 py-1.5 rounded-xl bg-figueira text-bg text-[13px] font-bold uppercase tracking-wide hover:brightness-110 transition-all active:scale-95 disabled:opacity-50"
                 >
                     {loading ? <Loader2 size={10} className="animate-spin" /> : 'OK'}
                 </button>

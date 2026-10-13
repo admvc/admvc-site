@@ -92,24 +92,24 @@ export default async function AgendasDashboard() {
         <main className="max-w-6xl mx-auto py-10 px-6 space-y-10 animate-in fade-in duration-700 pb-32">
             
             {/* --- BREADCRUMBS --- */}
-            <nav className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted">
+            <nav className="flex items-center gap-4 text-[14px] font-bold uppercase tracking-wide text-muted">
                 <Link href="/admin/dashboard" className="hover:text-figueira transition-colors flex items-center gap-2">
                     <ArrowLeft size={12} strokeWidth={3} /> Dashboard Admin
                 </Link>
                 <ChevronRight size={10} className="opacity-30" />
-                <span className="text-fg italic">Gabinete Pastoral</span>
+                <span className="text-fg">Gabinete Pastoral</span>
             </nav>
 
             {/* --- HEADER --- */}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-2">
                 <div className="space-y-2">
-                    <span className="text-figueira font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2">
+                    <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center gap-2">
                         <CalendarDays size={14} /> Gabinete & Atendimento
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h1 className="text-4xl md:text-5xl font-bold text-fg leading-none">
                         Gestão de <span className="text-muted/30">Agendas.</span>
                     </h1>
-                    <p className="text-[10px] text-muted font-bold uppercase tracking-widest pt-2">
+                    <p className="text-[14px] text-muted font-bold uppercase tracking-wide pt-2">
                         Controle os compromissos, aconselhamentos e reuniões pastorais.
                     </p>
                 </div>
@@ -127,8 +127,8 @@ export default async function AgendasDashboard() {
             {agendas.length === 0 ? (
                 <div className="text-center py-20 border-2 border-dashed border-soft rounded-[3rem] bg-bg2/50">
                     <CalendarDays size={32} className="mx-auto text-muted/30 mb-4" />
-                    <h3 className="text-lg font-black uppercase italic tracking-tighter text-fg mb-2">Nenhuma Agenda Criada</h3>
-                    <p className="text-[10px] font-bold text-muted uppercase tracking-widest max-w-sm mx-auto">
+                    <h3 className="text-lg font-bold text-fg mb-2">Nenhuma Agenda Criada</h3>
+                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide max-w-sm mx-auto">
                         Crie a primeira agenda pastoral para começar a receber marcações.
                     </p>
                 </div>
@@ -148,14 +148,14 @@ export default async function AgendasDashboard() {
                                         )}
                                     </div>
                                     <div>
-                                        <h2 className="text-2xl font-black uppercase italic tracking-tighter text-fg">
+                                        <h2 className="text-2xl font-bold text-fg">
                                             {agenda.nome}
                                         </h2>
                                         <div className="flex items-center gap-3 mt-1.5">
-                                            <span className="text-[9px] font-bold uppercase tracking-widest text-muted bg-soft/30 px-2 py-0.5 rounded-md">
+                                            <span className="text-[13px] font-bold uppercase tracking-wide text-muted bg-soft/30 px-2 py-0.5 rounded-md">
                                                 {agenda.is_publica ? '🌍 Agenda Pública' : '🔒 Agenda Privada'}
                                             </span>
-                                            <span className="text-[9px] font-black text-figueira uppercase tracking-widest">
+                                            <span className="text-[13px] font-bold text-figueira uppercase tracking-wide">
                                                 {agenda.compromissos.length} Próximos
                                             </span>
                                         </div>
@@ -171,7 +171,7 @@ export default async function AgendasDashboard() {
                             {/* LISTA DE COMPROMISSOS */}
                             <div className="p-8 md:p-10 space-y-4">
                                 {agenda.compromissos.length === 0 ? (
-                                    <p className="text-[10px] text-center font-bold text-muted uppercase tracking-widest italic py-6">
+                                    <p className="text-[14px] text-center font-bold text-muted uppercase tracking-wide py-6">
                                         Agenda livre. Nenhum compromisso marcado.
                                     </p>
                                 ) : (
@@ -201,23 +201,23 @@ const isPendente = comp.status === 'PENDENTE';
                                                 <div className="flex items-center gap-5">
                                                     {/* DATA E HORA */}
                                                     <div className="flex flex-col items-center justify-center min-w-[60px] border-r border-soft pr-5">
-                                                        <span className="text-[10px] font-black uppercase text-muted tracking-widest mb-1">
+                                                        <span className="text-[14px] font-bold uppercase text-muted tracking-wide mb-1">
                                                             {data.toLocaleDateString('pt-PT', { weekday: 'short' })}
                                                         </span>
-                                                        <span className="text-xl font-black italic text-fg leading-none">
+                                                        <span className="text-xl font-bold text-fg leading-none">
                                                             {data.getDate()}
                                                         </span>
-                                                        <span className={`text-[9px] font-bold flex items-center gap-1 mt-1.5 px-2 rounded-md ${isPendente ? 'text-orange-500 bg-orange-500/10' : 'text-figueira bg-figueira/10'}`}>
+                                                        <span className={`text-[13px] font-bold flex items-center gap-1 mt-1.5 px-2 rounded-md ${isPendente ? 'text-orange-500 bg-orange-500/10' : 'text-figueira bg-figueira/10'}`}>
                                                             <Clock size={8} /> {data.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
                                                         </span>
                                                     </div>
 
 {/* DETALHES */}
                                                     <div className="flex-1 min-w-0"> {/* O flex-1 min-w-0 dá espaço para respirar */}
-                                                        <h4 className="text-sm font-black uppercase tracking-tight text-fg group-hover:text-figueira transition-colors flex items-center gap-2 truncate">
+                                                        <h4 className="text-sm font-bold text-fg group-hover:text-figueira transition-colors flex items-center gap-2 truncate">
                                                             <span className="truncate">{comp.titulo}</span>
                                                             {isPendente && (
-                                                                <span className="bg-orange-500 text-white text-[8px] px-2 py-0.5 rounded-md tracking-widest animate-pulse shrink-0">
+                                                                <span className="bg-orange-500 text-white text-[13px] px-2 py-0.5 rounded-md animate-pulse shrink-0">
                                                                     Aguardar
                                                                 </span>
                                                             )}
@@ -227,12 +227,12 @@ const isPendente = comp.status === 'PENDENTE';
                                                         <div className="flex flex-wrap items-center gap-2 mt-1.5">
                                                             
                                                             {/* TAG CATEGORIA */}
-                                                            <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border flex items-center gap-1 shrink-0 ${estilo.bg} ${estilo.cor} ${estilo.border}`}>
+                                                            <span className={`text-[13px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-lg border flex items-center gap-1 shrink-0 ${estilo.bg} ${estilo.cor} ${estilo.border}`}>
                                                                 <Icone size={10} /> {estilo.label}
                                                             </span>
                                                             
                                                             {/* TAG PESSOA (Ícone User reduzido para size={8}) */}
-                                                            <span className="text-[9px] font-bold text-muted uppercase tracking-widest flex items-center gap-1 max-w-xs truncate">
+                                                            <span className="text-[13px] font-bold text-muted uppercase tracking-wide flex items-center gap-1 max-w-xs truncate">
                                                                 <User size={8} className="shrink-0 text-muted/60" /> 
                                                                 <span className="truncate">{pessoaNome}</span>
                                                             </span>
@@ -255,10 +255,10 @@ const isPendente = comp.status === 'PENDENTE';
                             {/* HORÁRIOS DISPONÍVEIS */}
                             <div className="px-8 md:px-10 pb-8 md:pb-10">
                                 <details className="group">
-                                    <summary className="cursor-pointer text-[9px] font-black uppercase tracking-widest text-muted hover:text-figueira transition-colors flex items-center gap-2 select-none py-2">
+                                    <summary className="cursor-pointer text-[13px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors flex items-center gap-2 select-none py-2">
                                         <Clock size={10} />
                                         Horários Disponíveis
-                                        <span className="text-[8px] text-muted/40 group-open:rotate-90 transition-transform">▶</span>
+                                        <span className="text-[13px] text-muted/40 group-open:rotate-90 transition-transform">▶</span>
                                     </summary>
                                     <div className="pt-3">
                                         <HorariosEditor

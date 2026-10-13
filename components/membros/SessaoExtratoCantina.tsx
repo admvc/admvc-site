@@ -24,11 +24,11 @@ export default function SessaoExtratoCantina({ carregamentos, objetivos }: Sessa
                         onClick={() => setMostrarCarregamentos(!mostrarCarregamentos)}
                         className="w-full flex items-center justify-between p-5 hover:bg-soft transition-colors active:scale-[0.99]"
                     >
-                        <h3 className="text-sm font-black italic uppercase tracking-widest text-muted">
+                        <h3 className="text-sm font-bold text-muted">
                             Histórico de Carregamentos
                         </h3>
                         <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-black uppercase text-figueira bg-figueira/10 px-3 py-1 rounded-full">
+                            <span className="text-[13px] font-bold uppercase text-figueira bg-figueira/10 px-3 py-1 rounded-full">
                                 Ver Detalhes
                             </span>
                             {mostrarCarregamentos ? <ChevronUp size={16} className="text-figueira" /> : <ChevronDown size={16} className="text-muted" />}
@@ -47,24 +47,24 @@ export default function SessaoExtratoCantina({ carregamentos, objetivos }: Sessa
                                             </div>
                                             <div>
                                                 <div className="flex items-center gap-2">
-                                                    <p className="text-[10px] font-black text-fg uppercase">Carregamento ({c.forma_pagamento})</p>
+                                                    <p className="text-[14px] font-bold text-fg uppercase">Carregamento ({c.forma_pagamento})</p>
                                                     {/* ETIQUETA DE PENDENTE */}
                                                     {c.status === 'PENDENTE' && (
-                                                        <span className="bg-orange-500/10 text-orange-600 border border-orange-500/20 text-[7px] px-1.5 py-0.5 rounded-md font-black uppercase tracking-widest">
+                                                        <span className="bg-orange-500/10 text-orange-600 border border-orange-500/20 text-[13px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wide">
                                                             Pendente
                                                         </span>
                                                     )}
                                                 </div>
                                                 <div className="flex items-center gap-1.5 text-muted mt-0.5">
                                                     <CalendarDays size={10} className="opacity-50" />
-                                                    <p className="text-[8px] font-bold uppercase">
+                                                    <p className="text-[13px] font-bold uppercase">
                                                         {new Date(c.createdAt).toLocaleDateString('pt-PT')}
                                                     </p>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <span className={`text-xs font-black italic ${c.status === 'PENDENTE' ? 'text-orange-500 opacity-50' : 'text-figueira'}`}>
+                                        <span className={`text-xs font-bold ${c.status === 'PENDENTE' ? 'text-orange-500 opacity-50' : 'text-figueira'}`}>
                                             +{new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(c.valor)}
                                         </span>
                                     </div>

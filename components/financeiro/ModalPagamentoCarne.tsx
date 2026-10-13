@@ -44,12 +44,12 @@ export default function ModalPagamentoCarne({ carne }: { carne: any }) {
                             <div className="w-16 h-16 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto">
                                 <DollarSign size={32} />
                             </div>
-                            <h3 className="text-xl font-black uppercase italic tracking-tighter">Lançar Parcela</h3>
-                            <p className="text-[10px] text-muted font-bold uppercase">{carne.membro.first_name} {carne.membro.last_name}</p>
+                            <h3 className="text-xl font-bold">Lançar Parcela</h3>
+                            <p className="text-[14px] text-muted font-bold uppercase">{carne.membro.first_name} {carne.membro.last_name}</p>
                         </div>
 
                         <div className="bg-bg p-4 rounded-2xl border border-soft space-y-3">
-                            <div className="flex justify-between text-[10px] font-black uppercase text-muted">
+                            <div className="flex justify-between text-[14px] font-bold uppercase text-muted">
                                 <span>Parcelas a pagar:</span>
                                 <div className="flex items-center gap-3">
                                     <button onClick={() => setQtd(Math.max(1, qtd - 1))} className="w-6 h-6 bg-soft rounded-lg">-</button>
@@ -58,8 +58,8 @@ export default function ModalPagamentoCarne({ carne }: { carne: any }) {
                                 </div>
                             </div>
                             <div className="border-t border-soft pt-3 flex justify-between items-end">
-                                <span className="text-[10px] font-black uppercase text-muted">Total a Receber:</span>
-                                <span className="text-xl font-black text-emerald-500">
+                                <span className="text-[14px] font-bold uppercase text-muted">Total a Receber:</span>
+                                <span className="text-xl font-bold text-emerald-500">
                                     {new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(totalAPagar)}
                                 </span>
                             </div>
@@ -68,14 +68,14 @@ export default function ModalPagamentoCarne({ carne }: { carne: any }) {
                         <div className="grid grid-cols-2 gap-3">
                             <button
                                 onClick={() => setAberto(false)}
-                                className="py-4 bg-soft text-fg rounded-xl text-[10px] font-black uppercase hover:bg-red-500 hover:text-white transition-all"
+                                className="py-4 bg-soft text-fg rounded-xl text-[14px] font-bold uppercase hover:bg-red-500 hover:text-white transition-all"
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={confirmarPagamento}
                                 disabled={loading}
-                                className="py-4 bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
+                                className="py-4 bg-emerald-500 text-white rounded-xl text-[14px] font-bold uppercase shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
                             >
                                 {loading ? <Loader2 className="animate-spin" size={14} /> : <Check size={14} />}
                                 Confirmar

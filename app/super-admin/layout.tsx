@@ -11,8 +11,9 @@ export default async function SuperAdminLayout({
 }) {
     const saSession = await getSASession()
 
+    // tema-antigo: o Super Admin fica com o visual escuro de sempre
     if (!saSession) {
-        return <>{children}</>
+        return <div className="tema-antigo">{children}</div>
     }
 
     const onboardingPendente = await prismaGlobal.tenant.count({
@@ -20,7 +21,7 @@ export default async function SuperAdminLayout({
     })
 
     return (
-        <div className="min-h-screen bg-[#0A0A0A] flex flex-col md:flex-row font-sans text-white">
+        <div className="tema-antigo min-h-screen bg-[#0A0A0A] flex flex-col md:flex-row font-sans text-white">
 
             {/* SIDEBAR */}
             <aside className="hidden md:flex w-64 bg-[#111111] border-r border-[#222] flex-col justify-between shrink-0 sticky top-0 h-dvh">

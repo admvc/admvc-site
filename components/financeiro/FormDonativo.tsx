@@ -62,7 +62,7 @@ export default function FormDonativo({ tenantSlug, fundos }: { tenantSlug: strin
                 <p className="text-gray-600 mb-6">Obrigado pela sua generosidade.</p>
 
                 <div className="bg-gray-50 rounded-xl p-6 max-w-sm mx-auto mb-8">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Referencia</p>
+                    <p className="text-xs font-semibold text-gray-500 mb-2">Referencia</p>
                     <p className="text-lg font-mono font-bold text-gray-900 break-all">{referencia}</p>
                 </div>
 

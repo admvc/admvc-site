@@ -25,7 +25,7 @@ export default function BotaoCancelarReserva({ reservaId }: { reservaId: number 
         <button
             onClick={handleCancelar}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-bg border border-soft text-muted py-3 rounded-xl font-black text-[9px] uppercase tracking-widest hover:border-red-500/30 hover:text-red-400 transition-all active:scale-95 disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 bg-bg border border-soft text-muted py-3 rounded-xl font-bold text-[13px] uppercase tracking-wide hover:border-red-500/30 hover:text-red-400 transition-all active:scale-95 disabled:opacity-50"
         >
             {loading ? <Loader2 size={12} className="animate-spin" /> : <X size={12} />}
             {loading ? 'A cancelar...' : 'Cancelar Reserva'}

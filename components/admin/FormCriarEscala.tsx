@@ -83,7 +83,7 @@ export default function FormCriarEscala({ departamento, eventos, onSucesso }: Fo
 
             {/* SELEÇÃO DE EVENTO */}
             <div className="space-y-2">
-                <label className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-white/50 ml-1">
+                <label className="flex items-center gap-2 text-[13px] font-bold uppercase tracking-wide text-white/50 ml-1">
                     <CalendarDays size={12} /> Data do Evento
                 </label>
                 <select name="eventoId" required className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-xs font-bold text-white outline-none focus:border-figueira appearance-none cursor-pointer">
@@ -98,7 +98,7 @@ export default function FormCriarEscala({ departamento, eventos, onSucesso }: Fo
 
             {/* SELEÇÃO DE VOLUNTÁRIO */}
             <div className="space-y-2">
-                <label className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-white/50 ml-1">
+                <label className="flex items-center gap-2 text-[13px] font-bold uppercase tracking-wide text-white/50 ml-1">
                     <User size={12} /> Voluntário
                 </label>
                 <select
@@ -118,7 +118,7 @@ export default function FormCriarEscala({ departamento, eventos, onSucesso }: Fo
             <div className="grid grid-cols-2 gap-4">
                 {/* SELEÇÃO DE FUNÇÃO CONTEXTUAL */}
                 <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-white/50 ml-1">
+                    <label className="flex items-center gap-2 text-[13px] font-bold uppercase tracking-wide text-white/50 ml-1">
                         <Zap size={12} /> Função
                     </label>
                     <select
@@ -135,7 +135,7 @@ export default function FormCriarEscala({ departamento, eventos, onSucesso }: Fo
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/50 ml-1">Horário</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-white/50 ml-1">Horário</label>
                     <input name="horario" type="text" defaultValue="19:30" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-xs font-bold text-white outline-none focus:border-figueira" />
                 </div>
             </div>

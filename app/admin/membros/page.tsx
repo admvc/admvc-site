@@ -54,7 +54,7 @@ export default async function ListaMembrosAdmin({ searchParams }: { searchParams
             <Breadcrumbs items={[{ label: 'Membros' }]} />
             {semQr > 0 && (
                 <div className="bg-bg2 border border-soft rounded-2xl p-4 flex items-center justify-between">
-                    <p className="text-[10px] font-bold text-muted">
+                    <p className="text-[14px] font-bold text-muted">
                         {semQr} membro{semQr !== 1 ? 's' : ''} sem QR Code
                     </p>
                     <BotaoGerarQrCodes />

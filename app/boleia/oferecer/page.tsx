@@ -35,7 +35,7 @@ export default async function OferecerBoleiaPage() {
 
             {/* HEADER */}
             <div className="space-y-4">
-                <Link href="/boleia" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted hover:text-fg transition-colors">
+                <Link href="/boleia" className="inline-flex items-center gap-2 text-[14px] font-bold uppercase tracking-wide text-muted hover:text-fg transition-colors">
                     <ArrowLeft size={14} /> Voltar
                 </Link>
 
@@ -44,10 +44,10 @@ export default async function OferecerBoleiaPage() {
                         <Car size={24} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                        <h1 className="text-2xl font-bold text-fg leading-none">
                             Oferecer Boleia
                         </h1>
-                        <p className="text-[10px] font-bold text-muted uppercase tracking-widest mt-1">
+                        <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-1">
                             Partilhe lugar no seu carro
                         </p>
                     </div>

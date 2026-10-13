@@ -32,7 +32,7 @@ export default function BotaoAutoReconciliar({ contaId }: { contaId: number }) {
             <button
                 onClick={handleClick}
                 disabled={loading}
-                className="h-11 px-5 bg-purple-500/10 text-purple-400 hover:bg-purple-500 hover:text-white rounded-xl flex items-center gap-2 transition-all active:scale-95 text-[9px] font-black uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-11 px-5 bg-purple-500/10 text-purple-400 hover:bg-purple-500 hover:text-white rounded-xl flex items-center gap-2 transition-all active:scale-95 text-[13px] font-bold uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {loading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
                 {loading ? 'A reconciliar...' : 'Auto-Reconciliar'}

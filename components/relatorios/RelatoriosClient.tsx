@@ -168,7 +168,7 @@ export default function RelatoriosClient({ membros }: { membros: any[] }) {
 
             {/* HEADER */}
             <header className="space-y-1">
-                <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Relatorios</h1>
+                <h1 className="text-3xl font-bold text-fg">Relatorios</h1>
                 <p className="text-xs text-muted">{membros.length} membros activos. Selecione um relatorio.</p>
             </header>
 
@@ -185,7 +185,7 @@ export default function RelatoriosClient({ membros }: { membros: any[] }) {
                             <div className="text-muted group-hover:text-figueira group-hover:-translate-y-1 transition-all duration-300">
                                 {btn.icon}
                             </div>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-fg leading-tight">
+                            <span className="text-[13px] font-bold uppercase tracking-wide text-fg leading-tight">
                                 {btn.label}
                             </span>
                         </button>
@@ -197,7 +197,7 @@ export default function RelatoriosClient({ membros }: { membros: any[] }) {
                         <div className="text-muted group-hover:text-figueira group-hover:-translate-y-1 transition-all duration-300">
                             <Calendar size={20} />
                         </div>
-                        <span className="text-[9px] font-black uppercase tracking-widest text-fg leading-tight">
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-fg leading-tight">
                             Escalas / Membro
                         </span>
                     </Link>
@@ -212,10 +212,10 @@ export default function RelatoriosClient({ membros }: { membros: any[] }) {
 
                         <div className="p-8 md:p-10 border-b border-soft flex justify-between items-center bg-bg2 relative shrink-0">
                             <div className="space-y-1">
-                                <span className="text-figueira font-black text-[9px] uppercase tracking-[0.3em] flex items-center gap-2">
+                                <span className="text-figueira font-bold text-[13px] uppercase tracking-wide flex items-center gap-2">
                                     <BarChart3 size={12} /> Visualizador de Dados
                                 </span>
-                                <h3 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter text-fg flex items-center gap-3">
+                                <h3 className="text-2xl md:text-3xl font-bold text-fg flex items-center gap-3">
                                     {relatorioAtual?.icon} {relatorioAtual?.label}
                                 </h3>
                             </div>
@@ -238,15 +238,15 @@ export default function RelatoriosClient({ membros }: { membros: any[] }) {
                                         {/* CABEÇALHO DA BARRA (CLICÁVEL) */}
                                         <div
                                             onClick={() => setLinhaExpandida(isExpanded ? null : index)}
-                                            className="flex justify-between items-end text-[10px] font-black uppercase tracking-widest text-fg cursor-pointer hover:text-figueira transition-colors select-none"
+                                            className="flex justify-between items-end text-[14px] font-bold uppercase tracking-wide text-fg cursor-pointer hover:text-figueira transition-colors select-none"
                                         >
                                             <span className="truncate pr-4 flex items-center gap-2">
                                                 {item.label}
                                                 <ChevronDown size={12} className={`text-muted transition-transform duration-300 ${isExpanded ? 'rotate-180 text-figueira' : ''}`} />
                                             </span>
                                             <div className="flex items-center gap-2 shrink-0">
-                                                <span className="text-lg italic leading-none">{item.valor}</span>
-                                                <span className="bg-soft text-muted px-2 py-0.5 rounded-md text-[8px] font-bold">
+                                                <span className="text-lg leading-none">{item.valor}</span>
+                                                <span className="bg-soft text-muted px-2 py-0.5 rounded-md text-[13px] font-bold">
                                                     {percentagem}%
                                                 </span>
                                             </div>
@@ -266,17 +266,17 @@ export default function RelatoriosClient({ membros }: { membros: any[] }) {
                                                 <div className="bg-bg2 border border-soft rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 shadow-inner max-h-48 overflow-y-auto custom-scrollbar">
                                                     {item.detalhes.map((m: any) => (
                                                         <div key={m.id} className="flex items-center justify-between border-b border-soft/50 last:border-0 pb-2 last:pb-0">
-                                                            <span className="text-[10px] font-bold text-fg uppercase truncate pr-2">
+                                                            <span className="text-[14px] font-bold text-fg uppercase truncate pr-2">
                                                                 {m.first_name} {m.last_name}
                                                             </span>
 
                                                             {/* Se for relatório de aniversários, mostra o DIA */}
                                                             {relatorioAtivo === 'aniversarios' && m.birthdate ? (
-                                                                <span className="shrink-0 text-[9px] font-black text-figueira tracking-widest bg-figueira/10 px-2 py-0.5 rounded border border-figueira/20">
+                                                                <span className="shrink-0 text-[13px] font-bold text-figueira bg-figueira/10 px-2 py-0.5 rounded border border-figueira/20">
                                                                     Dia {new Date(m.birthdate).getDate().toString().padStart(2, '0')}
                                                                 </span>
                                                             ) : (
-                                                                <span className="shrink-0 text-[8px] font-bold text-muted uppercase tracking-widest">
+                                                                <span className="shrink-0 text-[13px] font-bold text-muted uppercase tracking-wide">
                                                                     ID #{m.id}
                                                                 </span>
                                                             )}
@@ -293,8 +293,8 @@ export default function RelatoriosClient({ membros }: { membros: any[] }) {
                                     <div className="w-16 h-16 bg-soft rounded-3xl flex items-center justify-center text-muted mx-auto mb-4">
                                         <BarChart3 size={24} />
                                     </div>
-                                    <h4 className="text-xl font-black uppercase italic tracking-tighter text-fg">Sem Dados</h4>
-                                    <p className="text-[10px] font-bold text-muted uppercase tracking-widest mt-2">
+                                    <h4 className="text-xl font-bold text-fg">Sem Dados</h4>
+                                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-2">
                                         Não existem registos suficientes para gerar este gráfico.
                                     </p>
                                 </div>
@@ -302,7 +302,7 @@ export default function RelatoriosClient({ membros }: { membros: any[] }) {
                         </div>
 
                         <div className="p-6 bg-bg2 border-t border-soft text-center shrink-0">
-                            <p className="text-[9px] font-bold text-muted uppercase tracking-widest">
+                            <p className="text-[13px] font-bold text-muted uppercase tracking-wide">
                                 Dica: Clique no título da barra para ver a lista de nomes.
                             </p>
                         </div>

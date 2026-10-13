@@ -49,12 +49,12 @@ export default function ModalRelatorioEscalas({ membroId, isMenuItem }: { membro
         <>
             {isMenuItem ? (
                 <button onClick={() => setIsOpen(true)}
-                    className="text-[10px] font-bold uppercase tracking-widest text-fg hover:bg-soft px-3 py-2.5 rounded-lg transition-all flex items-center gap-3 w-full text-left">
+                    className="text-[14px] font-bold uppercase tracking-wide text-fg hover:bg-soft px-3 py-2.5 rounded-lg transition-all flex items-center gap-3 w-full text-left">
                     <CalendarSearch size={13} className="text-blue-500" /> Relatorio Escalas
                 </button>
             ) : (
                 <button onClick={() => setIsOpen(true)}
-                    className="bg-bg text-muted border border-soft hover:border-figueira hover:text-figueira transition-all text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-2 shrink-0">
+                    className="bg-bg text-muted border border-soft hover:border-figueira hover:text-figueira transition-all text-[13px] font-bold uppercase tracking-wide px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-2 shrink-0">
                     <CalendarSearch size={14} /> Ver Relatorio
                 </button>
             )}
@@ -76,10 +76,10 @@ export default function ModalRelatorioEscalas({ membroId, isMenuItem }: { membro
                                     <CalendarSearch size={18} />
                                 </div>
                                 <div>
-                                    <h2 className="text-sm font-black uppercase italic tracking-tighter text-fg leading-none">
+                                    <h2 className="text-sm font-bold text-fg leading-none">
                                         Relatorio de Escalas
                                     </h2>
-                                    <p className="text-[9px] font-bold text-muted uppercase tracking-widest mt-0.5">
+                                    <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-0.5">
                                         Historico e programacao
                                     </p>
                                 </div>
@@ -92,7 +92,7 @@ export default function ModalRelatorioEscalas({ membroId, isMenuItem }: { membro
                         {/* FILTROS */}
                         <div className="flex gap-3 p-4 border-b border-soft shrink-0">
                             <div className="flex-1 space-y-1">
-                                <label className="text-[8px] font-black uppercase text-muted tracking-widest">Mes</label>
+                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide">Mes</label>
                                 <select value={mes} onChange={(e) => setMes(Number(e.target.value))}
                                     className="w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-xs font-bold text-fg focus:border-figueira outline-none">
                                     {mesesNome.map((m, index) => (
@@ -101,7 +101,7 @@ export default function ModalRelatorioEscalas({ membroId, isMenuItem }: { membro
                                 </select>
                             </div>
                             <div className="w-24 space-y-1">
-                                <label className="text-[8px] font-black uppercase text-muted tracking-widest">Ano</label>
+                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide">Ano</label>
                                 <select value={ano} onChange={(e) => setAno(Number(e.target.value))}
                                     className="w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-xs font-bold text-fg focus:border-figueira outline-none">
                                     {anosOpcoes.map(a => (
@@ -116,7 +116,7 @@ export default function ModalRelatorioEscalas({ membroId, isMenuItem }: { membro
                             {loading ? (
                                 <div className="flex items-center justify-center py-12 gap-2">
                                     <Loader2 size={18} className="animate-spin text-figueira" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-muted">A carregar...</span>
+                                    <span className="text-[14px] font-bold uppercase tracking-wide text-muted">A carregar...</span>
                                 </div>
                             ) : escalas.length > 0 ? (
                                 escalas.map((esc) => {
@@ -126,18 +126,18 @@ export default function ModalRelatorioEscalas({ membroId, isMenuItem }: { membro
                                         <div key={esc.id} className={`flex items-center gap-3 p-3 rounded-2xl border transition-all ${jaPassou ? 'bg-bg2/50 border-soft/50 opacity-60' : 'bg-bg2 border-soft hover:border-figueira/30'}`}>
                                             {/* Data */}
                                             <div className={`w-11 h-11 rounded-xl flex flex-col items-center justify-center shrink-0 ${jaPassou ? 'bg-soft text-muted' : 'bg-fg text-bg'}`}>
-                                                <span className="text-[7px] font-black uppercase opacity-70">{dataEvento.toLocaleDateString('pt-PT', { month: 'short' })}</span>
-                                                <span className="text-base font-black italic leading-none">{dataEvento.toLocaleDateString('pt-PT', { day: '2-digit' })}</span>
+                                                <span className="text-[13px] font-bold uppercase opacity-70">{dataEvento.toLocaleDateString('pt-PT', { month: 'short' })}</span>
+                                                <span className="text-base font-bold leading-none">{dataEvento.toLocaleDateString('pt-PT', { day: '2-digit' })}</span>
                                             </div>
 
                                             {/* Info */}
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-[11px] font-black uppercase text-fg truncate leading-tight">{esc.evento.nome}</p>
+                                                <p className="text-[14px] font-bold uppercase text-fg truncate leading-tight">{esc.evento.nome}</p>
                                                 <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                                    <span className="text-[8px] font-bold bg-figueira/10 text-figueira px-1.5 py-0.5 rounded border border-figueira/20 uppercase tracking-widest">
+                                                    <span className="text-[13px] font-bold bg-figueira/10 text-figueira px-1.5 py-0.5 rounded border border-figueira/20 uppercase tracking-wide">
                                                         {esc.departamento.nome}
                                                     </span>
-                                                    <span className="text-[8px] font-bold bg-bg border border-soft px-1.5 py-0.5 rounded text-muted uppercase tracking-widest flex items-center gap-1">
+                                                    <span className="text-[13px] font-bold bg-bg border border-soft px-1.5 py-0.5 rounded text-muted uppercase tracking-wide flex items-center gap-1">
                                                         <ShieldCheck size={8} /> {esc.funcao}
                                                     </span>
                                                 </div>
@@ -159,7 +159,7 @@ export default function ModalRelatorioEscalas({ membroId, isMenuItem }: { membro
                             ) : (
                                 <div className="text-center py-12">
                                     <CalendarSearch size={28} className="mx-auto text-muted/30 mb-3" />
-                                    <p className="text-[10px] font-black text-muted uppercase tracking-widest">Nenhuma escala neste periodo.</p>
+                                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Nenhuma escala neste periodo.</p>
                                 </div>
                             )}
                         </div>

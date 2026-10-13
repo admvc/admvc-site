@@ -50,8 +50,8 @@ export default function ModalAgendaPastoral({ aberto, onClose }: Props) {
                             <Calendar size={18} />
                         </div>
                         <div>
-                            <h3 className="text-sm font-black uppercase italic tracking-tighter text-fg">Agenda Pastoral</h3>
-                            <p className="text-[8px] font-bold text-muted uppercase tracking-widest">Marcar reuniao</p>
+                            <h3 className="text-sm font-bold text-fg">Agenda Pastoral</h3>
+                            <p className="text-[13px] font-bold text-muted uppercase tracking-wide">Marcar reuniao</p>
                         </div>
                     </div>
                     <button
@@ -73,7 +73,7 @@ export default function ModalAgendaPastoral({ aberto, onClose }: Props) {
                     {erro && (
                         <div className="text-center py-8 space-y-2">
                             <Calendar size={28} className="mx-auto text-muted/20" />
-                            <p className="text-xs font-black uppercase tracking-widest text-muted">{erro}</p>
+                            <p className="text-xs font-bold text-muted">{erro}</p>
                         </div>
                     )}
 

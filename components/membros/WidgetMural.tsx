@@ -89,7 +89,7 @@ export default function WidgetMural({ avisos = [], alertasAcolhimento = [] }: Wi
 
                     {/* CABEÇALHO DO WIDGET */}
                     <div className="bg-bg border-b border-soft p-5 flex items-center justify-between">
-                        <h4 className="text-xs font-black uppercase tracking-widest text-fg flex items-center gap-2">
+                        <h4 className="text-xs font-bold text-fg flex items-center gap-2">
                             <MessageSquare size={16} className="text-figueira" />
                             Central de Avisos
                         </h4>
@@ -104,7 +104,7 @@ export default function WidgetMural({ avisos = [], alertasAcolhimento = [] }: Wi
                         {/* SECÇÃO: ALERTAS DE ACOLHIMENTO */}
                         {alertasAcolhimento.length > 0 && (
                             <div className="space-y-2">
-                                <h5 className="text-[9px] font-black uppercase tracking-widest text-emerald-500 px-2 pt-2 flex items-center gap-1.5">
+                                <h5 className="text-[13px] font-bold uppercase tracking-wide text-emerald-500 px-2 pt-2 flex items-center gap-1.5">
                                     <Users size={12} /> Equipa de Acolhimento
                                 </h5>
                                 {alertasAcolhimento.map((alerta) => (
@@ -115,15 +115,15 @@ export default function WidgetMural({ avisos = [], alertasAcolhimento = [] }: Wi
                                                     <Heart size={14} className="text-emerald-600" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[11px] font-black uppercase tracking-wider text-fg leading-none group-hover:text-emerald-700 transition-colors">
+                                                    <p className="text-[14px] font-bold uppercase tracking-wide text-fg leading-none group-hover:text-emerald-700 transition-colors">
                                                         {alerta.nome}
                                                     </p>
-                                                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted mt-1">
+                                                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted mt-1">
                                                         {formatDate(alerta.data_ultima_visita)}
                                                     </p>
                                                 </div>
                                             </div>
-                                            <span className={`shrink-0 px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest ${alerta.status === 'NOVO' ? 'bg-emerald-500 text-white shadow-sm' : 'bg-soft text-muted'}`}>
+                                            <span className={`shrink-0 px-2 py-1 rounded-md text-[13px] font-bold uppercase tracking-wide ${alerta.status === 'NOVO' ? 'bg-emerald-500 text-white shadow-sm' : 'bg-soft text-muted'}`}>
                                                 {alerta.status}
                                             </span>
                                         </div>
@@ -140,7 +140,7 @@ export default function WidgetMural({ avisos = [], alertasAcolhimento = [] }: Wi
                         {/* SECÇÃO: AVISOS DO MURAL GERAL */}
                         {avisos.length > 0 && (
                             <div className="space-y-2">
-                                <h5 className="text-[9px] font-black uppercase tracking-widest text-figueira px-2 pt-2 flex items-center gap-1.5">
+                                <h5 className="text-[13px] font-bold uppercase tracking-wide text-figueira px-2 pt-2 flex items-center gap-1.5">
                                     <MessageSquare size={12} /> Mural da Igreja
                                 </h5>
                                 {avisos.map((msg) => (
@@ -155,23 +155,23 @@ export default function WidgetMural({ avisos = [], alertasAcolhimento = [] }: Wi
                                                     </div>
                                                 )}
                                                 <div>
-                                                    <p className="text-[11px] font-black uppercase tracking-wider text-fg leading-none">
+                                                    <p className="text-[14px] font-bold uppercase tracking-wide text-fg leading-none">
                                                         {msg.autor?.first_name} {msg.autor?.last_name}
                                                     </p>
-                                                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted mt-1">
+                                                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted mt-1">
                                                         {formatDate(msg.createdAt)}
                                                     </p>
                                                 </div>
                                             </div>
 
                                             {/* Tag do Departamento/Grupo */}
-                                            <span className="shrink-0 bg-figueira/10 text-figueira px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest flex items-center gap-1 border border-figueira/20 max-w-[100px] truncate">
+                                            <span className="shrink-0 bg-figueira/10 text-figueira px-2 py-1 rounded-md text-[13px] font-bold uppercase tracking-wide flex items-center gap-1 border border-figueira/20 max-w-[100px] truncate">
                                                 <Hash size={10} className="shrink-0" />
                                                 <span className="truncate">{msg.departamento?.nome || msg.grupo?.nome || 'Geral'}</span>
                                             </span>
                                         </div>
                                         {/* 🔄 CORREÇÃO: Usar msg.mensagem em vez de msg.texto */}
-                                        <p className="text-[11px] text-fg font-medium line-clamp-3 leading-relaxed opacity-90">
+                                        <p className="text-[14px] text-fg font-medium line-clamp-3 leading-relaxed opacity-90">
                                             {msg.mensagem || msg.texto}
                                         </p>
                                     </Link>
@@ -182,7 +182,7 @@ export default function WidgetMural({ avisos = [], alertasAcolhimento = [] }: Wi
                         {/* BOTÃO PARA VER TUDO DO MURAL */}
                         {avisos.length > 0 && (
                             <div className="pt-2 px-2 pb-2">
-                                <Link href="/membros/mural" className="flex items-center justify-center gap-2 w-full py-3 bg-soft/50 text-muted rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-figueira hover:text-white transition-all">
+                                <Link href="/membros/mural" className="flex items-center justify-center gap-2 w-full py-3 bg-soft/50 text-muted rounded-xl text-[14px] font-bold uppercase tracking-wide hover:bg-figueira hover:text-white transition-all">
                                     Ver Histórico do Mural <ArrowRight size={14} />
                                 </Link>
                             </div>

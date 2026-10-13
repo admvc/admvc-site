@@ -26,7 +26,7 @@ export default function BotaoGerarQrCodes() {
 
     if (resultado) {
         return (
-            <span className="inline-flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-emerald-500">
+            <span className="inline-flex items-center gap-2 text-[13px] font-bold uppercase tracking-wide text-emerald-500">
                 <CheckCircle size={12} /> {resultado.count} QR codes gerados
             </span>
         )
@@ -36,7 +36,7 @@ export default function BotaoGerarQrCodes() {
         <button
             onClick={handleGerar}
             disabled={loading}
-            className="inline-flex items-center gap-2 bg-bg border border-soft text-fg px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:border-figueira/30 transition-all active:scale-95 disabled:opacity-50"
+            className="inline-flex items-center gap-2 bg-bg border border-soft text-fg px-4 py-2 rounded-xl text-[13px] font-bold uppercase tracking-wide hover:border-figueira/30 transition-all active:scale-95 disabled:opacity-50"
         >
             {loading ? <Loader2 size={12} className="animate-spin" /> : <QrCode size={12} />}
             {loading ? 'A gerar...' : 'Gerar QR para todos'}

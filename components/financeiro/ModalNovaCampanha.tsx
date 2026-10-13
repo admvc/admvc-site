@@ -96,10 +96,10 @@ export default function ModalNovaCampanha({ membros, tipoPredefinido = 'CARNE', 
                     {isRifa ? <Ticket size={20} /> : <Target size={20} />}
                 </div>
                 <div>
-                    <h5 className="text-xs font-black uppercase text-fg tracking-widest leading-tight">
+                    <h5 className="text-xs font-bold text-fg leading-tight">
                         {isRifa ? 'Nova Rifa' : 'Carnê'}
                     </h5>
-                    <p className="text-[9px] text-muted font-bold mt-1 uppercase tracking-widest">
+                    <p className="text-[13px] text-muted font-bold mt-1 uppercase tracking-wide">
                         {isRifa ? 'Sorteios' : 'Criar ou Adicionar'}
                     </p>
                 </div>
@@ -111,11 +111,11 @@ export default function ModalNovaCampanha({ membros, tipoPredefinido = 'CARNE', 
 
                         <div className="p-8 border-b border-soft flex justify-between items-center bg-bg2 relative">
                             <div className="space-y-1">
-                                <span className="text-figueira font-black text-[9px] uppercase tracking-[0.3em] flex items-center gap-2">
+                                <span className="text-figueira font-bold text-[13px] uppercase tracking-wide flex items-center gap-2">
                                     {isRifa ? <Ticket size={12} /> : <Target size={12} />}
                                     {isRifa ? 'Sorteio' : 'Carnês de Oferta'}
                                 </span>
-                                <h3 className="text-3xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                                <h3 className="text-3xl font-bold text-fg leading-none">
                                     {isRifa ? 'Configurar Rifa.' : 'Gestão de Carnês.'}
                                 </h3>
                             </div>
@@ -129,13 +129,13 @@ export default function ModalNovaCampanha({ membros, tipoPredefinido = 'CARNE', 
                             <div className="flex border-b border-soft bg-bg2">
                                 <button
                                     onClick={() => setModo('NOVA')}
-                                    className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${modo === 'NOVA' ? 'bg-bg text-figueira border-t-2 border-figueira' : 'text-muted hover:bg-soft/50'}`}
+                                    className={`flex-1 py-4 text-[14px] font-bold uppercase tracking-wide transition-all ${modo === 'NOVA' ? 'bg-bg text-figueira border-t-2 border-figueira' : 'text-muted hover:bg-soft/50'}`}
                                 >
                                     ✨ Criar Nova Campanha
                                 </button>
                                 <button
                                     onClick={() => setModo('EXISTENTE')}
-                                    className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${modo === 'EXISTENTE' ? 'bg-bg text-figueira border-t-2 border-figueira' : 'text-muted hover:bg-soft/50'}`}
+                                    className={`flex-1 py-4 text-[14px] font-bold uppercase tracking-wide transition-all ${modo === 'EXISTENTE' ? 'bg-bg text-figueira border-t-2 border-figueira' : 'text-muted hover:bg-soft/50'}`}
                                 >
                                     <Plus size={14} className="inline mr-1 -mt-0.5" /> Adicionar a Existente
                                 </button>
@@ -148,33 +148,33 @@ export default function ModalNovaCampanha({ membros, tipoPredefinido = 'CARNE', 
                             {(modo === 'NOVA' || isRifa) && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in duration-300">
                                     <div className="md:col-span-2 space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-muted ml-2 tracking-[0.2em]">
+                                        <label className="text-[14px] font-bold uppercase text-muted ml-2 tracking-wide">
                                             {isRifa ? 'Nome da Rifa' : 'Nome da Nova Campanha'}
                                         </label>
-                                        <input name="nome" required placeholder={isRifa ? "Ex: Rifa de Páscoa" : "Ex: Cadeiras Novas"} className="w-full bg-bg2 border-2 border-soft px-5 py-4 rounded-2xl text-xs font-black text-fg focus:border-figueira outline-none transition-colors" />
+                                        <input name="nome" required placeholder={isRifa ? "Ex: Rifa de Páscoa" : "Ex: Cadeiras Novas"} className="w-full bg-bg2 border-2 border-soft px-5 py-4 rounded-2xl text-xs font-bold text-fg focus:border-figueira outline-none transition-colors" />
                                     </div>
 
                                     {isRifa && (
                                         <div className="md:col-span-2 space-y-2">
-                                            <label className="text-[10px] font-black uppercase text-muted ml-2 tracking-[0.2em] flex items-center gap-1"><Gift size={12} /> Prémio a Sortear</label>
-                                            <input name="premio" required placeholder="Ex: Cabaz de Chocolate" className="w-full bg-bg2 border-2 border-soft px-5 py-4 rounded-2xl text-xs font-black text-fg focus:border-figueira outline-none transition-colors" />
+                                            <label className="text-[14px] font-bold uppercase text-muted ml-2 tracking-wide flex items-center gap-1"><Gift size={12} /> Prémio a Sortear</label>
+                                            <input name="premio" required placeholder="Ex: Cabaz de Chocolate" className="w-full bg-bg2 border-2 border-soft px-5 py-4 rounded-2xl text-xs font-bold text-fg focus:border-figueira outline-none transition-colors" />
                                         </div>
                                     )}
 
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-muted ml-2 tracking-[0.2em] flex items-center gap-1"><Euro size={12} /> {isRifa ? 'Valor por Número' : 'Valor Mensal'}</label>
-                                        <input name={isRifa ? "valor_numero" : "valor_mensal"} type="number" step="0.01" required placeholder="Ex: 5.00" className="w-full bg-bg2 border-2 border-soft px-5 py-4 rounded-2xl text-xs font-black text-fg focus:border-figueira outline-none transition-colors" />
+                                        <label className="text-[14px] font-bold uppercase text-muted ml-2 tracking-wide flex items-center gap-1"><Euro size={12} /> {isRifa ? 'Valor por Número' : 'Valor Mensal'}</label>
+                                        <input name={isRifa ? "valor_numero" : "valor_mensal"} type="number" step="0.01" required placeholder="Ex: 5.00" className="w-full bg-bg2 border-2 border-soft px-5 py-4 rounded-2xl text-xs font-bold text-fg focus:border-figueira outline-none transition-colors" />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-muted ml-2 tracking-[0.2em] flex items-center gap-1"><Hash size={12} /> {isRifa ? 'Total de Números' : 'Total de Parcelas'}</label>
-                                        <input name={isRifa ? "total_numeros" : "parcelas_total"} type="number" required defaultValue={isRifa ? 100 : 10} min="1" className="w-full bg-bg2 border-2 border-soft px-5 py-4 rounded-2xl text-xs font-black text-fg focus:border-figueira outline-none transition-colors" />
+                                        <label className="text-[14px] font-bold uppercase text-muted ml-2 tracking-wide flex items-center gap-1"><Hash size={12} /> {isRifa ? 'Total de Números' : 'Total de Parcelas'}</label>
+                                        <input name={isRifa ? "total_numeros" : "parcelas_total"} type="number" required defaultValue={isRifa ? 100 : 10} min="1" className="w-full bg-bg2 border-2 border-soft px-5 py-4 rounded-2xl text-xs font-bold text-fg focus:border-figueira outline-none transition-colors" />
                                     </div>
 
                                     {!isRifa && (
                                         <div className="md:col-span-2 space-y-2">
-                                            <label className="text-[10px] font-black uppercase text-muted ml-2 tracking-[0.2em] flex items-center gap-1"><CalendarDays size={12} /> Dia de Vencimento</label>
-                                            <input name="data_pagamento" type="number" required min="1" max="31" defaultValue="10" className="w-full bg-bg2 border-2 border-soft px-5 py-4 rounded-2xl text-xs font-black text-fg focus:border-figueira outline-none transition-colors" />
+                                            <label className="text-[14px] font-bold uppercase text-muted ml-2 tracking-wide flex items-center gap-1"><CalendarDays size={12} /> Dia de Vencimento</label>
+                                            <input name="data_pagamento" type="number" required min="1" max="31" defaultValue="10" className="w-full bg-bg2 border-2 border-soft px-5 py-4 rounded-2xl text-xs font-bold text-fg focus:border-figueira outline-none transition-colors" />
                                         </div>
                                     )}
                                 </div>
@@ -184,13 +184,13 @@ export default function ModalNovaCampanha({ membros, tipoPredefinido = 'CARNE', 
                             {!isRifa && modo === 'EXISTENTE' && (
                                 <div className="space-y-4 animate-in fade-in duration-300">
                                     <div className="space-y-2 bg-figueira/5 p-6 rounded-2xl border border-figueira/20">
-                                        <label className="text-[10px] font-black uppercase text-figueira ml-2 tracking-[0.2em]">
+                                        <label className="text-[14px] font-bold uppercase text-figueira ml-2 tracking-wide">
                                             Selecione a Campanha
                                         </label>
                                         <select
                                             value={campanhaSelecionadaNome}
                                             onChange={(e) => setCampanhaSelecionadaNome(e.target.value)}
-                                            className="w-full bg-white border-2 border-figueira/30 px-5 py-4 rounded-2xl text-sm font-black text-fg focus:border-figueira outline-none transition-colors cursor-pointer"
+                                            className="w-full bg-white border-2 border-figueira/30 px-5 py-4 rounded-2xl text-sm font-bold text-fg focus:border-figueira outline-none transition-colors cursor-pointer"
                                             required
                                         >
                                             <option value="">-- Escolha da lista --</option>
@@ -217,7 +217,7 @@ export default function ModalNovaCampanha({ membros, tipoPredefinido = 'CARNE', 
                                 <div className="space-y-4 pt-4 border-t border-soft animate-in fade-in duration-300">
 
                                     <div className="flex items-center justify-between mb-4">
-                                        <label className="text-[10px] font-black uppercase text-fg tracking-[0.2em] flex items-center gap-2">
+                                        <label className="text-[14px] font-bold uppercase text-fg tracking-wide flex items-center gap-2">
                                             <Users size={14} className="text-figueira" /> {modo === 'NOVA' ? 'Membros Aderentes' : 'Novos Membros a Adicionar'}
                                         </label>
                                     </div>
@@ -226,7 +226,7 @@ export default function ModalNovaCampanha({ membros, tipoPredefinido = 'CARNE', 
                                     {membrosEscolhidosDetalhados.length > 0 && (
                                         <div className="flex flex-wrap gap-2 p-4 bg-figueira/5 border border-figueira/20 rounded-2xl min-h-[60px] max-h-40 overflow-y-auto">
                                             {membrosEscolhidosDetalhados.map(m => (
-                                                <div key={m.id} className="bg-white border border-figueira/30 text-figueira text-[10px] font-black uppercase px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm animate-in zoom-in duration-200">
+                                                <div key={m.id} className="bg-white border border-figueira/30 text-figueira text-[14px] font-bold uppercase px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm animate-in zoom-in duration-200">
                                                     {m.first_name} {m.last_name}
                                                     <button type="button" onClick={() => removerMembro(m.id)} className="hover:bg-red-500 hover:text-white rounded-full p-0.5 transition-colors">
                                                         <X size={12} strokeWidth={3} />
@@ -245,7 +245,7 @@ export default function ModalNovaCampanha({ membros, tipoPredefinido = 'CARNE', 
                                                 placeholder="Pesquisar para adicionar à campanha..."
                                                 value={busca}
                                                 onChange={(e) => setBusca(e.target.value)}
-                                                className="w-full bg-bg2 border-2 border-soft p-4 pl-10 rounded-2xl text-xs font-black text-fg focus:border-figueira outline-none transition-colors"
+                                                className="w-full bg-bg2 border-2 border-soft p-4 pl-10 rounded-2xl text-xs font-bold text-fg focus:border-figueira outline-none transition-colors"
                                             />
                                         </div>
 
@@ -253,13 +253,13 @@ export default function ModalNovaCampanha({ membros, tipoPredefinido = 'CARNE', 
                                         {busca.length > 0 && (
                                             <div className="absolute top-full left-0 right-0 mt-2 max-h-48 overflow-y-auto bg-bg border-2 border-soft rounded-2xl shadow-xl z-10 flex flex-col p-2 space-y-1 animate-in slide-in-from-top-2">
                                                 {membrosDisponiveis.length === 0 ? (
-                                                    <p className="text-[10px] text-muted p-3 font-bold uppercase text-center">Nenhum membro disponível.</p>
+                                                    <p className="text-[14px] text-muted p-3 font-bold uppercase text-center">Nenhum membro disponível.</p>
                                                 ) : (
                                                     membrosDisponiveis.map((m) => (
                                                         <div
                                                             key={m.id}
                                                             onClick={() => adicionarMembro(m.id)}
-                                                            className="p-3 rounded-xl flex items-center justify-between cursor-pointer text-xs font-bold uppercase text-fg hover:bg-figueira/10 hover:text-figueira transition-colors"
+                                                            className="p-3 rounded-xl flex items-center justify-between cursor-pointer text-xs font-bold text-fg hover:bg-figueira/10 hover:text-figueira transition-colors"
                                                         >
                                                             {m.first_name} {m.last_name}
                                                             <UserPlus size={14} />
@@ -270,7 +270,7 @@ export default function ModalNovaCampanha({ membros, tipoPredefinido = 'CARNE', 
                                         )}
                                     </div>
 
-                                    <p className="text-[9px] text-muted font-bold uppercase tracking-widest text-right mt-2">
+                                    <p className="text-[13px] text-muted font-bold uppercase tracking-wide text-right mt-2">
                                         A adicionar: <span className="text-figueira">{membrosSelecionados.length}</span>
                                     </p>
                                 </div>
@@ -281,7 +281,7 @@ export default function ModalNovaCampanha({ membros, tipoPredefinido = 'CARNE', 
                                 <button
                                     type="submit"
                                     disabled={loading || (!isRifa && membrosSelecionados.length === 0)}
-                                    className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50"
+                                    className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50"
                                 >
                                     {loading ? <Loader2 className="animate-spin" size={16} /> : (isRifa ? <Ticket size={16} /> : <Target size={16} />)}
                                     {loading ? 'A Gravar...' : (isRifa ? 'Criar Grelha da Rifa' : (modo === 'NOVA' ? `Criar Campanha (${membrosSelecionados.length})` : `Adicionar ${membrosSelecionados.length} Membros`))}

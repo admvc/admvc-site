@@ -243,7 +243,7 @@ export default async function DashboardFinanceiro() {
 
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-30">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Tesouraria</h1>
+                    <h1 className="text-3xl font-bold text-fg">Tesouraria</h1>
                     <p className="text-xs text-muted">Gestao financeira da igreja.</p>
                 </div>
 
@@ -258,12 +258,12 @@ export default async function DashboardFinanceiro() {
                         <summary className="list-none cursor-pointer marker:hidden [&::-webkit-details-marker]:hidden">
                             <div className="h-11 px-4 bg-figueira text-white rounded-xl flex items-center gap-2 hover:bg-figueira/90 transition-all active:scale-95">
                                 <PlusCircle size={14} />
-                                <span className="text-[9px] font-black uppercase tracking-widest">Campanha</span>
+                                <span className="text-[13px] font-bold uppercase tracking-wide">Campanha</span>
                                 <ChevronDown size={12} className="opacity-50 group-open:rotate-180 transition-transform" />
                             </div>
                         </summary>
                         <div className="absolute right-0 top-full mt-2 w-60 bg-bg border border-soft p-2 rounded-[1.5rem] shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-col gap-1.5 z-50">
-                            <p className="text-[8px] text-muted font-black uppercase tracking-widest px-3 pt-2 pb-1.5 border-b border-soft/50">Criar Novo Objetivo</p>
+                            <p className="text-[13px] text-muted font-bold uppercase tracking-wide px-3 pt-2 pb-1.5 border-b border-soft/50">Criar Novo Objetivo</p>
                             <ModalNovaCampanha membros={membros} tipoPredefinido="CARNE" campanhasExistentes={campanhasAgrupadas} />
                             <ModalNovaCampanha membros={membros} tipoPredefinido="RIFA" />
                             <div className="border-t border-soft/50 mt-1 pt-1">
@@ -282,9 +282,9 @@ export default async function DashboardFinanceiro() {
                 <KpiCard label="Dizimistas" value={dizimistasIds.size} />
 
                 <div className="p-5 rounded-2xl border border-soft bg-bg2 flex flex-col justify-between gap-3">
-                    <p className="text-[8px] font-black uppercase tracking-widest text-muted">Privacidade</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Privacidade</p>
                     <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-bold text-muted leading-tight">Ocultar valores</span>
+                        <span className="text-[13px] font-bold text-muted leading-tight">Ocultar valores</span>
                         <BotaoPrivacidade />
                     </div>
                 </div>
@@ -305,13 +305,13 @@ export default async function DashboardFinanceiro() {
                                 {pendentesMBWay.map((l: any) => (
                                     <div key={l.id} className="flex items-center justify-between bg-bg border border-soft rounded-2xl px-4 py-3">
                                         <div>
-                                            <p className="text-[11px] font-black uppercase text-fg">
+                                            <p className="text-[14px] font-bold uppercase text-fg">
                                                 {l.objetivo.membro.first_name} {l.objetivo.membro.last_name}
                                             </p>
-                                            <p className="text-[9px] text-muted font-bold uppercase tracking-widest">{l.objetivo.nome}</p>
+                                            <p className="text-[13px] text-muted font-bold uppercase tracking-wide">{l.objetivo.nome}</p>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <span className="text-sm font-black text-fg">{euro(l.valor_pago)}</span>
+                                            <span className="text-sm font-bold text-fg">{euro(l.valor_pago)}</span>
                                             <BotaoConfirmarMBWay pendentes={[l]} />
                                         </div>
                                     </div>
@@ -332,16 +332,16 @@ export default async function DashboardFinanceiro() {
                                 {pedidosCantina.map((pedido: any) => (
                                     <div key={pedido.id} className="flex items-center justify-between bg-bg border border-soft rounded-2xl px-4 py-3">
                                         <div>
-                                            <p className="text-[11px] font-black uppercase text-fg">
+                                            <p className="text-[14px] font-bold uppercase text-fg">
                                                 {pedido.membro.first_name} {pedido.membro.last_name}
                                             </p>
                                             <div className="flex items-center gap-2 mt-0.5">
-                                                <span className="text-[8px] font-black uppercase tracking-widest text-muted">#{pedido.id}</span>
-                                                <span className="text-[8px] font-black uppercase tracking-widest text-figueira bg-figueira/10 px-1.5 py-0.5 rounded-md">{pedido.forma_pagamento}</span>
+                                                <span className="text-[13px] font-bold uppercase tracking-wide text-muted">#{pedido.id}</span>
+                                                <span className="text-[13px] font-bold uppercase tracking-wide text-figueira bg-figueira/10 px-1.5 py-0.5 rounded-md">{pedido.forma_pagamento}</span>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <span className="text-sm font-black text-fg">{euro(Number(pedido.valor))}</span>
+                                            <span className="text-sm font-bold text-fg">{euro(Number(pedido.valor))}</span>
                                             <BotaoAprovarCantina
                                                 pedidoId={pedido.id}
                                                 loyverseId={pedido.membro.loyverse_id}
@@ -397,8 +397,8 @@ export default async function DashboardFinanceiro() {
             <section className="space-y-4">
                 <div className="flex items-center gap-3 pb-2 border-b border-soft">
                     <Target size={16} className="text-figueira" />
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">Campanhas e Carnês</h2>
-                    <span className="text-[9px] font-black bg-bg2 border border-soft px-2.5 py-1 rounded-lg text-muted">{campanhasAgrupadas.length}</span>
+                    <h2 className="text-sm font-bold text-fg">Campanhas e Carnês</h2>
+                    <span className="text-[13px] font-bold bg-bg2 border border-soft px-2.5 py-1 rounded-lg text-muted">{campanhasAgrupadas.length}</span>
                 </div>
 
                 <div className="space-y-3">
@@ -419,8 +419,8 @@ export default async function DashboardFinanceiro() {
                                             {concluida ? <CheckCircle2 size={18} /> : <Layers size={18} />}
                                         </div>
                                         <div>
-                                            <h3 className="text-sm font-black uppercase tracking-tight text-fg leading-none">{campanha.nome}</h3>
-                                            <p className="text-[9px] text-muted font-bold uppercase tracking-widest mt-1 flex items-center gap-1">
+                                            <h3 className="text-sm font-bold text-fg leading-none">{campanha.nome}</h3>
+                                            <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-1 flex items-center gap-1">
                                                 <Users size={10} /> {campanha.objetivos.length} membros
                                             </p>
                                         </div>
@@ -428,18 +428,18 @@ export default async function DashboardFinanceiro() {
 
                                     <div className="flex items-center gap-6">
                                         <div className="text-right">
-                                            <p className="text-sm font-black text-fg">
+                                            <p className="text-sm font-bold text-fg">
                                                 {euro(campanha.totalPago)}
-                                                <span className="text-muted text-[10px] font-medium"> / {euro(campanha.metaTotal)}</span>
+                                                <span className="text-muted text-[14px] font-medium"> / {euro(campanha.metaTotal)}</span>
                                             </p>
                                             {campanha.valorPendente > 0 && (
-                                                <p className="text-[8px] font-black text-orange-500 mt-0.5">
+                                                <p className="text-[13px] font-bold text-orange-500 mt-0.5">
                                                     +{euro(campanha.valorPendente)} pendente
                                                 </p>
                                             )}
                                         </div>
                                         <div className="text-right hidden sm:block w-12">
-                                            <p className="text-lg font-black text-figueira italic">{pct.toFixed(0)}%</p>
+                                            <p className="text-lg font-bold text-figueira">{pct.toFixed(0)}%</p>
                                         </div>
                                         <ChevronDown size={15} className="text-muted group-open:rotate-180 transition-transform duration-200 shrink-0" />
                                     </div>
@@ -461,8 +461,8 @@ export default async function DashboardFinanceiro() {
                                                 </div>
                                                 <div className="flex justify-between items-start pt-1">
                                                     <div>
-                                                        <p className="text-[11px] font-black uppercase text-fg">{obj.membro.first_name} {obj.membro.last_name}</p>
-                                                        <p className="text-[8px] text-muted font-bold uppercase tracking-widest mt-0.5">
+                                                        <p className="text-[14px] font-bold uppercase text-fg">{obj.membro.first_name} {obj.membro.last_name}</p>
+                                                        <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-0.5">
                                                             {obj.parcelas_pagas || 0}/{obj.parcelas_total} parcelas
                                                         </p>
                                                     </div>
@@ -478,8 +478,8 @@ export default async function DashboardFinanceiro() {
                                                     }
                                                 </div>
                                                 <div className="flex justify-between items-center">
-                                                    <p className="text-xs font-black text-fg">{euro(totalInd)} <span className="text-[9px] text-muted font-medium">/ {euro(metaInd)}</span></p>
-                                                    <p className="text-[10px] font-black text-figueira">{percInd.toFixed(0)}%</p>
+                                                    <p className="text-xs font-bold text-fg">{euro(totalInd)} <span className="text-[13px] text-muted font-medium">/ {euro(metaInd)}</span></p>
+                                                    <p className="text-[14px] font-bold text-figueira">{percInd.toFixed(0)}%</p>
                                                 </div>
                                             </div>
                                         )
@@ -491,7 +491,7 @@ export default async function DashboardFinanceiro() {
 
                     {campanhasAgrupadas.length === 0 && (
                         <div className="py-12 text-center border-2 border-dashed border-soft rounded-2xl">
-                            <p className="text-[9px] font-black text-muted uppercase tracking-widest">Nenhuma campanha ativa.</p>
+                            <p className="text-[13px] font-bold text-muted uppercase tracking-wide">Nenhuma campanha ativa.</p>
                         </div>
                     )}
                 </div>
@@ -502,7 +502,7 @@ export default async function DashboardFinanceiro() {
                 <summary className="cursor-pointer px-6 py-4 flex items-center justify-between list-none [&::-webkit-details-marker]:hidden hover:bg-soft/20 transition-colors">
                     <div className="flex items-center gap-3">
                         <History size={14} className="text-muted" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-muted">Últimos Lançamentos</span>
+                        <span className="text-[14px] font-bold uppercase tracking-wide text-muted">Últimos Lançamentos</span>
                     </div>
                     <ChevronDown size={14} className="text-muted group-open:rotate-180 transition-transform duration-200" />
                 </summary>
@@ -514,15 +514,15 @@ export default async function DashboardFinanceiro() {
                                     {item.tipo === 'CARNÊ' ? <Receipt size={13} /> : <HandCoins size={13} />}
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-black uppercase text-fg leading-none">{item.nome}</p>
-                                    <p className="text-[8px] text-muted font-bold uppercase tracking-widest mt-0.5">{item.descricao} · {formatarData(item.data)}</p>
+                                    <p className="text-[14px] font-bold uppercase text-fg leading-none">{item.nome}</p>
+                                    <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-0.5">{item.descricao} · {formatarData(item.data)}</p>
                                 </div>
                             </div>
-                            <span className="text-sm font-black text-fg shrink-0 ml-4">{euro(item.valor)}</span>
+                            <span className="text-sm font-bold text-fg shrink-0 ml-4">{euro(item.valor)}</span>
                         </div>
                     ))}
                     {historicoRecente.length === 0 && (
-                        <p className="text-[10px] text-muted italic p-4">Nenhum lançamento recente.</p>
+                        <p className="text-[14px] text-muted p-4">Nenhum lançamento recente.</p>
                     )}
                 </div>
             </details>
@@ -532,7 +532,7 @@ export default async function DashboardFinanceiro() {
                 <section className="space-y-4 pt-6 border-t border-soft">
                     <div className="flex items-center gap-3">
                         <Archive size={16} className="text-muted" />
-                        <h2 className="text-sm font-black uppercase tracking-widest text-fg">Histórico de Sorteios</h2>
+                        <h2 className="text-sm font-bold text-fg">Histórico de Sorteios</h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-3">
                         {rifasFinalizadas.map((rifa: any) => (
@@ -551,8 +551,8 @@ function KpiCard({ label, value, accent }: { label: string; value: any; accent?:
     return (
         <div className={`p-5 rounded-2xl border flex flex-col gap-3 transition-all hover:-translate-y-0.5
             ${accent ? 'bg-figueira/5 border-figueira/20' : 'bg-bg2 border-soft'}`}>
-            <p className={`text-[8px] font-black uppercase tracking-widest ${accent ? 'text-figueira' : 'text-muted'}`}>{label}</p>
-            <p className={`text-2xl font-black italic tracking-tighter leading-none ${accent ? 'text-figueira' : 'text-fg'}`}>{value}</p>
+            <p className={`text-[13px] font-bold uppercase tracking-wide ${accent ? 'text-figueira' : 'text-muted'}`}>{label}</p>
+            <p className={`text-2xl font-bold leading-none ${accent ? 'text-figueira' : 'text-fg'}`}>{value}</p>
         </div>
     )
 }
@@ -588,8 +588,8 @@ function Alerta({ icon, cor, titulo, subtitulo, children }: {
                 <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${c.icon}`}>{icon}</div>
                     <div>
-                        <p className={`text-sm font-black uppercase tracking-tight leading-none ${c.titulo}`}>{titulo}</p>
-                        <p className={`text-[9px] font-bold uppercase tracking-widest mt-1 ${c.sub}`}>{subtitulo}</p>
+                        <p className={`text-sm font-bold leading-none ${c.titulo}`}>{titulo}</p>
+                        <p className={`text-[13px] font-bold uppercase tracking-wide mt-1 ${c.sub}`}>{subtitulo}</p>
                     </div>
                 </div>
                 <div className={`w-8 h-8 bg-bg/50 border border-white/20 rounded-full flex items-center justify-center ${c.chevron} group-open:text-white transition-all`}>
@@ -617,8 +617,8 @@ function SecaoColapsavel({ icon, titulo, subtitulo, corIcone, children, defaultO
                 <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${corIcone}`}>{icon}</div>
                     <div>
-                        <p className="text-sm font-black uppercase tracking-tight text-fg leading-none">{titulo}</p>
-                        <p className="text-[9px] text-muted font-bold uppercase tracking-widest mt-1">{subtitulo}</p>
+                        <p className="text-sm font-bold text-fg leading-none">{titulo}</p>
+                        <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-1">{subtitulo}</p>
                     </div>
                 </div>
                 <ChevronDown size={15} className="text-muted group-open:rotate-180 transition-transform duration-200 shrink-0" />

@@ -38,7 +38,7 @@ export default function BotaoAprovarCantina({
         <button
             onClick={handleAprovar}
             disabled={loading}
-            className="bg-orange-100 text-orange-600 hover:bg-orange-500 hover:text-white px-5 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm active:scale-95"
+            className="bg-orange-100 text-orange-600 hover:bg-orange-500 hover:text-white px-5 py-3 rounded-2xl text-[13px] font-bold uppercase tracking-wide transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm active:scale-95"
             title={`Aprovar €${valor} para ${nomeMembro}`}
         >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}

@@ -245,10 +245,10 @@ ${transacoes.length === 0 ? '<p style="color:#aaa;font-style:italic;padding:16px
                             <FileText size={18} />
                         </div>
                         <div>
-                            <h2 className="text-sm font-black uppercase italic tracking-tighter text-fg leading-none">
+                            <h2 className="text-sm font-bold text-fg leading-none">
                                 Extrato Financeiro
                             </h2>
-                            <p className="text-[9px] font-bold text-muted uppercase tracking-widest mt-0.5">
+                            <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-0.5">
                                 {membro.first_name} {membro.last_name}
                             </p>
                         </div>
@@ -256,13 +256,13 @@ ${transacoes.length === 0 ? '<p style="color:#aaa;font-style:italic;padding:16px
                     <div className="flex items-center gap-2">
                         <button
                             onClick={handleImprimir}
-                            className="h-9 px-3 flex items-center gap-1.5 bg-bg border border-soft text-muted hover:text-fg hover:bg-soft rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                            className="h-9 px-3 flex items-center gap-1.5 bg-bg border border-soft text-muted hover:text-fg hover:bg-soft rounded-xl text-[13px] font-bold uppercase tracking-wide transition-all"
                         >
                             <Printer size={13} /> Imprimir
                         </button>
                         <button
                             onClick={handleWhatsApp}
-                            className="h-9 px-3 flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 text-green-600 hover:bg-green-500 hover:text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                            className="h-9 px-3 flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 text-green-600 hover:bg-green-500 hover:text-white rounded-xl text-[13px] font-bold uppercase tracking-wide transition-all"
                         >
                             <MessageCircle size={13} /> WhatsApp
                         </button>
@@ -285,7 +285,7 @@ ${transacoes.length === 0 ? '<p style="color:#aaa;font-style:italic;padding:16px
                         >
                             <ChevronLeft size={13} className="text-muted" />
                         </button>
-                        <span className="text-sm font-black italic text-fg min-w-[40px] text-center">{ano}</span>
+                        <span className="text-sm font-bold text-fg min-w-[40px] text-center">{ano}</span>
                         <button
                             onClick={() => setAno(a => a + 1)}
                             disabled={ano >= hoje.getFullYear()}
@@ -301,7 +301,7 @@ ${transacoes.length === 0 ? '<p style="color:#aaa;font-style:italic;padding:16px
                     <div className="flex gap-1 flex-wrap">
                         <button
                             onClick={() => setMes(0)}
-                            className={`px-2.5 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${mes === 0 ? 'bg-fg text-bg' : 'bg-bg border border-soft text-muted hover:bg-soft'}`}
+                            className={`px-2.5 py-1.5 rounded-lg text-[13px] font-bold uppercase tracking-wide transition-all ${mes === 0 ? 'bg-fg text-bg' : 'bg-bg border border-soft text-muted hover:bg-soft'}`}
                         >
                             Todos
                         </button>
@@ -309,7 +309,7 @@ ${transacoes.length === 0 ? '<p style="color:#aaa;font-style:italic;padding:16px
                             <button
                                 key={i}
                                 onClick={() => setMes(i + 1)}
-                                className={`px-2.5 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all ${mes === i + 1 ? 'bg-fg text-bg' : 'bg-bg border border-soft text-muted hover:bg-soft'}`}
+                                className={`px-2.5 py-1.5 rounded-lg text-[13px] font-bold uppercase tracking-wide transition-all ${mes === i + 1 ? 'bg-fg text-bg' : 'bg-bg border border-soft text-muted hover:bg-soft'}`}
                             >
                                 {m.slice(0, 3)}
                             </button>
@@ -322,7 +322,7 @@ ${transacoes.length === 0 ? '<p style="color:#aaa;font-style:italic;padding:16px
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-3">
                             <Loader2 size={24} className="animate-spin text-figueira" />
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted">A carregar...</p>
+                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted">A carregar...</p>
                         </div>
                     ) : (
                         <>
@@ -332,29 +332,29 @@ ${transacoes.length === 0 ? '<p style="color:#aaa;font-style:italic;padding:16px
                                     const cfg = tipoConfig(tipo)
                                     return (
                                         <div key={tipo} className={`p-4 rounded-2xl border ${cfg.bg} ${cfg.border} space-y-1.5`}>
-                                            <p className={`text-[8px] font-black uppercase tracking-widest ${cfg.cor} opacity-80`}>
+                                            <p className={`text-[13px] font-bold uppercase tracking-wide ${cfg.cor} opacity-80`}>
                                                 {cfg.label}
                                             </p>
-                                            <p className={`text-xl font-black italic tracking-tighter leading-none ${cfg.cor}`}>
+                                            <p className={`text-xl font-bold leading-none ${cfg.cor}`}>
                                                 {euro(stats.total)}
                                             </p>
-                                            <p className="text-[8px] font-bold text-muted uppercase tracking-widest">
+                                            <p className="text-[13px] font-bold text-muted uppercase tracking-wide">
                                                 {stats.count} registo{stats.count !== 1 ? 's' : ''}
                                             </p>
                                         </div>
                                     )
                                 })}
                                 <div className="p-4 rounded-2xl border border-figueira/20 bg-figueira/5 space-y-1.5">
-                                    <p className="text-[8px] font-black uppercase tracking-widest text-figueira opacity-80">Total</p>
-                                    <p className="text-xl font-black italic tracking-tighter leading-none text-figueira">{euro(totalGeral)}</p>
-                                    <p className="text-[8px] font-bold text-muted uppercase tracking-widest">{transacoes.length} transações</p>
+                                    <p className="text-[13px] font-bold uppercase tracking-wide text-figueira opacity-80">Total</p>
+                                    <p className="text-xl font-bold leading-none text-figueira">{euro(totalGeral)}</p>
+                                    <p className="text-[13px] font-bold text-muted uppercase tracking-wide">{transacoes.length} transações</p>
                                 </div>
                             </div>
 
                             {/* GRÁFICO DE BARRAS POR MÊS (só no modo ano inteiro) */}
                             {mes === 0 && Object.keys(porMes).length > 0 && (
                                 <div className="bg-bg2 border border-soft rounded-2xl p-5 space-y-3">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
+                                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
                                         <TrendingUp size={11} /> Evolução Mensal
                                     </p>
                                     <div className="flex items-end gap-1.5 h-20">
@@ -370,7 +370,7 @@ ${transacoes.length === 0 ? '<p style="color:#aaa;font-style:italic;padding:16px
                                                             title={val > 0 ? euro(val) : ''}
                                                         />
                                                     </div>
-                                                    <span className="text-[7px] font-black text-muted uppercase">{m.slice(0, 3)}</span>
+                                                    <span className="text-[13px] font-bold text-muted uppercase">{m.slice(0, 3)}</span>
                                                 </div>
                                             )
                                         })}
@@ -380,14 +380,14 @@ ${transacoes.length === 0 ? '<p style="color:#aaa;font-style:italic;padding:16px
 
                             {/* TABELA DETALHADA */}
                             <div className="space-y-2">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-2 pb-2 border-b border-soft">
+                                <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 pb-2 border-b border-soft">
                                     <Receipt size={11} /> Detalhamento
                                 </p>
 
                                 {transacoes.length === 0 ? (
                                     <div className="py-12 text-center border-2 border-dashed border-soft rounded-2xl">
                                         <FileText size={28} className="mx-auto text-muted/30 mb-3" />
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-muted">
+                                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted">
                                             Nenhum registo no período selecionado
                                         </p>
                                     </div>
@@ -408,10 +408,10 @@ ${transacoes.length === 0 ? '<p style="color:#aaa;font-style:italic;padding:16px
 
                                                     {/* DATA */}
                                                     <div className="shrink-0 text-center min-w-[44px]">
-                                                        <p className="text-[7px] font-black uppercase text-muted leading-none">
+                                                        <p className="text-[13px] font-bold uppercase text-muted leading-none">
                                                             {new Date(t.data).toLocaleDateString('pt-PT', { month: 'short' })}
                                                         </p>
-                                                        <p className="text-sm font-black italic text-fg leading-none mt-0.5">
+                                                        <p className="text-sm font-bold text-fg leading-none mt-0.5">
                                                             {new Date(t.data).toLocaleDateString('pt-PT', { day: '2-digit' })}
                                                         </p>
                                                     </div>
@@ -419,29 +419,29 @@ ${transacoes.length === 0 ? '<p style="color:#aaa;font-style:italic;padding:16px
                                                     {/* DESCRIÇÃO */}
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center gap-2">
-                                                            <span className={`text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md border ${cfg.bg} ${cfg.border} ${cfg.cor}`}>
+                                                            <span className={`text-[13px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md border ${cfg.bg} ${cfg.border} ${cfg.cor}`}>
                                                                 {cfg.label}
                                                             </span>
                                                         </div>
                                                         {t.descricao && (
-                                                            <p className="text-[9px] text-muted font-medium mt-0.5 truncate">
+                                                            <p className="text-[13px] text-muted font-medium mt-0.5 truncate">
                                                                 {t.descricao}
                                                             </p>
                                                         )}
                                                     </div>
 
                                                     {/* VALOR */}
-                                                    <p className="text-sm font-black text-fg shrink-0">{euro(t.valor)}</p>
+                                                    <p className="text-sm font-bold text-fg shrink-0">{euro(t.valor)}</p>
                                                 </div>
                                             )
                                         })}
 
                                         {/* TOTAL */}
                                         <div className="flex items-center justify-between px-4 py-3 bg-figueira/5 border border-figueira/15 rounded-2xl mt-2">
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-figueira">
+                                            <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">
                                                 Total do Período
                                             </p>
-                                            <p className="text-base font-black italic text-figueira">{euro(totalGeral)}</p>
+                                            <p className="text-base font-bold text-figueira">{euro(totalGeral)}</p>
                                         </div>
                                     </div>
                                 )}
@@ -457,7 +457,7 @@ ${transacoes.length === 0 ? '<p style="color:#aaa;font-style:italic;padding:16px
         <>
             <button
                 onClick={() => setAberto(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft text-muted hover:border-figueira hover:text-figueira rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-sm"
+                className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft text-muted hover:border-figueira hover:text-figueira rounded-xl text-[13px] font-bold uppercase tracking-wide transition-all shadow-sm"
             >
                 <FileText size={14} /> Extrato
             </button>

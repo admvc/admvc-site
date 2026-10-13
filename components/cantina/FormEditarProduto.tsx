@@ -76,7 +76,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
         return (
             <button
                 onClick={() => setOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest bg-figueira/10 text-figueira border border-figueira/20 hover:bg-figueira/20 transition-all active:scale-95"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira border border-figueira/20 hover:bg-figueira/20 transition-all active:scale-95"
                 title="Editar produto"
             >
                 <Pencil size={12} />
@@ -97,7 +97,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
             <div className="relative bg-bg2 border border-soft rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-6 animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-black uppercase italic tracking-tighter text-fg">
+                    <h3 className="text-xl font-bold text-fg">
                         Editar Produto
                     </h3>
                     <button
@@ -112,7 +112,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Nome */}
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Nome do Produto
                             </label>
                             <input
@@ -126,7 +126,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
 
                         {/* Preco */}
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Preco (EUR)
                             </label>
                             <input
@@ -142,7 +142,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
 
                         {/* Categoria */}
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Categoria
                             </label>
                             <select
@@ -161,7 +161,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
 
                         {/* Custo de aquisicao */}
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Custo de Aquisicao (EUR)
                             </label>
                             <input
@@ -177,7 +177,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
 
                         {/* Stock */}
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Stock
                             </label>
                             <input
@@ -191,7 +191,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
 
                         {/* Stock Minimo */}
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Stock Minimo (Alerta)
                             </label>
                             <input
@@ -205,7 +205,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
 
                         {/* Imagem URL */}
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Imagem URL
                             </label>
                             <input
@@ -219,7 +219,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
 
                         {/* Controla Stock */}
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Controla Stock
                             </label>
                             <div
@@ -245,7 +245,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
 
                         {/* Disponivel */}
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Disponivel
                             </label>
                             <div
@@ -274,7 +274,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
                     <div className="space-y-3 pt-4 border-t border-soft">
                         <div className="flex items-center gap-2">
                             <Tag size={14} className="text-figueira" />
-                            <p className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Promocoes
                             </p>
                         </div>
@@ -303,7 +303,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
                         {/* Add promotion */}
                         <div className="flex flex-col sm:flex-row sm:items-end gap-2">
                             <div className="space-y-1 flex-1">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                     Quantidade
                                 </label>
                                 <input
@@ -317,7 +317,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
                                 />
                             </div>
                             <div className="space-y-1 flex-1">
-                                <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                     Preco Total (EUR)
                                 </label>
                                 <input
@@ -333,7 +333,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
                             <button
                                 type="button"
                                 onClick={adicionarPromocao}
-                                className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-3 rounded-2xl bg-figueira/10 text-figueira border border-figueira/20 text-[9px] font-black uppercase tracking-widest hover:bg-figueira/20 transition-all active:scale-95"
+                                className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-3 rounded-2xl bg-figueira/10 text-figueira border border-figueira/20 text-[13px] font-bold uppercase tracking-wide hover:bg-figueira/20 transition-all active:scale-95"
                             >
                                 <Plus size={12} />
                                 Adicionar
@@ -351,7 +351,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-figueira text-bg px-6 py-3.5 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:brightness-110 transition-all active:scale-95 disabled:opacity-50"
+                            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-figueira text-bg px-6 py-3.5 rounded-2xl font-bold text-[13px] uppercase tracking-wide hover:brightness-110 transition-all active:scale-95 disabled:opacity-50"
                         >
                             {loading ? (
                                 <Loader2 size={14} className="animate-spin" />
@@ -363,7 +363,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
                         <button
                             type="button"
                             onClick={() => setOpen(false)}
-                            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl font-black text-[9px] uppercase tracking-widest text-muted bg-bg border border-soft hover:border-figueira/50 transition-all active:scale-95"
+                            className="w-full sm:w-auto px-6 py-3.5 rounded-2xl font-bold text-[13px] uppercase tracking-wide text-muted bg-bg border border-soft hover:border-figueira/50 transition-all active:scale-95"
                         >
                             Cancelar
                         </button>

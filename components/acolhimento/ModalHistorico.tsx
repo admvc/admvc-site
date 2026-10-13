@@ -50,7 +50,7 @@ export default function ModalHistorico({ visitante, acionador, viewerRole }: Mod
             ) : (
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="text-figueira hover:underline flex items-center gap-1 transition-all group text-[9px] font-black uppercase tracking-widest bg-figueira/10 px-3 py-1.5 rounded-lg hover:bg-figueira/20"
+                    className="text-figueira hover:underline flex items-center gap-1 transition-all group text-[13px] font-bold uppercase tracking-wide bg-figueira/10 px-3 py-1.5 rounded-lg hover:bg-figueira/20"
                 >
                     <History size={12} className="group-hover:-rotate-45 transition-transform" />
                     Historico ({acompanhamentos.length})
@@ -66,14 +66,14 @@ export default function ModalHistorico({ visitante, acionador, viewerRole }: Mod
                         </button>
 
                         <div className="mb-6 pr-12 shrink-0 border-b border-soft pb-4">
-                            <span className="text-figueira font-black text-[9px] uppercase tracking-[0.3em] flex items-center gap-2 mb-1">
+                            <span className="text-figueira font-bold text-[13px] uppercase tracking-wide flex items-center gap-2 mb-1">
                                 <History size={12} /> Linha do Tempo
                             </span>
-                            <h2 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter text-fg leading-none">
+                            <h2 className="text-xl md:text-2xl font-bold text-fg leading-none">
                                 Historico de <span className="opacity-50">{visitante.nome}</span>
                             </h2>
                             {visitante.proximo_contacto && (
-                                <p className="text-[9px] font-bold text-blue-600 mt-2 flex items-center gap-1">
+                                <p className="text-[13px] font-bold text-blue-600 mt-2 flex items-center gap-1">
                                     <Clock size={10} /> Proximo contacto: {new Date(visitante.proximo_contacto).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric' })}
                                 </p>
                             )}
@@ -106,18 +106,18 @@ export default function ModalHistorico({ visitante, acionador, viewerRole }: Mod
                                                             }`}>
                                                                 {getEventLabel(acomp)}
                                                             </span>
-                                                            <p className="text-[10px] font-black text-fg uppercase italic tracking-tight mt-1.5 truncate max-w-[120px] md:max-w-none">
+                                                            <p className="text-[14px] font-bold text-fg uppercase tracking-wide mt-1.5 truncate max-w-[120px] md:max-w-none">
                                                                 {acomp.membro?.first_name} {acomp.membro?.last_name}
                                                             </p>
                                                         </div>
-                                                        <span className="text-[8px] font-bold uppercase tracking-widest text-muted flex items-center gap-1.5 bg-soft/30 px-2 py-1 rounded-full border border-soft/50 shrink-0">
+                                                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5 bg-soft/30 px-2 py-1 rounded-full border border-soft/50 shrink-0">
                                                             <Clock size={10} />
                                                             {new Date(acomp.data_contacto).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}
                                                         </span>
                                                     </div>
                                                     {acomp.observacoes && (
                                                         <div className="pt-2 border-t border-soft/50">
-                                                            <p className="text-[10px] md:text-[11px] text-fg font-medium italic leading-relaxed">
+                                                            <p className="text-[14px] text-fg font-medium leading-relaxed">
                                                                 &ldquo;{acomp.observacoes}&rdquo;
                                                             </p>
                                                         </div>
@@ -130,7 +130,7 @@ export default function ModalHistorico({ visitante, acionador, viewerRole }: Mod
                             ) : (
                                 <div className="text-center py-10 opacity-40 flex flex-col items-center gap-3 bg-bg rounded-3xl border border-dashed border-soft">
                                     <History size={32} />
-                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] italic">Nenhum contacto registado.</p>
+                                    <p className="text-[13px] font-bold uppercase tracking-wide">Nenhum contacto registado.</p>
                                 </div>
                             )}
                         </div>

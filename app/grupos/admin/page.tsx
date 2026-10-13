@@ -68,20 +68,20 @@ export default async function AdminGruposPage({ searchParams }: { searchParams: 
             {/* HEADER */}
             <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-soft">
                 <div className="space-y-2">
-                    <span className="text-figueira font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2">
+                    <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center gap-2">
                         <Users size={14} /> Gestao de Celulas
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h1 className="text-4xl md:text-5xl font-bold text-fg leading-none">
                         Pequenos <span className="text-muted/30">Grupos.</span>
                     </h1>
                 </div>
                 <div className="flex items-center gap-2">
                     <Link href="/admin/configuracoes"
-                        className="flex items-center gap-2 bg-bg2 border border-soft text-muted px-4 py-3 rounded-xl font-black text-[9px] uppercase tracking-widest hover:text-fg hover:border-figueira/30 transition-all">
+                        className="flex items-center gap-2 bg-bg2 border border-soft text-muted px-4 py-3 rounded-xl font-bold text-[13px] uppercase tracking-wide hover:text-fg hover:border-figueira/30 transition-all">
                         <Settings size={13} /> Gerir Grupos
                     </Link>
                     <Link href="/grupos" target="_blank"
-                        className="flex items-center gap-2 bg-bg2 border border-soft text-muted px-4 py-3 rounded-xl font-black text-[9px] uppercase tracking-widest hover:text-fg hover:border-figueira/30 transition-all">
+                        className="flex items-center gap-2 bg-bg2 border border-soft text-muted px-4 py-3 rounded-xl font-bold text-[13px] uppercase tracking-wide hover:text-fg hover:border-figueira/30 transition-all">
                         <Globe size={13} /> Ver Site Publico
                     </Link>
                 </div>
@@ -96,8 +96,8 @@ export default async function AdminGruposPage({ searchParams }: { searchParams: 
                     { label: 'No Site Pub.', value: publicos, cor: 'text-blue-600' },
                 ].map(k => (
                     <div key={k.label} className="bg-bg2 border border-soft rounded-2xl px-5 py-4">
-                        <p className="text-[8px] font-black uppercase tracking-widest text-muted">{k.label}</p>
-                        <p className={`text-2xl font-black italic ${k.cor}`}>{k.value}</p>
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">{k.label}</p>
+                        <p className={`text-2xl font-bold ${k.cor}`}>{k.value}</p>
                     </div>
                 ))}
             </div>
@@ -108,10 +108,10 @@ export default async function AdminGruposPage({ searchParams }: { searchParams: 
                     <div className="flex items-center gap-3">
                         <MapPin size={16} className="text-orange-500 shrink-0" />
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-orange-700">
+                            <p className="text-[14px] font-bold uppercase tracking-wide text-orange-700">
                                 {semCoords} grupo{semCoords !== 1 ? 's' : ''} sem coordenadas GPS
                             </p>
-                            <p className="text-[9px] font-bold text-orange-600/70 uppercase tracking-widest mt-0.5">
+                            <p className="text-[13px] font-bold text-orange-600/70 uppercase tracking-wide mt-0.5">
                                 Clica para geocodificar automaticamente via OpenStreetMap
                             </p>
                         </div>
@@ -124,8 +124,8 @@ export default async function AdminGruposPage({ searchParams }: { searchParams: 
             <section className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                 <div className="flex items-center gap-3 px-6 py-5 border-b border-soft">
                     <Map size={16} className="text-figueira" />
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">Mapa de Grupos</h2>
-                    <span className="text-[8px] font-black uppercase tracking-widest bg-soft border border-soft px-2 py-1 rounded-lg text-muted ml-auto">
+                    <h2 className="text-sm font-bold text-fg">Mapa de Grupos</h2>
+                    <span className="text-[13px] font-bold uppercase tracking-wide bg-soft border border-soft px-2 py-1 rounded-lg text-muted ml-auto">
                         {comCoords} no mapa
                     </span>
                 </div>
@@ -136,7 +136,7 @@ export default async function AdminGruposPage({ searchParams }: { searchParams: 
 
             {/* GRUPOS POR REGIÃO */}
             <section className="space-y-6">
-                <h2 className="text-sm font-black uppercase tracking-widest text-fg flex items-center gap-3">
+                <h2 className="text-sm font-bold text-fg flex items-center gap-3">
                     <Users size={15} className="text-figueira" /> Grupos por Regiao
                 </h2>
 
@@ -147,10 +147,10 @@ export default async function AdminGruposPage({ searchParams }: { searchParams: 
                         {/* CABEÇALHO DA REGIÃO */}
                         <div className="flex items-center justify-between px-6 py-4 border-b border-soft">
                             <div className="flex items-center gap-3">
-                                <span className={`text-[8px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl border ${COR_REGIAO[regiao] || 'bg-soft text-muted border-soft'}`}>
+                                <span className={`text-[13px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-xl border ${COR_REGIAO[regiao] || 'bg-soft text-muted border-soft'}`}>
                                     {regiao}
                                 </span>
-                                <span className="text-[9px] font-black text-muted uppercase tracking-widest">
+                                <span className="text-[13px] font-bold text-muted uppercase tracking-wide">
                                     {lista.length} grupo{lista.length !== 1 ? 's' : ''}
                                 </span>
                             </div>
@@ -166,29 +166,29 @@ export default async function AdminGruposPage({ searchParams }: { searchParams: 
 
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <p className="text-[11px] font-black uppercase text-fg leading-none">{grupo.nome}</p>
+                                            <p className="text-[14px] font-bold uppercase text-fg leading-none">{grupo.nome}</p>
                                             {grupo.publico && (
-                                                <span className="text-[7px] font-black uppercase tracking-widest bg-blue-500/10 text-blue-600 border border-blue-500/20 px-1.5 py-0.5 rounded">
+                                                <span className="text-[13px] font-bold uppercase tracking-wide bg-blue-500/10 text-blue-600 border border-blue-500/20 px-1.5 py-0.5 rounded">
                                                     Publico
                                                 </span>
                                             )}
                                             {grupo.categoria && (
-                                                <span className="text-[7px] font-bold text-muted uppercase tracking-widest">{grupo.categoria}</span>
+                                                <span className="text-[13px] font-bold text-muted uppercase tracking-wide">{grupo.categoria}</span>
                                             )}
                                         </div>
                                         <div className="flex flex-wrap items-center gap-3 mt-1">
                                             {grupo.dia_semana && grupo.horario && (
-                                                <span className="text-[9px] font-bold text-muted uppercase tracking-widest">
+                                                <span className="text-[13px] font-bold text-muted uppercase tracking-wide">
                                                     📅 {grupo.dia_semana} {grupo.horario}
                                                 </span>
                                             )}
                                             {grupo.cidade && (
-                                                <span className="text-[9px] font-bold text-muted uppercase tracking-widest">
+                                                <span className="text-[13px] font-bold text-muted uppercase tracking-wide">
                                                     📍 {grupo.cidade}
                                                 </span>
                                             )}
                                             {grupo.lideres.length > 0 && (
-                                                <span className="text-[9px] font-bold text-muted uppercase tracking-widest">
+                                                <span className="text-[13px] font-bold text-muted uppercase tracking-wide">
                                                     👤 {grupo.lideres[0].first_name} {grupo.lideres[0].last_name}
                                                 </span>
                                             )}
@@ -196,7 +196,7 @@ export default async function AdminGruposPage({ searchParams }: { searchParams: 
                                     </div>
 
                                     <div className="flex items-center gap-3 shrink-0">
-                                        <span className="text-[8px] font-black text-muted uppercase tracking-widest bg-soft px-2.5 py-1 rounded-lg">
+                                        <span className="text-[13px] font-bold text-muted uppercase tracking-wide bg-soft px-2.5 py-1 rounded-lg">
                                             {grupo.membros.length} membros
                                         </span>
                                     </div>

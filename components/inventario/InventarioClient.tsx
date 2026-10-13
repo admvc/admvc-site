@@ -131,8 +131,8 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
                     },
                 ].map(k => (
                     <div key={k.label} className="bg-bg2 border border-soft rounded-2xl px-4 py-3">
-                        <p className="text-[8px] font-black uppercase tracking-widest text-muted">{k.label}</p>
-                        <p className={`text-xl font-black italic ${k.cor}`}>{k.value}</p>
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">{k.label}</p>
+                        <p className={`text-xl font-bold ${k.cor}`}>{k.value}</p>
                     </div>
                 ))}
             </div>
@@ -162,7 +162,7 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
                 >
                     <SlidersHorizontal size={13} />
                     Filtros
-                    {temFiltros && <span className="bg-white/30 rounded-full w-4 h-4 flex items-center justify-center text-[7px]">!</span>}
+                    {temFiltros && <span className="bg-white/30 rounded-full w-4 h-4 flex items-center justify-center text-[13px]">!</span>}
                 </button>
 
                 <div className="flex border border-soft rounded-xl overflow-hidden bg-bg2">
@@ -176,7 +176,7 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
 
                 <button
                     onClick={() => setModalCriar(true)}
-                    className="flex items-center gap-2 bg-figueira text-white px-5 py-3 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-figueira/90 transition-all shadow-lg shadow-figueira/20 active:scale-95"
+                    className="flex items-center gap-2 bg-figueira text-white px-5 py-3 rounded-xl font-bold text-[13px] uppercase tracking-wide hover:bg-figueira/90 transition-all shadow-lg shadow-figueira/20 active:scale-95"
                 >
                     <Plus size={14} /> Adicionar
                 </button>
@@ -187,9 +187,9 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
                 <div className="bg-bg2 border border-soft rounded-2xl p-5 space-y-4 animate-in slide-in-from-top-2 duration-200">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div className="space-y-1.5">
-                            <label className="text-[8px] font-black uppercase tracking-widest text-muted">Categoria</label>
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Categoria</label>
                             <select value={filtroCategoria} onChange={e => setFiltroCategoria(e.target.value)}
-                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                                 <option value="TODAS">Todas</option>
                                 {Object.entries(CATEGORIAS).map(([k, v]) => (
                                     <option key={k} value={k}>{v.emoji} {v.label}</option>
@@ -197,9 +197,9 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
                             </select>
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-[8px] font-black uppercase tracking-widest text-muted">Estado</label>
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Estado</label>
                             <select value={filtroEstado} onChange={e => setFiltroEstado(e.target.value)}
-                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                                 <option value="TODOS">Todos</option>
                                 {Object.entries(ESTADOS).map(([k, v]) => (
                                     <option key={k} value={k}>{v.label}</option>
@@ -207,9 +207,9 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
                             </select>
                         </div>
                         <div className="space-y-1.5">
-                            <label className="text-[8px] font-black uppercase tracking-widest text-muted">Pertence a</label>
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Pertence a</label>
                             <select value={filtroDonoTipo} onChange={e => setFiltroDonoTipo(e.target.value)}
-                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                                 <option value="TODOS">Todos</option>
                                 <option value="IGREJA">Igreja</option>
                                 <option value="DEPARTAMENTO">Departamento</option>
@@ -220,11 +220,11 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
                     </div>
                     {temFiltros && (
                         <div className="flex justify-between items-center pt-2 border-t border-soft">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 {itensFiltrados.length} resultado{itensFiltrados.length !== 1 ? 's' : ''}
                             </p>
                             <button onClick={() => { setFiltroCategoria('TODAS'); setFiltroEstado('TODOS'); setFiltroDonoTipo('TODOS') }}
-                                className="text-[9px] font-black uppercase text-red-500 hover:text-red-700 flex items-center gap-1">
+                                className="text-[13px] font-bold uppercase text-red-500 hover:text-red-700 flex items-center gap-1">
                                 <X size={11} /> Limpar
                             </button>
                         </div>
@@ -240,7 +240,7 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
                             <thead>
                                 <tr className="border-b border-soft bg-bg/50">
                                     {['Item', 'Categoria', 'Estado', 'Dono', 'Disponibilidade', 'Garantia', ''].map(h => (
-                                        <th key={h} className="px-5 py-4 text-[8px] font-black text-muted uppercase tracking-widest">{h}</th>
+                                        <th key={h} className="px-5 py-4 text-[13px] font-bold text-muted uppercase tracking-wide">{h}</th>
                                     ))}
                                 </tr>
                             </thead>
@@ -249,7 +249,7 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
                                     <tr>
                                         <td colSpan={7} className="py-16 text-center">
                                             <Package size={24} className="mx-auto text-muted/20 mb-3" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-muted">Nenhum item encontrado</p>
+                                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum item encontrado</p>
                                         </td>
                                     </tr>
                                 ) : itensFiltrados.map(item => {
@@ -266,35 +266,35 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
                                                         {cat?.emoji || '📎'}
                                                     </div>
                                                     <div>
-                                                        <p className="text-[11px] font-black uppercase tracking-tight text-fg leading-none">{item.nome}</p>
-                                                        <p className="text-[8px] text-muted font-bold uppercase tracking-widest mt-0.5">
+                                                        <p className="text-[14px] font-bold uppercase tracking-wide text-fg leading-none">{item.nome}</p>
+                                                        <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-0.5">
                                                             {[item.marca, item.modelo].filter(Boolean).join(' · ') || item.codigo_patrimonio || `#${item.id}`}
                                                         </p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-5 py-3.5">
-                                                <span className="text-[9px] font-black text-muted uppercase tracking-widest">
+                                                <span className="text-[13px] font-bold text-muted uppercase tracking-wide">
                                                     {cat?.label || item.categoria}
                                                 </span>
                                             </td>
                                             <td className="px-5 py-3.5">
-                                                <span className={`text-[7px] font-black uppercase tracking-widest px-2 py-1 rounded-lg border ${estado?.cor || 'bg-soft text-muted border-soft'}`}>
+                                                <span className={`text-[13px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg border ${estado?.cor || 'bg-soft text-muted border-soft'}`}>
                                                     {estado?.label || item.estado}
                                                 </span>
                                             </td>
                                             <td className="px-5 py-3.5">
-                                                <p className="text-[10px] font-bold text-fg">{nomeDono(item)}</p>
-                                                <p className="text-[8px] text-muted uppercase tracking-widest">{item.dono_tipo || 'IGREJA'}</p>
+                                                <p className="text-[14px] font-bold text-fg">{nomeDono(item)}</p>
+                                                <p className="text-[13px] text-muted uppercase tracking-wide">{item.dono_tipo || 'IGREJA'}</p>
                                             </td>
                                             <td className="px-5 py-3.5">
-                                                <span className={`text-[10px] font-black ${dispo.cor}`}>{dispo.label}</span>
+                                                <span className={`text-[14px] font-bold ${dispo.cor}`}>{dispo.label}</span>
                                             </td>
                                             <td className="px-5 py-3.5">
                                                 {garantia ? (
-                                                    <span className={`text-[9px] font-black ${garantia.cor}`}>{garantia.label}</span>
+                                                    <span className={`text-[13px] font-bold ${garantia.cor}`}>{garantia.label}</span>
                                                 ) : (
-                                                    <span className="text-[9px] text-muted/40">—</span>
+                                                    <span className="text-[13px] text-muted/40">—</span>
                                                 )}
                                             </td>
                                             <td className="px-5 py-3.5">
@@ -318,7 +318,7 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
                         </table>
                     </div>
                     <div className="border-t border-soft px-6 py-3 bg-bg">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-muted">
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">
                             {itensFiltrados.length} item{itensFiltrados.length !== 1 ? 's' : ''}
                         </p>
                     </div>
@@ -331,7 +331,7 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
                     {itensFiltrados.length === 0 ? (
                         <div className="col-span-3 py-16 text-center bg-bg2 border border-soft rounded-2xl">
                             <Package size={24} className="mx-auto text-muted/20 mb-3" />
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted">Nenhum item encontrado</p>
+                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum item encontrado</p>
                         </div>
                     ) : itensFiltrados.map(item => {
                         const cat = CATEGORIAS[item.categoria]
@@ -346,36 +346,36 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
                                         <div className="flex items-center gap-3">
                                             <span className="text-2xl">{cat?.emoji || '📎'}</span>
                                             <div>
-                                                <p className="text-[11px] font-black uppercase tracking-tight text-fg leading-none">{item.nome}</p>
-                                                <p className="text-[8px] text-muted font-bold uppercase mt-0.5">
+                                                <p className="text-[14px] font-bold uppercase tracking-wide text-fg leading-none">{item.nome}</p>
+                                                <p className="text-[13px] text-muted font-bold uppercase mt-0.5">
                                                     {[item.marca, item.modelo].filter(Boolean).join(' · ') || `#${item.id}`}
                                                 </p>
                                             </div>
                                         </div>
-                                        <span className={`text-[7px] font-black uppercase tracking-widest px-2 py-1 rounded-lg border shrink-0 ${estado?.cor || ''}`}>
+                                        <span className={`text-[13px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg border shrink-0 ${estado?.cor || ''}`}>
                                             {estado?.label}
                                         </span>
                                     </div>
 
                                     <div className="space-y-1.5">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-muted">Dono</span>
-                                            <span className="text-[9px] font-bold text-fg">{nomeDono(item)}</span>
+                                            <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Dono</span>
+                                            <span className="text-[13px] font-bold text-fg">{nomeDono(item)}</span>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-muted">Stock</span>
-                                            <span className={`text-[9px] font-black ${dispo.cor}`}>{dispo.label}</span>
+                                            <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Stock</span>
+                                            <span className={`text-[13px] font-bold ${dispo.cor}`}>{dispo.label}</span>
                                         </div>
                                         {item.localizacao && (
                                             <div className="flex items-center justify-between">
-                                                <span className="text-[8px] font-black uppercase tracking-widest text-muted">Local</span>
-                                                <span className="text-[9px] font-bold text-fg">{item.localizacao}</span>
+                                                <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Local</span>
+                                                <span className="text-[13px] font-bold text-fg">{item.localizacao}</span>
                                             </div>
                                         )}
                                         {garantia && (
                                             <div className="flex items-center justify-between">
-                                                <span className="text-[8px] font-black uppercase tracking-widest text-muted">Garantia</span>
-                                                <span className={`text-[9px] font-black ${garantia.cor}`}>{garantia.label}</span>
+                                                <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Garantia</span>
+                                                <span className={`text-[13px] font-bold ${garantia.cor}`}>{garantia.label}</span>
                                             </div>
                                         )}
                                     </div>
@@ -383,12 +383,12 @@ export default function InventarioClient({ itens, departamentos, grupos, membros
 
                                 <div className="flex border-t border-soft">
                                     <button onClick={() => setItemDetalhes(item)}
-                                        className="flex-1 flex items-center justify-center gap-1.5 py-3 text-[8px] font-black uppercase tracking-widest text-muted hover:text-figueira hover:bg-figueira/5 transition-all">
+                                        className="flex-1 flex items-center justify-center gap-1.5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted hover:text-figueira hover:bg-figueira/5 transition-all">
                                         <Package size={12} /> Detalhes
                                     </button>
                                     <div className="w-px bg-soft" />
                                     <button onClick={() => setItemMovimento(item)}
-                                        className="flex-1 flex items-center justify-center gap-1.5 py-3 text-[8px] font-black uppercase tracking-widest text-muted hover:text-blue-500 hover:bg-blue-500/5 transition-all">
+                                        className="flex-1 flex items-center justify-center gap-1.5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted hover:text-blue-500 hover:bg-blue-500/5 transition-all">
                                         <ArrowLeftRight size={12} /> Movimento
                                     </button>
                                 </div>

@@ -80,7 +80,7 @@ export default async function InventarioPage({ searchParams }: { searchParams: P
             <Breadcrumbs items={[{ label: 'Inventário' }]} />
 
             <header className="space-y-1">
-                <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Inventario</h1>
+                <h1 className="text-3xl font-bold text-fg">Inventario</h1>
                 <p className="text-xs text-muted">Controlo de patrimonio e equipamentos.</p>
             </header>
 

@@ -37,10 +37,12 @@ export default function MontarEscala({ dados }: { dados: MontarEscalaDados }) {
     const porConfirmar = funcoes.flatMap((f) => f.escalados).filter((e) => e.estado === 'POR_CONFIRMAR').length
 
     const mensagemWhatsApp = useMemo(() => {
-        const linhas = funcoes.map((f) => {
-            const quem = f.escalados.filter((e) => e.estado !== 'NAO_PODE').map((e) => e.nome).join(', ')
-            return `• ${f.nome}: ${quem || '(por preencher)'}`
-        })
+        const linhas = funcoes
+            .map((f) => {
+                const quem = f.escalados.filter((e) => e.estado !== 'NAO_PODE').map((e) => e.nome).join(', ')
+                return quem ? `• ${f.nome}: ${quem}` : null
+            })
+            .filter(Boolean) as string[]
         return [
             `*Escala ${departamento.nome}*`,
             `${evento.nome} — ${diaPorExtenso(evento.data)}, às ${hora(evento.data)}`,
@@ -53,8 +55,8 @@ export default function MontarEscala({ dados }: { dados: MontarEscalaDados }) {
 
     return (
         <div className="space-y-5">
-            <Link href="/membros/dashboard" className="a-foco inline-flex min-h-[44px] items-center gap-2 text-[16px] font-semibold" style={{ color: 'var(--a-destaque)' }}>
-                <ArrowLeft size={20} aria-hidden /> Escalas
+            <Link href={`/escalas/culto/${evento.id}?equipa=${departamento.id}`} className="a-foco inline-flex min-h-[44px] items-center gap-2 text-[16px] font-semibold" style={{ color: 'var(--a-destaque)' }}>
+                <ArrowLeft size={20} aria-hidden /> Voltar à escala
             </Link>
 
             <header className="space-y-1">

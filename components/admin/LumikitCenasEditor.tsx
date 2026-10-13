@@ -91,14 +91,14 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
 
             <div className="flex items-center justify-end">
                 <button onClick={addScene} type="button"
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-figueira text-white text-[8px] font-black uppercase tracking-widest hover:bg-figueira/90 transition-all">
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-figueira text-white text-[13px] font-bold uppercase tracking-wide hover:bg-figueira/90 transition-all">
                     <Plus size={12} /> Adicionar
                 </button>
             </div>
 
             <div className="space-y-4">
                     {scenes.length === 0 && (
-                        <p className="text-[10px] text-muted text-center py-4 font-bold uppercase tracking-widest">
+                        <p className="text-[14px] text-muted text-center py-4 font-bold uppercase tracking-wide">
                             Nenhum botao configurado. Clique em "Adicionar" para criar.
                         </p>
                     )}
@@ -110,14 +110,14 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
                                 {/* Linha 1: Nome + Tipo + Apagar */}
                                 <div className="flex flex-col sm:flex-row gap-3">
                                     <div className="flex-1 space-y-1">
-                                        <label className="text-[7px] font-black uppercase tracking-widest text-muted">Nome do botao</label>
+                                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Nome do botao</label>
                                         <input type="text" value={scene.nome} onChange={e => update(scene.id, 'nome', e.target.value)}
                                             placeholder="Ex: Oracao, Louvor, Flash..."
                                             className="w-full bg-bg2 border border-soft rounded-lg px-3 py-2 text-sm font-bold text-fg focus:border-figueira outline-none placeholder:text-muted/30" />
                                     </div>
 
                                     <div className="w-32 space-y-1">
-                                        <label className="text-[7px] font-black uppercase tracking-widest text-muted">Tipo</label>
+                                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Tipo</label>
                                         <select value={scene.tipo} onChange={e => update(scene.id, 'tipo', e.target.value)}
                                             className="w-full bg-bg2 border border-soft rounded-lg px-2 py-2 text-sm font-bold text-fg focus:border-figueira outline-none">
                                             <option value="push">Push (1x)</option>
@@ -136,7 +136,7 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
                                 {/* Linha 2: Cor + Ícone */}
                                 <div className="flex flex-col sm:flex-row gap-4">
                                     <div className="space-y-1">
-                                        <label className="text-[7px] font-black uppercase tracking-widest text-muted">Cor</label>
+                                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Cor</label>
                                         <div className="flex gap-1.5 flex-wrap">
                                             {CORES.map(c => (
                                                 <button key={c.id} type="button" onClick={() => update(scene.id, 'cor', c.id)}
@@ -147,7 +147,7 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-[7px] font-black uppercase tracking-widest text-muted">Icone</label>
+                                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Icone</label>
                                         <div className="flex gap-1.5 flex-wrap">
                                             {ICONES.map(ic => {
                                                 const Ic = ic.icon
@@ -166,7 +166,7 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
                                 {/* Linha 3: Endpoint + Script IDs */}
                                 <div className="flex flex-col sm:flex-row gap-3">
                                     <div className="w-full sm:w-48 space-y-1">
-                                        <label className="text-[7px] font-black uppercase tracking-widest text-muted">Endpoint API</label>
+                                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Endpoint API</label>
                                         <select value={['FavoriteAction', 'ScriptAction', 'MediaPlaylistAction'].includes(scene.endpoint) ? scene.endpoint : '__custom'}
                                             onChange={e => {
                                                 if (e.target.value === '__custom') return
@@ -186,7 +186,7 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
                                     </div>
 
                                     <div className="flex-1 space-y-1">
-                                        <label className="text-[7px] font-black uppercase tracking-widest text-muted">
+                                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                             {scene.tipo === 'toggle' ? 'ID (Ligar)' : 'ID'}
                                         </label>
                                         <input type="text" value={scene.scriptOn} onChange={e => update(scene.id, 'scriptOn', e.target.value)}
@@ -196,7 +196,7 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
 
                                     {scene.tipo === 'toggle' && (
                                         <div className="flex-1 space-y-1">
-                                            <label className="text-[7px] font-black uppercase tracking-widest text-muted">ID (Desligar)</label>
+                                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">ID (Desligar)</label>
                                             <input type="text" value={scene.scriptOff || ''} onChange={e => update(scene.id, 'scriptOff', e.target.value)}
                                                 placeholder="ID para desligar"
                                                 className="w-full bg-bg2 border border-soft rounded-lg px-3 py-2 text-xs font-mono text-fg focus:border-figueira outline-none placeholder:text-muted/30" />
@@ -206,7 +206,7 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
 
                                 {/* Preview */}
                                 <div className="flex items-center gap-2 pt-2 border-t border-soft/50">
-                                    <span className="text-[7px] font-black uppercase tracking-widest text-muted">Preview:</span>
+                                    <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Preview:</span>
                                     <div className={`px-3 py-1.5 rounded-lg border-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest
                                         ${scene.cor === 'blue' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : ''}
                                         ${scene.cor === 'purple' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : ''}
@@ -219,7 +219,7 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
                                     `}>
                                         <IconPreview size={14} />
                                         {scene.nome || 'Sem nome'}
-                                        {scene.tipo === 'toggle' && <span className="text-[7px] opacity-60 ml-1">ON/OFF</span>}
+                                        {scene.tipo === 'toggle' && <span className="text-[13px] opacity-60 ml-1">ON/OFF</span>}
                                     </div>
                                 </div>
                             </div>
@@ -227,8 +227,8 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
                     })}
             </div>
 
-            <div className="bg-bg border border-soft rounded-xl p-4 text-[9px] text-muted/60 space-y-1">
-                <p className="font-black uppercase tracking-widest text-muted text-[8px]">Como funciona:</p>
+            <div className="bg-bg border border-soft rounded-xl p-4 text-[13px] text-muted/60 space-y-1">
+                <p className="font-bold uppercase tracking-wide text-muted text-[13px]">Como funciona:</p>
                 <p><strong>Push:</strong> Clica e executa o script uma vez (ex: flash, transicao).</p>
                 <p><strong>Toggle:</strong> Liga/desliga — usa 2 scripts diferentes (ex: ligar cena / desligar cena).</p>
                 <p><strong>Script ID:</strong> No Holyrics, va a Ferramentas &gt; Scripts e copie o ID do script que controla o Lumikit.</p>
@@ -238,7 +238,7 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
             {/* GUARDAR */}
             <div className="flex justify-end">
                 <button onClick={handleSave} disabled={saving}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-fg text-bg text-[9px] font-black uppercase tracking-widest hover:bg-figueira transition-all disabled:opacity-50 shadow-sm">
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-fg text-bg text-[13px] font-bold uppercase tracking-wide hover:bg-figueira transition-all disabled:opacity-50 shadow-sm">
                     {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
                     Guardar Botoes
                 </button>

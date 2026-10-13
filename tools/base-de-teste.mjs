@@ -12,18 +12,33 @@
 import { spawnSync } from 'node:child_process'
 import { urlDeTeste, prismaDeTeste } from './url-de-teste.mjs'
 
+// Os modulos do sistema (iguais a MODULOS em lib/planos.ts)
+const MODULOS = {
+    ESCALAS: 'escalas', GRUPOS: 'grupos', LOUVOR: 'louvor', FINANCEIRO: 'financeiro', CANTINA: 'cantina',
+    ACOLHIMENTO: 'acolhimento', INVENTARIO: 'inventario', GABINETE: 'gabinete', MURAL: 'mural',
+    PERSONALIZACAO: 'personalizacao', RELATORIOS: 'relatorios', AUDITORIA: 'auditoria', HOLYRICS: 'holyrics',
+    MESA_SOM: 'mesa_som', CIFRAS: 'cifras', LUMIKIT: 'lumikit', PREGACAO: 'pregacao', EBD: 'ebd',
+    BOLEIA: 'boleia', ASSISTENCIA: 'assistencia',
+}
+
 export const SENHA_TESTE = 'senha-de-teste-123'
 export const PAPEIS = ['ADMIN', 'CONGREGATION_ADMIN', 'LEADER', 'FINANCE', 'MANAGER', 'USER']
 
 const url = urlDeTeste()
 
-console.log('1/2 · db push para o schema admvc_teste…')
-const r = spawnSync('npx', ['prisma', 'db', 'push', '--accept-data-loss'], {
-    stdio: 'inherit',
-    shell: true,
-    env: { ...process.env, DATABASE_URL: url },
-})
-if (r.status !== 0) process.exit(r.status ?? 1)
+// Com --sem-push salta o db push (quando o schema ja foi atualizado por uma
+// migracao aplicada a mao): so recria os dados de teste.
+if (process.argv.includes('--sem-push')) {
+    console.log('1/2 · db push saltado (--sem-push)')
+} else {
+    console.log('1/2 · db push para o schema admvc_teste…')
+    const r = spawnSync('npx', ['prisma', 'db', 'push', '--accept-data-loss'], {
+        stdio: 'inherit',
+        shell: true,
+        env: { ...process.env, DATABASE_URL: url },
+    })
+    if (r.status !== 0) process.exit(r.status ?? 1)
+}
 
 console.log('2/2 · dados ficticios…')
 const { prisma, fechar } = await prismaDeTeste(url)
@@ -49,8 +64,11 @@ for (const letra of ['a', 'b']) {
     const L = letra.toUpperCase()
     const tenant = await prisma.tenant.create({
         data: { slug: `igreja-${letra}`, nome: `Igreja de Teste ${L}`, plano: 'ENTERPRISE', status: 'ATIVO', onboarding_completo: true,
-            // Os mesmos modulos que a igreja tem ligados na producao (painel Cloud)
-            modulos_custom: ['escalas', 'grupos', 'louvor', 'mural', 'personalizacao', 'holyrics', 'cifras'] },
+            // A: todos os modulos (e a igreja com que o dono testa). B: os mesmos
+            // que a igreja tem ligados na producao (para ver modulos desligados).
+            modulos_custom: letra === 'a'
+                ? Object.values(MODULOS)
+                : ['escalas', 'grupos', 'louvor', 'mural', 'personalizacao', 'holyrics', 'cifras'] },
     })
     const cong = await prisma.congregacao.create({
         data: { nome: `Sede ${L}`, cidade: 'Lisboa', endereco: 'Rua de Teste, 1', tenant_id: tenant.id },
@@ -91,7 +109,7 @@ for (const letra of ['a', 'b']) {
     })
 
     // Louvor: o LEADER lidera; funcoes; uma equipa com nomes (para as capturas)
-    const depto = await prisma.departamento.create({ data: { nome: 'Louvor', tenant_id: tenant.id, lider_id: membros.LEADER.id } })
+    const depto = await prisma.departamento.create({ data: { nome: 'Louvor', e_louvor: true, tenant_id: tenant.id, lider_id: membros.LEADER.id } })
     const funcoes = {}
     for (const nome of ['Voz', 'Teclas', 'Guitarra', 'Bateria']) {
         funcoes[nome] = await prisma.funcaoDepartamento.create({ data: { nome, departamento_id: depto.id, tenant_id: tenant.id } })
@@ -139,11 +157,50 @@ for (const letra of ['a', 'b']) {
     await prisma.escala.create({
         data: { funcao: 'Teclas', funcao_id: funcoes.Teclas.id, evento_id: evento.id, departamento_id: depto.id, membro_id: bruno.id, tenant_id: tenant.id, confirmado: true },
     })
+    // Repertorio da igreja (cada igreja o seu) e a setlist do primeiro domingo
+    const musicas = []
+    for (const [titulo, artista, tom, bpm, cifra] of [
+        [`Grande é o Senhor ${L}`, 'Adhemar de Campos', 'G', 72, 'adhemar-de-campos/grande-o-senhor'],
+        ['Lugar Secreto', 'Gabriela Rocha', 'D', 68, 'gabriela-rocha/lugar-secreto'],
+        ['Ousado Amor', 'Isaías Saad', 'A', 76, 'isaias-saad/ousado-amor'],
+        ['Bondade de Deus', 'Isaías Saad', 'C', 70, 'isaias-saad/bondade-de-deus'],
+    ]) {
+        musicas.push(await prisma.musica.create({
+            data: { titulo, artista, tom, bpm, tenant_id: tenant.id, link_cifra: `https://www.cifraclub.com.br/${cifra}/`,
+                cifra_interna: titulo.startsWith('Grande') ? '[G]Grande é o Se[D]nhor\n[Em]Digno de [C]louvor' : null },
+        }))
+    }
+    for (const [i, [m, tom]] of [[musicas[0], 'A'], [musicas[1], 'D']].entries()) {
+        await prisma.repertorioEvento.create({ data: { evento_id: evento.id, musica_id: m.id, tom_tocado: tom, ordem: i + 1, tenant_id: tenant.id } })
+    }
+
     // A Carla nao pode no primeiro domingo (indisponibilidade marcada)
     const carla = equipa.find(([m]) => m.first_name === 'Carla')[0]
     await prisma.indisponibilidadeMembro.create({
         data: { membro_id: carla.id, tenant_id: tenant.id, tipo: 'DATA_ESPECIFICA', data_inicio: diaHora(domingo, 0), motivo: 'Viagem' },
     })
+
+    // Diaconia (Obreiros): lider proprio, funcoes, equipa e uma escala no domingo
+    const novo = (first, last, email, role = 'USER') => prisma.membro.create({
+        data: { first_name: first, last_name: last, email, password: hash, role, status: 'ATIVO', is_active: true, termo_aceite: true,
+            tenant_id: tenant.id, congregacao_id: cong.id, phone_1: '91' + String(Math.floor(1000000 + Math.random() * 8999999)) },
+    })
+    const liderObreiros = await novo('Paulo', 'Diácono', `obreiros@${letra}.teste`, 'LEADER')
+    const rui = await novo('Rui', 'Martins', `rui@${letra}.teste`)
+    const diaconia = await prisma.departamento.create({ data: { nome: 'Diaconia', tenant_id: tenant.id, lider_id: liderObreiros.id } })
+    const fd = {}
+    for (const nome of ['Porta', 'Recepção', 'Ofertas', 'Santa Ceia']) {
+        fd[nome] = await prisma.funcaoDepartamento.create({ data: { nome, departamento_id: diaconia.id, tenant_id: tenant.id } })
+    }
+    const daniel = equipa.find(([m]) => m.first_name === 'Daniel')[0]
+    const ana = equipa.find(([m]) => m.first_name === 'Ana')[0]
+    for (const [m, fs] of [[liderObreiros, ['Porta', 'Recepção']], [daniel, ['Porta', 'Santa Ceia']], [ana, ['Recepção', 'Ofertas']], [rui, ['Ofertas', 'Porta']]]) {
+        await prisma.integranteDepartamento.create({
+            data: { membro_id: m.id, departamento_id: diaconia.id, tenant_id: tenant.id, funcoes: { create: fs.map((f) => ({ funcao_id: fd[f].id })) } },
+        })
+    }
+    await prisma.escala.create({ data: { funcao: 'Porta', funcao_id: fd.Porta.id, evento_id: evento.id, departamento_id: diaconia.id, membro_id: daniel.id, tenant_id: tenant.id, confirmado: true } })
+    await prisma.escala.create({ data: { funcao: 'Ofertas', funcao_id: fd.Ofertas.id, evento_id: evento.id, departamento_id: diaconia.id, membro_id: rui.id, tenant_id: tenant.id } })
 
     await prisma.grupo.create({
         data: {

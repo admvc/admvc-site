@@ -89,7 +89,7 @@ export default async function RecibosPage({
             {/* Header */}
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">
+                    <h1 className="text-3xl font-bold text-fg">
                         Recibos de Donativo
                     </h1>
                     <p className="text-xs text-muted">
@@ -130,7 +130,7 @@ export default async function RecibosPage({
                         </div>
                         <div>
                             <p className="text-xs text-muted">Recibos emitidos</p>
-                            <p className="text-2xl font-black text-fg">{recibos.length}</p>
+                            <p className="text-2xl font-bold text-fg">{recibos.length}</p>
                         </div>
                     </div>
                 </div>
@@ -142,7 +142,7 @@ export default async function RecibosPage({
                         </div>
                         <div>
                             <p className="text-xs text-muted">Valor total</p>
-                            <p className="text-2xl font-black text-fg">{euro(valorTotal)}</p>
+                            <p className="text-2xl font-bold text-fg">{euro(valorTotal)}</p>
                         </div>
                     </div>
                 </div>
@@ -154,7 +154,7 @@ export default async function RecibosPage({
                         </div>
                         <div>
                             <p className="text-xs text-muted">Membros sem recibo</p>
-                            <p className="text-2xl font-black text-fg">{semRecibo}</p>
+                            <p className="text-2xl font-bold text-fg">{semRecibo}</p>
                         </div>
                     </div>
                 </div>

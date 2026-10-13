@@ -60,7 +60,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
                                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${cores[state.tipo || 'perigo'].icon}`}>
                                     <AlertTriangle size={18} />
                                 </div>
-                                <h3 className="text-sm font-black uppercase italic tracking-tighter text-fg">
+                                <h3 className="text-sm font-bold text-fg">
                                     {state.titulo || 'Confirmação'}
                                 </h3>
                             </div>
@@ -79,13 +79,13 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
                             <div className="grid grid-cols-2 gap-3">
                                 <button
                                     onClick={() => handleClose(false)}
-                                    className="py-3 rounded-xl text-[9px] font-black uppercase tracking-widest bg-bg2 border border-soft text-muted hover:bg-soft transition-all"
+                                    className="py-3 rounded-xl text-[13px] font-bold uppercase tracking-wide bg-bg2 border border-soft text-muted hover:bg-soft transition-all"
                                 >
                                     {state.botaoCancelar || 'Cancelar'}
                                 </button>
                                 <button
                                     onClick={() => handleClose(true)}
-                                    className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest text-white transition-all flex items-center justify-center gap-2 active:scale-95 shadow-md ${cores[state.tipo || 'perigo'].btn}`}
+                                    className={`py-3 rounded-xl text-[13px] font-bold uppercase tracking-wide text-white transition-all flex items-center justify-center gap-2 active:scale-95 shadow-md ${cores[state.tipo || 'perigo'].btn}`}
                                 >
                                     {state.botaoConfirmar || 'Confirmar'}
                                 </button>
@@ -158,7 +158,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                             className={`pointer-events-auto w-full max-w-sm flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl animate-in slide-in-from-top-4 fade-in duration-200 ${cores[t.tipo]}`}
                         >
                             <span className="shrink-0">{icones[t.tipo]}</span>
-                            <p className="flex-1 text-[11px] font-bold leading-snug">{t.mensagem}</p>
+                            <p className="flex-1 text-[14px] font-bold leading-snug">{t.mensagem}</p>
                             <button onClick={() => remover(t.id)} className="shrink-0 opacity-60 hover:opacity-100 transition-opacity">
                                 <X size={14} />
                             </button>

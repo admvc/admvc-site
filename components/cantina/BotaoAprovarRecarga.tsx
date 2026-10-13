@@ -33,7 +33,7 @@ export default function BotaoAprovarRecarga({ pedidoId }: Props) {
 
     if (aprovado) {
         return (
-            <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1">
+            <span className="text-[13px] font-bold uppercase tracking-wide text-emerald-400 flex items-center gap-1">
                 <CheckCircle size={12} /> Aprovado
             </span>
         )
@@ -41,11 +41,11 @@ export default function BotaoAprovarRecarga({ pedidoId }: Props) {
 
     return (
         <div className="flex items-center gap-2">
-            {erro && <span className="text-[9px] text-red-400">{erro}</span>}
+            {erro && <span className="text-[13px] text-red-400">{erro}</span>}
             <button
                 onClick={handleAprovar}
                 disabled={loading}
-                className="px-4 py-2 bg-figueira text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-40 flex items-center gap-1"
+                className="px-4 py-2 bg-figueira text-white rounded-xl text-[14px] font-bold uppercase tracking-wide hover:opacity-90 transition-all disabled:opacity-40 flex items-center gap-1"
             >
                 {loading ? <Loader2 size={12} className="animate-spin" /> : <CheckCircle size={12} />}
                 Aprovar

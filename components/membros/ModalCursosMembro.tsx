@@ -62,8 +62,8 @@ export default function ModalCursosMembro({ aberto, onClose, cursos, meusInteres
                             <GraduationCap size={18} />
                         </div>
                         <div>
-                            <h3 className="text-sm font-black uppercase italic tracking-tighter text-fg">Cursos</h3>
-                            <p className="text-[8px] font-bold text-muted uppercase tracking-widest">{cursos.length} disponíveis</p>
+                            <h3 className="text-sm font-bold text-fg">Cursos</h3>
+                            <p className="text-[13px] font-bold text-muted uppercase tracking-wide">{cursos.length} disponíveis</p>
                         </div>
                     </div>
                     <button
@@ -91,21 +91,21 @@ export default function ModalCursosMembro({ aberto, onClose, cursos, meusInteres
                                             <GraduationCap size={20} />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="text-[11px] font-black uppercase italic text-fg">{curso.titulo}</h4>
+                                            <h4 className="text-[14px] font-bold uppercase text-fg">{curso.titulo}</h4>
                                             {curso.descricao && (
-                                                <p className="text-[9px] text-muted mt-0.5 line-clamp-2">{curso.descricao}</p>
+                                                <p className="text-[13px] text-muted mt-0.5 line-clamp-2">{curso.descricao}</p>
                                             )}
                                             <div className="flex items-center gap-3 mt-2">
-                                                <span className="flex items-center gap-1 text-[8px] text-muted font-bold">
+                                                <span className="flex items-center gap-1 text-[13px] text-muted font-bold">
                                                     <Calendar size={10} className="shrink-0" /> {dataInicio} — {dataFim}
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-3 mt-1">
-                                                <span className="text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md bg-purple-500/10 text-purple-500 border border-purple-500/20">
+                                                <span className="text-[13px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-md bg-purple-500/10 text-purple-500 border border-purple-500/20">
                                                     {curso.categoria}
                                                 </span>
                                                 {curso._count?.turmas && curso._count.turmas > 0 && (
-                                                    <span className="flex items-center gap-1 text-[8px] text-muted font-bold">
+                                                    <span className="flex items-center gap-1 text-[13px] text-muted font-bold">
                                                         <Users size={10} /> {matriculas}{curso.vagas_maximas ? `/${curso.vagas_maximas}` : ''} inscritos
                                                     </span>
                                                 )}
@@ -114,14 +114,14 @@ export default function ModalCursosMembro({ aberto, onClose, cursos, meusInteres
                                     </div>
 
                                     {jaTemInteresse ? (
-                                        <div className="w-full py-2 text-center rounded-xl bg-figueira/10 text-figueira text-[9px] font-black uppercase tracking-widest border border-figueira/20">
+                                        <div className="w-full py-2 text-center rounded-xl bg-figueira/10 text-figueira text-[13px] font-bold uppercase tracking-wide border border-figueira/20">
                                             Interesse Manifestado
                                         </div>
                                     ) : (
                                         <button
                                             onClick={() => handleInteresse(curso.id)}
                                             disabled={loading}
-                                            className="w-full py-2.5 rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20 text-[9px] font-black uppercase tracking-widest hover:bg-purple-500 hover:text-white transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                                            className="w-full py-2.5 rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20 text-[13px] font-bold uppercase tracking-wide hover:bg-purple-500 hover:text-white transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
                                         >
                                             {loading ? <Loader2 size={13} className="animate-spin" /> : <GraduationCap size={13} />}
                                             {loading ? 'A enviar...' : 'Tenho Interesse'}
@@ -133,7 +133,7 @@ export default function ModalCursosMembro({ aberto, onClose, cursos, meusInteres
                     ) : (
                         <div className="text-center py-8">
                             <GraduationCap size={28} className="mx-auto text-muted/20 mb-2" />
-                            <p className="text-[9px] font-black uppercase tracking-widest text-muted">Sem cursos disponíveis de momento</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Sem cursos disponíveis de momento</p>
                         </div>
                     )}
                 </div>

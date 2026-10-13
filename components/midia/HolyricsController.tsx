@@ -259,15 +259,15 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                         {status === 'testing' ? <Loader2 size={16} className="animate-spin" /> : <MonitorPlay size={16} />}
                     </div>
                     <div>
-                        <h1 className="text-sm font-black italic uppercase tracking-tighter text-fg leading-none">Holyrics</h1>
-                        <span className="text-[8px] font-bold uppercase tracking-widest text-muted flex items-center gap-1">
+                        <h1 className="text-sm font-bold text-fg leading-none">Holyrics</h1>
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1">
                             {status === 'connected' ? <CheckCircle2 size={8} className="text-green-500" /> : status === 'testing' ? <Loader2 size={8} className="animate-spin" /> : <XCircle size={8} className="text-red-400" />}
                             {status === 'connected' ? 'Conectado' : status === 'testing' ? 'A conectar...' : 'Desconectado'}
                         </span>
                     </div>
                 </div>
                 {ipAddress && (
-                    <span className="text-[8px] font-bold uppercase tracking-widest text-muted bg-soft px-2 py-1 rounded">
+                    <span className="text-[13px] font-bold uppercase tracking-wide text-muted bg-soft px-2 py-1 rounded">
                         {ipAddress.replace(/^https?:\/\//, '')}
                     </span>
                 )}
@@ -281,7 +281,7 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                     <div className="p-4 border-b border-soft flex justify-between items-center shrink-0 bg-soft/10">
                         <div className="flex items-center gap-2">
                             <ListVideo className="text-figueira" size={18} />
-                            <h3 className="text-xs font-black uppercase italic tracking-tighter text-fg">Escala do Culto</h3>
+                            <h3 className="text-xs font-bold text-fg">Escala do Culto</h3>
                         </div>
                         {loadingPlaylist ? <Loader2 size={14} className="animate-spin text-muted" /> : (
                             <button onClick={fetchPlaylistReal} className="p-1.5 bg-bg border border-soft rounded-md hover:text-figueira transition-colors" title="Atualizar Lista">
@@ -300,9 +300,9 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                                 >
                                     <div className="flex items-center gap-2">
                                         {group.isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                                        <span className="text-[10px] font-black uppercase tracking-widest drop-shadow-md truncate">{group.titleInfo.name}</span>
+                                        <span className="text-[14px] font-bold uppercase tracking-wide drop-shadow-md truncate">{group.titleInfo.name}</span>
                                     </div>
-                                    <span className="text-[9px] font-bold bg-black/20 px-1.5 py-0.5 rounded-md">{group.items.length}</span>
+                                    <span className="text-[13px] font-bold bg-black/20 px-1.5 py-0.5 rounded-md">{group.items.length}</span>
                                 </button>
 
                                 {group.isExpanded && (
@@ -319,9 +319,9 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                                                     {renderIcone(item.type)}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <h4 className="text-[11px] font-black text-fg truncate group-hover:text-figueira transition-colors">{item.name}</h4>
+                                                    <h4 className="text-[14px] font-bold text-fg truncate group-hover:text-figueira transition-colors">{item.name}</h4>
                                                     {item.text && (
-                                                        <p className="text-[8px] font-bold text-muted line-clamp-1 mt-0.5 leading-relaxed">"{item.text.replace(/\n/g, ' ')}"</p>
+                                                        <p className="text-[13px] font-bold text-muted line-clamp-1 mt-0.5 leading-relaxed">"{item.text.replace(/\n/g, ' ')}"</p>
                                                     )}
                                                 </div>
                                             </div>
@@ -341,10 +341,10 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                         {/* Navegação Básica */}
                         <div className="flex gap-2 mr-auto">
                             <button onClick={() => sendCommand('ActionPrevious')} className="bg-bg border border-soft hover:border-figueira hover:text-figueira text-fg px-4 py-2 rounded-xl flex items-center gap-2 transition-all active:scale-95">
-                                <ArrowLeft size={16} /> <span className="text-[10px] font-black uppercase tracking-widest hidden md:inline">Anterior</span>
+                                <ArrowLeft size={16} /> <span className="text-[14px] font-bold uppercase tracking-wide hidden md:inline">Anterior</span>
                             </button>
                             <button onClick={() => sendCommand('ActionNext')} className="bg-bg border border-soft hover:border-figueira hover:text-figueira text-fg px-4 py-2 rounded-xl flex items-center gap-2 transition-all active:scale-95">
-                                <span className="text-[10px] font-black uppercase tracking-widest hidden md:inline">Próximo</span> <ArrowRight size={16} />
+                                <span className="text-[14px] font-bold uppercase tracking-wide hidden md:inline">Próximo</span> <ArrowRight size={16} />
                             </button>
                         </div>
 
@@ -356,25 +356,25 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                                 className={`bg-bg border border-soft hover:border-blue-500 hover:text-blue-500 text-fg px-4 py-2 rounded-xl flex items-center gap-2 transition-all active:scale-95 ${isFavoritesMenuOpen && 'border-blue-500 text-blue-500 shadow-md'}`}
                                 title="Favoritos"
                             >
-                                <Menu size={16} /> <span className="text-[9px] font-black uppercase tracking-widest hidden xl:inline">Favoritos</span>
+                                <Menu size={16} /> <span className="text-[13px] font-bold uppercase tracking-wide hidden xl:inline">Favoritos</span>
                             </button>
 
                             {/* DROPDOWN DOS FAVORITOS */}
                             {isFavoritesMenuOpen && (
                                 <div className="absolute top-full mt-2 right-0 md:right-auto md:left-0 w-56 bg-bg border border-soft rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
                                     <div className="bg-soft/20 px-4 py-2 border-b border-soft/50 flex justify-between items-center">
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-muted">Acesso Rápido</span>
-                                        <span className="text-[9px] bg-bg2 px-1.5 rounded text-fg">{favorites.length}</span>
+                                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Acesso Rápido</span>
+                                        <span className="text-[13px] bg-bg2 px-1.5 rounded text-fg">{favorites.length}</span>
                                     </div>
                                     <div className="flex flex-col max-h-60 overflow-y-auto scrollbar-hide p-2 gap-1">
                                         {favorites.length === 0 ? (
-                                            <div className="p-4 text-center text-muted text-[10px] font-bold">Nenhum favorito guardado no Holyrics.</div>
+                                            <div className="p-4 text-center text-muted text-[14px] font-bold">Nenhum favorito guardado no Holyrics.</div>
                                         ) : (
                                             favorites.map((fav) => (
                                                 <button
                                                     key={fav.id}
                                                     onClick={() => executeFavorite(fav.id)}
-                                                    className="text-left px-3 py-2.5 hover:bg-soft/30 rounded-xl text-[10px] font-black uppercase tracking-widest text-fg transition-colors truncate"
+                                                    className="text-left px-3 py-2.5 hover:bg-soft/30 rounded-xl text-[14px] font-bold uppercase tracking-wide text-fg transition-colors truncate"
                                                 >
                                                     {fav.name}
                                                 </button>
@@ -390,11 +390,11 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                                 className="bg-bg border border-soft hover:border-blue-500 hover:text-blue-500 text-fg px-4 py-2 rounded-xl flex items-center gap-2 transition-all active:scale-95"
                                 title="Abrir Bíblia"
                             >
-                                <BookOpen size={16} /> <span className="text-[9px] font-black uppercase tracking-widest hidden xl:inline">Bíblia</span>
+                                <BookOpen size={16} /> <span className="text-[13px] font-bold uppercase tracking-wide hidden xl:inline">Bíblia</span>
                             </button>
 
                             <button onClick={() => sendCommand('ToggleF8')} className="bg-bg border border-soft hover:border-orange-500 hover:text-orange-500 text-fg px-4 py-2 rounded-xl flex items-center gap-2 transition-all active:scale-95" title="Esconder/Mostrar Texto">
-                                <Type size={16} /> <span className="text-[9px] font-black uppercase tracking-widest hidden xl:inline">Limpar Texto</span>
+                                <Type size={16} /> <span className="text-[13px] font-bold uppercase tracking-wide hidden xl:inline">Limpar Texto</span>
                             </button>
 
                             <button
@@ -402,11 +402,11 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                                 className="bg-bg border border-soft hover:border-red-500 hover:text-red-500 text-fg px-4 py-2 rounded-xl flex items-center gap-2 transition-all active:scale-95"
                                 title="Parar Mídia no VLC"
                             >
-                                <StopCircle size={16} /> <span className="text-[9px] font-black uppercase tracking-widest hidden xl:inline">Stop Mídia</span>
+                                <StopCircle size={16} /> <span className="text-[13px] font-bold uppercase tracking-wide hidden xl:inline">Stop Mídia</span>
                             </button>
 
                             <button onClick={() => sendCommand('CloseCurrentPresentation')} className="bg-red-500/10 border border-red-500/20 hover:bg-red-500 hover:text-white text-red-600 px-4 py-2 rounded-xl flex items-center gap-2 transition-all active:scale-95" title="Fechar Apresentação Atual">
-                                <Square size={16} className="fill-current" /> <span className="text-[9px] font-black uppercase tracking-widest hidden xl:inline">Apagar Tudo</span>
+                                <Square size={16} className="fill-current" /> <span className="text-[13px] font-bold uppercase tracking-wide hidden xl:inline">Apagar Tudo</span>
                             </button>
                         </div>
                     </div>
@@ -416,7 +416,7 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
 
                         {/* Monitor Principal */}
                         <div className="flex-1 w-full aspect-video bg-black rounded-2xl border-4 border-bg2 shadow-2xl relative overflow-hidden flex flex-col group">
-                            <div className="absolute top-3 left-3 bg-red-600 text-white text-[8px] px-2 py-1 rounded-full font-black uppercase tracking-widest z-10 flex items-center gap-1.5 shadow-md">
+                            <div className="absolute top-3 left-3 bg-red-600 text-white text-[13px] px-2 py-1 rounded-full font-bold uppercase tracking-wide z-10 flex items-center gap-1.5 shadow-md">
                                 <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
                                 Telão Principal
                             </div>
@@ -430,14 +430,14 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                             ) : (
                                 <div className="flex-1 flex flex-col items-center justify-center opacity-30 group-hover:opacity-50 transition-opacity">
                                     <Monitor size={48} strokeWidth={1} className="text-white mb-2" />
-                                    <span className="text-[10px] text-white font-bold uppercase tracking-widest">Aguardando Imagem</span>
+                                    <span className="text-[14px] text-white font-bold uppercase tracking-wide">Aguardando Imagem</span>
                                 </div>
                             )}
                         </div>
 
                         {/* Monitor Retorno */}
                         <div className="flex-1 w-full aspect-video bg-neutral-900 rounded-2xl border-4 border-bg2 shadow-xl relative overflow-hidden flex flex-col group">
-                            <div className="absolute top-3 left-3 bg-blue-600 text-white text-[8px] px-2 py-1 rounded-full font-black uppercase tracking-widest z-10 flex items-center gap-1.5 shadow-md">
+                            <div className="absolute top-3 left-3 bg-blue-600 text-white text-[13px] px-2 py-1 rounded-full font-bold uppercase tracking-wide z-10 flex items-center gap-1.5 shadow-md">
                                 <MonitorPlay size={10} />
                                 Retorno (Palco)
                             </div>
@@ -451,7 +451,7 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                             ) : (
                                 <div className="flex-1 flex flex-col items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity">
                                     <Monitor size={40} strokeWidth={1} className="text-white mb-2" />
-                                    <span className="text-[9px] text-white font-bold uppercase tracking-widest">Visão do Altar</span>
+                                    <span className="text-[13px] text-white font-bold uppercase tracking-wide">Visão do Altar</span>
                                 </div>
                             )}
                         </div>
@@ -467,7 +467,7 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                 >
                     <div className="flex items-center gap-2">
                         <TerminalSquare size={14} className="text-white/60" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-white/60">
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-white/60">
                             Terminal de Logs {logs.length > 0 && `(${logs.length})`}
                         </span>
                     </div>
@@ -475,9 +475,9 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                 </button>
 
                 {isTerminalOpen && (
-                    <div className="p-3 h-40 overflow-y-auto font-mono text-[9px] space-y-1.5 bg-black/50 scrollbar-hide">
+                    <div className="p-3 h-40 overflow-y-auto font-mono text-[13px] space-y-1.5 bg-black/50 scrollbar-hide">
                         {logs.length === 0 ? (
-                            <p className="text-white/30 text-center italic mt-10">A aguardar comandos...</p>
+                            <p className="text-white/30 text-center mt-10">A aguardar comandos...</p>
                         ) : (
                             logs.map((log) => (
                                 <div key={log.id} className="flex gap-2 leading-relaxed border-b border-white/5 pb-1">
@@ -507,7 +507,7 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                         <div className="flex justify-between items-center p-4 border-b border-soft bg-soft/10">
                             <div className="flex items-center gap-2 text-fg">
                                 <BookOpen size={20} className="text-blue-500" />
-                                <h2 className="text-sm font-black uppercase tracking-widest">Bíblia Sagrada</h2>
+                                <h2 className="text-sm font-bold">Bíblia Sagrada</h2>
                             </div>
                             <button onClick={() => setIsBibleOpen(false)} className="text-muted hover:text-red-500 transition-colors p-1">
                                 <X size={20} />
@@ -519,7 +519,7 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
 
                             {/* Seleção de Livro (Scrollable) */}
                             <div className="flex-1">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-muted mb-2 block">Livro</label>
+                                <label className="text-[14px] font-bold uppercase tracking-wide text-muted mb-2 block">Livro</label>
                                 <div className="h-48 overflow-y-auto pr-2 space-y-1 scrollbar-thin scrollbar-thumb-soft scrollbar-track-transparent">
                                     {bibleBooks.map((book) => (
                                         <button
@@ -537,30 +537,30 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
                             <div className="flex flex-col gap-4 justify-center md:w-48">
                                 <div className="flex gap-4">
                                     <div className="flex-1">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted mb-2 block">Capítulo</label>
+                                        <label className="text-[14px] font-bold uppercase tracking-wide text-muted mb-2 block">Capítulo</label>
                                         <input
                                             type="number"
                                             min="1"
                                             value={chapter}
                                             onChange={(e) => setChapter(e.target.value)}
-                                            className="w-full bg-bg2 border border-soft rounded-xl px-4 py-3 text-center font-black text-lg text-fg outline-none focus:border-blue-500 transition-colors"
+                                            className="w-full bg-bg2 border border-soft rounded-xl px-4 py-3 text-center font-bold text-lg text-fg outline-none focus:border-blue-500 transition-colors"
                                         />
                                     </div>
                                     <div className="flex-1">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted mb-2 block">Versículo</label>
+                                        <label className="text-[14px] font-bold uppercase tracking-wide text-muted mb-2 block">Versículo</label>
                                         <input
                                             type="number"
                                             min="1"
                                             value={verse}
                                             onChange={(e) => setVerse(e.target.value)}
-                                            className="w-full bg-bg2 border border-soft rounded-xl px-4 py-3 text-center font-black text-lg text-fg outline-none focus:border-blue-500 transition-colors"
+                                            className="w-full bg-bg2 border border-soft rounded-xl px-4 py-3 text-center font-bold text-lg text-fg outline-none focus:border-blue-500 transition-colors"
                                         />
                                     </div>
                                 </div>
 
                                 <button
                                     onClick={projectBible}
-                                    className="w-full mt-4 bg-blue-600 hover:bg-blue-500 text-white px-4 py-4 rounded-xl font-black uppercase text-xs tracking-widest transition-all active:scale-95 shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2"
+                                    className="w-full mt-4 bg-blue-600 hover:bg-blue-500 text-white px-4 py-4 rounded-xl font-bold text-xs transition-all active:scale-95 shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2"
                                 >
                                     <MonitorPlay size={16} /> Projetar
                                 </button>

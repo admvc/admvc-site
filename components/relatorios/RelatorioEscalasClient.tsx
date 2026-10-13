@@ -74,10 +74,10 @@ function RelatorioContent({ dados, departamentos, mes, ano, deptoFiltro, totalEs
         <>
             <header className="flex items-center justify-between">
                 <div className="space-y-1">
-                    <Link href="/admin/relatorios" className="flex items-center gap-2 text-[10px] font-black uppercase text-muted hover:text-figueira transition-all mb-2">
+                    <Link href="/admin/relatorios" className="flex items-center gap-2 text-[14px] font-bold uppercase text-muted hover:text-figueira transition-all mb-2">
                         <ArrowLeft size={12} /> Relatorios
                     </Link>
-                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Escalas por Membro</h1>
+                    <h1 className="text-3xl font-bold text-fg">Escalas por Membro</h1>
                     <p className="text-xs text-muted">Participacao, funcoes e disponibilidade de cada voluntario.</p>
                 </div>
             </header>
@@ -89,8 +89,8 @@ function RelatorioContent({ dados, departamentos, mes, ano, deptoFiltro, totalEs
                         <ChevronLeft size={16} className="text-muted" />
                     </button>
                     <div className="text-center min-w-[160px]">
-                        <p className="text-sm font-black uppercase tracking-widest text-fg">{MESES[mes - 1]}</p>
-                        <p className="text-[9px] font-bold text-muted uppercase tracking-widest">{ano}</p>
+                        <p className="text-sm font-bold text-fg">{MESES[mes - 1]}</p>
+                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide">{ano}</p>
                     </div>
                     <button onClick={mesSeguinte} className="p-2 bg-bg2 border border-soft rounded-xl hover:bg-soft transition-all">
                         <ChevronRight size={16} className="text-muted" />
@@ -102,7 +102,7 @@ function RelatorioContent({ dados, departamentos, mes, ano, deptoFiltro, totalEs
                     <select
                         value={deptoFiltro ?? ''}
                         onChange={(e) => navegar({ departamento: e.target.value || undefined })}
-                        className="bg-bg2 border border-soft rounded-xl px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-fg appearance-none cursor-pointer pr-7"
+                        className="bg-bg2 border border-soft rounded-xl px-3 py-2 text-[14px] font-bold uppercase tracking-wide text-fg appearance-none cursor-pointer pr-7"
                         style={{
                             backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                             backgroundPosition: 'right 0.5rem center',
@@ -131,7 +131,7 @@ function RelatorioContent({ dados, departamentos, mes, ano, deptoFiltro, totalEs
             {/* LISTA DE MEMBROS */}
             {dados.length === 0 ? (
                 <div className="py-16 text-center bg-bg2 border border-soft rounded-2xl">
-                    <p className="text-[10px] font-black text-muted uppercase tracking-widest">Nenhuma escala encontrada neste periodo.</p>
+                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Nenhuma escala encontrada neste periodo.</p>
                 </div>
             ) : (
                 <div className="space-y-2">
@@ -155,17 +155,17 @@ function RelatorioContent({ dados, departamentos, mes, ano, deptoFiltro, totalEs
                                         {d.membro.avatar_file ? (
                                             <img src={d.membro.avatar_file} alt="" className="w-full h-full object-cover" />
                                         ) : (
-                                            <span className="text-[10px] font-black text-muted">{d.membro.first_name[0]}</span>
+                                            <span className="text-[14px] font-bold text-muted">{d.membro.first_name[0]}</span>
                                         )}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[11px] font-black uppercase text-fg truncate">
+                                        <p className="text-[14px] font-bold uppercase text-fg truncate">
                                             {d.membro.first_name} {d.membro.last_name}
                                         </p>
                                         <div className="flex items-center gap-2 mt-0.5">
-                                            <span className="text-[8px] font-bold text-muted uppercase tracking-widest">{d.total} escalas</span>
+                                            <span className="text-[13px] font-bold text-muted uppercase tracking-wide">{d.total} escalas</span>
                                             {funcoesList.length > 0 && (
-                                                <span className="text-[7px] font-bold bg-bg border border-soft px-1.5 py-0.5 rounded text-muted">
+                                                <span className="text-[13px] font-bold bg-bg border border-soft px-1.5 py-0.5 rounded text-muted">
                                                     {funcoesList[0][0]}
                                                 </span>
                                             )}
@@ -202,11 +202,11 @@ function RelatorioContent({ dados, departamentos, mes, ano, deptoFiltro, totalEs
                                     {/* FUNÇÕES DETALHADAS */}
                                     {funcoesList.length > 0 && (
                                         <div className="space-y-1">
-                                            <p className="text-[8px] font-black uppercase tracking-widest text-muted">Funcoes desempenhadas</p>
+                                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Funcoes desempenhadas</p>
                                             <div className="flex flex-wrap gap-1.5">
                                                 {funcoesList.map(([funcao, count]) => (
-                                                    <span key={funcao} className="text-[8px] font-bold bg-bg border border-soft px-2 py-1 rounded-lg text-fg">
-                                                        {funcao} <span className="text-figueira font-black">&times;{count}</span>
+                                                    <span key={funcao} className="text-[13px] font-bold bg-bg border border-soft px-2 py-1 rounded-lg text-fg">
+                                                        {funcao} <span className="text-figueira font-bold">&times;{count}</span>
                                                     </span>
                                                 ))}
                                             </div>
@@ -216,10 +216,10 @@ function RelatorioContent({ dados, departamentos, mes, ano, deptoFiltro, totalEs
                                     {/* DEPARTAMENTOS */}
                                     {!deptoFiltro && deptosList.length > 0 && (
                                         <div className="space-y-1">
-                                            <p className="text-[8px] font-black uppercase tracking-widest text-muted">Departamentos</p>
+                                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Departamentos</p>
                                             <div className="flex flex-wrap gap-1.5">
                                                 {deptosList.map(([depto, count]) => (
-                                                    <span key={depto} className="text-[7px] font-bold bg-figueira/10 text-figueira px-2 py-0.5 rounded border border-figueira/20">
+                                                    <span key={depto} className="text-[13px] font-bold bg-figueira/10 text-figueira px-2 py-0.5 rounded border border-figueira/20">
                                                         {depto} ({count})
                                                     </span>
                                                 ))}
@@ -229,12 +229,12 @@ function RelatorioContent({ dados, departamentos, mes, ano, deptoFiltro, totalEs
 
                                     {/* DATAS DOS EVENTOS */}
                                     <div className="space-y-1">
-                                        <p className="text-[8px] font-black uppercase tracking-widest text-muted">Datas escalado</p>
+                                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Datas escalado</p>
                                         <div className="flex flex-wrap gap-1">
                                             {d.datas.map((dt, i) => {
                                                 const date = new Date(dt)
                                                 return (
-                                                    <span key={i} className="text-[7px] font-bold bg-bg border border-soft px-1.5 py-0.5 rounded text-muted">
+                                                    <span key={i} className="text-[13px] font-bold bg-bg border border-soft px-1.5 py-0.5 rounded text-muted">
                                                         {date.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}
                                                     </span>
                                                 )
@@ -268,10 +268,10 @@ function Kpi({ label, value, icon, cor }: { label: string; value: any; icon: Rea
     return (
         <div className={`p-4 rounded-2xl border flex flex-col gap-2 ${cor ? cores[cor] : 'bg-bg2 border-soft text-fg'}`}>
             <div className="flex items-center justify-between">
-                <p className="text-[8px] font-black uppercase tracking-widest opacity-70">{label}</p>
+                <p className="text-[13px] font-bold uppercase tracking-wide opacity-70">{label}</p>
                 <div className="opacity-40">{icon}</div>
             </div>
-            <p className="text-xl font-black italic tracking-tighter leading-none">{value}</p>
+            <p className="text-xl font-bold leading-none">{value}</p>
         </div>
     )
 }
@@ -285,7 +285,7 @@ function StatPill({ label, value, cor }: { label: string; value: number; cor: st
         blue: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
     }
     return (
-        <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg border ${cores[cor] || ''}`}>
+        <span className={`text-[13px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg border ${cores[cor] || ''}`}>
             {value} {label}
         </span>
     )

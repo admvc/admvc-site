@@ -73,8 +73,8 @@ export default function ModalEditarAgenda({ agenda, membros }: { agenda: any, me
 
                         <div className="p-8 border-b border-soft bg-bg2">
                             <div className="space-y-1 pr-24">
-                                <span className="text-figueira font-black text-[9px] uppercase tracking-[0.3em]">Opções</span>
-                                <h3 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Editar <span className="text-muted/20">Agenda.</span></h3>
+                                <span className="text-figueira font-bold text-[13px] uppercase tracking-wide">Opções</span>
+                                <h3 className="text-3xl font-bold text-fg">Editar <span className="text-muted/20">Agenda.</span></h3>
                             </div>
                         </div>
 
@@ -87,20 +87,20 @@ export default function ModalEditarAgenda({ agenda, membros }: { agenda: any, me
                             {/* DONO E NOME */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2"><User size={12} /> Dono / Líder</label>
-                                    <select name="dono_id" defaultValue={agenda.dono_id} required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none cursor-pointer">
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2"><User size={12} /> Dono / Líder</label>
+                                    <select name="dono_id" defaultValue={agenda.dono_id} required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer">
                                         {membros.map(m => <option key={m.id} value={m.id}>{m.first_name} {m.last_name}</option>)}
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2"><Type size={12} /> Título</label>
-                                    <input name="nome" defaultValue={agenda.nome} required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none" />
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2"><Type size={12} /> Título</label>
+                                    <input name="nome" defaultValue={agenda.nome} required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none" />
                                 </div>
                             </div>
 
                             {/* DELEGAR GESTORES (NOVO) */}
                             <div className="bg-bg2 p-6 rounded-2xl border border-soft space-y-4">
-                                <label className="text-[10px] font-black uppercase text-fg tracking-[0.2em] flex items-center gap-2">
+                                <label className="text-[14px] font-bold uppercase text-fg tracking-wide flex items-center gap-2">
                                     <Shield size={12} className="text-figueira"/> Delegar a Gestores / Secretariado
                                 </label>
                                 
@@ -130,7 +130,7 @@ export default function ModalEditarAgenda({ agenda, membros }: { agenda: any, me
                                 {gestoresSelecionados.length > 0 && (
                                     <div className="flex flex-wrap gap-2 pt-2">
                                         {gestoresSelecionados.map((g, i) => (
-                                            <div key={i} className="flex items-center gap-2 bg-figueira/10 border border-figueira/20 text-figueira px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest">
+                                            <div key={i} className="flex items-center gap-2 bg-figueira/10 border border-figueira/20 text-figueira px-3 py-1.5 rounded-lg text-[13px] font-bold uppercase tracking-wide">
                                                 <span>{g.nome}</span>
                                                 <button type="button" onClick={() => removerGestor(g.id)} className="hover:text-red-500 transition-colors"><X size={12} /></button>
                                             </div>
@@ -141,16 +141,16 @@ export default function ModalEditarAgenda({ agenda, membros }: { agenda: any, me
 
                             {/* LINK */}
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2"><LinkIcon size={12} /> Link Público</label>
+                                <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2"><LinkIcon size={12} /> Link Público</label>
                                 <div className="flex bg-bg2 border-2 border-soft rounded-2xl overflow-hidden focus-within:border-figueira transition-colors">
-                                    <span className="px-4 py-4 bg-soft/30 text-muted text-[10px] font-black uppercase tracking-widest flex items-center border-r border-soft">/agenda/</span>
-                                    <input name="slug" defaultValue={agenda.slug} required onChange={(e) => setSlugPreview(e.target.value.toLowerCase().replace(/\s+/g, '-'))} className="w-full bg-transparent px-4 py-4 text-xs font-black text-fg outline-none" />
+                                    <span className="px-4 py-4 bg-soft/30 text-muted text-[14px] font-bold uppercase tracking-wide flex items-center border-r border-soft">/agenda/</span>
+                                    <input name="slug" defaultValue={agenda.slug} required onChange={(e) => setSlugPreview(e.target.value.toLowerCase().replace(/\s+/g, '-'))} className="w-full bg-transparent px-4 py-4 text-xs font-bold text-fg outline-none" />
                                 </div>
                             </div>
 
                             {/* BOTÃO SALVAR */}
                             <div className="pt-4 border-t border-soft mt-6">
-                                <button disabled={isPending} type="submit" className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50">
+                                <button disabled={isPending} type="submit" className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50">
                                     {isPending ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />} Atualizar Agenda
                                 </button>
                             </div>

@@ -144,27 +144,27 @@ export default function GrelhaRifa({ rifa, membros, membroPreSelecionadoId }: Gr
             <div className="flex-1 p-6 md:p-8 border-b md:border-b-0 md:border-r border-soft">
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h3 className="text-xl font-black uppercase italic tracking-tighter text-fg leading-none flex items-center gap-2">
+                        <h3 className="text-xl font-bold text-fg leading-none flex items-center gap-2">
                             <Ticket className="text-figueira" /> {rifa.nome}
                         </h3>
-                        <p className="text-[10px] font-bold text-muted uppercase tracking-widest mt-1">
+                        <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-1">
                             Prémio: <span className="text-figueira">{rifa.premio}</span>
                         </p>
                     </div>
 
                     <div className="flex flex-col items-end gap-2">
                         <div className="text-right">
-                            <span className="text-[10px] font-black uppercase text-muted tracking-widest block">Progresso</span>
-                            <span className="text-lg font-black text-fg italic leading-none">
+                            <span className="text-[14px] font-bold uppercase text-muted tracking-wide block">Progresso</span>
+                            <span className="text-lg font-bold text-fg leading-none">
                                 {rifa.numeros_vendidos.length} <span className="text-xs text-muted">/ {rifa.total_numeros}</span>
                             </span>
                         </div>
                         <div className="flex gap-2">
-                            <button onClick={handleEncerrarSemVencedor} disabled={loading} className="text-[8px] font-black uppercase tracking-widest bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 disabled:opacity-50">
+                            <button onClick={handleEncerrarSemVencedor} disabled={loading} className="text-[13px] font-bold uppercase tracking-wide bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 disabled:opacity-50">
                                 <Power size={10} /> Encerrar
                             </button>
                             {rifa.numeros_vendidos.length > 0 && (
-                                <button onClick={() => { setModoSorteio(true); setNumeroEditando(null); setNumerosSelecionados([]); }} className="text-[8px] font-black uppercase tracking-widest bg-yellow-100 text-yellow-700 hover:bg-yellow-500 hover:text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1">
+                                <button onClick={() => { setModoSorteio(true); setNumeroEditando(null); setNumerosSelecionados([]); }} className="text-[13px] font-bold uppercase tracking-wide bg-yellow-100 text-yellow-700 hover:bg-yellow-500 hover:text-white px-3 py-1.5 rounded-lg transition-all flex items-center gap-1">
                                     <Trophy size={10} /> Sorteio
                                 </button>
                             )}
@@ -187,8 +187,8 @@ export default function GrelhaRifa({ rifa, membros, membroPreSelecionadoId }: Gr
                                 onClick={() => isVendido ? selecionarNumeroVendido(num) : toggleNumeroLivre(num)}
                                 className={`relative aspect-square rounded-xl flex flex-col items-center justify-center transition-all overflow-hidden ${isVendido ? isSelecionadoVendido ? 'bg-figueira text-white shadow-lg scale-110 z-10 border-2 border-white' : 'bg-figueira/10 text-figueira border border-figueira/30 hover:bg-figueira/20' : isSelecionadoLivre ? 'bg-fg text-bg shadow-lg scale-110 z-10' : 'bg-bg border border-soft text-fg hover:border-fg hover:bg-fg/5'}`}
                             >
-                                <span className="text-sm font-black">{num}</span>
-                                {isVendido && <span className="text-[7px] font-black uppercase w-full truncate px-1 text-center opacity-80 mt-0.5">{nomeCurto}</span>}
+                                <span className="text-sm font-bold">{num}</span>
+                                {isVendido && <span className="text-[13px] font-bold uppercase w-full truncate px-1 text-center opacity-80 mt-0.5">{nomeCurto}</span>}
                             </button>
                         );
                     })}
@@ -204,10 +204,10 @@ export default function GrelhaRifa({ rifa, membros, membroPreSelecionadoId }: Gr
 
                         <div className="flex justify-between items-start mb-6 border-b border-soft pb-4">
                             <div>
-                                <h4 className="text-xl font-black italic text-yellow-600 leading-none flex items-center gap-2">
+                                <h4 className="text-xl font-bold text-yellow-600 leading-none flex items-center gap-2">
                                     <Trophy size={20} /> O Sorteio.
                                 </h4>
-                                <span className="text-[9px] font-black uppercase tracking-widest text-muted block mt-1">
+                                <span className="text-[13px] font-bold uppercase tracking-wide text-muted block mt-1">
                                     Selecione os grandes vencedores
                                 </span>
                             </div>
@@ -218,7 +218,7 @@ export default function GrelhaRifa({ rifa, membros, membroPreSelecionadoId }: Gr
 
                         <div className="space-y-4">
                             <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-2xl">
-                                <label className="text-[10px] font-black uppercase text-yellow-700 tracking-widest flex items-center gap-1 mb-2">
+                                <label className="text-[14px] font-bold uppercase text-yellow-700 tracking-wide flex items-center gap-1 mb-2">
                                     <Trophy size={12} /> 1º Prémio (Obrigatório)
                                 </label>
                                 <select name="num1" required className="w-full bg-white border border-yellow-300 p-3 rounded-xl text-xs font-bold outline-none focus:border-yellow-500 transition-all cursor-pointer">
@@ -232,7 +232,7 @@ export default function GrelhaRifa({ rifa, membros, membroPreSelecionadoId }: Gr
                             </div>
 
                             <div className="bg-gray-50 border border-gray-200 p-4 rounded-2xl">
-                                <label className="text-[10px] font-black uppercase text-gray-600 tracking-widest flex items-center gap-1 mb-2">
+                                <label className="text-[14px] font-bold uppercase text-gray-600 tracking-wide flex items-center gap-1 mb-2">
                                     <Medal size={12} /> 2º Prémio (Opcional)
                                 </label>
                                 <select name="num2" className="w-full bg-white border border-gray-300 p-3 rounded-xl text-xs font-bold outline-none focus:border-gray-500 transition-all cursor-pointer">
@@ -244,7 +244,7 @@ export default function GrelhaRifa({ rifa, membros, membroPreSelecionadoId }: Gr
                             </div>
 
                             <div className="bg-orange-50 border border-orange-200 p-4 rounded-2xl">
-                                <label className="text-[10px] font-black uppercase text-orange-700 tracking-widest flex items-center gap-1 mb-2">
+                                <label className="text-[14px] font-bold uppercase text-orange-700 tracking-wide flex items-center gap-1 mb-2">
                                     <Medal size={12} className="text-orange-600" /> 3º Prémio (Opcional)
                                 </label>
                                 <select name="num3" className="w-full bg-white border border-orange-300 p-3 rounded-xl text-xs font-bold outline-none focus:border-orange-500 transition-all cursor-pointer">
@@ -256,7 +256,7 @@ export default function GrelhaRifa({ rifa, membros, membroPreSelecionadoId }: Gr
                             </div>
                         </div>
 
-                        <button disabled={loading} className="w-full bg-yellow-500 text-white py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-yellow-600 transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xl mt-6">
+                        <button disabled={loading} className="w-full bg-yellow-500 text-white py-5 rounded-2xl font-bold uppercase text-[14px] tracking-wide hover:bg-yellow-600 transition-all flex items-center justify-center gap-2 active:scale-95 shadow-xl mt-6">
                             {loading ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}
                             {loading ? 'A Encerrar...' : 'Finalizar e Guardar'}
                         </button>
@@ -266,7 +266,7 @@ export default function GrelhaRifa({ rifa, membros, membroPreSelecionadoId }: Gr
                     // 2. ESTADO NORMAL (VAZIO)
                     <div className="text-center opacity-50 space-y-3">
                         <Layers size={40} className="mx-auto text-muted" />
-                        <p className="text-[10px] font-black uppercase text-muted tracking-widest leading-relaxed">
+                        <p className="text-[14px] font-bold uppercase text-muted tracking-wide leading-relaxed">
                             Clica nos números livres<br />para venda múltipla
                         </p>
                     </div>
@@ -276,13 +276,13 @@ export default function GrelhaRifa({ rifa, membros, membroPreSelecionadoId }: Gr
                     <div className="space-y-6 animate-in slide-in-from-right-4 fade-in flex flex-col h-full justify-between">
                         <div>
                             <div className="flex justify-between items-start">
-                                <div><span className="text-[9px] font-black uppercase text-figueira tracking-widest flex items-center gap-1"><CheckCircle2 size={12} /> Número Vendido</span><h4 className="text-4xl font-black italic text-fg mt-1">#{numeroEditando}</h4></div>
+                                <div><span className="text-[13px] font-bold uppercase text-figueira tracking-wide flex items-center gap-1"><CheckCircle2 size={12} /> Número Vendido</span><h4 className="text-4xl font-bold text-fg mt-1">#{numeroEditando}</h4></div>
                                 <button type="button" onClick={() => setNumeroEditando(null)} className="p-2 bg-bg2 rounded-xl text-muted hover:text-red-500"><X size={16} /></button>
                             </div>
                             <div className="space-y-4 pt-4 border-t border-soft mt-4">
                                 <div className="bg-figueira/10 border border-figueira/20 p-5 rounded-2xl relative">
-                                    <span className="text-[8px] font-black uppercase text-muted tracking-widest block mb-1">Comprador</span>
-                                    <p className="text-sm font-black text-figueira uppercase pr-8">{vendaSelecionada.membro ? `${vendaSelecionada.membro.first_name} ${vendaSelecionada.membro.last_name}` : vendaSelecionada.nome_externo}</p>
+                                    <span className="text-[13px] font-bold uppercase text-muted tracking-wide block mb-1">Comprador</span>
+                                    <p className="text-sm font-bold text-figueira pr-8">{vendaSelecionada.membro ? `${vendaSelecionada.membro.first_name} ${vendaSelecionada.membro.last_name}` : vendaSelecionada.nome_externo}</p>
                                     <button type="button" onClick={() => { setTipoComprador(vendaSelecionada.membro ? 'MEMBRO' : 'EXTERNO'); setIsEditing(true); }} className="absolute top-4 right-4 p-2 bg-white rounded-lg text-figueira hover:bg-figueira hover:text-white transition-all"><Edit3 size={14} /></button>
                                 </div>
                             </div>
@@ -296,7 +296,7 @@ export default function GrelhaRifa({ rifa, membros, membroPreSelecionadoId }: Gr
                         <input type="hidden" name="membro_id" value={tipoComprador === 'MEMBRO' ? membroIdSelecionado : ""} />
                         
                         <div className="flex justify-between items-start">
-                            <div><span className={`text-[9px] font-black uppercase tracking-widest block ${isEditing ? 'text-orange-500' : 'text-muted'}`}>{isEditing ? 'A Corrigir Dono' : `${numerosSelecionados.length} Números`}</span><h4 className={`text-2xl font-black italic leading-none mt-1 ${isEditing ? 'text-fg' : 'text-figueira'}`}>{isEditing ? `#${numeroEditando}` : numerosSelecionados.join(', ')}</h4></div>
+                            <div><span className={`text-[13px] font-bold uppercase tracking-wide block ${isEditing ? 'text-orange-500' : 'text-muted'}`}>{isEditing ? 'A Corrigir Dono' : `${numerosSelecionados.length} Números`}</span><h4 className={`text-2xl font-bold leading-none mt-1 ${isEditing ? 'text-fg' : 'text-figueira'}`}>{isEditing ? `#${numeroEditando}` : numerosSelecionados.join(', ')}</h4></div>
                             <button type="button" onClick={() => { isEditing ? setIsEditing(false) : setNumerosSelecionados([]) }} className="p-2 bg-bg2 rounded-xl"><X size={16} /></button>
                         </div>
 
@@ -304,8 +304,8 @@ export default function GrelhaRifa({ rifa, membros, membroPreSelecionadoId }: Gr
                             
                             {!membroPreSelecionadoId && (
                                 <div className="flex bg-bg2 p-1 rounded-xl">
-                                    <button type="button" onClick={() => setTipoComprador('MEMBRO')} className={`flex-1 py-2 text-[9px] font-black uppercase rounded-lg ${tipoComprador === 'MEMBRO' ? 'bg-white shadow-sm text-fg' : 'text-muted'}`}>Membro</button>
-                                    <button type="button" onClick={() => setTipoComprador('EXTERNO')} className={`flex-1 py-2 text-[9px] font-black uppercase rounded-lg ${tipoComprador === 'EXTERNO' ? 'bg-white shadow-sm text-fg' : 'text-muted'}`}>Externo</button>
+                                    <button type="button" onClick={() => setTipoComprador('MEMBRO')} className={`flex-1 py-2 text-[13px] font-bold uppercase rounded-lg ${tipoComprador === 'MEMBRO' ? 'bg-white shadow-sm text-fg' : 'text-muted'}`}>Membro</button>
+                                    <button type="button" onClick={() => setTipoComprador('EXTERNO')} className={`flex-1 py-2 text-[13px] font-bold uppercase rounded-lg ${tipoComprador === 'EXTERNO' ? 'bg-white shadow-sm text-fg' : 'text-muted'}`}>Externo</button>
                                 </div>
                             )}
 
@@ -326,7 +326,7 @@ export default function GrelhaRifa({ rifa, membros, membroPreSelecionadoId }: Gr
                                     </div>
                                     
                                     {membroPreSelecionadoId && membroPreSelecionadoId !== 'anonimo' && (
-                                        <p className="text-[9px] font-black text-figueira uppercase tracking-widest mt-2 flex items-center gap-1">
+                                        <p className="text-[13px] font-bold text-figueira uppercase tracking-wide mt-2 flex items-center gap-1">
                                             <CheckCircle2 size={10} /> Comprador selecionado
                                         </p>
                                     )}
@@ -342,7 +342,7 @@ export default function GrelhaRifa({ rifa, membros, membroPreSelecionadoId }: Gr
                             )}
                         </div>
                         
-                        <button disabled={loading || (tipoComprador === 'MEMBRO' && (!membroIdSelecionado || membroIdSelecionado === ''))} className={`w-full text-bg py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 ${isEditing ? 'bg-orange-500 hover:bg-orange-600' : 'bg-fg hover:bg-black'}`}>
+                        <button disabled={loading || (tipoComprador === 'MEMBRO' && (!membroIdSelecionado || membroIdSelecionado === ''))} className={`w-full text-bg py-5 rounded-2xl font-bold uppercase text-[14px] tracking-wide flex items-center justify-center gap-2 ${isEditing ? 'bg-orange-500 hover:bg-orange-600' : 'bg-fg hover:bg-black'}`}>
                             {loading ? <Loader2 className="animate-spin" size={16} /> : (isEditing ? <Edit3 size={16} /> : <CheckCircle2 size={16} />)}
                             {loading ? 'A Gravar...' : (isEditing ? 'Guardar Correção' : `Vender (€${valorTotalLote.toFixed(2)})`)}
                         </button>

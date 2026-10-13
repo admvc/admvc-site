@@ -60,8 +60,8 @@ export function ModalMovimento({ item, onClose, onSucesso }: Props) {
                                 <ArrowLeftRight size={16} />
                             </div>
                             <div>
-                                <h3 className="text-sm font-black uppercase italic tracking-tighter text-fg leading-none">{item.nome}</h3>
-                                <p className="text-[8px] font-bold text-muted uppercase tracking-widest mt-0.5">
+                                <h3 className="text-sm font-bold text-fg leading-none">{item.nome}</h3>
+                                <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-0.5">
                                     Registar Movimento · {item.quantidade_disponivel}/{item.quantidade_total} disponíveis
                                 </p>
                             </div>
@@ -74,21 +74,21 @@ export function ModalMovimento({ item, onClose, onSucesso }: Props) {
                     <form onSubmit={handleSubmit} className="overflow-y-auto px-7 py-5 space-y-5">
 
                         {erro && (
-                            <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-[9px] font-bold text-red-600 uppercase tracking-widest">
+                            <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-[13px] font-bold text-red-600 uppercase tracking-wide">
                                 {erro}
                             </div>
                         )}
 
                         {/* TIPO */}
                         <div className="space-y-2">
-                            <label className="text-[8px] font-black uppercase tracking-widest text-muted">Tipo de Movimento</label>
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Tipo de Movimento</label>
                             <div className="grid grid-cols-2 gap-2">
                                 {TIPOS_MOVIMENTO.map(t => (
                                     <button key={t.value} type="button" onClick={() => setTipoSel(t.value)}
                                         className={`flex flex-col items-start p-3 rounded-xl border text-left transition-all
                                             ${tipoSel === t.value ? 'bg-fg text-bg border-fg' : 'bg-bg border-soft text-fg hover:border-figueira/30'}`}>
-                                        <span className="text-[10px] font-black">{t.label}</span>
-                                        <span className={`text-[8px] mt-0.5 ${tipoSel === t.value ? 'text-bg/60' : 'text-muted'}`}>{t.desc}</span>
+                                        <span className="text-[14px] font-bold">{t.label}</span>
+                                        <span className={`text-[13px] mt-0.5 ${tipoSel === t.value ? 'text-bg/60' : 'text-muted'}`}>{t.desc}</span>
                                     </button>
                                 ))}
                             </div>
@@ -96,43 +96,43 @@ export function ModalMovimento({ item, onClose, onSucesso }: Props) {
 
                         {/* QUANTIDADE */}
                         <div className="space-y-1.5">
-                            <label className="text-[8px] font-black uppercase tracking-widest text-muted">Quantidade</label>
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Quantidade</label>
                             <input type="number" name="quantidade" defaultValue="1" min="1" max={item.quantidade_total} required
-                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none" />
+                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none" />
                         </div>
 
                         {/* RESPONSÁVEL */}
                         <div className="space-y-1.5">
-                            <label className="text-[8px] font-black uppercase tracking-widest text-muted">Responsável</label>
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Responsável</label>
                             <input type="text" name="responsavel" placeholder="Quem fez este movimento"
-                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none" />
+                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none" />
                         </div>
 
                         {/* DESTINO */}
                         {tipoInfo?.precisaDestino && (
                             <div className="space-y-1.5">
-                                <label className="text-[8px] font-black uppercase tracking-widest text-muted">
+                                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                     {tipoSel === 'MANUTENCAO' ? 'Assistência / Local de Reparação' : 'Destino / Responsável'}
                                 </label>
                                 <input type="text" name="destino" required placeholder="Nome ou local"
-                                    className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none" />
+                                    className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none" />
                             </div>
                         )}
 
                         {/* DATA RETORNO PREVISTA */}
                         {tipoInfo?.precisaRetorno && (
                             <div className="space-y-1.5">
-                                <label className="text-[8px] font-black uppercase tracking-widest text-muted">Data de Retorno Prevista</label>
+                                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Data de Retorno Prevista</label>
                                 <input type="date" name="data_retorno_prevista"
-                                    className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none" />
+                                    className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none" />
                             </div>
                         )}
 
                         {/* OBSERVAÇÃO */}
                         <div className="space-y-1.5">
-                            <label className="text-[8px] font-black uppercase tracking-widest text-muted">Observação</label>
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Observação</label>
                             <textarea name="observacao" rows={2} placeholder="Notas adicionais..."
-                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none resize-none" />
+                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none resize-none" />
                         </div>
 
                         <button type="submit" disabled={isPending}

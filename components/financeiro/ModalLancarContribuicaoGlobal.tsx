@@ -61,7 +61,7 @@ export default function ModalLancarContribuicaoGlobal({ membros }: { membros: an
             <button
                 type="button"
                 onClick={() => setIsOpen(true)}
-                className="flex items-center justify-center gap-3 bg-figueira text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira/90 transition-all shadow-lg shadow-figueira/20 active:scale-95 h-full"
+                className="flex items-center justify-center gap-3 bg-figueira text-white px-6 py-4 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira/90 transition-all shadow-lg shadow-figueira/20 active:scale-95 h-full"
             >
                 <HeartHandshake size={16} />
                 Lançar Entrada
@@ -75,8 +75,8 @@ export default function ModalLancarContribuicaoGlobal({ membros }: { membros: an
                         {/* HEADER */}
                         <div className="p-8 border-b border-soft flex justify-between items-center bg-bg2 relative">
                             <div className="space-y-1">
-                                <span className="text-figueira font-black text-[9px] uppercase tracking-[0.3em]">Tesouraria ADMVC</span>
-                                <h3 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Nova <span className="text-muted/20">Entrada.</span></h3>
+                                <span className="text-figueira font-bold text-[13px] uppercase tracking-wide">Tesouraria ADMVC</span>
+                                <h3 className="text-3xl font-bold text-fg">Nova <span className="text-muted/20">Entrada.</span></h3>
                             </div>
                             <button
                                 type="button"
@@ -95,7 +95,7 @@ export default function ModalLancarContribuicaoGlobal({ membros }: { membros: an
 
                             {/* SELECIONAR MEMBRO (PESQUISA INTELIGENTE) */}
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2">
+                                <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                     <User size={12} /> Selecionar Membro
                                 </label>
                                 <div className="relative">
@@ -107,7 +107,7 @@ export default function ModalLancarContribuicaoGlobal({ membros }: { membros: an
                                         placeholder="Digite para pesquisar membro..."
                                         required
                                         autoComplete="off"
-                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 pl-12 text-xs font-black text-fg focus:border-figueira outline-none transition-all"
+                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 pl-12 text-xs font-bold text-fg focus:border-figueira outline-none transition-all"
                                     />
                                     <datalist id="lista-membros-entrada">
                                         {membros.map(m => (
@@ -117,7 +117,7 @@ export default function ModalLancarContribuicaoGlobal({ membros }: { membros: an
                                 </div>
                                 {/* Alerta se a pessoa digitar um nome que não existe */}
                                 {buscaMembro && !membroIdSelecionado && (
-                                    <p className="text-[9px] text-red-500 font-bold ml-2 mt-1 uppercase tracking-widest animate-in fade-in">
+                                    <p className="text-[13px] text-red-500 font-bold ml-2 mt-1 uppercase tracking-wide animate-in fade-in">
                                         ⚠️ Selecione um membro válido da lista.
                                     </p>
                                 )}
@@ -126,11 +126,11 @@ export default function ModalLancarContribuicaoGlobal({ membros }: { membros: an
                             <div className="grid grid-cols-2 gap-4">
                                 {/* TIPO */}
                                 <div className="space-y-2 col-span-2 sm:col-span-1">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2">Tipo de Entrada</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2">Tipo de Entrada</label>
                                     <select
                                         name="tipo"
                                         required
-                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none appearance-none cursor-pointer"
+                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer"
                                     >
                                         <option value="DIZIMO">Dízimo</option>
                                         <option value="OFERTA">Oferta Voluntária</option>
@@ -140,7 +140,7 @@ export default function ModalLancarContribuicaoGlobal({ membros }: { membros: an
 
                                 {/* VALOR */}
                                 <div className="space-y-2 col-span-2 sm:col-span-1">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2">Valor (€)</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2">Valor (€)</label>
                                     <input
                                         type="number"
                                         name="valor"
@@ -148,7 +148,7 @@ export default function ModalLancarContribuicaoGlobal({ membros }: { membros: an
                                         min="0.01"
                                         required
                                         placeholder="0.00"
-                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none"
+                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none"
                                     />
                                 </div>
                             </div>
@@ -156,7 +156,7 @@ export default function ModalLancarContribuicaoGlobal({ membros }: { membros: an
                             <div className="grid grid-cols-2 gap-4">
                                 {/* DATA */}
                                 <div className="space-y-2 col-span-2 sm:col-span-1">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2">
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                         <Calendar size={12} /> Data do Registo
                                     </label>
                                     <input
@@ -164,19 +164,19 @@ export default function ModalLancarContribuicaoGlobal({ membros }: { membros: an
                                         name="data"
                                         required
                                         defaultValue={new Date().toISOString().split('T')[0]}
-                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none cursor-pointer"
+                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer"
                                     />
                                 </div>
 
                                 {/* MÉTODO DE PAGAMENTO */}
                                 <div className="space-y-2 col-span-2 sm:col-span-1">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2">
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                         <CreditCard size={12} /> Método
                                     </label>
                                     <select
                                         name="metodo"
                                         required
-                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none appearance-none cursor-pointer"
+                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer"
                                     >
                                         <option value="NUMERARIO">Numerário (Dinheiro)</option>
                                         <option value="MBWAY">MBWay</option>
@@ -188,14 +188,14 @@ export default function ModalLancarContribuicaoGlobal({ membros }: { membros: an
 
                             {/* OBSERVAÇÃO */}
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2">
+                                <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                     <FileText size={12} /> Observação (Opcional)
                                 </label>
                                 <input
                                     type="text"
                                     name="observacao"
                                     placeholder="Ex: Oferta para o congresso de jovens..."
-                                    className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none"
+                                    className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none"
                                 />
                             </div>
 
@@ -204,7 +204,7 @@ export default function ModalLancarContribuicaoGlobal({ membros }: { membros: an
                                 <button
                                     type="submit"
                                     disabled={isPending || (buscaMembro.length > 0 && !membroIdSelecionado)}
-                                    className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50"
+                                    className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50"
                                 >
                                     {isPending ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
                                     {isPending ? "A Registar..." : "Registar Contribuição"}

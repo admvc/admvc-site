@@ -59,12 +59,12 @@ export default function CifraEditor({ musicaId, titulo, cifraAtual, onClose, onS
             {/* HEADER */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0 bg-zinc-900">
                 <div className="min-w-0">
-                    <p className="text-[8px] font-black uppercase tracking-widest text-emerald-400">Editor de Cifra</p>
-                    <h3 className="text-sm font-black uppercase tracking-tighter text-white truncate">{titulo}</h3>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-emerald-400">Editor de Cifra</p>
+                    <h3 className="text-sm font-bold text-white truncate">{titulo}</h3>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                     <button onClick={() => { setShowImport(!showImport); setShowHelp(false) }}
-                        className={`h-8 px-3 flex items-center gap-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest ${showImport ? 'bg-orange-500 text-white' : 'bg-white/10 text-white/60'}`}>
+                        className={`h-8 px-3 flex items-center gap-1.5 rounded-lg text-[13px] font-bold uppercase tracking-wide ${showImport ? 'bg-orange-500 text-white' : 'bg-white/10 text-white/60'}`}>
                         <Download size={12} /> Importar
                     </button>
                     <button onClick={() => { setShowHelp(!showHelp); setShowImport(false) }}
@@ -83,8 +83,8 @@ export default function CifraEditor({ musicaId, titulo, cifraAtual, onClose, onS
 
             {/* HELP */}
             {showHelp && (
-                <div className="px-4 py-3 border-b border-white/10 bg-blue-500/10 text-blue-300 text-[10px] leading-relaxed shrink-0">
-                    <p className="font-black uppercase tracking-widest mb-1">Como escrever:</p>
+                <div className="px-4 py-3 border-b border-white/10 bg-blue-500/10 text-blue-300 text-[14px] leading-relaxed shrink-0">
+                    <p className="font-bold mb-1">Como escrever:</p>
                     <p>Coloca os acordes entre <strong>[colchetes]</strong> antes da silaba:</p>
                     <p className="font-mono mt-1 bg-black/30 px-2 py-1 rounded text-xs">
                         [Am]Quando eu chorei Tu en[G]xugaste as minhas la[F]grimas
@@ -96,10 +96,10 @@ export default function CifraEditor({ musicaId, titulo, cifraAtual, onClose, onS
             {/* IMPORT */}
             {showImport && (
                 <div className="px-4 py-3 border-b border-white/10 bg-orange-500/5 shrink-0 space-y-2">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-orange-300">
+                    <p className="text-[14px] font-bold uppercase tracking-wide text-orange-300">
                         Importar do CifraClub
                     </p>
-                    <p className="text-[9px] text-orange-200/60">
+                    <p className="text-[13px] text-orange-200/60">
                         Abre a musica no CifraClub, seleciona o texto da cifra e cola aqui abaixo. O sistema converte automaticamente.
                     </p>
                     <textarea
@@ -113,11 +113,11 @@ export default function CifraEditor({ musicaId, titulo, cifraAtual, onClose, onS
                     />
                     <div className="flex gap-2">
                         <button onClick={handleImport} disabled={!importTexto.trim()}
-                            className="flex-1 py-2.5 rounded-xl bg-orange-500 text-white text-[9px] font-black uppercase tracking-widest disabled:opacity-40 flex items-center justify-center gap-2 hover:bg-orange-600">
+                            className="flex-1 py-2.5 rounded-xl bg-orange-500 text-white text-[13px] font-bold uppercase tracking-wide disabled:opacity-40 flex items-center justify-center gap-2 hover:bg-orange-600">
                             <Download size={12} /> Converter e Importar
                         </button>
                         <button onClick={() => { setShowImport(false); setImportTexto('') }}
-                            className="px-4 py-2.5 rounded-xl bg-white/10 text-white/60 text-[9px] font-black uppercase tracking-widest hover:bg-white/20">
+                            className="px-4 py-2.5 rounded-xl bg-white/10 text-white/60 text-[13px] font-bold uppercase tracking-wide hover:bg-white/20">
                             Cancelar
                         </button>
                     </div>
@@ -126,7 +126,7 @@ export default function CifraEditor({ musicaId, titulo, cifraAtual, onClose, onS
 
             {/* MENSAGEM DE IMPORTAÇÃO */}
             {importMsg && (
-                <div className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest shrink-0 ${importMsg.includes('sucesso') ? 'bg-emerald-500/20 text-emerald-400' : 'bg-orange-500/20 text-orange-400'}`}>
+                <div className={`px-4 py-2 text-[14px] font-bold uppercase tracking-wide shrink-0 ${importMsg.includes('sucesso') ? 'bg-emerald-500/20 text-emerald-400' : 'bg-orange-500/20 text-orange-400'}`}>
                     {importMsg}
                 </div>
             )}
@@ -140,7 +140,7 @@ export default function CifraEditor({ musicaId, titulo, cifraAtual, onClose, onS
                                 {segs.length === 0 && <br />}
                                 {segs.map((seg, j) => (
                                     seg.tipo === 'acorde' ? (
-                                        <span key={j} className="text-emerald-400 font-black text-lg">{seg.valor}</span>
+                                        <span key={j} className="text-emerald-400 font-bold text-lg">{seg.valor}</span>
                                     ) : (
                                         <span key={j} className="text-white/80">{seg.valor}</span>
                                     )
@@ -162,16 +162,16 @@ export default function CifraEditor({ musicaId, titulo, cifraAtual, onClose, onS
 
             {/* FOOTER */}
             <div className="flex items-center justify-between px-4 py-3 border-t border-white/10 shrink-0 bg-zinc-900">
-                <p className="text-[8px] text-white/30 font-bold uppercase tracking-widest">
+                <p className="text-[13px] text-white/30 font-bold uppercase tracking-wide">
                     {texto.split('\n').length} linhas · {texto.length} caracteres
                 </p>
                 <div className="flex gap-2">
                     <button onClick={onClose}
-                        className="px-4 py-2.5 rounded-xl bg-white/10 text-white/60 text-[9px] font-black uppercase tracking-widest hover:bg-white/20">
+                        className="px-4 py-2.5 rounded-xl bg-white/10 text-white/60 text-[13px] font-bold uppercase tracking-wide hover:bg-white/20">
                         Cancelar
                     </button>
                     <button onClick={handleSave} disabled={saving || !texto.trim()}
-                        className="px-5 py-2.5 rounded-xl bg-emerald-500 text-white text-[9px] font-black uppercase tracking-widest hover:bg-emerald-600 disabled:opacity-50 flex items-center gap-2">
+                        className="px-5 py-2.5 rounded-xl bg-emerald-500 text-white text-[13px] font-bold uppercase tracking-wide hover:bg-emerald-600 disabled:opacity-50 flex items-center gap-2">
                         {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
                         Guardar Cifra
                     </button>

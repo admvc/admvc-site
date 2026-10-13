@@ -69,10 +69,10 @@ export default async function EncomendasPage() {
     return (
         <main className="max-w-6xl mx-auto pt-16 md:pt-10 px-4 sm:px-6 lg:px-8 space-y-10 pb-28 animate-in fade-in duration-700">
             <header className="text-center space-y-4 pb-8 border-b border-soft">
-                <span className="text-figueira font-black text-[10px] md:text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-2">
+                <span className="text-figueira font-bold text-[14px] md:text-xs uppercase tracking-wide flex items-center justify-center gap-2">
                     <ClipboardList size={14} /> Gestao de Encomendas
                 </span>
-                <h1 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                <h1 className="text-4xl md:text-6xl font-bold text-fg leading-none">
                     Encomendas <span className="text-muted/20">do dia.</span>
                 </h1>
             </header>
@@ -80,7 +80,7 @@ export default async function EncomendasPage() {
             {porEvento.size === 0 && (
                 <div className="py-20 text-center">
                     <Package size={32} className="mx-auto text-muted/20 mb-4" />
-                    <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-muted">Nenhuma encomenda para hoje ou amanha</p>
+                    <p className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted">Nenhuma encomenda para hoje ou amanha</p>
                 </div>
             )}
 
@@ -94,7 +94,7 @@ export default async function EncomendasPage() {
                         <div className="bg-bg2 border border-soft rounded-2xl p-6 space-y-4">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h2 className="text-lg font-black uppercase tracking-widest text-fg">{evento.nome}</h2>
+                                    <h2 className="text-lg font-bold text-fg">{evento.nome}</h2>
                                     <p className="text-xs text-muted capitalize">
                                         {evento.data.toLocaleDateString('pt-PT', {
                                             weekday: 'long',
@@ -104,7 +104,7 @@ export default async function EncomendasPage() {
                                     </p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-muted">
+                                    <p className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted">
                                         {totalConfirmadas} pendente{totalConfirmadas !== 1 ? 's' : ''} / {totalEntregues} entregue{totalEntregues !== 1 ? 's' : ''}
                                     </p>
                                 </div>
@@ -113,7 +113,7 @@ export default async function EncomendasPage() {
                             {/* Totais agregados por produto */}
                             {totaisProdutos.length > 0 && (
                                 <div className="bg-figueira/5 border border-figueira/20 rounded-2xl p-4">
-                                    <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-figueira mb-2">Resumo Total</h3>
+                                    <h3 className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-figueira mb-2">Resumo Total</h3>
                                     <div className="flex flex-wrap gap-2">
                                         {totaisProdutos.map(([nome, qtd]) => (
                                             <span key={nome} className="bg-bg border border-soft rounded-xl px-3 py-1 text-xs font-bold text-fg">
@@ -137,13 +137,13 @@ export default async function EncomendasPage() {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
                                             <User size={14} className="text-figueira" />
-                                            <span className="text-sm font-black uppercase text-fg">
+                                            <span className="text-sm font-bold text-fg">
                                                 {enc.membro.first_name} {enc.membro.last_name}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             {enc.status === 'ENTREGUE' ? (
-                                                <span className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-emerald-400">
+                                                <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-emerald-400">
                                                     Entregue
                                                 </span>
                                             ) : (
@@ -157,17 +157,17 @@ export default async function EncomendasPage() {
 
                                     <div className="flex flex-wrap gap-2">
                                         {enc.itens.map(item => (
-                                            <span key={item.id} className="bg-bg border border-soft rounded-lg px-2 py-1 text-[10px] md:text-xs font-bold text-muted">
+                                            <span key={item.id} className="bg-bg border border-soft rounded-lg px-2 py-1 text-[14px] md:text-xs font-bold text-muted">
                                                 {item.quantidade}x {item.produto.nome}
                                             </span>
                                         ))}
                                     </div>
 
                                     <div className="flex items-center justify-between pt-2 border-t border-soft">
-                                        <span className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">
+                                        <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">
                                             #{enc.id} - {enc.criado_em.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
                                         </span>
-                                        <span className="text-sm font-black italic text-figueira">{enc.total.toFixed(2)}€</span>
+                                        <span className="text-sm font-bold text-figueira">{enc.total.toFixed(2)}€</span>
                                     </div>
                                 </div>
                             ))}

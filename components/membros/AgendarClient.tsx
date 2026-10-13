@@ -73,10 +73,10 @@ export default function AgendarClient({ agendas, membro }: { agendas: any[]; mem
         return (
             <div className="text-center py-16 space-y-4 animate-in fade-in">
                 <CheckCircle2 size={48} className="mx-auto text-emerald-500" />
-                <h2 className="text-2xl font-black italic uppercase tracking-tighter text-fg">Pedido Enviado!</h2>
+                <h2 className="text-2xl font-bold text-fg">Pedido Enviado!</h2>
                 <p className="text-sm text-muted">O pastor sera notificado e confirmara o agendamento.</p>
                 <button onClick={() => { setEnviado(false); setCategoria(''); setTitulo(''); setData('') }}
-                    className="px-6 py-3 rounded-xl bg-fg text-bg text-[9px] font-black uppercase tracking-widest hover:bg-figueira transition-all">
+                    className="px-6 py-3 rounded-xl bg-fg text-bg text-[13px] font-bold uppercase tracking-wide hover:bg-figueira transition-all">
                     Novo Pedido
                 </button>
             </div>
@@ -91,14 +91,14 @@ export default function AgendarClient({ agendas, membro }: { agendas: any[]; mem
     return (
         <>
             <header className="space-y-1">
-                <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Agendar</h1>
+                <h1 className="text-3xl font-bold text-fg">Agendar</h1>
                 <p className="text-xs text-muted">Pede uma reuniao com o pastor ou lider.</p>
             </header>
 
             {agendas.length === 0 ? (
                 <div className="bg-bg2 border border-soft rounded-2xl p-8 text-center space-y-3">
                     <Calendar size={32} className="mx-auto text-muted/20" />
-                    <p className="text-sm font-black uppercase tracking-widest text-muted">Nenhuma agenda disponivel</p>
+                    <p className="text-sm font-bold text-muted">Nenhuma agenda disponivel</p>
                     <p className="text-xs text-muted/60">Nao existem agendas publicas de momento.</p>
                 </div>
             ) : (
@@ -106,8 +106,8 @@ export default function AgendarClient({ agendas, membro }: { agendas: any[]; mem
 
                     {/* PASSO 1: Escolher agenda/pastor */}
                     <section className="space-y-3">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[9px] font-black flex items-center justify-center">1</span>
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center">1</span>
                             Com quem?
                         </p>
                         <div className="grid sm:grid-cols-2 gap-3">
@@ -123,8 +123,8 @@ export default function AgendarClient({ agendas, membro }: { agendas: any[]; mem
                                             </div>
                                         )}
                                         <div>
-                                            <p className="text-sm font-black uppercase tracking-tight text-fg">{a.nome}</p>
-                                            <p className="text-[9px] font-bold text-muted uppercase tracking-widest">
+                                            <p className="text-sm font-bold text-fg">{a.nome}</p>
+                                            <p className="text-[13px] font-bold text-muted uppercase tracking-wide">
                                                 {a.dono?.first_name} {a.dono?.last_name}
                                             </p>
                                         </div>
@@ -136,8 +136,8 @@ export default function AgendarClient({ agendas, membro }: { agendas: any[]; mem
 
                     {/* PASSO 2: Tipo de reuniao */}
                     <section className={`space-y-3 transition-all ${!agendaSelecionada ? 'opacity-30 pointer-events-none' : ''}`}>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[9px] font-black flex items-center justify-center">2</span>
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center">2</span>
                             Que tipo de reuniao?
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -146,7 +146,7 @@ export default function AgendarClient({ agendas, membro }: { agendas: any[]; mem
                                 const active = categoria === c.id
                                 return (
                                     <button key={c.id} type="button" onClick={() => setCategoria(c.id)}
-                                        className={`px-4 py-2.5 rounded-xl border text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all active:scale-95 ${active ? CORES_ACTIVE[c.cor] : CORES[c.cor]}`}>
+                                        className={`px-4 py-2.5 rounded-xl border text-[13px] font-bold uppercase tracking-wide flex items-center gap-2 transition-all active:scale-95 ${active ? CORES_ACTIVE[c.cor] : CORES[c.cor]}`}>
                                         <Icon size={13} /> {c.label}
                                     </button>
                                 )
@@ -156,23 +156,23 @@ export default function AgendarClient({ agendas, membro }: { agendas: any[]; mem
 
                     {/* PASSO 3: Data e hora */}
                     <section className={`space-y-3 transition-all ${!categoria ? 'opacity-30 pointer-events-none' : ''}`}>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[9px] font-black flex items-center justify-center">3</span>
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center">3</span>
                             Quando?
                         </p>
                         <div className="grid grid-cols-3 gap-3">
                             <div className="space-y-1.5">
-                                <label className="text-[8px] font-black uppercase tracking-widest text-muted">Data</label>
+                                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Data</label>
                                 <input type="date" value={data} onChange={e => setData(e.target.value)} min={dataMin} required
                                     className="w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-sm font-bold text-fg focus:border-figueira outline-none" />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-[8px] font-black uppercase tracking-widest text-muted">Inicio</label>
+                                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Inicio</label>
                                 <input type="time" value={horaInicio} onChange={e => setHoraInicio(e.target.value)} required
                                     className="w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-sm font-bold text-fg focus:border-figueira outline-none" />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-[8px] font-black uppercase tracking-widest text-muted">Fim</label>
+                                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Fim</label>
                                 <input type="time" value={horaFim} onChange={e => setHoraFim(e.target.value)} required
                                     className="w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-sm font-bold text-fg focus:border-figueira outline-none" />
                             </div>
@@ -181,8 +181,8 @@ export default function AgendarClient({ agendas, membro }: { agendas: any[]; mem
 
                     {/* PASSO 4: Assunto */}
                     <section className={`space-y-3 transition-all ${!data ? 'opacity-30 pointer-events-none' : ''}`}>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[9px] font-black flex items-center justify-center">4</span>
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center">4</span>
                             Assunto
                         </p>
                         <input type="text" value={titulo} onChange={e => setTitulo(e.target.value)} required
@@ -195,7 +195,7 @@ export default function AgendarClient({ agendas, membro }: { agendas: any[]; mem
 
                     {/* ENVIAR */}
                     <button type="submit" disabled={enviando || !agendaSelecionada || !categoria || !data || !titulo}
-                        className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-fg text-bg text-[10px] font-black uppercase tracking-widest hover:bg-figueira transition-all disabled:opacity-40 shadow-sm active:scale-95">
+                        className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-fg text-bg text-[14px] font-bold uppercase tracking-wide hover:bg-figueira transition-all disabled:opacity-40 shadow-sm active:scale-95">
                         {enviando ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                         {enviando ? 'A enviar...' : 'Pedir Agendamento'}
                     </button>

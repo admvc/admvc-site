@@ -65,7 +65,7 @@ export default async function PledgesPage() {
             {/* Header */}
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">
+                    <h1 className="text-3xl font-bold text-fg">
                         Promessas de Contribuicao
                     </h1>
                     <p className="text-xs text-muted">
@@ -108,7 +108,7 @@ export default async function PledgesPage() {
             {/* Alertas de Atrasados */}
             {atrasados.length > 0 && (
                 <section className="space-y-3">
-                    <h2 className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-red-500 flex items-center gap-2">
+                    <h2 className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-red-500 flex items-center gap-2">
                         <AlertTriangle size={14} /> Pledges Atrasados ({atrasados.length})
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -121,14 +121,14 @@ export default async function PledgesPage() {
                             return (
                                 <div key={pledge.id} className="bg-red-500/5 border border-red-500/20 rounded-2xl p-4 space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <p className="text-xs font-black uppercase tracking-tight text-fg">
+                                        <p className="text-xs font-bold text-fg">
                                             {pledge.membro.first_name} {pledge.membro.last_name}
                                         </p>
-                                        <span className="text-[7px] md:text-[9px] md:text-[11px] font-black uppercase tracking-widest text-red-500 bg-red-500/10 px-2 py-0.5 rounded-md">
+                                        <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-red-500 bg-red-500/10 px-2 py-0.5 rounded-md">
                                             {mesesAtras} mes(es) atras
                                         </span>
                                     </div>
-                                    <p className="text-[9px] md:text-[11px] text-muted">
+                                    <p className="text-[13px] md:text-[14px] text-muted">
                                         {pledge.fundo?.nome || 'Sem fundo'} - {euro(pledge.valor_mensal)}/mes
                                     </p>
                                     <div className="w-full h-1.5 bg-red-500/10 rounded-full overflow-hidden">
@@ -146,7 +146,7 @@ export default async function PledgesPage() {
 
             {/* Tabela de todos os pledges */}
             <section className="space-y-3">
-                <h2 className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
+                <h2 className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
                     <Users size={14} /> Todos os Pledges ({pledges.length})
                 </h2>
 
@@ -155,13 +155,13 @@ export default async function PledgesPage() {
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="border-b border-soft">
-                                    <th className="px-6 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted">Membro</th>
-                                    <th className="px-6 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted">Fundo</th>
-                                    <th className="px-6 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted">Valor/Mes</th>
-                                    <th className="px-6 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted">Duracao</th>
-                                    <th className="px-6 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted">Cumprido</th>
-                                    <th className="px-6 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted">Progresso</th>
-                                    <th className="px-6 py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted">Status</th>
+                                    <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Membro</th>
+                                    <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Fundo</th>
+                                    <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Valor/Mes</th>
+                                    <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Duracao</th>
+                                    <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Cumprido</th>
+                                    <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Progresso</th>
+                                    <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -212,11 +212,11 @@ export default async function PledgesPage() {
                                                             style={{ width: `${progresso}%` }}
                                                         />
                                                     </div>
-                                                    <span className="text-[9px] md:text-[11px] font-bold text-muted w-8 text-right">{progresso}%</span>
+                                                    <span className="text-[13px] md:text-[14px] font-bold text-muted w-8 text-right">{progresso}%</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className={`flex items-center gap-1 text-[7px] md:text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-lg w-fit ${cfg.bgColor}`}>
+                                                <span className={`flex items-center gap-1 text-[13px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg w-fit ${cfg.bgColor}`}>
                                                     <Icon size={10} />
                                                     {cfg.label}
                                                 </span>
@@ -228,7 +228,7 @@ export default async function PledgesPage() {
                                     <tr>
                                         <td colSpan={7} className="px-6 py-12 text-center">
                                             <HeartHandshake size={28} className="text-muted mx-auto mb-2" />
-                                            <p className="text-[10px] md:text-xs font-bold text-muted">Nenhuma promessa criada ainda.</p>
+                                            <p className="text-[14px] md:text-xs font-bold text-muted">Nenhuma promessa criada ainda.</p>
                                         </td>
                                     </tr>
                                 )}
@@ -240,7 +240,7 @@ export default async function PledgesPage() {
 
             {/* Criar novo pledge */}
             <section className="space-y-3">
-                <h2 className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
+                <h2 className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
                     <HeartHandshake size={14} /> Criar Nova Promessa
                 </h2>
                 <FormNovoPledge fundos={fundos} membros={membros} isAdmin={true} />
@@ -270,10 +270,10 @@ function KpiCard({ label, value, icon: Icon, iconColor, accent }: {
     return (
         <div className={`p-5 rounded-2xl border flex flex-col gap-3 transition-all hover:-translate-y-0.5 ${borderClass}`}>
             <div className="flex items-center justify-between">
-                <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted">{label}</p>
+                <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">{label}</p>
                 <Icon size={16} className={iconColor || 'text-muted'} />
             </div>
-            <p className={`text-2xl font-black italic tracking-tighter leading-none ${valueClass}`}>{value}</p>
+            <p className={`text-2xl font-bold leading-none ${valueClass}`}>{value}</p>
         </div>
     )
 }

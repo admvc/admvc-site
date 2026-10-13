@@ -191,7 +191,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="sticky top-0 z-10 bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl">
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">Nova Aula EBD</h2>
+                    <h2 className="text-sm font-bold text-fg">Nova Aula EBD</h2>
                     <button onClick={() => setModalAberto(false)} className="text-muted hover:text-fg transition-colors">
                         <X size={18} />
                     </button>
@@ -200,7 +200,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                 <form onSubmit={handleCriar} className="p-6 space-y-4">
                     {/* Titulo */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Titulo *</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Titulo *</label>
                         <input
                             name="titulo"
                             required
@@ -211,7 +211,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
 
                     {/* Tema */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Tema</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Tema</label>
                         <input
                             name="tema"
                             className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors"
@@ -222,7 +222,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                     {/* Professor + Data */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Professor *</label>
+                            <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Professor *</label>
                             <select
                                 name="professor_id"
                                 required
@@ -237,7 +237,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Data *</label>
+                            <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Data *</label>
                             <input
                                 name="data"
                                 type="date"
@@ -249,7 +249,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
 
                     {/* Sermao base */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Sermao base (opcional)</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Sermao base (opcional)</label>
                         <select
                             name="sermao_id"
                             defaultValue={sermaoIdInicial || ''}
@@ -266,7 +266,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
 
                     {/* Perguntas de discussao */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Perguntas de Discussao (uma por linha)</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Perguntas de Discussao (uma por linha)</label>
                         <textarea
                             name="perguntas_discussao"
                             rows={4}
@@ -277,7 +277,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
 
                     {/* Material de apoio */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Material de Apoio</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Material de Apoio</label>
                         <textarea
                             name="material_apoio"
                             rows={3}
@@ -289,7 +289,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3 bg-figueira text-white text-[10px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="w-full py-3 bg-figueira text-white text-[14px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                         {loading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
                         {loading ? 'A criar...' : 'Criar Aula'}
@@ -308,7 +308,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl flex-shrink-0">
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">
+                    <h2 className="text-sm font-bold text-fg">
                         Marcar Presencas
                     </h2>
                     <button onClick={() => { setPresencaAulaId(null); setPresentes([]) }} className="text-muted hover:text-fg transition-colors">
@@ -323,7 +323,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                         className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors"
                         placeholder="Pesquisar membro..."
                     />
-                    <p className="text-[9px] font-bold text-figueira mt-2">
+                    <p className="text-[13px] font-bold text-figueira mt-2">
                         {presentes.length} presente{presentes.length !== 1 ? 's' : ''}
                     </p>
                 </div>
@@ -346,7 +346,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                                 }`}>
                                     {isPresente && <Check size={12} />}
                                 </div>
-                                <span className="text-[11px] font-bold text-fg">
+                                <span className="text-[14px] font-bold text-fg">
                                     {m.first_name} {m.last_name}
                                 </span>
                             </button>
@@ -358,7 +358,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                     <button
                         onClick={salvarPresencas}
                         disabled={presencaLoading}
-                        className="w-full py-3 bg-figueira text-white text-[10px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="w-full py-3 bg-figueira text-white text-[14px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                         {presencaLoading ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
                         {presencaLoading ? 'A guardar...' : 'Guardar Presencas'}
@@ -375,9 +375,9 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
             <header className="space-y-4">
                 <div className="flex items-center gap-2 text-figueira">
                     <GraduationCap size={16} />
-                    <span className="font-black text-[10px] uppercase tracking-[0.3em]">Escola Biblica</span>
+                    <span className="font-bold text-[14px] uppercase tracking-wide">Escola Biblica</span>
                 </div>
-                <h1 className="text-4xl sm:text-5xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                <h1 className="text-4xl sm:text-5xl font-bold text-fg leading-none">
                     EBD<span className="text-muted/20">.</span>
                 </h1>
             </header>
@@ -388,8 +388,8 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                     <ChevronLeft size={18} />
                 </button>
                 <div className="text-center">
-                    <p className="text-sm font-black uppercase tracking-widest text-fg">{MESES[mes - 1]}</p>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted">{ano}</p>
+                    <p className="text-sm font-bold text-fg">{MESES[mes - 1]}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">{ano}</p>
                 </div>
                 <button onClick={mesSeguinte} className="p-2 hover:bg-bg rounded-xl transition-colors text-muted hover:text-fg">
                     <ChevronRight size={18} />
@@ -398,12 +398,12 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
 
             {/* Action bar */}
             <div className="flex items-center justify-between">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted">
+                <p className="text-[14px] font-bold uppercase tracking-wide text-muted">
                     {aulas.length} {aulas.length === 1 ? 'aula' : 'aulas'}
                 </p>
                 <button
                     onClick={() => setModalAberto(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[9px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[13px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity"
                 >
                     <Plus size={12} />
                     Nova Aula
@@ -414,7 +414,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
             {aulas.length === 0 ? (
                 <div className="py-20 text-center border-2 border-dashed border-soft rounded-[2.5rem]">
                     <GraduationCap size={32} className="mx-auto text-muted/30 mb-4" />
-                    <p className="text-xs font-black uppercase text-muted tracking-widest">Nenhuma aula neste mes.</p>
+                    <p className="text-xs font-bold text-muted">Nenhuma aula neste mes.</p>
                 </div>
             ) : (
                 <div className="space-y-3">
@@ -426,18 +426,18 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                                 <summary className="cursor-pointer px-5 py-4 flex items-center gap-4 list-none [&::-webkit-details-marker]:hidden">
                                     {/* Date badge */}
                                     <div className="flex-shrink-0 w-12 h-12 bg-bg border border-soft rounded-xl flex flex-col items-center justify-center">
-                                        <span className="text-[10px] font-black text-figueira leading-none">
+                                        <span className="text-[14px] font-bold text-figueira leading-none">
                                             {new Date(a.data).getDate()}
                                         </span>
-                                        <span className="text-[8px] font-bold text-muted uppercase">
+                                        <span className="text-[13px] font-bold text-muted uppercase">
                                             {new Date(a.data).toLocaleDateString('pt-PT', { month: 'short' })}
                                         </span>
                                     </div>
 
                                     {/* Info */}
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="text-xs font-black uppercase tracking-wide text-fg truncate">{a.titulo}</h3>
-                                        <p className="text-[9px] font-bold text-muted mt-0.5">
+                                        <h3 className="text-xs font-bold text-fg truncate">{a.titulo}</h3>
+                                        <p className="text-[13px] font-bold text-muted mt-0.5">
                                             <User size={9} className="inline mr-1" />
                                             {a.professor.first_name} {a.professor.last_name}
                                             {a.sermao && (
@@ -452,7 +452,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                                     {/* Presence count */}
                                     <div className="hidden sm:flex items-center gap-1.5 bg-bg border border-soft rounded-full px-3 py-1">
                                         <Users size={10} className="text-figueira" />
-                                        <span className="text-[9px] font-black text-fg">{a._count.presencas}</span>
+                                        <span className="text-[13px] font-bold text-fg">{a._count.presencas}</span>
                                     </div>
 
                                     <ChevronDown size={14} className="text-muted group-open:rotate-180 transition-transform flex-shrink-0" />
@@ -463,18 +463,18 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                                     {/* Tema */}
                                     {a.tema && (
                                         <div>
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-muted mb-1">Tema</p>
-                                            <p className="text-[11px] text-fg/80">{a.tema}</p>
+                                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Tema</p>
+                                            <p className="text-[14px] text-fg/80">{a.tema}</p>
                                         </div>
                                     )}
 
                                     {/* Perguntas */}
                                     {perguntas.length > 0 && (
                                         <div>
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-muted mb-1">Perguntas de Discussao</p>
+                                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Perguntas de Discussao</p>
                                             <ol className="space-y-1 list-decimal list-inside">
                                                 {perguntas.map((p: string, i: number) => (
-                                                    <li key={i} className="text-[10px] text-fg/80">{p}</li>
+                                                    <li key={i} className="text-[14px] text-fg/80">{p}</li>
                                                 ))}
                                             </ol>
                                         </div>
@@ -483,10 +483,10 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                                     {/* Linked sermon */}
                                     {a.sermao && (
                                         <div>
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-muted mb-1">Sermao Base</p>
+                                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Sermao Base</p>
                                             <Link
                                                 href={`/pregacao/editor/${a.sermao.id}`}
-                                                className="inline-flex items-center gap-1.5 text-[10px] font-bold text-figueira hover:underline"
+                                                className="inline-flex items-center gap-1.5 text-[14px] font-bold text-figueira hover:underline"
                                             >
                                                 <BookOpen size={10} />
                                                 {a.sermao.titulo}
@@ -497,8 +497,8 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                                     {/* Material */}
                                     {a.material_apoio && (
                                         <div>
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-muted mb-1">Material de Apoio</p>
-                                            <p className="text-[10px] text-fg/70 whitespace-pre-wrap">{a.material_apoio}</p>
+                                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Material de Apoio</p>
+                                            <p className="text-[14px] text-fg/70 whitespace-pre-wrap">{a.material_apoio}</p>
                                         </div>
                                     )}
 
@@ -506,14 +506,14 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                                     <div className="flex flex-wrap gap-2 pt-2">
                                         <button
                                             onClick={() => abrirPresencas(a)}
-                                            className="flex items-center gap-1.5 px-4 py-2 bg-figueira/10 border border-figueira/20 rounded-2xl text-[9px] font-black uppercase tracking-widest text-figueira hover:bg-figueira/20 transition-colors"
+                                            className="flex items-center gap-1.5 px-4 py-2 bg-figueira/10 border border-figueira/20 rounded-2xl text-[13px] font-bold uppercase tracking-wide text-figueira hover:bg-figueira/20 transition-colors"
                                         >
                                             <Users size={10} />
                                             Marcar Presencas
                                         </button>
                                         <button
                                             onClick={() => handleRemover(a.id)}
-                                            className="flex items-center gap-1.5 px-4 py-2 bg-red-600/10 border border-red-600/20 rounded-2xl text-[9px] font-black uppercase tracking-widest text-red-400 hover:bg-red-600/20 transition-colors ml-auto"
+                                            className="flex items-center gap-1.5 px-4 py-2 bg-red-600/10 border border-red-600/20 rounded-2xl text-[13px] font-bold uppercase tracking-wide text-red-400 hover:bg-red-600/20 transition-colors ml-auto"
                                         >
                                             <Trash2 size={10} />
                                             Remover

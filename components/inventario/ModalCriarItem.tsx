@@ -37,9 +37,9 @@ interface Props {
 function Campo({ label, name, type = 'text', placeholder = '', defaultValue = '', required = false, className = '' }: any) {
     return (
         <div className={`space-y-1.5 ${className}`}>
-            <label className="text-[8px] font-black uppercase tracking-widest text-muted">{label}{required && ' *'}</label>
+            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">{label}{required && ' *'}</label>
             <input type={type} name={name} placeholder={placeholder} defaultValue={defaultValue} required={required}
-                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none transition-all" />
+                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all" />
         </div>
     )
 }
@@ -81,8 +81,8 @@ export default function ModalCriarItem({ departamentos, grupos, membros, onClose
                                 <Package size={16} />
                             </div>
                             <div>
-                                <h3 className="text-sm font-black uppercase italic tracking-tighter text-fg">Novo Item</h3>
-                                <p className="text-[8px] font-bold text-muted uppercase tracking-widest mt-0.5">Adicionar ao inventário</p>
+                                <h3 className="text-sm font-bold text-fg">Novo Item</h3>
+                                <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-0.5">Adicionar ao inventário</p>
                             </div>
                         </div>
                         <button onClick={onClose} className="w-8 h-8 bg-soft/20 rounded-full flex items-center justify-center text-muted hover:bg-red-500 hover:text-white transition-all">
@@ -93,25 +93,25 @@ export default function ModalCriarItem({ departamentos, grupos, membros, onClose
                     <form onSubmit={handleSubmit} className="overflow-y-auto px-7 py-5 space-y-5">
 
                         {erro && (
-                            <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-[9px] font-bold text-red-600 uppercase tracking-widest">
+                            <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-[13px] font-bold text-red-600 uppercase tracking-wide">
                                 {erro}
                             </div>
                         )}
 
                         {/* IDENTIFICAÇÃO */}
                         <div className="space-y-3">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-figueira">Identificação</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">Identificação</p>
                             <Campo label="Nome do Item" name="nome" placeholder="Ex: Microfone Shure SM58" required />
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Categoria *</label>
-                                    <select name="categoria" required className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Categoria *</label>
+                                    <select name="categoria" required className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                                         {CATEGORIAS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                                     </select>
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Estado</label>
-                                    <select name="estado" className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Estado</label>
+                                    <select name="estado" className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                                         {ESTADOS.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
                                     </select>
                                 </div>
@@ -130,7 +130,7 @@ export default function ModalCriarItem({ departamentos, grupos, membros, onClose
 
                         {/* DONO */}
                         <div className="space-y-3 border-t border-soft pt-4">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-figueira">Pertence a</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">Pertence a</p>
                             <div className="flex flex-wrap gap-2">
                                 {['IGREJA', 'DEPARTAMENTO', 'GRUPO', 'MEMBRO'].map(tipo => (
                                     <button key={tipo} type="button" onClick={() => setDonoTipo(tipo)}
@@ -143,8 +143,8 @@ export default function ModalCriarItem({ departamentos, grupos, membros, onClose
 
                             {donoTipo === 'DEPARTAMENTO' && (
                                 <div className="space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Departamento *</label>
-                                    <select name="dono_departamento_id" required className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Departamento *</label>
+                                    <select name="dono_departamento_id" required className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                                         <option value="">Seleccione...</option>
                                         {departamentos.map(d => <option key={d.id} value={d.id}>{d.nome}</option>)}
                                     </select>
@@ -152,8 +152,8 @@ export default function ModalCriarItem({ departamentos, grupos, membros, onClose
                             )}
                             {donoTipo === 'GRUPO' && (
                                 <div className="space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Grupo *</label>
-                                    <select name="dono_grupo_id" required className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Grupo *</label>
+                                    <select name="dono_grupo_id" required className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                                         <option value="">Seleccione...</option>
                                         {grupos.map(g => <option key={g.id} value={g.id}>{g.nome}</option>)}
                                     </select>
@@ -161,8 +161,8 @@ export default function ModalCriarItem({ departamentos, grupos, membros, onClose
                             )}
                             {donoTipo === 'MEMBRO' && (
                                 <div className="space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Membro *</label>
-                                    <select name="dono_membro_id" required className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Membro *</label>
+                                    <select name="dono_membro_id" required className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                                         <option value="">Seleccione...</option>
                                         {membros.map(m => <option key={m.id} value={m.id}>{m.first_name} {m.last_name}</option>)}
                                     </select>
@@ -172,7 +172,7 @@ export default function ModalCriarItem({ departamentos, grupos, membros, onClose
 
                         {/* AQUISIÇÃO */}
                         <div className="space-y-3 border-t border-soft pt-4">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-figueira">Aquisição</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">Aquisição</p>
                             <div className="grid grid-cols-3 gap-3">
                                 <Campo label="Quantidade" name="quantidade_total" type="number" defaultValue="1" />
                                 <Campo label="Valor (€)" name="valor_aquisicao" type="number" placeholder="0.00" />
@@ -187,13 +187,13 @@ export default function ModalCriarItem({ departamentos, grupos, membros, onClose
                         {/* GARANTIA */}
                         <div className="space-y-3 border-t border-soft pt-4">
                             <div className="flex items-center justify-between">
-                                <p className="text-[8px] font-black uppercase tracking-widest text-figueira">Garantia</p>
+                                <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">Garantia</p>
                                 <label className="flex items-center gap-2 cursor-pointer">
                                     <div onClick={() => setTemGarantia(!temGarantia)}
                                         className={`w-10 h-6 rounded-full transition-all relative ${temGarantia ? 'bg-figueira' : 'bg-soft'}`}>
                                         <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${temGarantia ? 'left-5' : 'left-1'}`} />
                                     </div>
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-muted">
+                                    <span className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                         {temGarantia ? 'Tem garantia' : 'Sem garantia'}
                                     </span>
                                 </label>
@@ -211,9 +211,9 @@ export default function ModalCriarItem({ departamentos, grupos, membros, onClose
 
                         {/* NOTAS */}
                         <div className="space-y-1.5 border-t border-soft pt-4">
-                            <label className="text-[8px] font-black uppercase tracking-widest text-muted">Notas</label>
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Notas</label>
                             <textarea name="notas" rows={2} placeholder="Informações adicionais..."
-                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none resize-none" />
+                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none resize-none" />
                         </div>
 
                         {/* SUBMIT */}

@@ -54,7 +54,7 @@ export default async function DonativosDashboard() {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <Heart size={20} className="text-figueira" />
-                    <h1 className="text-base font-black uppercase tracking-widest text-fg">Donativos Online</h1>
+                    <h1 className="text-base font-bold text-fg">Donativos Online</h1>
                 </div>
             </div>
 
@@ -63,23 +63,23 @@ export default async function DonativosDashboard() {
                 <div className="bg-bg2 border border-soft rounded-2xl p-5">
                     <div className="flex items-center gap-2 mb-2">
                         <AlertCircle size={14} className="text-amber-400" />
-                        <p className="text-[8px] font-black uppercase tracking-widest text-muted">Pendentes</p>
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Pendentes</p>
                     </div>
-                    <p className="text-2xl font-black text-amber-400">{pendentes.length}</p>
+                    <p className="text-2xl font-bold text-amber-400">{pendentes.length}</p>
                 </div>
                 <div className="bg-bg2 border border-soft rounded-2xl p-5">
                     <div className="flex items-center gap-2 mb-2">
                         <TrendingUp size={14} className="text-green-400" />
-                        <p className="text-[8px] font-black uppercase tracking-widest text-muted">Este Mes</p>
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Este Mes</p>
                     </div>
-                    <p className="text-2xl font-black text-green-400">{euro(totalMes)}</p>
+                    <p className="text-2xl font-bold text-green-400">{euro(totalMes)}</p>
                 </div>
                 <div className="bg-bg2 border border-soft rounded-2xl p-5">
                     <div className="flex items-center gap-2 mb-2">
                         <TrendingUp size={14} className="text-figueira" />
-                        <p className="text-[8px] font-black uppercase tracking-widest text-muted">Este Ano</p>
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Este Ano</p>
                     </div>
-                    <p className="text-2xl font-black text-figueira">{euro(totalAno)}</p>
+                    <p className="text-2xl font-bold text-figueira">{euro(totalAno)}</p>
                 </div>
             </div>
 
@@ -88,7 +88,7 @@ export default async function DonativosDashboard() {
                 <div className="bg-bg2 border border-soft rounded-2xl p-5">
                     <div className="flex items-center gap-2 mb-4">
                         <Clock size={14} className="text-amber-400" />
-                        <h2 className="text-[10px] font-black uppercase tracking-widest text-fg">Donativos Pendentes</h2>
+                        <h2 className="text-[14px] font-bold uppercase tracking-wide text-fg">Donativos Pendentes</h2>
                     </div>
                     <div className="space-y-3">
                         {pendentes.map(d => (
@@ -104,8 +104,8 @@ export default async function DonativosDashboard() {
                                         {d.fundo && <span>Fundo: {d.fundo.nome}</span>}
                                         <span>{formatData(d.criado_em)}</span>
                                     </div>
-                                    {d.referencia && <p className="text-[10px] text-muted font-mono mt-1">Ref: {d.referencia}</p>}
-                                    {d.mensagem && <p className="text-xs text-muted mt-1 italic">&quot;{d.mensagem}&quot;</p>}
+                                    {d.referencia && <p className="text-[14px] text-muted font-mono mt-1">Ref: {d.referencia}</p>}
+                                    {d.mensagem && <p className="text-xs text-muted mt-1">&quot;{d.mensagem}&quot;</p>}
                                 </div>
                                 <BotaoConfirmarDonativo donativoId={d.id} />
                             </div>
@@ -117,7 +117,7 @@ export default async function DonativosDashboard() {
             {pendentes.length === 0 && (
                 <div className="bg-bg2 border border-soft rounded-2xl p-8 text-center">
                     <CheckCircle2 size={24} className="text-green-400 mx-auto mb-2" />
-                    <p className="text-xs text-muted font-bold uppercase tracking-widest">Nenhum donativo pendente</p>
+                    <p className="text-xs text-muted font-bold">Nenhum donativo pendente</p>
                 </div>
             )}
 
@@ -126,12 +126,12 @@ export default async function DonativosDashboard() {
                 <div className="bg-bg2 border border-soft rounded-2xl p-5">
                     <div className="flex items-center gap-2 mb-4">
                         <CheckCircle2 size={14} className="text-green-400" />
-                        <h2 className="text-[10px] font-black uppercase tracking-widest text-fg">Recentes Confirmados</h2>
+                        <h2 className="text-[14px] font-bold uppercase tracking-wide text-fg">Recentes Confirmados</h2>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="text-[8px] font-black uppercase tracking-widest text-muted border-b border-soft">
+                                <tr className="text-[13px] font-bold uppercase tracking-wide text-muted border-b border-soft">
                                     <th className="py-2 pr-4">Doador</th>
                                     <th className="py-2 pr-4">Valor</th>
                                     <th className="py-2 pr-4">Fundo</th>

@@ -67,10 +67,10 @@ export default async function MuralPage() {
                         <MessageSquare size={24} className="hidden md:block" />
                     </div>
                     <div>
-                        <h1 className="text-xl md:text-3xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                        <h1 className="text-xl md:text-3xl font-bold text-fg leading-none">
                             Mural de <span className="text-muted/30">Avisos.</span>
                         </h1>
-                        <p className="text-[9px] md:text-xs text-muted font-bold tracking-widest uppercase mt-1">
+                        <p className="text-[13px] md:text-xs text-muted font-bold tracking-wide uppercase mt-1">
                             Comunicação interna das tuas equipas.
                         </p>
                     </div>
@@ -83,7 +83,7 @@ export default async function MuralPage() {
                 ) : (
                     <div className="h-full flex flex-col items-center justify-center text-center p-10 bg-bg2 border border-dashed border-soft rounded-[3rem]">
                         <MessageSquare size={48} className="text-soft mb-4" />
-                        <h3 className="text-lg font-black uppercase tracking-widest text-fg">Sem Canais Disponíveis</h3>
+                        <h3 className="text-lg font-bold text-fg">Sem Canais Disponíveis</h3>
                         <p className="text-xs text-muted font-medium mt-2 max-w-sm">Ainda não estás associado a nenhum Grupo ou Departamento. Fala com a liderança para seres adicionado.</p>
                     </div>
                 )}

@@ -35,10 +35,10 @@ export default function SelecionarCongregacaoClient({
                         <Church size={32} className="text-figueira" />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-figueira">
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-figueira">
                             {igrejaName}
                         </p>
-                        <h1 className="text-2xl font-black italic uppercase tracking-tighter text-fg mt-1">
+                        <h1 className="text-2xl font-bold text-fg mt-1">
                             Selecionar Congregacao
                         </h1>
                         <p className="text-xs text-muted mt-2">
@@ -69,11 +69,11 @@ export default function SelecionarCongregacaoClient({
                                 }
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h3 className="text-sm font-black uppercase tracking-tight text-fg truncate">
+                                <h3 className="text-sm font-bold text-fg truncate">
                                     {cong.nome}
                                 </h3>
                                 {cong.cidade && (
-                                    <p className="text-[10px] font-bold text-muted flex items-center gap-1 mt-0.5">
+                                    <p className="text-[14px] font-bold text-muted flex items-center gap-1 mt-0.5">
                                         <MapPin size={10} /> {cong.cidade}
                                     </p>
                                 )}

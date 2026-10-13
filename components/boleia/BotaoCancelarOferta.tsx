@@ -25,7 +25,7 @@ export default function BotaoCancelarOferta({ ofertaId }: { ofertaId: number }) 
         <button
             onClick={handleCancelar}
             disabled={loading}
-            className="inline-flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-red-400 hover:text-red-300 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 text-[13px] font-bold uppercase tracking-wide text-red-400 hover:text-red-300 transition-colors disabled:opacity-50"
         >
             {loading ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
             {loading ? 'A cancelar...' : 'Cancelar'}

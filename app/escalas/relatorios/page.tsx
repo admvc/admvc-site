@@ -67,12 +67,12 @@ export default async function RelatorioEscalasPage(
                 <div className="space-y-2">
                     <div className="flex items-center gap-2 text-figueira">
                         <CalendarDays size={16} />
-                        <span className="font-black text-[10px] uppercase tracking-[0.3em]">Relatórios Oficiais</span>
+                        <span className="font-bold text-[14px] uppercase tracking-wide">Relatórios Oficiais</span>
                     </div>
-                    <h1 className="text-6xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h1 className="text-6xl font-bold text-fg leading-none">
                         Escalas <span className="text-muted/20">Semanais.</span>
                     </h1>
-                    <p className="text-muted text-xs font-bold uppercase tracking-widest">
+                    <p className="text-muted text-xs font-bold">
                         Período: {format(dataInicio, "dd/MM")} até {format(dataFim, "dd/MM")}
                     </p>
                 </div>
@@ -83,9 +83,9 @@ export default async function RelatorioEscalasPage(
 
             {/* CABEÇALHO DE IMPRESSÃO */}
             <div className="hidden print:flex flex-col items-center border-b-4 border-fg pb-6 mb-10 text-center">
-                <h1 className="text-4xl font-black uppercase tracking-tighter italic">ADMVC • GESTÃO DE ESCALAS</h1>
-                <p className="text-[10px] font-black uppercase tracking-[0.5em] mt-2 text-muted">Relatório Geral de Atividades Ministerial</p>
-                <div className="mt-4 px-6 py-1 bg-fg text-bg rounded-full text-[10px] font-black uppercase">
+                <h1 className="text-4xl font-bold">ADMVC • GESTÃO DE ESCALAS</h1>
+                <p className="text-[14px] font-bold uppercase tracking-wide mt-2 text-muted">Relatório Geral de Atividades Ministerial</p>
+                <div className="mt-4 px-6 py-1 bg-fg text-bg rounded-full text-[14px] font-bold uppercase">
                     {format(dataInicio, "dd/MM/yyyy")} — {format(dataFim, "dd/MM/yyyy")}
                 </div>
             </div>
@@ -96,8 +96,8 @@ export default async function RelatorioEscalasPage(
                     Object.values(relatorioData).map((item: any) => (
                         <section key={item.info.id} className="break-inside-avoid">
                             <div className="flex items-baseline gap-4 border-b-2 border-soft pb-2 mb-6">
-                                <h2 className="text-3xl font-black uppercase italic tracking-tighter text-fg">{item.info.nome}</h2>
-                                <span className="text-xs font-bold text-figueira uppercase">
+                                <h2 className="text-3xl font-bold text-fg">{item.info.nome}</h2>
+                                <span className="text-xs font-bold text-figueira">
                                     {format(new Date(item.info.data), "EEEE, dd 'de' MMMM", { locale: pt })}
                                 </span>
                             </div>
@@ -105,7 +105,7 @@ export default async function RelatorioEscalasPage(
                             <div className="space-y-8">
                                 {Object.entries(item.deptos).map(([depto, pessoas]: [string, any]) => (
                                     <div key={depto} className="space-y-3">
-                                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted flex items-center gap-2">
+                                        <h4 className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
                                             <span className="w-2 h-2 bg-figueira rounded-full" /> {depto}
                                         </h4>
 
@@ -113,10 +113,10 @@ export default async function RelatorioEscalasPage(
                                             {pessoas.map((esc: any) => (
                                                 <div key={esc.id} className="p-4 bg-bg2 border border-soft rounded-2xl flex justify-between items-center print:border-soft print:bg-white transition-all hover:border-figueira/30">
                                                     <div>
-                                                        <p className="text-[11px] font-black uppercase text-fg leading-none">
+                                                        <p className="text-[14px] font-bold uppercase text-fg leading-none">
                                                             {esc.membro.first_name} {esc.membro.last_name}
                                                         </p>
-                                                        <p className="text-[9px] font-bold text-figueira uppercase mt-1 italic">
+                                                        <p className="text-[13px] font-bold text-figueira uppercase mt-1">
                                                             {esc.funcao}
                                                         </p>
                                                     </div>
@@ -130,13 +130,13 @@ export default async function RelatorioEscalasPage(
                     ))
                 ) : (
                     <div className="py-32 text-center border-4 border-dashed border-soft rounded-[4rem]">
-                        <p className="text-sm font-black uppercase text-muted tracking-widest">Nenhuma atividade registrada.</p>
+                        <p className="text-sm font-bold text-muted">Nenhuma atividade registrada.</p>
                     </div>
                 )}
             </div>
 
             <footer className="pt-10 border-t border-soft text-center hidden print:block mt-20">
-                <p className="text-[9px] font-black uppercase text-muted tracking-widest">
+                <p className="text-[13px] font-bold uppercase text-muted tracking-wide">
                     Documento Interno • Gerado em {format(new Date(), "dd/MM/yyyy 'às' HH:mm")}
                 </p>
             </footer>

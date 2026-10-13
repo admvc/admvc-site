@@ -36,14 +36,14 @@ export default function FormDespesa({ fundos, categorias }: Props) {
                     <Receipt size={20} />
                 </div>
                 <div>
-                    <h3 className="text-sm font-black uppercase italic tracking-tighter text-fg leading-none">Nova Despesa</h3>
-                    <p className="text-[9px] text-muted mt-1">Submete uma despesa para aprovacao.</p>
+                    <h3 className="text-sm font-bold text-fg leading-none">Nova Despesa</h3>
+                    <p className="text-[13px] text-muted mt-1">Submete uma despesa para aprovacao.</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Fundo</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Fundo</label>
                     <select
                         name="fundo_id"
                         required
@@ -59,7 +59,7 @@ export default function FormDespesa({ fundos, categorias }: Props) {
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Categoria (opcional)</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Categoria (opcional)</label>
                     <select
                         name="categoria_id"
                         className="w-full bg-bg border border-soft rounded-xl px-4 py-3 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-figueira/30"
@@ -73,7 +73,7 @@ export default function FormDespesa({ fundos, categorias }: Props) {
             </div>
 
             <div className="space-y-1.5">
-                <label className="text-[8px] font-black uppercase tracking-widest text-muted">Descricao</label>
+                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Descricao</label>
                 <input
                     type="text"
                     name="descricao"
@@ -85,7 +85,7 @@ export default function FormDespesa({ fundos, categorias }: Props) {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Valor</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Valor</label>
                     <input
                         type="number"
                         name="valor"
@@ -98,7 +98,7 @@ export default function FormDespesa({ fundos, categorias }: Props) {
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Fornecedor (opcional)</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Fornecedor (opcional)</label>
                     <input
                         type="text"
                         name="fornecedor"
@@ -108,7 +108,7 @@ export default function FormDespesa({ fundos, categorias }: Props) {
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Data</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Data</label>
                     <input
                         type="date"
                         name="data"
@@ -122,7 +122,7 @@ export default function FormDespesa({ fundos, categorias }: Props) {
             <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-figueira text-white rounded-2xl py-3.5 text-[10px] font-black uppercase tracking-widest hover:bg-figueira/90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-figueira text-white rounded-2xl py-3.5 text-[14px] font-bold uppercase tracking-wide hover:bg-figueira/90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <Receipt size={16} />}
                 {loading ? 'A Submeter...' : 'Submeter Despesa'}

@@ -54,7 +54,7 @@ const PROTECTED_MODELS = [
     'LancamentoFinanceiro', 'Rifa', 'RifaNumero', 'PedidoSaldoCantina',
     'Contribuicao', 'Visitante', 'AcompanhamentoVisitante',
     'ProjetoObra', 'EtapaObra', 'AvisoMural', 'Agenda',
-    'Compromisso', 'RepertorioEvento',
+    'Compromisso', 'RepertorioEvento', 'Musica',
     'ItemInventario', 'MovimentoInventario',
     'IndisponibilidadeMembro', 'MensagemEvento',
     'BoleiaOferta', 'BoleiaReserva',

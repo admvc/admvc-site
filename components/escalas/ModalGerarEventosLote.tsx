@@ -30,7 +30,7 @@ export default function ModalGerarEventosLote() {
             <button
                 type="button"
                 onClick={() => setIsOpen(true)}
-                className="flex items-center gap-2 bg-figueira text-white px-5 py-3 rounded-2xl font-black text-[9px] uppercase tracking-[0.2em] hover:bg-figueira/90 transition-all shadow-lg shadow-figueira/20 active:scale-95"
+                className="flex items-center gap-2 bg-figueira text-white px-5 py-3 rounded-2xl font-bold text-[13px] uppercase tracking-wide hover:bg-figueira/90 transition-all shadow-lg shadow-figueira/20 active:scale-95"
             >
                 <Repeat size={14} />
                 Gerar Cultos Contínuos
@@ -43,8 +43,8 @@ export default function ModalGerarEventosLote() {
                         {/* HEADER */}
                         <div className="p-8 border-b border-soft flex justify-between items-center bg-bg2 relative">
                             <div className="space-y-1">
-                                <span className="text-figueira font-black text-[9px] uppercase tracking-[0.3em]">Agenda Automática</span>
-                                <h3 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Eventos <span className="text-muted/20">Lote.</span></h3>
+                                <span className="text-figueira font-bold text-[13px] uppercase tracking-wide">Agenda Automática</span>
+                                <h3 className="text-3xl font-bold text-fg">Eventos <span className="text-muted/20">Lote.</span></h3>
                             </div>
                             <button
                                 onClick={() => !isPending && setIsOpen(false)}
@@ -59,7 +59,7 @@ export default function ModalGerarEventosLote() {
 
                             {/* NOME DO EVENTO */}
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2">
+                                <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                     <Type size={12} /> Nome do Evento
                                 </label>
                                 <input
@@ -67,20 +67,20 @@ export default function ModalGerarEventosLote() {
                                     name="nome"
                                     required
                                     placeholder="Ex: Culto de Celebração"
-                                    className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none"
+                                    className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 {/* DIA DA SEMANA */}
                                 <div className="space-y-2 col-span-2 sm:col-span-1">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2">
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                         <CalendarDays size={12} /> Dia
                                     </label>
                                     <select
                                         name="diaDaSemana"
                                         required
-                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none appearance-none cursor-pointer"
+                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer"
                                     >
                                         <option value="0">Domingos</option>
                                         <option value="1">Segundas-feiras</option>
@@ -94,13 +94,13 @@ export default function ModalGerarEventosLote() {
 
                                 {/* FREQUÊNCIA (NOVO) */}
                                 <div className="space-y-2 col-span-2 sm:col-span-1">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2">
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                         <Filter size={12} /> Frequência
                                     </label>
                                     <select
                                         name="frequencia"
                                         required
-                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none appearance-none cursor-pointer"
+                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer"
                                     >
                                         <option value="TODAS">Toda a semana</option>
                                         <option value="1">1º do Mês</option>
@@ -113,7 +113,7 @@ export default function ModalGerarEventosLote() {
 
                                 {/* HORÁRIO */}
                                 <div className="space-y-2 col-span-2 sm:col-span-1">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2">
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                         <Clock size={12} /> Horário Fixo
                                     </label>
                                     <input
@@ -121,19 +121,19 @@ export default function ModalGerarEventosLote() {
                                         name="horario"
                                         required
                                         defaultValue="10:00"
-                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none cursor-pointer"
+                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer"
                                     />
                                 </div>
 
                                 {/* DURAÇÃO */}
                                 <div className="space-y-2 col-span-2 sm:col-span-1">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2">
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
                                         <Repeat size={12} /> Período
                                     </label>
                                     <select
                                         name="meses"
                                         required
-                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none appearance-none cursor-pointer"
+                                        className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer"
                                     >
                                         <option value="1">1 mês</option>
                                         <option value="3">3 meses</option>
@@ -148,7 +148,7 @@ export default function ModalGerarEventosLote() {
                                 <button
                                     type="submit"
                                     disabled={isPending}
-                                    className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50"
+                                    className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50"
                                 >
                                     {isPending ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
                                     {isPending ? "A Gerar Agenda..." : "Gerar Cultos na Base de Dados"}

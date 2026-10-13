@@ -65,7 +65,7 @@ export default function GerenciadorEscalaClient({ deptoId, integrantes, eventos,
                 <form action={handleAddEscala} className="bg-bg2 border border-soft p-8 rounded-[2.5rem] sticky top-10 space-y-6 shadow-sm">
                     <div className="flex items-center gap-2">
                         <Sparkles size={18} className="text-figueira" />
-                        <h3 className="text-lg font-black uppercase italic text-fg tracking-tighter">Nova Escala</h3>
+                        <h3 className="text-lg font-bold text-fg">Nova Escala</h3>
                     </div>
 
                     <input type="hidden" name="departamento_id" value={deptoId} />
@@ -73,7 +73,7 @@ export default function GerenciadorEscalaClient({ deptoId, integrantes, eventos,
                     <div className="space-y-4">
                         {/* SELECT EVENTO */}
                         <div>
-                            <label className="text-[10px] font-black uppercase text-muted ml-2">Evento / Culto</label>
+                            <label className="text-[14px] font-bold uppercase text-muted ml-2">Evento / Culto</label>
                             <select name="evento_id" required className="...">
                                 <option value="">Selecione o culto...</option>
                                 {eventos && eventos.length > 0 ? (
@@ -90,7 +90,7 @@ export default function GerenciadorEscalaClient({ deptoId, integrantes, eventos,
 
                         {/* SELECT MEMBRO */}
                         <div>
-                            <label className="text-[10px] font-black uppercase text-muted ml-2">Membro da Equipe</label>
+                            <label className="text-[14px] font-bold uppercase text-muted ml-2">Membro da Equipe</label>
                             <select
                                 name="membro_id"
                                 required
@@ -110,7 +110,7 @@ export default function GerenciadorEscalaClient({ deptoId, integrantes, eventos,
                         {/* INPUT FUNÇÃO COM SUGESTÕES */}
                         <div className="space-y-3">
                             <div>
-                                <label className="text-[10px] font-black uppercase text-muted ml-2">Função na Escala</label>
+                                <label className="text-[14px] font-bold uppercase text-muted ml-2">Função na Escala</label>
                                 <input
                                     name="funcao"
                                     required
@@ -143,7 +143,7 @@ export default function GerenciadorEscalaClient({ deptoId, integrantes, eventos,
 
                         <button
                             disabled={loading}
-                            className="w-full bg-fg text-bg py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-figueira transition-all disabled:opacity-50 shadow-xl active:scale-95"
+                            className="w-full bg-fg text-bg py-5 rounded-2xl font-bold uppercase text-[14px] tracking-wide hover:bg-figueira transition-all disabled:opacity-50 shadow-xl active:scale-95"
                         >
                             {loading ? 'A processar...' : 'Confirmar Escala'}
                         </button>
@@ -155,14 +155,14 @@ export default function GerenciadorEscalaClient({ deptoId, integrantes, eventos,
             <div className="lg:col-span-8 space-y-4">
                 <div className="flex justify-between items-end mb-2 px-4 md:px-0">
                     <div>
-                        <h3 className="text-lg font-black uppercase italic text-fg leading-none tracking-tighter">Escalas Agendadas</h3>
-                        <p className="text-[10px] font-bold text-muted uppercase tracking-widest mt-1">Próximos compromissos do setor</p>
+                        <h3 className="text-lg font-bold text-fg leading-none">Escalas Agendadas</h3>
+                        <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-1">Próximos compromissos do setor</p>
                     </div>
                 </div>
 
                 {escalas.length === 0 && (
                     <div className="p-20 border-2 border-dashed border-soft rounded-[3rem] text-center bg-bg2/30">
-                        <p className="text-xs font-bold text-muted uppercase tracking-widest italic opacity-50">Nenhuma escala definida para este período.</p>
+                        <p className="text-xs font-bold text-muted opacity-50">Nenhuma escala definida para este período.</p>
                     </div>
                 )}
 
@@ -170,21 +170,21 @@ export default function GerenciadorEscalaClient({ deptoId, integrantes, eventos,
                     <div key={esc.id} className="bg-bg2 border border-soft p-6 rounded-2xl flex items-center justify-between group hover:border-figueira/30 transition-all shadow-sm">
                         <div className="flex items-center gap-6">
                             <div className="bg-soft p-4 rounded-2xl text-center min-w-[70px] border border-soft/50">
-                                <span className="block text-[10px] font-black text-figueira uppercase">
+                                <span className="block text-[14px] font-bold text-figueira uppercase">
                                     {new Date(esc.evento.data).toLocaleDateString('pt-BR', { month: 'short' })}
                                 </span>
-                                <span className="block text-xl font-black text-fg">
+                                <span className="block text-xl font-bold text-fg">
                                     {new Date(esc.evento.data).toLocaleDateString('pt-BR', { day: '2-digit' })}
                                 </span>
                             </div>
 
                             <div>
-                                <h4 className="font-black text-sm uppercase text-fg leading-none mb-2">
+                                <h4 className="font-bold text-sm text-fg leading-none mb-2">
                                     {esc.membro.first_name} {esc.membro.last_name}
                                 </h4>
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[9px] font-bold text-muted uppercase bg-soft px-2 py-1 rounded-lg border border-soft/50">{esc.evento.nome}</span>
-                                    <span className="text-[9px] font-black text-figueira uppercase tracking-[0.15em] border-l-2 border-soft pl-3 italic">{esc.funcao}</span>
+                                    <span className="text-[13px] font-bold text-muted uppercase bg-soft px-2 py-1 rounded-lg border border-soft/50">{esc.evento.nome}</span>
+                                    <span className="text-[13px] font-bold text-figueira uppercase tracking-wide border-l-2 border-soft pl-3">{esc.funcao}</span>
                                 </div>
                             </div>
                         </div>

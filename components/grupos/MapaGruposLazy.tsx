@@ -8,7 +8,7 @@ const MapaGruposLazy = dynamic(() => import('@/components/grupos/MapaGrupos'), {
     ssr: false,
     loading: () => (
         <div className="h-[500px] rounded-[1.5rem] bg-soft/30 border border-soft flex items-center justify-center animate-pulse">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted">A carregar mapa...</p>
+            <p className="text-[14px] font-bold uppercase tracking-wide text-muted">A carregar mapa...</p>
         </div>
     ),
 })

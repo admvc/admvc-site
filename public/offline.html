@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADMVC — Sem ligacao</title>
+    <title>ADMVC — Sem ligação</title>
     <style>
-        body { background: #0b0d0c; color: #e6efea; font-family: system-ui; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; text-align: center; }
-        h1 { font-size: 1.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; }
-        p { color: #7e948a; font-size: 0.875rem; margin-top: 0.5rem; }
-        button { background: #3f6b4f; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; margin-top: 1.5rem; }
+        /* As cores do tema (verde), claro ou escuro conforme o telemovel */
+        :root { --bg: #f5f7f6; --texto: #17201b; --suave: #56655d; --destaque: #2f6b47; --sobre: #ffffff; color-scheme: light dark; }
+        @media (prefers-color-scheme: dark) { :root { --bg: #0f1311; --texto: #eef3f0; --suave: #a9bab1; --destaque: #7fc29b; --sobre: #0f1311; } }
+        body { background: var(--bg); color: var(--texto); font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 0 16px; text-align: center; }
+        h1 { font-size: 1.5rem; font-weight: 700; margin: 0; }
+        p { color: var(--suave); font-size: 1rem; margin-top: 0.5rem; }
+        button { background: var(--destaque); color: var(--sobre); border: none; min-height: 48px; padding: 0 1.25rem; border-radius: 14px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 1.5rem; }
     </style>
 </head>
 <body>
     <div>
-        <h1>Sem ligacao</h1>
-        <p>Verifique a sua ligacao a internet e tente novamente.</p>
+        <h1>Sem ligação</h1>
+        <p>Verifique a sua ligação à internet e tente novamente.</p>
         <button onclick="location.reload()">Tentar novamente</button>
     </div>
 </body>

@@ -179,7 +179,7 @@ export default function TrackingClient({
                     <ArrowLeft size={16} />
                 </Link>
                 <div className="flex-1 min-w-0">
-                    <h1 className="text-sm font-black uppercase italic tracking-tighter text-fg">Tracking em Tempo Real</h1>
+                    <h1 className="text-sm font-bold text-fg">Tracking em Tempo Real</h1>
                     <p className="text-xs text-muted font-bold truncate">{eventoNome || enderecoPartida}</p>
                 </div>
             </div>
@@ -196,7 +196,7 @@ export default function TrackingClient({
                     <User size={14} /> {participantes.length} participante{participantes.length !== 1 ? 's' : ''}
                 </div>
                 {distanciaKm !== null && (
-                    <div className="flex items-center gap-2 text-xs font-black text-figueira">
+                    <div className="flex items-center gap-2 text-xs font-bold text-figueira">
                         <Car size={14} />
                         {distanciaKm < 1
                             ? `${Math.round(distanciaKm * 1000)} metros de distância`
@@ -216,7 +216,7 @@ export default function TrackingClient({
 
             {/* PARTICIPANTES */}
             <div className="bg-bg2 border border-soft rounded-2xl p-4 space-y-2">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted mb-2">Participantes</p>
+                <p className="text-[14px] font-bold uppercase tracking-wide text-muted mb-2">Participantes</p>
                 {participantes.map(p => {
                     const posicaoAtiva = posicoes.find(pos => pos.membroId === p.membroId)
                     return (
@@ -248,7 +248,7 @@ export default function TrackingClient({
                     <button
                         onClick={handleIniciar}
                         disabled={loading}
-                        className="w-full flex items-center justify-center gap-2 py-4 bg-figueira text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all disabled:opacity-50"
+                        className="w-full flex items-center justify-center gap-2 py-4 bg-figueira text-white rounded-2xl font-bold text-xs shadow-lg active:scale-95 transition-all disabled:opacity-50"
                     >
                         {loading
                             ? <><Loader2 size={16} className="animate-spin" /> A obter localização...</>
@@ -258,7 +258,7 @@ export default function TrackingClient({
                 ) : (
                     <button
                         onClick={handleParar}
-                        className="w-full flex items-center justify-center gap-2 py-4 bg-red-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                        className="w-full flex items-center justify-center gap-2 py-4 bg-red-500 text-white rounded-2xl font-bold text-xs shadow-lg active:scale-95 transition-all"
                     >
                         <Square size={16} /> Parar {isMotorista ? 'Viagem' : 'Partilha'}
                     </button>

@@ -44,7 +44,7 @@ export default function BotaoConfirmarMBWay({ pendentes }: Props) {
         <button
             onClick={confirmar}
             disabled={loading}
-            className="bg-fg text-bg px-5 py-3 rounded-xl font-black text-[9px] uppercase hover:bg-green-600 hover:text-white transition-all shadow-lg active:scale-95 flex items-center gap-2 disabled:opacity-50"
+            className="bg-fg text-bg px-5 py-3 rounded-xl font-bold text-[13px] uppercase hover:bg-green-600 hover:text-white transition-all shadow-lg active:scale-95 flex items-center gap-2 disabled:opacity-50"
             title="Validar Pagamentos MBWay"
         >
             {loading ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}

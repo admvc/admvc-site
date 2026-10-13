@@ -6,8 +6,8 @@ import { put } from '@vercel/blob'
 import { requireRole } from '@/lib/auth-utils'
 import { audit } from '@/lib/audit'
 import { getTenantIdFromHeaders } from '@/lib/db'
+import { TEMAS, type Tema } from '@/lib/branding'
 
-const HEX_REGEX = /^#[0-9A-Fa-f]{6}$/
 
 async function getTenantId(): Promise<number> {
     const id = await getTenantIdFromHeaders()
@@ -20,29 +20,18 @@ export async function atualizarBranding(formData: FormData) {
         await requireRole(['ADMIN'])
         const tenantId = await getTenantId()
 
-        const corPrimaria = formData.get('cor_primaria') as string
-        const corSecundaria = formData.get('cor_secundaria') as string
-        const corFundo = formData.get('cor_fundo') as string
+        // Tema: um da lista (claro/escuro segue o telemovel)
+        const tema = formData.get('tema') as string
+        if (tema && !TEMAS.includes(tema as Tema)) {
+            return { ok: false, error: 'Tema inválido.' }
+        }
         const logoFile = formData.get('logo') as File | null
-
-        // Validar cores
-        if (corPrimaria && !HEX_REGEX.test(corPrimaria)) {
-            return { ok: false, error: 'Cor primaria invalida. Use formato #RRGGBB.' }
-        }
-        if (corSecundaria && !HEX_REGEX.test(corSecundaria)) {
-            return { ok: false, error: 'Cor secundaria invalida. Use formato #RRGGBB.' }
-        }
-        if (corFundo && !HEX_REGEX.test(corFundo)) {
-            return { ok: false, error: 'Cor de fundo invalida. Use formato #RRGGBB.' }
-        }
 
         const youtubeChannelId = (formData.get('youtube_channel_id') as string)?.trim() || null
         const instagramHandle = (formData.get('instagram_handle') as string)?.trim().replace(/^@/, '') || null
 
         const data: any = {}
-        if (corPrimaria) data.cor_primaria = corPrimaria
-        if (corSecundaria) data.cor_secundaria = corSecundaria
-        if (corFundo) data.cor_fundo = corFundo
+        if (tema) data.tema = tema
         data.youtube_channel_id = youtubeChannelId
         data.instagram_handle = instagramHandle
 
@@ -83,9 +72,7 @@ export async function resetBranding() {
         await prisma.tenant.update({
             where: { id: tenantId },
             data: {
-                cor_primaria: '#3F6B4F',
-                cor_secundaria: '#7FAE93',
-                cor_fundo: '#0b0d0c',
+                tema: 'verde',
                 logo_url: null,
                 youtube_channel_id: null,
                 instagram_handle: null,

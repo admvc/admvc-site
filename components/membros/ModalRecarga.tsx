@@ -29,15 +29,15 @@ export default function ModalRecarga({ isOpen, onClose }: { isOpen: boolean, onC
                         <div className="w-16 h-16 bg-[#ff004f]/10 text-[#ff004f] rounded-2xl flex items-center justify-center mx-auto mb-4">
                             <img src="https://www.mbway.pt/wp-content/uploads/2017/01/logo_mbway.png" alt="MBWAY" className="w-10 h-10 object-contain" />
                         </div>
-                        <h3 className="text-2xl font-black uppercase italic tracking-tighter text-fg">Recarga via <span className="text-[#ff004f]">MB WAY</span></h3>
-                        <p className="text-[10px] font-bold text-muted uppercase tracking-widest">Siga os passos abaixo para adicionar saldo</p>
+                        <h3 className="text-2xl font-bold text-fg">Recarga via <span className="text-[#ff004f]">MB WAY</span></h3>
+                        <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Siga os passos abaixo para adicionar saldo</p>
                     </div>
 
                     <div className="bg-bg border border-soft p-6 rounded-3xl space-y-4">
                         <div className="space-y-1">
-                            <span className="text-[8px] font-black text-muted uppercase tracking-widest block">Número de Telemóvel</span>
+                            <span className="text-[13px] font-bold text-muted uppercase tracking-wide block">Número de Telemóvel</span>
                             <div className="flex items-center justify-between bg-soft/20 p-4 rounded-xl border border-soft">
-                                <span className="text-lg font-black text-fg tracking-tighter">{telemovelIgreja}</span>
+                                <span className="text-lg font-bold text-fg">{telemovelIgreja}</span>
                                 <button onClick={copiarNumero} className="text-figueira hover:scale-110 transition-transform">
                                     {copiado ? <CheckCircle2 size={18} /> : <Copy size={18} />}
                                 </button>
@@ -45,7 +45,7 @@ export default function ModalRecarga({ isOpen, onClose }: { isOpen: boolean, onC
                         </div>
 
                         <div className="space-y-3">
-                            <p className="text-[10px] font-medium text-muted leading-relaxed italic">
+                            <p className="text-[14px] font-medium text-muted leading-relaxed">
                                 1. Envie o valor desejado via MB WAY para o número acima.<br />
                                 2. Na descrição, coloque o seu **Nome Completo**.<br />
                                 3. O Financeiro validará o depósito em até 24h.
@@ -55,7 +55,7 @@ export default function ModalRecarga({ isOpen, onClose }: { isOpen: boolean, onC
 
                     <button
                         onClick={onClose}
-                        className="w-full py-5 bg-fg text-bg rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira hover:text-white transition-all shadow-xl flex items-center justify-center gap-2"
+                        className="w-full py-5 bg-fg text-bg rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira hover:text-white transition-all shadow-xl flex items-center justify-center gap-2"
                     >
                         Entendi, já fiz o envio <ArrowRight size={14} />
                     </button>

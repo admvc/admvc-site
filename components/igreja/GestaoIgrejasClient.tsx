@@ -60,21 +60,21 @@ export default function GestaoIgrejasClient({ igrejasIniciais }: { igrejasInicia
             {/* CABEÇALHO DO PAINEL */}
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-fg flex items-center gap-3">
                         <Building size={28} className="text-figueira" />
                         Plataforma Super Admin
                     </h1>
-                    <p className="text-xs font-bold text-muted uppercase tracking-widest mt-1">
+                    <p className="text-xs font-bold text-muted mt-1">
                         Gestão global de Tenants (Igrejas)
                     </p>
                 </div>
 
                 {modo === 'lista' ? (
-                    <button onClick={() => setModo('criar')} className="bg-fg text-bg px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-figueira transition-all flex items-center gap-2">
+                    <button onClick={() => setModo('criar')} className="bg-fg text-bg px-6 py-3 rounded-2xl font-bold text-[14px] uppercase tracking-wide shadow-xl hover:bg-figueira transition-all flex items-center gap-2">
                         <PlusCircle size={16} /> Registar Nova Igreja
                     </button>
                 ) : (
-                    <button onClick={voltarLista} className="bg-bg2 border border-soft text-fg px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:border-figueira transition-all flex items-center gap-2">
+                    <button onClick={voltarLista} className="bg-bg2 border border-soft text-fg px-6 py-3 rounded-2xl font-bold text-[14px] uppercase tracking-wide shadow-sm hover:border-figueira transition-all flex items-center gap-2">
                         <ArrowLeft size={16} /> Voltar à Lista
                     </button>
                 )}
@@ -123,39 +123,39 @@ export default function GestaoIgrejasClient({ igrejasIniciais }: { igrejasInicia
                                     <div className="bg-figueira/10 text-figueira p-3 rounded-2xl shrink-0">
                                         <Church size={20} />
                                     </div>
-                                    <span className="bg-soft text-muted px-3 py-1 rounded-md text-[8px] font-black uppercase tracking-widest">
+                                    <span className="bg-soft text-muted px-3 py-1 rounded-md text-[13px] font-bold uppercase tracking-wide">
                                         Plano {igreja.plano}
                                     </span>
                                 </div>
-                                <h3 className="text-lg font-black uppercase italic tracking-tighter text-fg leading-none truncate">
+                                <h3 className="text-lg font-bold text-fg leading-none truncate">
                                     {igreja.nome}
                                 </h3>
-                                <p className="text-[10px] font-bold text-muted mt-1 truncate">/{igreja.slug}</p>
+                                <p className="text-[14px] font-bold text-muted mt-1 truncate">/{igreja.slug}</p>
 
                                 <div className="mt-6 flex items-center gap-6">
                                     <div className="space-y-1">
-                                        <p className="text-[8px] font-black text-muted uppercase tracking-widest">Membros</p>
-                                        <p className="text-sm font-black text-fg flex items-center gap-1"><Users size={14} className="text-figueira" /> {igreja._count.membros}</p>
+                                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide">Membros</p>
+                                        <p className="text-sm font-bold text-fg flex items-center gap-1"><Users size={14} className="text-figueira" /> {igreja._count.membros}</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[8px] font-black text-muted uppercase tracking-widest">Congregações</p>
-                                        <p className="text-sm font-black text-fg flex items-center gap-1"><Building size={14} className="text-blue-500" /> {igreja._count.congregacoes}</p>
+                                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide">Congregações</p>
+                                        <p className="text-sm font-bold text-fg flex items-center gap-1"><Building size={14} className="text-blue-500" /> {igreja._count.congregacoes}</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="mt-6 flex gap-2">
-                                <button onClick={() => abrirEdicao(igreja)} className="flex-1 flex items-center justify-center gap-2 py-3 bg-bg border border-soft rounded-xl text-[9px] font-black uppercase tracking-widest text-muted hover:bg-fg hover:text-bg transition-all">
+                                <button onClick={() => abrirEdicao(igreja)} className="flex-1 flex items-center justify-center gap-2 py-3 bg-bg border border-soft rounded-xl text-[13px] font-bold uppercase tracking-wide text-muted hover:bg-fg hover:text-bg transition-all">
                                     <Edit3 size={14} /> Editar
                                 </button>
-                                <Link href={`/super-admin/igrejas/${igreja.id}/modulos`} className="flex-1 flex items-center justify-center gap-2 py-3 bg-bg border border-soft rounded-xl text-[9px] font-black uppercase tracking-widest text-muted hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">
+                                <Link href={`/super-admin/igrejas/${igreja.id}/modulos`} className="flex-1 flex items-center justify-center gap-2 py-3 bg-bg border border-soft rounded-xl text-[13px] font-bold uppercase tracking-wide text-muted hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all">
                                     <Settings2 size={14} /> Modulos
                                 </Link>
-                                <Link href={`/super-admin/igrejas/${igreja.id}/tema`} className="flex-1 flex items-center justify-center gap-2 py-3 bg-bg border border-soft rounded-xl text-[9px] font-black uppercase tracking-widest text-muted hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-all">
+                                <Link href={`/super-admin/igrejas/${igreja.id}/tema`} className="flex-1 flex items-center justify-center gap-2 py-3 bg-bg border border-soft rounded-xl text-[13px] font-bold uppercase tracking-wide text-muted hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-all">
                                     <Palette size={14} /> Tema
                                 </Link>
                                 {!igreja.onboarding_completo && (
-                                    <Link href={`/super-admin/onboarding/${igreja.id}`} className="flex-1 flex items-center justify-center gap-2 py-3 bg-bg border border-amber-500/20 rounded-xl text-[9px] font-black uppercase tracking-widest text-amber-400 hover:bg-amber-500/10 transition-all">
+                                    <Link href={`/super-admin/onboarding/${igreja.id}`} className="flex-1 flex items-center justify-center gap-2 py-3 bg-bg border border-amber-500/20 rounded-xl text-[13px] font-bold uppercase tracking-wide text-amber-400 hover:bg-amber-500/10 transition-all">
                                         <Rocket size={14} /> Setup
                                     </Link>
                                 )}
@@ -177,10 +177,10 @@ export default function GestaoIgrejasClient({ igrejasIniciais }: { igrejasInicia
                             {modo === 'criar' ? <PlusCircle size={28} /> : <Edit3 size={28} />}
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black uppercase tracking-tighter text-fg italic">
+                            <h2 className="text-2xl font-bold text-fg">
                                 {modo === 'criar' ? 'Nova Organização' : `Editar: ${igrejaSelecionada?.nome}`}
                             </h2>
-                            <p className="text-[10px] font-bold text-muted uppercase tracking-widest mt-1">
+                            <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-1">
                                 {modo === 'criar' ? 'Configurar tenant e conta de administrador' : 'Alterar dados principais do Tenant'}
                             </p>
                         </div>
@@ -191,25 +191,25 @@ export default function GestaoIgrejasClient({ igrejasIniciais }: { igrejasInicia
 
                             {/* DADOS DA IGREJA (Sempre visível) */}
                             <div className="space-y-5 col-span-1 md:col-span-2">
-                                <h3 className="text-[10px] font-black uppercase text-figueira tracking-[0.2em] bg-figueira/10 px-4 py-2 rounded-xl inline-block border border-figueira/20">
+                                <h3 className="text-[14px] font-bold uppercase text-figueira tracking-wide bg-figueira/10 px-4 py-2 rounded-xl inline-block border border-figueira/20">
                                     1. Definições do Tenant
                                 </h3>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Nome da Igreja</label>
+                                        <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Nome da Igreja</label>
                                         <input name="nomeIgreja" defaultValue={igrejaSelecionada?.nome} required className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Ex: Assembleia Central" />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Identificador (Slug)</label>
+                                        <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Identificador (Slug)</label>
                                         <input name="slug" defaultValue={igrejaSelecionada?.slug} required className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Ex: assembleia-central" />
-                                        <p className="text-[8px] text-muted font-bold tracking-widest uppercase ml-4 mt-1">Usado para subdomínios e identificação</p>
+                                        <p className="text-[13px] text-muted font-bold tracking-wide uppercase ml-4 mt-1">Usado para subdomínios e identificação</p>
                                     </div>
 
                                     {modo === 'editar' && (
                                         <div className="space-y-2 md:col-span-2">
-                                            <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Plano de Assinatura</label>
+                                            <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Plano de Assinatura</label>
                                             <select name="plano" defaultValue={igrejaSelecionada?.plano || 'FREE'} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all appearance-none">
                                                 <option value="FREE">FREE (Gratuito)</option>
                                                 <option value="PRO">PRO (Profissional)</option>
@@ -223,23 +223,23 @@ export default function GestaoIgrejasClient({ igrejasIniciais }: { igrejasInicia
                             {/* DADOS DO ADMIN (Apenas na Criação) */}
                             {modo === 'criar' && (
                                 <div className="space-y-5 col-span-1 md:col-span-2 pt-6 border-t border-soft">
-                                    <h3 className="text-[10px] font-black uppercase text-blue-500 tracking-[0.2em] bg-blue-500/10 px-4 py-2 rounded-xl inline-block border border-blue-500/20">
+                                    <h3 className="text-[14px] font-bold uppercase text-blue-500 tracking-wide bg-blue-500/10 px-4 py-2 rounded-xl inline-block border border-blue-500/20">
                                         2. Conta de Acesso (Administrador)
                                     </h3>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-2 md:col-span-2">
-                                            <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Nome do Responsável</label>
+                                            <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Nome do Responsável</label>
                                             <input name="adminNome" required className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-blue-500 transition-all" placeholder="Nome do Pastor/Líder" />
                                         </div>
 
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">E-mail de Acesso</label>
+                                            <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">E-mail de Acesso</label>
                                             <input name="adminEmail" type="email" required className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-blue-500 transition-all" placeholder="admin@igreja.pt" />
                                         </div>
 
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">Palavra-passe Provisória</label>
+                                            <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Palavra-passe Provisória</label>
                                             <input name="adminPassword" type="password" required className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-blue-500 transition-all" placeholder="••••••••" />
                                         </div>
                                     </div>
@@ -249,7 +249,7 @@ export default function GestaoIgrejasClient({ igrejasIniciais }: { igrejasInicia
 
                         {/* STATUS DE FEEDBACK */}
                         {status && (
-                            <div className={`flex items-center justify-center gap-3 text-[10px] font-black uppercase p-4 rounded-2xl animate-in zoom-in-95 duration-300 ${status.type === 'error' ? 'text-red-500 bg-red-500/10 border border-red-500/20' : 'text-green-500 bg-green-500/10 border border-green-500/20'}`}>
+                            <div className={`flex items-center justify-center gap-3 text-[14px] font-bold uppercase p-4 rounded-2xl animate-in zoom-in-95 duration-300 ${status.type === 'error' ? 'text-red-500 bg-red-500/10 border border-red-500/20' : 'text-green-500 bg-green-500/10 border border-green-500/20'}`}>
                                 {status.type === 'error' ? '❌ ' : <CheckCircle2 size={18} />}
                                 {status.msg}
                             </div>
@@ -257,7 +257,7 @@ export default function GestaoIgrejasClient({ igrejasIniciais }: { igrejasInicia
 
                         <button
                             disabled={loading}
-                            className={`w-full py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-lg active:scale-95 ${loading ? 'bg-muted text-bg cursor-wait' : 'bg-fg text-bg hover:bg-figueira'}`}
+                            className={`w-full py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide transition-all flex items-center justify-center gap-3 shadow-lg active:scale-95 ${loading ? 'bg-muted text-bg cursor-wait' : 'bg-fg text-bg hover:bg-figueira'}`}
                         >
                             {loading && <Loader2 className="animate-spin" size={18} />}
                             {!loading && modo === 'criar' && <PlusCircle size={18} />}

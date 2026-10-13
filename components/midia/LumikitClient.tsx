@@ -144,7 +144,7 @@ export default function LumikitClient({ holyricsUrl, holyricsToken, scenes }: Pr
         return (
             <div className="bg-bg2 border border-soft rounded-2xl p-8 text-center space-y-4">
                 <WifiOff size={32} className="mx-auto text-muted/30" />
-                <p className="text-sm font-black uppercase tracking-widest text-muted">Holyrics nao configurado</p>
+                <p className="text-sm font-bold text-muted">Holyrics nao configurado</p>
                 <p className="text-xs text-muted/60">Configure o Holyrics nas <Link href="/admin/midia" className="text-figueira underline">configuracoes de midia</Link>.</p>
             </div>
         )
@@ -159,13 +159,13 @@ export default function LumikitClient({ holyricsUrl, holyricsToken, scenes }: Pr
                         {status === 'testing' ? <Loader2 size={18} className="animate-spin" /> : <Lightbulb size={18} />}
                     </div>
                     <div>
-                        <p className="text-sm font-black text-fg uppercase tracking-widest">Iluminacao</p>
-                        <p className="text-[8px] font-bold text-muted uppercase tracking-widest">
+                        <p className="text-sm font-bold text-fg">Iluminacao</p>
+                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide">
                             {status === 'connected' ? 'Conectado via Holyrics' : status === 'testing' ? 'A conectar...' : 'Desconectado'}
                         </p>
                     </div>
                 </div>
-                <Link href="/admin/midia" className="text-[8px] font-bold uppercase tracking-widest text-muted hover:text-figueira transition-colors flex items-center gap-1">
+                <Link href="/admin/midia" className="text-[13px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors flex items-center gap-1">
                     <Settings size={10} /> Config
                 </Link>
             </div>
@@ -185,15 +185,15 @@ export default function LumikitClient({ holyricsUrl, holyricsToken, scenes }: Pr
                                     {enviando === scene.id ? (
                                         <Loader2 size={14} className="animate-spin" />
                                     ) : scene.tipo === 'toggle' ? (
-                                        <span className="text-[7px] font-black uppercase tracking-widest opacity-60">
+                                        <span className="text-[13px] font-bold uppercase tracking-wide opacity-60">
                                             {isOn ? 'ON' : 'OFF'}
                                         </span>
                                     ) : (
-                                        <span className="text-[7px] font-black uppercase tracking-widest opacity-40">PUSH</span>
+                                        <span className="text-[13px] font-bold uppercase tracking-wide opacity-40">PUSH</span>
                                     )}
                                 </div>
                                 <div>
-                                    <p className="text-sm font-black uppercase tracking-widest">{scene.nome || 'Sem nome'}</p>
+                                    <p className="text-sm font-bold">{scene.nome || 'Sem nome'}</p>
                                 </div>
                             </button>
                         )
@@ -202,8 +202,8 @@ export default function LumikitClient({ holyricsUrl, holyricsToken, scenes }: Pr
             ) : (
                 <div className="bg-bg2 border border-soft rounded-2xl p-6 text-center space-y-2">
                     <Lightbulb size={24} className="mx-auto text-muted/30" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted">Nenhum botao configurado</p>
-                    <p className="text-[9px] text-muted/60">Configure os botoes em <Link href="/admin/midia" className="text-figueira underline">Admin &gt; Midia</Link>.</p>
+                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum botao configurado</p>
+                    <p className="text-[13px] text-muted/60">Configure os botoes em <Link href="/admin/midia" className="text-figueira underline">Admin &gt; Midia</Link>.</p>
                 </div>
             )}
 
@@ -215,7 +215,7 @@ export default function LumikitClient({ holyricsUrl, holyricsToken, scenes }: Pr
                 >
                     <div className="flex items-center gap-2">
                         <TerminalSquare size={14} className="text-white/60" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-white/60">
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-white/60">
                             Terminal de Logs {logs.length > 0 && `(${logs.length})`}
                         </span>
                     </div>
@@ -223,9 +223,9 @@ export default function LumikitClient({ holyricsUrl, holyricsToken, scenes }: Pr
                 </button>
 
                 {isTerminalOpen && (
-                    <div className="p-3 h-40 overflow-y-auto font-mono text-[9px] space-y-1.5 bg-black/50 scrollbar-hide">
+                    <div className="p-3 h-40 overflow-y-auto font-mono text-[13px] space-y-1.5 bg-black/50 scrollbar-hide">
                         {logs.length === 0 ? (
-                            <p className="text-white/30 text-center italic mt-10">A aguardar comandos...</p>
+                            <p className="text-white/30 text-center mt-10">A aguardar comandos...</p>
                         ) : (
                             logs.map((log) => (
                                 <div key={log.id} className="flex gap-2 leading-relaxed border-b border-white/5 pb-1">

@@ -18,7 +18,7 @@ export default async function DiagnosticoLoyversePage() {
             <main className="max-w-7xl mx-auto py-10 px-6 space-y-10 animate-in fade-in duration-700">
                 <div className="bg-orange-50 border border-orange-200 p-8 rounded-3xl text-center space-y-2">
                     <AlertTriangle className="mx-auto text-orange-500" size={32} />
-                    <h2 className="text-lg font-black uppercase text-orange-700">Loyverse nao configurado</h2>
+                    <h2 className="text-lg font-bold text-orange-700">Loyverse nao configurado</h2>
                     <p className="text-sm text-orange-600">Configure o token Loyverse nas definicoes do tenant para utilizar esta funcionalidade.</p>
                 </div>
             </main>
@@ -59,21 +59,21 @@ export default async function DiagnosticoLoyversePage() {
         <main className="max-w-7xl mx-auto py-10 px-6 space-y-10 animate-in fade-in duration-700">
             <header className="flex flex-col md:flex-row justify-between md:items-end gap-6 border-b border-soft pb-8">
                 <div>
-                    <span className="text-figueira font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2 mb-2">
+                    <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center gap-2 mb-2">
                         <ShieldCheck size={14} /> Diagnóstico de Integração
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h1 className="text-4xl md:text-5xl font-bold text-fg leading-none">
                         Clientes <span className="text-muted/20">Loyverse.</span>
                     </h1>
                 </div>
                 <div className="flex gap-4">
                     <div className="bg-bg2 border border-soft px-6 py-4 rounded-2xl shadow-sm text-right">
-                        <p className="text-[9px] font-black text-muted uppercase tracking-widest">Total Loyverse</p>
-                        <p className="text-2xl font-black italic text-fg leading-none mt-1">{clientesLoyverse?.length || 0}</p>
+                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide">Total Loyverse</p>
+                        <p className="text-2xl font-bold text-fg leading-none mt-1">{clientesLoyverse?.length || 0}</p>
                     </div>
                     <div className="bg-green-50 border border-green-200 px-6 py-4 rounded-2xl shadow-sm text-right">
-                        <p className="text-[9px] font-black text-green-600/70 uppercase tracking-widest">Já Sincronizados</p>
-                        <p className="text-2xl font-black italic text-green-600 leading-none mt-1">{jaVinculadosCount}</p>
+                        <p className="text-[13px] font-bold text-green-600/70 uppercase tracking-wide">Já Sincronizados</p>
+                        <p className="text-2xl font-bold text-green-600 leading-none mt-1">{jaVinculadosCount}</p>
                     </div>
                 </div>
             </header>
@@ -90,8 +90,8 @@ export default async function DiagnosticoLoyversePage() {
                             <AlertTriangle size={24} />
                         </div>
                         <div>
-                            <h3 className="text-xl font-black uppercase italic text-orange-700 tracking-tighter leading-none">Acão Necessária: Contas Desvinculadas</h3>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-orange-600/80 mt-1">
+                            <h3 className="text-xl font-bold text-orange-700 leading-none">Acão Necessária: Contas Desvinculadas</h3>
+                            <p className="text-[14px] font-bold uppercase tracking-wide text-orange-600/80 mt-1">
                                 Encontrámos {sugestoesVinculacao.length} cliente(s) no Loyverse com o mesmo email da sua base de dados.
                             </p>
                         </div>
@@ -102,12 +102,12 @@ export default async function DiagnosticoLoyversePage() {
                             <div key={sugestao.membro.id} className="bg-white border border-orange-200 p-5 rounded-3xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:border-orange-400">
                                 <div>
                                     <div className="flex items-center gap-2 mb-1">
-                                        <span className="bg-orange-100 text-orange-600 text-[8px] font-black uppercase px-2 py-0.5 rounded-full border border-orange-200">Encontrado Match</span>
+                                        <span className="bg-orange-100 text-orange-600 text-[13px] font-bold uppercase px-2 py-0.5 rounded-full border border-orange-200">Encontrado Match</span>
                                     </div>
-                                    <h4 className="text-sm font-black uppercase text-fg leading-none">
+                                    <h4 className="text-sm font-bold text-fg leading-none">
                                         {sugestao.membro.first_name} {sugestao.membro.last_name}
                                     </h4>
-                                    <p className="text-[10px] font-bold text-muted lowercase tracking-widest mt-1">
+                                    <p className="text-[14px] font-bold text-muted lowercase mt-1">
                                         {sugestao.membro.email}
                                     </p>
                                 </div>
@@ -126,7 +126,7 @@ export default async function DiagnosticoLoyversePage() {
             {sugestoesVinculacao.length === 0 && clientesLoyverse && (
                 <div className="bg-green-50 border border-green-200 p-6 rounded-3xl flex items-center justify-center gap-3">
                     <CheckCircle2 className="text-green-500" />
-                    <span className="text-[10px] font-black uppercase text-green-700 tracking-widest">Todos os emails correspondentes já estão sincronizados com o Loyverse.</span>
+                    <span className="text-[14px] font-bold uppercase text-green-700 tracking-wide">Todos os emails correspondentes já estão sincronizados com o Loyverse.</span>
                 </div>
             )}
 
@@ -135,7 +135,7 @@ export default async function DiagnosticoLoyversePage() {
             {/* ========================================================= */}
             <section className="bg-bg2 border border-soft rounded-[3rem] overflow-hidden shadow-xl">
                 <div className="p-6 border-b border-soft bg-bg flex items-center justify-between">
-                    <h2 className="text-sm font-black uppercase italic tracking-tighter text-fg flex items-center gap-2">
+                    <h2 className="text-sm font-bold text-fg flex items-center gap-2">
                         <User size={16} className="text-figueira" /> Diretório Completo
                     </h2>
                 </div>
@@ -143,7 +143,7 @@ export default async function DiagnosticoLoyversePage() {
                 <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full text-left border-collapse min-w-[800px]">
                         <thead>
-                            <tr className="bg-soft/30 border-b border-soft text-[10px] font-black uppercase tracking-widest text-muted">
+                            <tr className="bg-soft/30 border-b border-soft text-[14px] font-bold uppercase tracking-wide text-muted">
                                 <th className="px-8 py-6 w-1/4 border-r border-soft/50">Nome no Loyverse</th>
                                 <th className="px-8 py-6 w-1/4">Membro na App</th>
                                 <th className="px-8 py-6 w-1/6">Status</th>
@@ -165,38 +165,38 @@ export default async function DiagnosticoLoyversePage() {
 
                                         {/* COLUNA 1: DADOS DO LOYVERSE */}
                                         <td className="px-8 py-6 border-r border-soft/50">
-                                            <p className="text-xs font-black uppercase text-fg leading-tight">{c.name}</p>
-                                            <p className="text-[10px] font-bold text-muted lowercase mt-0.5">{c.email || 'sem-email@loyverse.com'}</p>
+                                            <p className="text-xs font-bold text-fg leading-tight">{c.name}</p>
+                                            <p className="text-[14px] font-bold text-muted lowercase mt-0.5">{c.email || 'sem-email@loyverse.com'}</p>
                                         </td>
 
                                         {/* COLUNA 2: DADOS DA NOSSA APP (A TUA NOVA COMPARAÇÃO VISUAL) */}
                                         <td className="px-8 py-6">
                                             {membroExibicao ? (
                                                 <div>
-                                                    <p className={`text-xs font-black uppercase leading-tight ${membroVinculado ? 'text-fg' : 'text-orange-600'}`}>
+                                                    <p className={`text-xs font-bold leading-tight ${membroVinculado ? 'text-fg' : 'text-orange-600'}`}>
                                                         {membroExibicao.first_name} {membroExibicao.last_name}
                                                     </p>
-                                                    <p className="text-[10px] font-bold text-muted lowercase mt-0.5">
+                                                    <p className="text-[14px] font-bold text-muted lowercase mt-0.5">
                                                         {membroExibicao.email}
                                                     </p>
                                                 </div>
                                             ) : (
-                                                <span className="text-[10px] font-black uppercase text-muted/40 italic">--- Não Encontrado ---</span>
+                                                <span className="text-[14px] font-bold uppercase text-muted/40">--- Não Encontrado ---</span>
                                             )}
                                         </td>
 
                                         {/* COLUNA 3: STATUS VISUAL */}
                                         <td className="px-8 py-6">
                                             {membroVinculado ? (
-                                                <span className="text-[9px] font-black uppercase text-green-600 bg-green-500/10 px-3 py-1.5 rounded-lg border border-green-500/20">
+                                                <span className="text-[13px] font-bold uppercase text-green-600 bg-green-500/10 px-3 py-1.5 rounded-lg border border-green-500/20">
                                                     Sincronizado
                                                 </span>
                                             ) : membroSugerido ? (
-                                                <span className="text-[9px] font-black uppercase text-orange-600 bg-orange-500/10 px-3 py-1.5 rounded-lg border border-orange-500/20">
+                                                <span className="text-[13px] font-bold uppercase text-orange-600 bg-orange-500/10 px-3 py-1.5 rounded-lg border border-orange-500/20">
                                                     Pendente Match
                                                 </span>
                                             ) : (
-                                                <span className="text-[9px] font-black uppercase text-muted bg-soft px-3 py-1.5 rounded-lg">
+                                                <span className="text-[13px] font-bold uppercase text-muted bg-soft px-3 py-1.5 rounded-lg">
                                                     Sem Vínculo
                                                 </span>
                                             )}
@@ -204,7 +204,7 @@ export default async function DiagnosticoLoyversePage() {
 
                                         {/* COLUNA 4: UUID PARA COPIAR */}
                                         <td className="px-8 py-6">
-                                            <code className="bg-bg border border-soft px-3 py-1.5 rounded-lg text-[10px] font-mono text-figueira select-all">
+                                            <code className="bg-bg border border-soft px-3 py-1.5 rounded-lg text-[14px] font-mono text-figueira select-all">
                                                 {c.id}
                                             </code>
                                         </td>
@@ -219,7 +219,7 @@ export default async function DiagnosticoLoyversePage() {
                 {!clientesLoyverse && (
                     <div className="p-20 text-center space-y-4">
                         <RefreshCw className="mx-auto text-muted animate-spin" size={32} />
-                        <p className="text-xs font-black uppercase text-muted tracking-widest">A aguardar resposta da API Loyverse...</p>
+                        <p className="text-xs font-bold text-muted">A aguardar resposta da API Loyverse...</p>
                     </div>
                 )}
             </section>

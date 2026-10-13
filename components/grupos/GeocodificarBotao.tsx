@@ -27,7 +27,7 @@ export default function GeocodificarBotao() {
 
     if (estado === 'done' && resultado) {
         return (
-            <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-emerald-700">
+            <div className="flex items-center gap-2 text-[13px] font-bold uppercase tracking-wide text-emerald-700">
                 <CheckCircle2 size={13} />
                 {resultado.sucesso} OK · {resultado.falhou} falhou
             </div>
@@ -38,7 +38,7 @@ export default function GeocodificarBotao() {
         <button
             onClick={handleClick}
             disabled={estado === 'loading'}
-            className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all active:scale-95 disabled:opacity-60 shrink-0"
+            className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide hover:bg-orange-600 transition-all active:scale-95 disabled:opacity-60 shrink-0"
         >
             {estado === 'loading'
                 ? <><Loader2 size={13} className="animate-spin" /> A geocodificar...</>

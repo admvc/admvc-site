@@ -216,17 +216,17 @@ export default function AdminCadastroMembroPage() {
 
             <header className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-soft pb-6 gap-6">
                 <div className="space-y-2">
-                    <span className="text-figueira font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2">
+                    <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center gap-2">
                         <ShieldCheck size={14} /> Modulo Administrativo
                     </span>
-                    <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h1 className="text-4xl md:text-5xl font-bold text-fg leading-none">
                         Novo <span className="text-muted/20">Membro.</span>
                     </h1>
                 </div>
                 <div className="w-full md:w-64 space-y-2">
                     <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-muted">Perfil preenchido</span>
-                        <span className="text-[9px] font-black text-figueira">{pctConcluido}%</span>
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Perfil preenchido</span>
+                        <span className="text-[13px] font-bold text-figueira">{pctConcluido}%</span>
                     </div>
                     <div className="h-1.5 bg-soft rounded-full overflow-hidden">
                         <div className="h-full bg-figueira rounded-full transition-all duration-500" style={{ width: `${pctConcluido}%` }} />
@@ -237,7 +237,7 @@ export default function AdminCadastroMembroPage() {
             {erros.length > 0 && (
                 <div className="bg-red-500/8 border border-red-500/20 rounded-2xl px-5 py-4 flex items-start gap-3 animate-in slide-in-from-top-2 duration-200">
                     <AlertCircle size={16} className="text-red-500 shrink-0 mt-0.5" />
-                    <div>{erros.map((e, i) => <p key={i} className="text-[10px] font-black uppercase tracking-widest text-red-600">{e}</p>)}</div>
+                    <div>{erros.map((e, i) => <p key={i} className="text-[14px] font-bold uppercase tracking-wide text-red-600">{e}</p>)}</div>
                 </div>
             )}
 
@@ -272,8 +272,8 @@ export default function AdminCadastroMembroPage() {
                                 <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
                             </div>
                             <div>
-                                <p className="text-sm font-black uppercase italic text-fg">Fotografia de Perfil</p>
-                                <p className="text-[9px] text-muted font-bold uppercase tracking-widest mt-1">
+                                <p className="text-sm font-bold text-fg">Fotografia de Perfil</p>
+                                <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-1">
                                     {fotoFile ? `${fotoFile.name} selecionada` : 'Clica no icone para carregar'}
                                 </p>
                             </div>
@@ -291,9 +291,9 @@ export default function AdminCadastroMembroPage() {
                             <Campo label="Profissao" name="profession" value={formValues.profession} onChange={handleInputChange} />
                             <Campo label="Nacionalidade" name="nationality" value={formValues.nationality} onChange={handleInputChange} />
                             <div className="space-y-1.5">
-                                <label className="text-[9px] font-black uppercase text-muted ml-1 tracking-widest">Escolaridade</label>
+                                <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">Escolaridade</label>
                                 <select name="escolaridade_id" value={formValues.escolaridade_id} onChange={handleInputChange}
-                                    className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none">
+                                    className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none">
                                     <option value="">Selecione...</option>
                                     <option value="1">Ensino Basico</option>
                                     <option value="2">Ensino Secundario</option>
@@ -308,15 +308,15 @@ export default function AdminCadastroMembroPage() {
                 {/* ABA 2 */}
                 {abaAtiva === 2 && (
                     <div className="space-y-5 animate-in fade-in duration-200">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-2 pb-4 border-b border-soft">
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 pb-4 border-b border-soft">
                             <MapPin size={11} className="text-figueira" /> Morada Residencial
                         </p>
                         <div className="grid md:grid-cols-4 gap-5">
                             <div className="relative">
-                                <label className="text-[9px] font-black uppercase text-muted ml-1 tracking-widest block mb-1.5">Codigo Postal (PT)</label>
+                                <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide block mb-1.5">Codigo Postal (PT)</label>
                                 <input name="postal_code" value={formValues.postal_code} onChange={handleCodigoPostalChange}
                                     placeholder="0000-000" maxLength={8}
-                                    className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[11px] font-bold text-fg focus:border-figueira outline-none" />
+                                    className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none" />
                                 {buscandoCP && <Loader2 size={13} className="animate-spin text-figueira absolute right-4 top-9" />}
                             </div>
                             <Campo label="Pais" name="country" value={formValues.country} onChange={handleInputChange} className="md:col-span-3" />
@@ -334,7 +334,7 @@ export default function AdminCadastroMembroPage() {
                 {abaAtiva === 3 && (
                     <div className="space-y-6 animate-in fade-in duration-200">
                         <div className="bg-figueira/5 border border-figueira/15 rounded-2xl p-5 space-y-3">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-figueira flex items-center gap-2">
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-figueira flex items-center gap-2">
                                 <Lock size={11} /> Nivel de Acesso
                             </p>
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -357,9 +357,9 @@ export default function AdminCadastroMembroPage() {
                                 opcoes={['ATIVO', 'INATIVO', 'VISITANTE', 'PENDENTE']} />
                             <Campo label="ID Loyverse" name="loyverse_id" value={formValues.loyverse_id} onChange={handleInputChange} placeholder="UUID do cliente" />
                             <div className="md:col-span-3 space-y-1.5">
-                                <label className="text-[9px] font-black uppercase text-muted ml-1 tracking-widest">Notas Pastorais</label>
+                                <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">Notas Pastorais</label>
                                 <textarea name="notes" rows={4} value={formValues.notes} onChange={handleInputChange}
-                                    className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[11px] font-bold text-fg focus:border-figueira outline-none resize-none"
+                                    className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none resize-none"
                                     placeholder="Testemunho, contexto pastoral, observacoes..." />
                             </div>
                         </div>
@@ -384,7 +384,7 @@ export default function AdminCadastroMembroPage() {
                         </div>
 
                         <div className="border-t border-soft pt-6 space-y-4">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
                                 <Scale size={11} className="text-figueira" /> Termos Legais
                             </p>
                             <div className="bg-bg border border-soft rounded-2xl p-5 space-y-4">
@@ -392,16 +392,16 @@ export default function AdminCadastroMembroPage() {
                                     <input type="checkbox" name="gdpr_aceite" checked={formValues.gdpr_aceite} onChange={handleInputChange}
                                         className="mt-1 w-5 h-5 accent-figueira cursor-pointer shrink-0" />
                                     <div>
-                                        <p className="text-[10px] font-black uppercase text-fg group-hover:text-figueira transition-colors">Autorizacao GDPR</p>
-                                        <p className="text-[9px] text-muted font-medium mt-0.5">Autorizo o tratamento de dados pessoais para fins pastorais.</p>
+                                        <p className="text-[14px] font-bold uppercase text-fg group-hover:text-figueira transition-colors">Autorizacao GDPR</p>
+                                        <p className="text-[13px] text-muted font-medium mt-0.5">Autorizo o tratamento de dados pessoais para fins pastorais.</p>
                                     </div>
                                 </label>
                                 <label className="flex items-start gap-4 cursor-pointer group">
                                     <input type="checkbox" name="permanecer_aceite" checked={formValues.permanecer_aceite} onChange={handleInputChange}
                                         className="mt-1 w-5 h-5 accent-figueira cursor-pointer shrink-0" />
                                     <div>
-                                        <p className="text-[10px] font-black uppercase text-fg group-hover:text-figueira transition-colors">Termo Permanecer</p>
-                                        <p className="text-[9px] text-muted font-medium mt-0.5">Concordo com a visao e regras de conduta da ADMVC.</p>
+                                        <p className="text-[14px] font-bold uppercase text-fg group-hover:text-figueira transition-colors">Termo Permanecer</p>
+                                        <p className="text-[13px] text-muted font-medium mt-0.5">Concordo com a visao e regras de conduta da ADMVC.</p>
                                     </div>
                                 </label>
                             </div>
@@ -409,7 +409,7 @@ export default function AdminCadastroMembroPage() {
 
                         {/* RESUMO */}
                         <div className="bg-figueira/5 border border-figueira/20 rounded-2xl p-5 space-y-2">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-figueira flex items-center gap-2">
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-figueira flex items-center gap-2">
                                 <CheckCircle2 size={11} /> Resumo do Registo
                             </p>
                             <div className="grid grid-cols-2 gap-x-6 gap-y-1">
@@ -422,8 +422,8 @@ export default function AdminCadastroMembroPage() {
                                     ['Foto', fotoFile ? fotoFile.name : 'Sem foto'],
                                 ].map(([label, value]) => (
                                     <div key={label} className="flex gap-2">
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-muted min-w-[48px]">{label}</span>
-                                        <span className="text-[8px] font-bold text-fg truncate">{value}</span>
+                                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted min-w-[48px]">{label}</span>
+                                        <span className="text-[13px] font-bold text-fg truncate">{value}</span>
                                     </div>
                                 ))}
                             </div>
@@ -449,7 +449,7 @@ export default function AdminCadastroMembroPage() {
 
                 {abaAtiva < 4 ? (
                     <button type="button" onClick={avancar}
-                        className="px-6 py-3 bg-fg text-bg rounded-2xl font-black text-[9px] uppercase tracking-widest shadow-lg hover:bg-figueira transition-all flex items-center gap-2 active:scale-95">
+                        className="px-6 py-3 bg-fg text-bg rounded-2xl font-bold text-[13px] uppercase tracking-wide shadow-lg hover:bg-figueira transition-all flex items-center gap-2 active:scale-95">
                         Proximo <ChevronRight size={14} />
                     </button>
                 ) : (
@@ -470,8 +470,8 @@ export default function AdminCadastroMembroPage() {
 function Campo({ label, className = '', ...props }: any) {
     return (
         <div className={`space-y-1.5 ${className}`}>
-            <label className="text-[9px] font-black uppercase text-muted ml-1 tracking-widest">{label}</label>
-            <input {...props} className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[11px] font-bold text-fg focus:border-figueira outline-none transition-all" />
+            <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">{label}</label>
+            <input {...props} className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all" />
         </div>
     )
 }
@@ -479,8 +479,8 @@ function Campo({ label, className = '', ...props }: any) {
 function SelecionarOpcoes({ label, opcoes, ...props }: any) {
     return (
         <div className="space-y-1.5">
-            <label className="text-[9px] font-black uppercase text-muted ml-1 tracking-widest">{label}</label>
-            <select {...props} className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+            <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">{label}</label>
+            <select {...props} className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                 <option value="">Selecione...</option>
                 {opcoes.map((opt: any) => {
                     const v = typeof opt === 'string' ? opt : opt.value

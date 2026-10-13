@@ -99,12 +99,12 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
 
             <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Gestao de Escalas</h1>
+                    <h1 className="text-3xl font-bold text-fg">Gestao de Escalas</h1>
                     <p className="text-xs text-muted">Atribuir voluntarios aos eventos agendados.</p>
                 </div>
                 <Link
                     href="/admin/eventos"
-                    className="flex items-center gap-2 text-[10px] md:text-xs font-black uppercase tracking-widest text-figueira hover:text-figueira/70 transition-all"
+                    className="flex items-center gap-2 text-[14px] md:text-xs font-bold uppercase tracking-wide text-figueira hover:text-figueira/70 transition-all"
                 >
                     Gerir eventos <ArrowRight size={14} />
                 </Link>
@@ -118,8 +118,8 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
                     { label: 'Pendentes Confirmacao', value: pendentesConfirmacao, cor: pendentesConfirmacao > 0 ? 'text-orange-600' : 'text-emerald-600' },
                 ].map(k => (
                     <div key={k.label} className="bg-bg2 border border-soft rounded-2xl px-5 py-4">
-                        <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-muted">{k.label}</p>
-                        <p className={`text-2xl font-black italic ${k.cor}`}>{k.value}</p>
+                        <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">{k.label}</p>
+                        <p className={`text-2xl font-bold ${k.cor}`}>{k.value}</p>
                     </div>
                 ))}
             </div>
@@ -128,7 +128,7 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
             <section className="bg-bg2 border border-soft rounded-2xl overflow-hidden shadow-sm">
                 <div className="flex items-center gap-3 px-6 py-4 border-b border-soft">
                     <Settings2 size={14} className="text-figueira" />
-                    <h2 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-fg">Eventos Proximos</h2>
+                    <h2 className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-fg">Eventos Proximos</h2>
                 </div>
                 <div className="p-4 flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar">
                     {eventosFuturos.length === 0 && (
@@ -149,9 +149,9 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
                                 }`}
                             >
                                 <span className={`w-1.5 h-1.5 rounded-full ${tipoInfo.cor}`} />
-                                <span className="font-black">{d.getDate()}/{d.getMonth() + 1}</span>
+                                <span className="font-bold">{d.getDate()}/{d.getMonth() + 1}</span>
                                 <span className="truncate max-w-[120px]">{ev.nome}</span>
-                                <span className={`text-[7px] md:text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border ${tipoInfo.corFundo} ${tipoInfo.corTexto} ${tipoInfo.corBorda}`}>
+                                <span className={`text-[13px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border ${tipoInfo.corFundo} ${tipoInfo.corTexto} ${tipoInfo.corBorda}`}>
                                     {tipoInfo.label}
                                 </span>
                             </Link>
@@ -168,8 +168,8 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
                         <Settings2 size={18} />
                     </div>
                     <div>
-                        <h2 className="text-sm font-black uppercase tracking-widest text-fg leading-none">Atribuir Escala</h2>
-                        <p className="text-[9px] md:text-[11px] font-bold uppercase tracking-widest text-muted mt-1">
+                        <h2 className="text-sm font-bold text-fg leading-none">Atribuir Escala</h2>
+                        <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted mt-1">
                             Selecionar evento, departamento, membro e funcao
                         </p>
                     </div>
@@ -187,9 +187,9 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
             <section className="space-y-4">
                 <div className="flex items-center gap-3 px-1">
                     <Users size={15} className="text-emerald-500" />
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">Quadro Geral de Escalas</h2>
+                    <h2 className="text-sm font-bold text-fg">Quadro Geral de Escalas</h2>
                     {totalEventos > 0 && (
-                        <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest bg-soft border border-soft px-2 py-1 rounded-lg text-muted">
+                        <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide bg-soft border border-soft px-2 py-1 rounded-lg text-muted">
                             {totalEventos} evento{totalEventos !== 1 ? 's' : ''}
                         </span>
                     )}

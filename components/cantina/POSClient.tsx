@@ -319,7 +319,7 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
     // ── Shared sub-components ──────────────────────────────────────────────
     const MemberSelector = (
         <div className="space-y-2">
-            <label className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+            <label className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                 <User size={12} /> Membro
             </label>
             <div className="relative flex gap-1.5">
@@ -367,15 +367,15 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
             </div>
             {qrOpen && !isIOS && !scannerFallback && (
                 <div className="space-y-2">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted text-center">Aponte a camera para o QR Code do membro</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted text-center">Aponte a camera para o QR Code do membro</p>
                     <div id="qr-reader" className="rounded-xl overflow-hidden border border-soft" style={{ width: '100%', maxWidth: 350, margin: '0 auto' }} />
                     <div className="flex gap-2">
                         <button onClick={stopScanner}
-                            className="flex-1 px-3 py-2 bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl text-[9px] font-black uppercase tracking-widest">
+                            className="flex-1 px-3 py-2 bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl text-[13px] font-bold uppercase tracking-wide">
                             Fechar
                         </button>
                         <button onClick={() => { stopScanner(); setScannerFallback(true); setTimeout(() => fileInputRef.current?.click(), 200) }}
-                            className="flex-1 px-3 py-2 bg-soft border border-soft text-muted rounded-xl text-[9px] font-black uppercase tracking-widest hover:text-fg">
+                            className="flex-1 px-3 py-2 bg-soft border border-soft text-muted rounded-xl text-[13px] font-bold uppercase tracking-wide hover:text-fg">
                             Tirar Foto
                         </button>
                     </div>
@@ -383,9 +383,9 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
             )}
             {selectedMembro && (
                 <div className="flex items-center justify-between bg-bg rounded-xl px-3 py-2 border border-soft">
-                    <span className="text-[10px] font-bold text-fg">{selectedMembro.first_name} {selectedMembro.last_name}</span>
+                    <span className="text-[14px] font-bold text-fg">{selectedMembro.first_name} {selectedMembro.last_name}</span>
                     <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-black text-figueira">
+                        <span className="text-[14px] font-bold text-figueira">
                             {loadingSaldo ? <Loader2 size={12} className="animate-spin" /> : `${(saldo ?? 0).toFixed(2)}\u20ac`}
                         </span>
                         <button
@@ -420,17 +420,17 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
             ) : cart.map(item => (
                 <div key={item.produtoId} className="flex items-center gap-2 bg-bg rounded-xl px-3 py-2 border border-soft">
                     <div className="flex-1 min-w-0">
-                        <p className="text-[11px] font-bold text-fg truncate">{item.nome}</p>
+                        <p className="text-[14px] font-bold text-fg truncate">{item.nome}</p>
                         {item.promocoes && item.quantidade >= (item.promocoes[0]?.quantidade ?? Infinity) && (
-                            <p className="text-[9px] font-black text-emerald-400">Promo aplicada</p>
+                            <p className="text-[13px] font-bold text-emerald-400">Promo aplicada</p>
                         )}
                     </div>
                     <div className="flex items-center gap-1">
                         <button onClick={() => updateQty(item.produtoId, -1)} className="w-6 h-6 rounded-lg bg-soft/30 flex items-center justify-center text-muted hover:text-fg"><Minus size={12} /></button>
-                        <span className="text-[11px] font-black text-fg w-6 text-center">{item.quantidade}</span>
+                        <span className="text-[14px] font-bold text-fg w-6 text-center">{item.quantidade}</span>
                         <button onClick={() => updateQty(item.produtoId, 1)} className="w-6 h-6 rounded-lg bg-soft/30 flex items-center justify-center text-muted hover:text-fg"><Plus size={12} /></button>
                     </div>
-                    <span className="text-[11px] font-black text-figueira w-14 text-right">{calcItemTotal(item).toFixed(2)}&euro;</span>
+                    <span className="text-[14px] font-bold text-figueira w-14 text-right">{calcItemTotal(item).toFixed(2)}&euro;</span>
                     <button onClick={() => removeItem(item.produtoId)} className="text-muted hover:text-red-400 ml-1"><Trash2 size={13} /></button>
                 </div>
             ))}
@@ -440,7 +440,7 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
     const PaymentSelector = (
         <div className="space-y-2">
             <div className="flex items-center justify-between">
-                <label className="text-[9px] font-black uppercase tracking-widest text-muted">Pagamento</label>
+                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Pagamento</label>
                 <button
                     onClick={() => {
                         setDividido(!dividido)
@@ -448,7 +448,7 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                             setPagamentosDivididos({ CREDITOS: 0, DINHEIRO: 0, MBWAY: 0, TRANSFERENCIA: 0, FIADO: 0 })
                         }
                     }}
-                    className={`text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg transition-all ${dividido ? 'bg-figueira text-bg' : 'text-figueira hover:bg-figueira/10'}`}
+                    className={`text-[13px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg transition-all ${dividido ? 'bg-figueira text-bg' : 'text-figueira hover:bg-figueira/10'}`}
                 >
                     {dividido ? 'Pagamento Unico' : 'Dividir'}
                 </button>
@@ -460,7 +460,7 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                         const Icon = opt.icon
                         return (
                             <button key={opt.value} onClick={() => setFormaPagamento(opt.value)}
-                                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${formaPagamento === opt.value ? 'bg-figueira text-bg' : 'bg-bg border border-soft text-muted hover:border-figueira'}`}>
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[14px] font-bold uppercase tracking-wide transition-all ${formaPagamento === opt.value ? 'bg-figueira text-bg' : 'bg-bg border border-soft text-muted hover:border-figueira'}`}>
                                 <Icon size={12} /> {opt.label}
                             </button>
                         )
@@ -474,7 +474,7 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                         return (
                             <div key={opt.value} className="flex items-center gap-2">
                                 <Icon size={12} className="text-muted shrink-0" />
-                                <span className="text-[9px] font-bold text-muted w-20 truncate">{opt.label}</span>
+                                <span className="text-[13px] font-bold text-muted w-20 truncate">{opt.label}</span>
                                 <input
                                     type="number"
                                     step="0.01"
@@ -484,11 +484,11 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                                     placeholder="0.00"
                                     className="flex-1 bg-bg2 border border-soft rounded-lg px-2 py-1.5 text-xs font-bold text-fg focus:border-figueira outline-none text-right"
                                 />
-                                <span className="text-[10px] text-muted">€</span>
+                                <span className="text-[14px] text-muted">€</span>
                             </div>
                         )
                     })}
-                    <div className={`flex justify-between pt-2 border-t border-soft text-[10px] font-black ${Math.abs(somaDividido - total) < 0.01 ? 'text-emerald-500' : 'text-red-400'}`}>
+                    <div className={`flex justify-between pt-2 border-t border-soft text-[14px] font-bold ${Math.abs(somaDividido - total) < 0.01 ? 'text-emerald-500' : 'text-red-400'}`}>
                         <span>Soma</span>
                         <span>{somaDividido.toFixed(2)}€ / {total.toFixed(2)}€</span>
                     </div>
@@ -503,12 +503,12 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                 <div className="space-y-1.5">
                     <div className="flex justify-between text-xs">
                         <span className="text-muted font-bold">Total</span>
-                        <span className="font-black text-fg">{total.toFixed(2)}&euro;</span>
+                        <span className="font-bold text-fg">{total.toFixed(2)}&euro;</span>
                     </div>
                     {isCreditos && selectedMembro && saldo !== null && (
                         <div className="flex justify-between text-xs">
                             <span className="text-muted font-bold">Saldo restante</span>
-                            <span className={`font-black ${saldoRestante !== null && saldoRestante < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                            <span className={`font-bold ${saldoRestante !== null && saldoRestante < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
                                 {saldoRestante !== null ? `${saldoRestante.toFixed(2)}\u20ac` : '\u2014'}
                             </span>
                         </div>
@@ -516,7 +516,7 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                 </div>
             )}
             <button onClick={confirmarVenda} disabled={!canConfirm}
-                className="w-full bg-figueira text-bg font-black text-xs uppercase tracking-widest py-3.5 rounded-xl transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                className="w-full bg-figueira text-bg font-bold text-xs py-3.5 rounded-xl transition-all hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                 {loading ? <><Loader2 size={14} className="animate-spin" /> A processar...</> : <><CreditCard size={14} /> Confirmar Venda</>}
             </button>
         </>
@@ -528,9 +528,9 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
             <div className="fixed inset-0 bg-[#0a0a0a] z-50 flex items-center justify-center p-6">
                 <div className="text-center space-y-4 max-w-sm">
                     <Clock size={48} className="mx-auto text-amber-500" />
-                    <h2 className="text-xl font-black uppercase italic tracking-tighter text-white">Turno Nao Aberto</h2>
+                    <h2 className="text-xl font-bold text-white">Turno Nao Aberto</h2>
                     <p className="text-sm text-white/60">Precisa abrir um turno antes de registar vendas.</p>
-                    <a href="/cantina/turnos" className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-black rounded-xl font-black text-xs uppercase tracking-widest hover:bg-amber-400 transition-all">
+                    <a href="/cantina/turnos" className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-black rounded-xl font-bold text-xs hover:bg-amber-400 transition-all">
                         <Clock size={14} /> Abrir Turno
                     </a>
                 </div>
@@ -554,26 +554,26 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                     <div className="bg-bg2 border border-soft rounded-2xl p-8 max-w-sm w-full space-y-4 animate-in zoom-in duration-300">
                         <div className="text-center space-y-2">
                             <CheckCircle size={32} className="text-emerald-500 mx-auto" />
-                            <h2 className="text-lg font-black uppercase tracking-tighter text-fg">Venda Confirmada</h2>
+                            <h2 className="text-lg font-bold text-fg">Venda Confirmada</h2>
                         </div>
                         <div className="border-t border-b border-soft py-3 space-y-1">
                             {receipt.itens.map((item, i) => (
-                                <div key={i} className="flex justify-between text-[11px]">
+                                <div key={i} className="flex justify-between text-[14px]">
                                     <span className="text-fg">{item.quantidade}x {item.nome}</span>
                                     <span className="text-muted font-bold">{(item.preco * item.quantidade).toFixed(2)}&euro;</span>
                                 </div>
                             ))}
                         </div>
-                        <div className="flex justify-between text-sm font-black">
+                        <div className="flex justify-between text-sm font-bold">
                             <span className="text-fg">Total</span>
                             <span className="text-figueira">{receipt.total.toFixed(2)}&euro;</span>
                         </div>
-                        <div className="text-[10px] text-muted space-y-1">
+                        <div className="text-[14px] text-muted space-y-1">
                             <p>Pagamento: {receipt.formaPagamento}</p>
                             {receipt.membro && <p>Cliente: {receipt.membro}</p>}
                             {receipt.saldoRestante !== null && <p>Saldo restante: {receipt.saldoRestante.toFixed(2)}&euro;</p>}
                         </div>
-                        <button onClick={() => { setReceipt(null); setSheetOpen(false) }} className="w-full bg-figueira text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">
+                        <button onClick={() => { setReceipt(null); setSheetOpen(false) }} className="w-full bg-figueira text-white py-3 rounded-xl font-bold text-[14px] uppercase tracking-wide">
                             Nova Venda
                         </button>
                     </div>
@@ -587,10 +587,10 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <CreditCard size={20} className="text-figueira" />
-                            <h1 className="text-base lg:text-lg font-black uppercase tracking-widest text-fg">Ponto de Venda</h1>
+                            <h1 className="text-base lg:text-lg font-bold text-fg">Ponto de Venda</h1>
                         </div>
                         <button onClick={toggleFullscreen}
-                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-bg2 border border-soft text-[9px] font-black uppercase tracking-widest text-muted hover:border-figueira hover:text-figueira transition-all">
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-bg2 border border-soft text-[13px] font-bold uppercase tracking-wide text-muted hover:border-figueira hover:text-figueira transition-all">
                             {fullscreen ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
                             <span className="hidden sm:inline">Modo Caixa</span>
                         </button>
@@ -599,19 +599,19 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                     {fullscreen && (
                         <div className="flex items-center gap-2 bg-figueira/10 border border-figueira/20 rounded-xl px-3 py-1.5">
                             <Maximize2 size={11} className="text-figueira" />
-                            <span className="text-[9px] font-black uppercase tracking-widest text-figueira">Modo Caixa ativo</span>
+                            <span className="text-[13px] font-bold uppercase tracking-wide text-figueira">Modo Caixa ativo</span>
                         </div>
                     )}
 
                     {/* Category tabs */}
                     <div className="flex flex-wrap gap-1.5 lg:gap-2">
                         <button onClick={() => setCategoriaAtiva(null)}
-                            className={`px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all ${!categoriaAtiva ? 'bg-fg text-bg shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-fg'}`}>
+                            className={`px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl text-[13px] lg:text-[14px] font-bold uppercase tracking-wide transition-all ${!categoriaAtiva ? 'bg-fg text-bg shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-fg'}`}>
                             Todos
                         </button>
                         {categorias.map(cat => (
                             <button key={cat.id} onClick={() => setCategoriaAtiva(cat.id)}
-                                className={`px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all ${categoriaAtiva === cat.id ? 'bg-figueira text-bg shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-figueira'}`}>
+                                className={`px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl text-[13px] lg:text-[14px] font-bold uppercase tracking-wide transition-all ${categoriaAtiva === cat.id ? 'bg-figueira text-bg shadow-md' : 'bg-bg2 border border-soft text-muted hover:border-figueira'}`}>
                                 {cat.nome}
                             </button>
                         ))}
@@ -627,19 +627,19 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                                 <button key={produto.id} onClick={() => !esgotado && addToCart(produto)} disabled={esgotado}
                                     className={`relative bg-bg2 border rounded-2xl p-3 lg:p-4 text-left transition-all ${esgotado ? 'border-soft opacity-40 cursor-not-allowed' : 'border-soft hover:border-figueira hover:shadow-lg cursor-pointer active:scale-[0.97]'} ${inCart ? 'border-figueira/50 ring-1 ring-figueira/20' : ''}`}>
                                     {inCart && (
-                                        <span className="absolute top-2 right-2 bg-figueira text-bg text-[9px] font-black w-5 h-5 rounded-full flex items-center justify-center">
+                                        <span className="absolute top-2 right-2 bg-figueira text-bg text-[13px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
                                             {inCart.quantidade}
                                         </span>
                                     )}
-                                    <p className="text-[11px] lg:text-xs font-bold text-fg truncate">{produto.nome}</p>
-                                    <p className="text-sm font-black text-figueira mt-0.5 lg:mt-1">{produto.preco.toFixed(2)}&euro;</p>
+                                    <p className="text-[14px] lg:text-xs font-bold text-fg truncate">{produto.nome}</p>
+                                    <p className="text-sm font-bold text-figueira mt-0.5 lg:mt-1">{produto.preco.toFixed(2)}&euro;</p>
                                     {promoLabel && (
-                                        <span className="inline-block mt-1 bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 text-[8px] lg:text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-lg">
+                                        <span className="inline-block mt-1 bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 text-[13px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-lg">
                                             {promoLabel}
                                         </span>
                                     )}
                                     {produto.controla_stock && (
-                                        <p className={`text-[8px] lg:text-[9px] font-bold uppercase tracking-widest mt-1 ${produto.stock <= 3 ? 'text-red-400' : 'text-muted'}`}>
+                                        <p className={`text-[13px] font-bold uppercase tracking-wide mt-1 ${produto.stock <= 3 ? 'text-red-400' : 'text-muted'}`}>
                                             Stock: {produto.stock}
                                         </p>
                                     )}
@@ -658,8 +658,8 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                         {MemberSelector}
                         <div className="border-t border-soft" />
                         <div className="flex items-center justify-between">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5"><ShoppingCart size={12} /> Carrinho</span>
-                            {cartCount > 0 && <span className="text-[9px] font-black text-figueira bg-figueira/10 px-2 py-0.5 rounded-full">{cartCount} {cartCount === 1 ? 'item' : 'itens'}</span>}
+                            <span className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5"><ShoppingCart size={12} /> Carrinho</span>
+                            {cartCount > 0 && <span className="text-[13px] font-bold text-figueira bg-figueira/10 px-2 py-0.5 rounded-full">{cartCount} {cartCount === 1 ? 'item' : 'itens'}</span>}
                         </div>
                         {CartItems}
                         <div className="border-t border-soft" />
@@ -675,9 +675,9 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                 className="lg:hidden fixed bottom-5 right-5 z-40 bg-figueira text-bg rounded-2xl px-5 py-3.5 flex items-center gap-2 shadow-xl shadow-figueira/20 active:scale-95 transition-transform">
                 <ShoppingCart size={18} />
                 {cartCount > 0 && (
-                    <span className="bg-bg text-figueira text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center">{cartCount}</span>
+                    <span className="bg-bg text-figueira text-[14px] font-bold w-5 h-5 rounded-full flex items-center justify-center">{cartCount}</span>
                 )}
-                <span className="text-xs font-black">{total.toFixed(2)}&euro;</span>
+                <span className="text-xs font-bold">{total.toFixed(2)}&euro;</span>
             </button>
 
             {/* ── Mobile Bottom Sheet ────────────────────────────────────── */}
@@ -686,7 +686,7 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSheetOpen(false)} />
                     <div className="relative bg-bg2 rounded-2xl border border-soft max-h-[90vh] w-full max-w-md flex flex-col animate-in zoom-in-95 duration-300 shadow-2xl">
                         <div className="flex items-center justify-between px-5 pt-5 pb-3">
-                            <span className="text-xs font-black uppercase tracking-widest text-fg flex items-center gap-2">
+                            <span className="text-xs font-bold text-fg flex items-center gap-2">
                                 <ShoppingCart size={14} className="text-figueira" /> Carrinho
                             </span>
                             <button onClick={() => setSheetOpen(false)} className="w-8 h-8 rounded-xl bg-soft/30 flex items-center justify-center text-muted hover:text-fg">

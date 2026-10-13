@@ -345,10 +345,11 @@ export async function atualizarDepartamento(formData: FormData) {
         const congIdStr = formData.get("congregacaoId") as string;
         const congregacaoId = congIdStr ? Number(congIdStr) : null;
         const is_global = !congregacaoId;
+        const e_louvor = formData.get("e_louvor") === "on";
 
         await db.departamento.update({
             where: { id },
-            data: { nome, descricao, lider_id: lider_id === 0 ? null : lider_id, congregacaoId, is_global }
+            data: { nome, descricao, lider_id: lider_id === 0 ? null : lider_id, congregacaoId, is_global, e_louvor }
         });
 
         revalidatePath("/admin/configuracoes");
@@ -1921,13 +1922,30 @@ export async function aprovarInteresseDepartamento(interesseId: number) {
             where: { membro_id: interesse.membro_id, departamento_id: interesse.departamento_id }
         })
         if (!jaVinculado) {
+            // As funcoes sugeridas pelo lider (so as deste departamento)
+            const funcoes = interesse.funcoes_ids.length
+                ? await db.funcaoDepartamento.findMany({ where: { id: { in: interesse.funcoes_ids }, departamento_id: interesse.departamento_id }, select: { id: true } })
+                : []
             await db.integranteDepartamento.create({
                 data: {
                     membro_id: interesse.membro_id,
                     departamento_id: interesse.departamento_id,
                     tenant_id: tenantId,
+                    funcoes: { create: funcoes.map((f) => ({ funcao_id: f.id })) },
                 }
             })
+        }
+
+        // Quem sugeriu (o lider) fica a saber
+        if (interesse.sugerido_por_id) {
+            try {
+                const { sendPushToMembro } = await import('@/lib/web-push')
+                await sendPushToMembro(interesse.sugerido_por_id, {
+                    title: 'Sugestão aprovada',
+                    body: `${interesse.membro.first_name} ${interesse.membro.last_name} já faz parte de ${interesse.departamento.nome}.`,
+                    url: '/escalas',
+                })
+            } catch { /* push opcional */ }
         }
 
         // Push notification ao membro
@@ -1936,7 +1954,7 @@ export async function aprovarInteresseDepartamento(interesseId: number) {
             await sendPushToMembro(interesse.membro_id, {
                 title: 'Interesse Aprovado!',
                 body: `Foste aceite no departamento ${interesse.departamento.nome}. Bem-vindo!`,
-                url: '/membros/dashboard?tab=departamentos'
+                url: '/escalas'
             })
         } catch { /* push opcional */ }
 

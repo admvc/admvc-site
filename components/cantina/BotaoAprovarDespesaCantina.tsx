@@ -58,7 +58,7 @@ export default function BotaoAprovarDespesaCantina({
                 <button
                     onClick={handleAprovar}
                     disabled={isPending}
-                    className="bg-emerald-100 text-emerald-600 hover:bg-emerald-500 hover:text-white px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 active:scale-95 shadow-sm"
+                    className="bg-emerald-100 text-emerald-600 hover:bg-emerald-500 hover:text-white px-4 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 active:scale-95 shadow-sm"
                 >
                     {isPending ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
                     Aprovar
@@ -66,7 +66,7 @@ export default function BotaoAprovarDespesaCantina({
                 <button
                     onClick={handleRejeitar}
                     disabled={isPending}
-                    className="bg-red-100 text-red-600 hover:bg-red-500 hover:text-white px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 active:scale-95 shadow-sm"
+                    className="bg-red-100 text-red-600 hover:bg-red-500 hover:text-white px-4 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 active:scale-95 shadow-sm"
                 >
                     {isPending ? <Loader2 size={14} className="animate-spin" /> : <XCircle size={14} />}
                     Rejeitar
@@ -80,7 +80,7 @@ export default function BotaoAprovarDespesaCantina({
             <button
                 onClick={handlePagar}
                 disabled={isPending}
-                className="bg-blue-100 text-blue-600 hover:bg-blue-500 hover:text-white px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 active:scale-95 shadow-sm"
+                className="bg-blue-100 text-blue-600 hover:bg-blue-500 hover:text-white px-4 py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 active:scale-95 shadow-sm"
             >
                 {isPending ? <Loader2 size={14} className="animate-spin" /> : <DollarSign size={14} />}
                 Pagar

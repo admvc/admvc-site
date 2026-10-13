@@ -71,12 +71,12 @@ export default async function DespesasPage() {
             {/* Header */}
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Despesas</h1>
+                    <h1 className="text-3xl font-bold text-fg">Despesas</h1>
                     <p className="text-xs text-muted">Submeter, aprovar e gerir despesas da igreja.</p>
                 </div>
                 <Link
                     href="/financeiro/fundos"
-                    className="h-11 px-4 bg-bg2 border border-soft text-fg rounded-xl flex items-center gap-2 hover:bg-bg transition-all active:scale-95 text-[9px] font-black uppercase tracking-widest w-fit"
+                    className="h-11 px-4 bg-bg2 border border-soft text-fg rounded-xl flex items-center gap-2 hover:bg-bg transition-all active:scale-95 text-[13px] font-bold uppercase tracking-wide w-fit"
                 >
                     <Landmark size={14} />
                     Fundos
@@ -93,10 +93,10 @@ export default async function DespesasPage() {
                                     <AlertCircle size={20} />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-[11px] font-black uppercase text-orange-700">
+                                    <p className="text-[14px] font-bold uppercase text-orange-700">
                                         {pendentes.length} despesa{pendentes.length !== 1 ? 's' : ''} pendente{pendentes.length !== 1 ? 's' : ''}
                                     </p>
-                                    <p className="text-[9px] text-orange-600/80 font-bold">A aguardar aprovacao</p>
+                                    <p className="text-[13px] text-orange-600/80 font-bold">A aguardar aprovacao</p>
                                 </div>
                             </div>
                         </summary>
@@ -105,24 +105,24 @@ export default async function DespesasPage() {
                             {pendentes.map((d: any) => (
                                 <div key={d.id} className="bg-bg2 border border-orange-500/20 rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div className="space-y-1 flex-1">
-                                        <p className="text-[11px] font-black uppercase text-fg">{d.descricao}</p>
+                                        <p className="text-[14px] font-bold uppercase text-fg">{d.descricao}</p>
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-muted bg-bg px-2 py-0.5 rounded-md">
+                                            <span className="text-[13px] font-bold uppercase tracking-wide text-muted bg-bg px-2 py-0.5 rounded-md">
                                                 {d.fundo.nome}
                                             </span>
                                             {d.categoria && (
-                                                <span className="text-[8px] font-black uppercase tracking-widest text-muted bg-bg px-2 py-0.5 rounded-md">
+                                                <span className="text-[13px] font-bold uppercase tracking-wide text-muted bg-bg px-2 py-0.5 rounded-md">
                                                     {d.categoria.nome}
                                                 </span>
                                             )}
                                             {d.fornecedor && (
-                                                <span className="text-[8px] text-muted">{d.fornecedor}</span>
+                                                <span className="text-[13px] text-muted">{d.fornecedor}</span>
                                             )}
                                         </div>
-                                        <p className="text-[8px] text-muted">{formatarData(d.data)}</p>
+                                        <p className="text-[13px] text-muted">{formatarData(d.data)}</p>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-lg font-black italic tracking-tighter text-fg">{euro(d.valor)}</span>
+                                        <span className="text-lg font-bold text-fg">{euro(d.valor)}</span>
                                         <BotaoAprovarDespesa despesaId={d.id} />
                                         <BotaoRejeitarDespesa despesaId={d.id} />
                                     </div>
@@ -135,7 +135,7 @@ export default async function DespesasPage() {
 
             {/* Submit new expense */}
             <section className="space-y-3">
-                <h2 className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
+                <h2 className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
                     <Receipt size={14} /> Submeter Despesa
                 </h2>
                 <FormDespesa
@@ -146,14 +146,14 @@ export default async function DespesasPage() {
 
             {/* History table */}
             <section className="space-y-3">
-                <h2 className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-2">
+                <h2 className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
                     <Wallet size={14} /> Historico de Despesas
                 </h2>
 
                 {recentes.length === 0 ? (
                     <div className="bg-bg2 border border-soft rounded-2xl p-12 text-center space-y-3">
                         <Wallet size={32} className="text-muted mx-auto" />
-                        <p className="text-[10px] font-bold text-muted">Nenhuma despesa registada.</p>
+                        <p className="text-[14px] font-bold text-muted">Nenhuma despesa registada.</p>
                     </div>
                 ) : (
                     <div className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
@@ -161,14 +161,14 @@ export default async function DespesasPage() {
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="border-b border-soft">
-                                        <th className="px-5 py-3.5 text-[8px] font-black uppercase tracking-widest text-muted">Data</th>
-                                        <th className="px-5 py-3.5 text-[8px] font-black uppercase tracking-widest text-muted">Descricao</th>
-                                        <th className="px-5 py-3.5 text-[8px] font-black uppercase tracking-widest text-muted">Fundo</th>
-                                        <th className="px-5 py-3.5 text-[8px] font-black uppercase tracking-widest text-muted">Categoria</th>
-                                        <th className="px-5 py-3.5 text-[8px] font-black uppercase tracking-widest text-muted">Valor</th>
-                                        <th className="px-5 py-3.5 text-[8px] font-black uppercase tracking-widest text-muted">Fornecedor</th>
-                                        <th className="px-5 py-3.5 text-[8px] font-black uppercase tracking-widest text-muted">Status</th>
-                                        <th className="px-5 py-3.5 text-[8px] font-black uppercase tracking-widest text-muted">Acoes</th>
+                                        <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Data</th>
+                                        <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Descricao</th>
+                                        <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Fundo</th>
+                                        <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Categoria</th>
+                                        <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Valor</th>
+                                        <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Fornecedor</th>
+                                        <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Status</th>
+                                        <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Acoes</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -176,18 +176,18 @@ export default async function DespesasPage() {
                                         const sc = statusConfig[d.status] || statusConfig.PENDENTE
                                         return (
                                             <tr key={d.id} className="border-b border-soft/50 last:border-0 hover:bg-bg/50 transition-colors">
-                                                <td className="px-5 py-3 text-[10px] text-muted whitespace-nowrap">{formatarData(d.data)}</td>
-                                                <td className="px-5 py-3 text-[10px] font-bold text-fg max-w-[200px] truncate">{d.descricao}</td>
+                                                <td className="px-5 py-3 text-[14px] text-muted whitespace-nowrap">{formatarData(d.data)}</td>
+                                                <td className="px-5 py-3 text-[14px] font-bold text-fg max-w-[200px] truncate">{d.descricao}</td>
                                                 <td className="px-5 py-3">
-                                                    <span className="text-[8px] font-black uppercase tracking-widest text-muted bg-bg px-2 py-0.5 rounded-md">
+                                                    <span className="text-[13px] font-bold uppercase tracking-wide text-muted bg-bg px-2 py-0.5 rounded-md">
                                                         {d.fundo.nome}
                                                     </span>
                                                 </td>
-                                                <td className="px-5 py-3 text-[10px] text-muted">{d.categoria?.nome || '-'}</td>
-                                                <td className="px-5 py-3 text-[11px] font-black text-fg whitespace-nowrap">{euro(d.valor)}</td>
-                                                <td className="px-5 py-3 text-[10px] text-muted">{d.fornecedor || '-'}</td>
+                                                <td className="px-5 py-3 text-[14px] text-muted">{d.categoria?.nome || '-'}</td>
+                                                <td className="px-5 py-3 text-[14px] font-bold text-fg whitespace-nowrap">{euro(d.valor)}</td>
+                                                <td className="px-5 py-3 text-[14px] text-muted">{d.fornecedor || '-'}</td>
                                                 <td className="px-5 py-3">
-                                                    <span className={`inline-flex items-center gap-1 text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${sc.bg} ${sc.text}`}>
+                                                    <span className={`inline-flex items-center gap-1 text-[13px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md ${sc.bg} ${sc.text}`}>
                                                         {sc.icon} {d.status}
                                                     </span>
                                                 </td>

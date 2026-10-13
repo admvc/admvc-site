@@ -47,8 +47,8 @@ export default function QrCodeModal({ membroId, qrCode: initial, membroNome }: P
                 >
                     <div className="text-center space-y-6" onClick={e => e.stopPropagation()}>
                         <div className="space-y-1">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-figueira">Cartao Cantina</p>
-                            <h2 className="text-xl font-black uppercase italic tracking-tighter text-fg">{membroNome}</h2>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">Cartao Cantina</p>
+                            <h2 className="text-xl font-bold text-fg">{membroNome}</h2>
                         </div>
 
                         {qrCode ? (
@@ -56,17 +56,17 @@ export default function QrCodeModal({ membroId, qrCode: initial, membroNome }: P
                                 <div className="bg-white rounded-3xl p-6 mx-auto w-fit shadow-lg">
                                     <QRCode value={qrCode} size={220} level="M" />
                                 </div>
-                                <p className="text-[10px] text-muted font-bold">Mostre este QR Code no POS da Cantina</p>
-                                <p className="text-[8px] text-muted/40 mt-2">Toque em qualquer lugar para fechar</p>
+                                <p className="text-[14px] text-muted font-bold">Mostre este QR Code no POS da Cantina</p>
+                                <p className="text-[13px] text-muted/40 mt-2">Toque em qualquer lugar para fechar</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
                                 <div className="bg-soft rounded-3xl p-10 mx-auto w-fit">
                                     <QrCode size={60} className="text-muted" />
                                 </div>
-                                <p className="text-[10px] text-muted">Ainda nao tem cartao. Gere um para identificacao rapida.</p>
+                                <p className="text-[14px] text-muted">Ainda nao tem cartao. Gere um para identificacao rapida.</p>
                                 <button onClick={gerar} disabled={loading}
-                                    className="inline-flex items-center gap-2 bg-figueira text-white px-5 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest disabled:opacity-50">
+                                    className="inline-flex items-center gap-2 bg-figueira text-white px-5 py-3 rounded-xl text-[13px] font-bold uppercase tracking-wide disabled:opacity-50">
                                     {loading ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
                                     Gerar Cartao
                                 </button>

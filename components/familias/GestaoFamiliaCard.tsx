@@ -26,14 +26,14 @@ export function GestaoFamiliaCard({ familia }: any) {
             <div className="p-5">
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-figueira/10 text-figueira rounded-xl flex items-center justify-center shrink-0 text-sm font-black">
+                        <div className="w-10 h-10 bg-figueira/10 text-figueira rounded-xl flex items-center justify-center shrink-0 text-sm font-bold">
                             {familia.surname[0]}
                         </div>
                         <div>
-                            <h3 className="text-sm font-black uppercase tracking-tight text-fg leading-none">
+                            <h3 className="text-sm font-bold text-fg leading-none">
                                 {familia.surname}
                             </h3>
-                            <p className="text-[9px] font-bold text-muted mt-1">
+                            <p className="text-[13px] font-bold text-muted mt-1">
                                 {familia.members.length} membro{familia.members.length !== 1 ? 's' : ''}
                             </p>
                         </div>
@@ -58,7 +58,7 @@ export function GestaoFamiliaCard({ familia }: any) {
                 {familia.members.length > 0 && !aberto && (
                     <div className="flex -space-x-2">
                         {familia.members.slice(0, 5).map((m: any) => (
-                            <div key={m.id} className="w-7 h-7 rounded-lg bg-soft border-2 border-bg2 flex items-center justify-center text-[8px] font-black text-muted overflow-hidden" title={`${m.first_name} ${m.last_name}`}>
+                            <div key={m.id} className="w-7 h-7 rounded-lg bg-soft border-2 border-bg2 flex items-center justify-center text-[13px] font-bold text-muted overflow-hidden" title={`${m.first_name} ${m.last_name}`}>
                                 {m.avatar_file
                                     ? <img src={m.avatar_file} alt="" className="w-full h-full object-cover" />
                                     : m.first_name[0]
@@ -66,7 +66,7 @@ export function GestaoFamiliaCard({ familia }: any) {
                             </div>
                         ))}
                         {familia.members.length > 5 && (
-                            <div className="w-7 h-7 rounded-lg bg-soft border-2 border-bg2 flex items-center justify-center text-[8px] font-black text-muted">
+                            <div className="w-7 h-7 rounded-lg bg-soft border-2 border-bg2 flex items-center justify-center text-[13px] font-bold text-muted">
                                 +{familia.members.length - 5}
                             </div>
                         )}
@@ -82,15 +82,15 @@ export function GestaoFamiliaCard({ familia }: any) {
                         {familia.members.length > 0 ? familia.members.map((m: any) => (
                             <div key={m.id} className="flex items-center justify-between px-3 py-2 bg-bg rounded-xl hover:bg-soft/10 transition-all group/item">
                                 <div className="flex items-center gap-2.5">
-                                    <div className="w-7 h-7 rounded-lg bg-soft overflow-hidden flex items-center justify-center text-muted text-[9px] font-black shrink-0">
+                                    <div className="w-7 h-7 rounded-lg bg-soft overflow-hidden flex items-center justify-center text-muted text-[13px] font-bold shrink-0">
                                         {m.avatar_file
                                             ? <img src={m.avatar_file} alt="" className="w-full h-full object-cover" />
                                             : <User size={12} />
                                         }
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-bold text-fg">{m.first_name} {m.last_name}</p>
-                                        <p className="text-[8px] font-bold text-muted uppercase tracking-widest">
+                                        <p className="text-[14px] font-bold text-fg">{m.first_name} {m.last_name}</p>
+                                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide">
                                             {m.parentesco ? m.parentesco.replace(/_/g, ' ') : 'Membro'}
                                         </p>
                                     </div>
@@ -104,7 +104,7 @@ export function GestaoFamiliaCard({ familia }: any) {
                                 </button>
                             </div>
                         )) : (
-                            <p className="text-[10px] text-muted text-center py-4 font-bold">Nenhum membro vinculado.</p>
+                            <p className="text-[14px] text-muted text-center py-4 font-bold">Nenhum membro vinculado.</p>
                         )}
                     </div>
 

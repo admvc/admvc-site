@@ -31,7 +31,7 @@ export default function FormImportarExtrato({ contaId }: { contaId: number }) {
     return (
         <div className="space-y-3">
             <label className="flex items-center gap-3 cursor-pointer group">
-                <div className="h-11 px-5 bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white rounded-xl flex items-center gap-2 transition-all active:scale-95 text-[9px] font-black uppercase tracking-widest group-hover:bg-blue-500 group-hover:text-white">
+                <div className="h-11 px-5 bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white rounded-xl flex items-center gap-2 transition-all active:scale-95 text-[13px] font-bold uppercase tracking-wide group-hover:bg-blue-500 group-hover:text-white">
                     {loading ? (
                         <Loader2 size={14} className="animate-spin" />
                     ) : (
@@ -49,7 +49,7 @@ export default function FormImportarExtrato({ contaId }: { contaId: number }) {
                 />
             </label>
 
-            <p className="text-[10px] text-muted">
+            <p className="text-[14px] text-muted">
                 <FileSpreadsheet size={10} className="inline mr-1" />
                 Formato: data;descricao;valor;saldo (separado por ; ou ,)
             </p>
@@ -72,7 +72,7 @@ export default function FormImportarExtrato({ contaId }: { contaId: number }) {
                         </div>
                     )}
                     {resultado.errors && resultado.errors.length > 0 && (
-                        <ul className="mt-2 space-y-0.5 text-[10px] text-orange-400">
+                        <ul className="mt-2 space-y-0.5 text-[14px] text-orange-400">
                             {resultado.errors.slice(0, 5).map((err, i) => (
                                 <li key={i}>- {err}</li>
                             ))}

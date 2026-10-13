@@ -24,7 +24,7 @@ export default function AlertasOrcamento({ alertas }: { alertas: AlertaOrcamento
 
     return (
         <section className="space-y-3">
-            <h2 className="text-[9px] font-black uppercase tracking-widest text-amber-500 flex items-center gap-2">
+            <h2 className="text-[13px] font-bold uppercase tracking-wide text-amber-500 flex items-center gap-2">
                 <AlertTriangle size={14} /> Alertas de Orcamento ({excedidos.length})
             </h2>
 
@@ -36,10 +36,10 @@ export default function AlertasOrcamento({ alertas }: { alertas: AlertaOrcamento
                     >
                         <div className="flex items-start justify-between">
                             <div className="space-y-1">
-                                <p className="text-xs font-black uppercase tracking-tight text-fg">
+                                <p className="text-xs font-bold text-fg">
                                     {alerta.categoriaNome}
                                 </p>
-                                <p className="text-[9px] text-muted">{alerta.fundoNome}</p>
+                                <p className="text-[13px] text-muted">{alerta.fundoNome}</p>
                             </div>
                             <div className={`p-2 rounded-xl ${alerta.percentagem >= 90 ? 'bg-red-500/10 text-red-500' : 'bg-amber-500/10 text-amber-500'}`}>
                                 {alerta.percentagem >= 90
@@ -58,10 +58,10 @@ export default function AlertasOrcamento({ alertas }: { alertas: AlertaOrcamento
                                 />
                             </div>
                             <div className="flex items-center justify-between">
-                                <p className="text-[9px] text-muted">
+                                <p className="text-[13px] text-muted">
                                     {euro(alerta.valorGasto)} gasto de {euro(alerta.valorPrevisto)} previsto
                                 </p>
-                                <span className={`text-[9px] font-black ${alerta.percentagem >= 90 ? 'text-red-500' : 'text-amber-500'}`}>
+                                <span className={`text-[13px] font-bold ${alerta.percentagem >= 90 ? 'text-red-500' : 'text-amber-500'}`}>
                                     {alerta.percentagem}%
                                 </span>
                             </div>

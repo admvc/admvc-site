@@ -42,11 +42,11 @@ export default async function WidgetAgendaPastoral({ membroId }: { membroId: num
                         <CheckCircle2 size={20} />
                     </div>
                     <div>
-                        <h4 className="text-sm font-black uppercase italic tracking-tight text-fg">Agenda Livre</h4>
-                        <p className="text-[10px] font-bold text-muted uppercase tracking-widest mt-1">Nenhum compromisso marcado para hoje.</p>
+                        <h4 className="text-sm font-bold text-fg">Agenda Livre</h4>
+                        <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-1">Nenhum compromisso marcado para hoje.</p>
                     </div>
                 </div>
-                <Link href="/gabinete" className="text-[10px] font-black uppercase tracking-widest text-figueira flex items-center gap-1 hover:gap-2 transition-all">
+                <Link href="/gabinete" className="text-[14px] font-bold uppercase tracking-wide text-figueira flex items-center gap-1 hover:gap-2 transition-all">
                     Ver Agenda <ArrowRight size={12} />
                 </Link>
             </div>
@@ -64,8 +64,8 @@ export default async function WidgetAgendaPastoral({ membroId }: { membroId: num
                             <BellRing size={20} />
                         </div>
                         <div>
-                            <h4 className="text-sm font-black uppercase italic tracking-tight text-fg">Pedidos Pendentes</h4>
-                            <p className="text-[10px] font-bold text-orange-600 uppercase tracking-widest mt-1">
+                            <h4 className="text-sm font-bold text-fg">Pedidos Pendentes</h4>
+                            <p className="text-[14px] font-bold text-orange-600 uppercase tracking-wide mt-1">
                                 Tens {pendentes.length} marcação(ões) a aguardar aprovação.
                             </p>
                         </div>
@@ -84,8 +84,8 @@ export default async function WidgetAgendaPastoral({ membroId }: { membroId: num
                             <CalendarDays size={20} />
                         </div>
                         <div>
-                            <h4 className="text-sm font-black uppercase italic tracking-tight text-fg">Compromissos Hoje</h4>
-                            <p className="text-[10px] font-bold text-muted uppercase tracking-widest mt-1">
+                            <h4 className="text-sm font-bold text-fg">Compromissos Hoje</h4>
+                            <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-1">
                                 O teu próximo é às <strong className="text-figueira">{new Date(agendadosHoje[0].data_inicio).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}</strong>.
                             </p>
                         </div>

@@ -22,7 +22,7 @@ export default function CardSaldoLocal({ membroId }: { membroId: number }) {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Wallet2 size={16} className="text-figueira" />
-                    <span className="text-[9px] font-black uppercase tracking-widest text-muted">Saldo Cantina</span>
+                    <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Saldo Cantina</span>
                 </div>
                 <button
                     onClick={fetchSaldo}
@@ -34,7 +34,7 @@ export default function CardSaldoLocal({ membroId }: { membroId: number }) {
                 </button>
             </div>
 
-            <p className="text-3xl font-black italic text-fg leading-none">
+            <p className="text-3xl font-bold text-fg leading-none">
                 {loading ? '...' : `${(saldo || 0).toFixed(2)}€`}
             </p>
         </div>

@@ -43,7 +43,7 @@ export default function ModalAjuda({ isMenuItem = false, trigger }: { isMenuItem
             ) : isMenuItem ? (
                 <button
                     onClick={() => setAberto(true)}
-                    className="text-[9px] font-bold uppercase tracking-widest text-fg hover:bg-soft px-2.5 py-2 rounded-lg transition-all flex items-center gap-2.5 w-full text-left"
+                    className="text-[13px] font-bold uppercase tracking-wide text-fg hover:bg-soft px-2.5 py-2 rounded-lg transition-all flex items-center gap-2.5 w-full text-left"
                 >
                     <HelpCircle size={12} className="text-figueira" /> Ajuda
                 </button>
@@ -65,7 +65,7 @@ export default function ModalAjuda({ isMenuItem = false, trigger }: { isMenuItem
                         <div className="flex items-center justify-between px-5 py-4 border-b border-soft">
                             <div className="flex items-center gap-2.5">
                                 <HelpCircle size={18} className="text-figueira" />
-                                <h2 className="text-sm font-black uppercase tracking-widest text-fg">Ajuda</h2>
+                                <h2 className="text-sm font-bold text-fg">Ajuda</h2>
                             </div>
                             <button
                                 onClick={() => setAberto(false)}
@@ -83,7 +83,7 @@ export default function ModalAjuda({ isMenuItem = false, trigger }: { isMenuItem
                                     <details key={secao.titulo} className="group rounded-xl border border-soft overflow-hidden">
                                         <summary className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none hover:bg-soft/20 transition-all">
                                             <Icon size={14} className="text-figueira shrink-0" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-fg">{secao.titulo}</span>
+                                            <span className="text-[14px] font-bold uppercase tracking-wide text-fg">{secao.titulo}</span>
                                         </summary>
                                         <div className="px-4 pb-3 pt-0">
                                             <p className="text-xs text-muted leading-relaxed pl-[26px]">{secao.conteudo}</p>
@@ -95,7 +95,7 @@ export default function ModalAjuda({ isMenuItem = false, trigger }: { isMenuItem
                             <details className="group rounded-xl border border-soft overflow-hidden">
                                 <summary className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none hover:bg-soft/20 transition-all">
                                     <Shield size={14} className="text-figueira shrink-0" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-fg">O que e o GDPR?</span>
+                                    <span className="text-[14px] font-bold uppercase tracking-wide text-fg">O que e o GDPR?</span>
                                 </summary>
                                 <div className="px-4 pb-3 pt-0">
                                     <p className="text-xs text-muted leading-relaxed pl-[26px]">O GDPR (Regulamento Geral de Protecao de Dados) e a lei europeia que protege os seus dados pessoais. Ao aceitar o GDPR na nossa plataforma, voce autoriza a igreja a guardar os seus dados (nome, contacto, etc.) de forma segura e apenas para fins de gestao eclesiastica.</p>
@@ -106,7 +106,7 @@ export default function ModalAjuda({ isMenuItem = false, trigger }: { isMenuItem
                             <details className="group rounded-xl border border-soft overflow-hidden">
                                 <summary className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none hover:bg-soft/20 transition-all">
                                     <HeartHandshake size={14} className="text-figueira shrink-0" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-fg">O que e o Permanecer?</span>
+                                    <span className="text-[14px] font-bold uppercase tracking-wide text-fg">O que e o Permanecer?</span>
                                 </summary>
                                 <div className="px-4 pb-3 pt-0">
                                     <p className="text-xs text-muted leading-relaxed pl-[26px]">O Permanecer e o processo de integracao a membresia da igreja. Ao aceitar o Permanecer, voce declara o seu compromisso de caminhar em comunhao, participar na vida da igreja e crescer espiritualmente.</p>

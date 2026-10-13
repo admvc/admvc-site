@@ -29,7 +29,7 @@ export default function TabelaRecibos({ recibos }: { recibos: ReciboRow[] }) {
         <div className="overflow-x-auto">
             <table className="w-full text-sm">
                 <thead>
-                    <tr className="text-xs text-muted uppercase tracking-wider">
+                    <tr className="text-xs text-muted">
                         <th className="text-left px-4 py-3 font-medium">Membro</th>
                         <th className="text-left px-4 py-3 font-medium hidden sm:table-cell">NIF</th>
                         <th className="text-right px-4 py-3 font-medium">Valor Total</th>

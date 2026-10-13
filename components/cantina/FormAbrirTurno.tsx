@@ -34,7 +34,7 @@ export default function FormAbrirTurno() {
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase tracking-widest text-muted block">
+                <label className="text-[13px] font-bold uppercase tracking-wide text-muted block">
                     Valor Inicial em Caixa (EUR)
                 </label>
                 <input
@@ -55,7 +55,7 @@ export default function FormAbrirTurno() {
             <button
                 type="submit"
                 disabled={isPending}
-                className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-figueira text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-figueira/90 transition-all disabled:opacity-50"
+                className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-figueira text-white rounded-xl text-[13px] font-bold uppercase tracking-wide hover:bg-figueira/90 transition-all disabled:opacity-50"
             >
                 <Play size={14} />
                 {isPending ? 'A abrir...' : 'Abrir Turno'}

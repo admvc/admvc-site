@@ -73,10 +73,10 @@ export default async function BoleiaPage() {
             <header className="bg-bg/95 backdrop-blur-sm -mx-4 sm:-mx-6 px-4 sm:px-6 lg:px-8 py-3 md:py-4 border-b border-soft">
                 <div className="flex justify-between items-center gap-3 max-w-6xl mx-auto">
                     <div>
-                        <span className="text-figueira font-black text-[9px] md:text-[10px] uppercase tracking-[0.3em] flex items-center gap-2 mb-0.5">
+                        <span className="text-figueira font-bold text-[13px] md:text-[14px] uppercase tracking-wide flex items-center gap-2 mb-0.5">
                             <Car size={12} /> Boleia Solidaria
                         </span>
-                        <h1 className="text-lg md:text-3xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                        <h1 className="text-lg md:text-3xl font-bold text-fg leading-none">
                             Boleias <span className="text-muted/20">Disponiveis.</span>
                         </h1>
                     </div>
@@ -84,13 +84,13 @@ export default async function BoleiaPage() {
                     <div className="flex gap-2 md:gap-3 shrink-0">
                         <Link
                             href="/boleia/oferecer"
-                            className="inline-flex items-center gap-1.5 bg-figueira text-white px-3 py-2 md:px-5 md:py-2.5 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-figueira/90 transition-all shadow-lg shadow-figueira/20 active:scale-95"
+                            className="inline-flex items-center gap-1.5 bg-figueira text-white px-3 py-2 md:px-5 md:py-2.5 rounded-xl md:rounded-2xl text-[13px] md:text-[14px] font-bold uppercase tracking-wide hover:bg-figueira/90 transition-all shadow-lg shadow-figueira/20 active:scale-95"
                         >
                             <Plus size={12} /> Oferecer
                         </Link>
                         <Link
                             href="/boleia/minhas"
-                            className="inline-flex items-center gap-1.5 bg-bg2 border border-soft text-fg px-3 py-2 md:px-5 md:py-2.5 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-soft transition-all active:scale-95"
+                            className="inline-flex items-center gap-1.5 bg-bg2 border border-soft text-fg px-3 py-2 md:px-5 md:py-2.5 rounded-xl md:rounded-2xl text-[13px] md:text-[14px] font-bold uppercase tracking-wide hover:bg-soft transition-all active:scale-95"
                         >
                             Minhas
                         </Link>
@@ -101,20 +101,20 @@ export default async function BoleiaPage() {
             {/* STATS */}
             <div className="flex items-center gap-4 md:gap-6">
                 <div className="text-center">
-                    <p className="text-xl md:text-2xl font-black italic text-fg">{ofertas.length}</p>
-                    <p className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-muted">Ativas</p>
+                    <p className="text-xl md:text-2xl font-bold text-fg">{ofertas.length}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Ativas</p>
                 </div>
                 <div className="w-px h-6 md:h-8 bg-soft" />
                 <div className="text-center">
-                    <p className="text-xl md:text-2xl font-black italic text-fg">
+                    <p className="text-xl md:text-2xl font-bold text-fg">
                         {ofertas.reduce((sum, o) => sum + Math.max(0, o.vagas_total - o.reservas.length), 0)}
                     </p>
-                    <p className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-muted">Livres</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Livres</p>
                 </div>
                 <div className="w-px h-6 md:h-8 bg-soft" />
                 <div className="text-center">
-                    <p className="text-xl md:text-2xl font-black italic text-fg">{proximosEventos.length}</p>
-                    <p className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-muted">Eventos</p>
+                    <p className="text-xl md:text-2xl font-bold text-fg">{proximosEventos.length}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Eventos</p>
                 </div>
             </div>
 
@@ -136,7 +136,7 @@ export default async function BoleiaPage() {
                 if (ofertasComCoordenadas.length === 0) return null
                 return (
                     <section className="hidden md:block space-y-3">
-                        <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-muted flex items-center gap-2">
+                        <h2 className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted flex items-center gap-2">
                             <Map size={14} /> Mapa de Boleias
                         </h2>
                         <MapaBoleiasWrapper ofertas={ofertasComCoordenadas} />
@@ -162,37 +162,37 @@ export default async function BoleiaPage() {
                                     {/* Motorista */}
                                     <div className="flex items-center gap-3">
                                         <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-figueira/10 flex items-center justify-center shrink-0">
-                                            <span className="text-[9px] md:text-[10px] font-black text-figueira">
+                                            <span className="text-[13px] md:text-[14px] font-bold text-figueira">
                                                 {oferta.motorista.first_name[0]}{oferta.motorista.last_name[0]}
                                             </span>
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-xs md:text-sm font-black uppercase text-fg leading-none truncate">
+                                            <p className="text-xs md:text-sm font-bold text-fg leading-none truncate">
                                                 {oferta.motorista.first_name} {oferta.motorista.last_name}
                                             </p>
                                             {souMotorista && (
-                                                <span className="text-[8px] md:text-[10px] font-black uppercase text-figueira tracking-widest">Voce</span>
+                                                <span className="text-[13px] md:text-[14px] font-bold uppercase text-figueira tracking-wide">Voce</span>
                                             )}
                                         </div>
                                     </div>
 
                                     {/* Detalhes */}
                                     <div className="space-y-1.5">
-                                        <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-fg font-medium">
+                                        <div className="flex items-center gap-2 text-[14px] text-fg font-medium">
                                             <Clock size={11} className="text-figueira shrink-0" />
                                             {dataFormatada} as {horaFormatada}
                                         </div>
-                                        <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-muted">
+                                        <div className="flex items-center gap-2 text-[14px] text-muted">
                                             <MapPin size={11} className="shrink-0" />
                                             <span className="truncate">{oferta.zona_partida || oferta.endereco_partida}</span>
                                         </div>
                                         {oferta.evento && (
-                                            <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-muted">
+                                            <div className="flex items-center gap-2 text-[14px] text-muted">
                                                 <Calendar size={11} className="shrink-0" />
                                                 <span className="truncate">{oferta.evento.nome}</span>
                                             </div>
                                         )}
-                                        <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-muted">
+                                        <div className="flex items-center gap-2 text-[14px] text-muted">
                                             <Users size={11} className="shrink-0" />
                                             {vagasLivres}/{oferta.vagas_total} {vagasLivres === 1 ? 'lugar livre' : 'lugares livres'}
                                         </div>
@@ -200,7 +200,7 @@ export default async function BoleiaPage() {
 
                                     {/* Nota */}
                                     {oferta.nota && (
-                                        <p className="text-[9px] md:text-[10px] text-muted italic border-t border-soft pt-2 md:pt-3">
+                                        <p className="text-[13px] md:text-[14px] text-muted border-t border-soft pt-2 md:pt-3">
                                             &ldquo;{oferta.nota}&rdquo;
                                         </p>
                                     )}
@@ -210,7 +210,7 @@ export default async function BoleiaPage() {
                                         <div className="flex items-center gap-1 pt-1">
                                             {oferta.reservas.map(r => (
                                                 <div key={r.id} className="w-6 h-6 md:w-7 md:h-7 rounded-lg bg-soft flex items-center justify-center" title={`${r.passageiro.first_name} ${r.passageiro.last_name}`}>
-                                                    <span className="text-[7px] md:text-[8px] font-black text-muted">
+                                                    <span className="text-[13px] font-bold text-muted">
                                                         {r.passageiro.first_name[0]}{r.passageiro.last_name[0]}
                                                     </span>
                                                 </div>
@@ -221,7 +221,7 @@ export default async function BoleiaPage() {
                                     {/* Acao */}
                                     <div className="pt-1 md:pt-2 flex items-center gap-3">
                                         {souMotorista ? (
-                                            <Link href="/boleia/minhas" className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-figueira hover:text-fg transition-colors flex items-center gap-1">
+                                            <Link href="/boleia/minhas" className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-figueira hover:text-fg transition-colors flex items-center gap-1">
                                                 Gerir <ChevronRight size={12} />
                                             </Link>
                                         ) : minhaReserva ? (
@@ -234,7 +234,7 @@ export default async function BoleiaPage() {
                                         ) : vagasLivres > 0 ? (
                                             <BotaoReservar ofertaId={oferta.id} />
                                         ) : (
-                                            <span className="text-[9px] md:text-[11px] font-black uppercase tracking-widest text-muted">Sem vagas</span>
+                                            <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Sem vagas</span>
                                         )}
                                     </div>
                                 </div>
@@ -245,10 +245,10 @@ export default async function BoleiaPage() {
             ) : (
                 <div className="py-20 text-center">
                     <Car size={32} className="mx-auto text-muted/20 mb-4" />
-                    <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-muted">
+                    <p className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted">
                         Nenhuma boleia disponivel de momento
                     </p>
-                    <Link href="/boleia/oferecer" className="inline-flex items-center gap-2 mt-4 text-figueira text-[10px] md:text-xs font-black uppercase tracking-widest hover:text-fg transition-colors">
+                    <Link href="/boleia/oferecer" className="inline-flex items-center gap-2 mt-4 text-figueira text-[14px] md:text-xs font-bold uppercase tracking-wide hover:text-fg transition-colors">
                         <Plus size={12} /> Seja o primeiro a oferecer
                     </Link>
                 </div>
@@ -256,7 +256,7 @@ export default async function BoleiaPage() {
             {/* BOLEIAS PASSADAS — AGRADECER */}
             {minhasReservasPassadas.length > 0 && (
                 <section className="space-y-4">
-                    <h2 className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-muted">
+                    <h2 className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted">
                         Boleias Recentes — Agradecer
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
@@ -272,15 +272,15 @@ export default async function BoleiaPage() {
                                     <div className="p-4 md:p-6 space-y-3">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 rounded-xl bg-soft flex items-center justify-center shrink-0">
-                                                <span className="text-[10px] md:text-xs font-black text-muted">
+                                                <span className="text-[14px] md:text-xs font-bold text-muted">
                                                     {oferta.motorista.first_name[0]}{oferta.motorista.last_name[0]}
                                                 </span>
                                             </div>
                                             <div>
-                                                <p className="text-sm font-black uppercase text-fg leading-none">
+                                                <p className="text-sm font-bold text-fg leading-none">
                                                     {oferta.motorista.first_name} {oferta.motorista.last_name}
                                                 </p>
-                                                <p className="text-[10px] md:text-xs text-muted">{dataFormatada} as {horaFormatada}</p>
+                                                <p className="text-[14px] md:text-xs text-muted">{dataFormatada} as {horaFormatada}</p>
                                             </div>
                                         </div>
                                         <div className="pt-1">

@@ -44,7 +44,7 @@ export default function NovaFamiliaModal({ familiasExistentes = [] }: { familias
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className="w-full md:w-auto flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-xl active:scale-95"
+                className="w-full md:w-auto flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-xl active:scale-95"
             >
                 <Plus size={16} /> Nova Família
             </button>
@@ -64,15 +64,15 @@ export default function NovaFamiliaModal({ familiasExistentes = [] }: { familias
                             <div className="w-12 h-12 bg-figueira/10 text-figueira rounded-2xl flex items-center justify-center mb-4">
                                 <Home size={20} />
                             </div>
-                            <h2 className="text-2xl font-black uppercase italic tracking-tighter text-fg">Criar Agregado</h2>
-                            <p className="text-[10px] font-bold text-muted uppercase tracking-widest mt-1">Insira o apelido principal da família</p>
+                            <h2 className="text-2xl font-bold text-fg">Criar Agregado</h2>
+                            <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-1">Insira o apelido principal da família</p>
                         </div>
 
                         {/* Note que mudámos para onSubmit no form em vez de action direto se preferir, ou mantemos action. 
                             O Next.js aceita Action com FormData perfeitamente. */}
                         <form action={handleAction} className="space-y-6">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest">
+                                <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">
                                     Apelido (Ex: Silva, Oliveira)
                                 </label>
                                 <input
@@ -92,7 +92,7 @@ export default function NovaFamiliaModal({ familiasExistentes = [] }: { familias
                                 {nomeDuplicado && (
                                     <div className="flex items-center gap-1.5 text-red-500 ml-4 animate-in slide-in-from-top-2">
                                         <AlertTriangle size={12} />
-                                        <span className="text-[10px] font-bold uppercase tracking-widest">
+                                        <span className="text-[14px] font-bold uppercase tracking-wide">
                                             A família "{nome.trim()}" já existe!
                                         </span>
                                     </div>
@@ -103,7 +103,7 @@ export default function NovaFamiliaModal({ familiasExistentes = [] }: { familias
                                 type="submit"
                                 // Desativa o botão se estiver a carregar, se o nome for duplicado, ou se estiver vazio
                                 disabled={loading || nomeDuplicado || nome.trim() === ''}
-                                className="w-full flex items-center justify-center gap-2 bg-figueira text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:brightness-110 transition-all shadow-lg shadow-figueira/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full flex items-center justify-center gap-2 bg-figueira text-white py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:brightness-110 transition-all shadow-lg shadow-figueira/20 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
                                 {loading ? 'A criar...' : 'Guardar Família'}

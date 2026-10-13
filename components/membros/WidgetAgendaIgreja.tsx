@@ -26,8 +26,8 @@ export default function WidgetAgendaIgreja({ eventos = [], isAdmin = false }: { 
                     <CalendarDays size={18} />
                 </div>
                 <div>
-                    <h3 className="text-xl font-black uppercase italic tracking-tighter text-fg leading-none">Agenda da Igreja</h3>
-                    <p className="text-[9px] font-bold text-muted uppercase tracking-widest mt-1">Dados em Tempo Real</p>
+                    <h3 className="text-xl font-bold text-fg leading-none">Agenda da Igreja</h3>
+                    <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-1">Dados em Tempo Real</p>
                 </div>
             </div>
 
@@ -39,18 +39,18 @@ export default function WidgetAgendaIgreja({ eventos = [], isAdmin = false }: { 
                             className={`w-full flex gap-4 p-3 rounded-3xl transition-all text-left hover:bg-bg ${index !== eventosVisiveis.length - 1 ? 'border-b border-soft pb-5' : ''}`}
                         >
                             <div className="w-14 h-14 bg-soft/50 group-hover:bg-figueira group-hover:text-white rounded-2xl flex flex-col items-center justify-center shrink-0 transition-colors shadow-sm">
-                                <span className="text-lg font-black leading-none">{formatarDia(evento.data)}</span>
-                                <span className="text-[9px] font-black uppercase tracking-widest mt-0.5">{formatarMes(evento.data)}</span>
+                                <span className="text-lg font-bold leading-none">{formatarDia(evento.data)}</span>
+                                <span className="text-[13px] font-bold uppercase tracking-wide mt-0.5">{formatarMes(evento.data)}</span>
                             </div>
 
                             <div className="flex flex-col justify-center min-w-0 flex-1">
-                                <p className="text-[10px] text-figueira font-black uppercase tracking-widest mb-0.5 truncate capitalize">
+                                <p className="text-[14px] text-figueira font-bold uppercase tracking-wide mb-0.5 truncate capitalize">
                                     {formatarDiaSemana(evento.data)}
                                 </p>
-                                <h4 className="text-sm font-black uppercase text-fg truncate tracking-tight">
+                                <h4 className="text-sm font-bold text-fg truncate">
                                     {evento.nome} {/* 👈 Ajustado de 'titulo' para 'nome' */}
                                 </h4>
-                                <div className="flex items-center gap-3 mt-1.5 text-[10px] font-bold text-muted uppercase tracking-widest">
+                                <div className="flex items-center gap-3 mt-1.5 text-[14px] font-bold text-muted uppercase tracking-wide">
                                     <span className="flex items-center gap-1"><Clock size={10} /> {formatarHora(evento.data)}</span>
                                 </div>
                             </div>
@@ -65,7 +65,7 @@ export default function WidgetAgendaIgreja({ eventos = [], isAdmin = false }: { 
                         )}
                     </div>
                 )) : (
-                    <p className="text-[10px] text-muted italic p-4 text-center">Sem eventos agendados.</p>
+                    <p className="text-[14px] text-muted p-4 text-center">Sem eventos agendados.</p>
                 )}
             </div>
 
@@ -73,7 +73,7 @@ export default function WidgetAgendaIgreja({ eventos = [], isAdmin = false }: { 
             {eventos.length > 2 && (
                 <button
                     onClick={() => setExpandido(!expandido)}
-                    className="mt-6 w-full py-4 bg-bg border border-soft rounded-2xl text-[10px] font-black uppercase tracking-widest text-muted hover:text-fg hover:border-figueira transition-all flex items-center justify-center gap-2"
+                    className="mt-6 w-full py-4 bg-bg border border-soft rounded-2xl text-[14px] font-bold uppercase tracking-wide text-muted hover:text-fg hover:border-figueira transition-all flex items-center justify-center gap-2"
                 >
                     {expandido ? 'Ocultar' : `Ver todos (${eventos.length})`}
                     <ChevronDown size={14} className={expandido ? 'rotate-180' : ''} />
@@ -86,16 +86,16 @@ export default function WidgetAgendaIgreja({ eventos = [], isAdmin = false }: { 
                     <div className="bg-bg w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden border border-soft animate-in zoom-in-95 duration-300">
                         <div className="relative h-24 bg-figueira flex items-center justify-center">
                             <button onClick={() => setEventoSelecionado(null)} className="absolute top-4 right-4 p-2 bg-white/20 text-white rounded-xl"><X size={20} /></button>
-                            <h2 className="text-xl font-black uppercase italic text-white tracking-tighter">Detalhes do Evento</h2>
+                            <h2 className="text-xl font-bold text-white">Detalhes do Evento</h2>
                         </div>
                         <div className="p-8 space-y-6">
-                            <h3 className="text-2xl font-black uppercase italic text-fg tracking-tighter">{eventoSelecionado.nome}</h3>
+                            <h3 className="text-2xl font-bold text-fg">{eventoSelecionado.nome}</h3>
                             <div className="bg-bg2/50 border-2 border-dashed border-soft p-5 rounded-2xl">
-                                <p className="text-xs font-bold text-muted leading-relaxed italic">
+                                <p className="text-xs font-bold text-muted leading-relaxed">
                                     {eventoSelecionado.descricao || "Sem descrição disponível."}
                                 </p>
                             </div>
-                            <button onClick={() => setEventoSelecionado(null)} className="w-full py-5 bg-fg text-bg rounded-2xl font-black text-[10px] uppercase tracking-[0.3em]">Fechar</button>
+                            <button onClick={() => setEventoSelecionado(null)} className="w-full py-5 bg-fg text-bg rounded-2xl font-bold text-[14px] uppercase tracking-wide">Fechar</button>
                         </div>
                     </div>
                 </div>

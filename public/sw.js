@@ -1,4 +1,4 @@
-const CACHE_NAME = 'admvc-v2.6.0'
+const CACHE_NAME = 'admvc-v2.7.0'
 const OFFLINE_URL = '/offline.html'
 
 // Cache static assets on install

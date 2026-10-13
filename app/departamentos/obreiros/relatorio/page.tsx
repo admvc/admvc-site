@@ -48,7 +48,7 @@ export default async function ObreirosRelatorio({
     if (!result.ok || !result.data) {
         return (
             <div className="flex items-center justify-center min-h-screen px-4">
-                <p className="text-sm font-black uppercase text-muted">Erro ao carregar dados</p>
+                <p className="text-sm font-bold text-muted">Erro ao carregar dados</p>
             </div>
         )
     }
@@ -67,8 +67,8 @@ export default async function ObreirosRelatorio({
                         <ArrowLeft size={16} />
                     </Link>
                     <div>
-                        <h1 className="text-base font-black uppercase italic tracking-tighter text-fg">Relatorio</h1>
-                        <p className="text-[7px] font-black uppercase tracking-widest text-figueira">Obreiros · {periodo} {periodo === 1 ? 'mes' : 'meses'}</p>
+                        <h1 className="text-base font-bold text-fg">Relatorio</h1>
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">Obreiros · {periodo} {periodo === 1 ? 'mes' : 'meses'}</p>
                     </div>
                 </div>
             </div>
@@ -83,25 +83,25 @@ export default async function ObreirosRelatorio({
                 <div className="grid grid-cols-2 gap-3">
                     <div className="bg-bg2 border border-soft rounded-2xl p-4 flex flex-col items-center gap-1">
                         <Calendar size={18} className="text-blue-400" />
-                        <span className="text-2xl font-black text-fg">{stats.totalServicos}</span>
-                        <span className="text-[7px] font-black uppercase tracking-widest text-muted">Total Servicos</span>
+                        <span className="text-2xl font-bold text-fg">{stats.totalServicos}</span>
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Total Servicos</span>
                     </div>
                     <div className="bg-bg2 border border-soft rounded-2xl p-4 flex flex-col items-center gap-1">
                         <Users size={18} className="text-figueira" />
-                        <span className="text-2xl font-black text-fg">{stats.mediaServicos}</span>
-                        <span className="text-[7px] font-black uppercase tracking-widest text-muted">Media/Obreiro</span>
+                        <span className="text-2xl font-bold text-fg">{stats.mediaServicos}</span>
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Media/Obreiro</span>
                     </div>
                     <div className="bg-bg2 border border-soft rounded-2xl p-4 flex flex-col items-center gap-1">
                         <Award size={18} className="text-amber-500" />
-                        <span className="text-sm font-black text-fg truncate max-w-full">{stats.melhorObreiro?.nome || '—'}</span>
-                        <span className="text-[7px] font-black uppercase tracking-widest text-muted">
+                        <span className="text-sm font-bold text-fg truncate max-w-full">{stats.melhorObreiro?.nome || '—'}</span>
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">
                             {stats.melhorObreiro ? `${stats.melhorObreiro.count} servicos` : 'Mais Activo'}
                         </span>
                     </div>
                     <div className="bg-bg2 border border-soft rounded-2xl p-4 flex flex-col items-center gap-1">
                         <TrendingUp size={18} className="text-emerald-500" />
-                        <span className="text-2xl font-black text-fg">{stats.taxaConfirmacao}%</span>
-                        <span className="text-[7px] font-black uppercase tracking-widest text-muted">Confirmacao</span>
+                        <span className="text-2xl font-bold text-fg">{stats.taxaConfirmacao}%</span>
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Confirmacao</span>
                     </div>
                 </div>
 
@@ -110,7 +110,7 @@ export default async function ObreirosRelatorio({
                     titulo="Ranking de Servico"
                     icon={<Award size={16} className="text-amber-500" />}
                     badge={
-                        <span className="text-[8px] font-black px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-500">
+                        <span className="text-[13px] font-bold px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-500">
                             {stats.ranking.length}
                         </span>
                     }
@@ -123,14 +123,14 @@ export default async function ObreirosRelatorio({
 
                             return (
                                 <div key={obr.membroId} className="flex items-center gap-3">
-                                    <span className="w-8 text-center text-sm font-black text-fg shrink-0">
+                                    <span className="w-8 text-center text-sm font-bold text-fg shrink-0">
                                         {medalha || `${idx + 1}.`}
                                     </span>
-                                    <div className="w-9 h-9 flex items-center justify-center rounded-full bg-figueira text-white text-[10px] font-black shrink-0">
+                                    <div className="w-9 h-9 flex items-center justify-center rounded-full bg-figueira text-white text-[14px] font-bold shrink-0">
                                         {obr.iniciais}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[11px] font-black uppercase italic text-fg truncate">{obr.nome}</p>
+                                        <p className="text-[14px] font-bold uppercase text-fg truncate">{obr.nome}</p>
                                         <div className="mt-1 h-2 bg-soft rounded-full overflow-hidden">
                                             <div
                                                 className={`h-full rounded-full transition-all ${idx === 0 ? 'bg-amber-500' : idx === 1 ? 'bg-gray-400' : idx === 2 ? 'bg-amber-700' : 'bg-figueira'}`}
@@ -138,12 +138,12 @@ export default async function ObreirosRelatorio({
                                             />
                                         </div>
                                     </div>
-                                    <span className="text-xs font-black text-fg shrink-0">{obr.confirmados}</span>
+                                    <span className="text-xs font-bold text-fg shrink-0">{obr.confirmados}</span>
                                 </div>
                             )
                         })}
                         {stats.ranking.length === 0 && (
-                            <p className="text-center text-xs font-black uppercase text-muted py-4">Sem dados neste periodo</p>
+                            <p className="text-center text-xs font-bold text-muted py-4">Sem dados neste periodo</p>
                         )}
                     </div>
                 </SeccaoColapsavel>
@@ -160,8 +160,8 @@ export default async function ObreirosRelatorio({
                             return (
                                 <div key={f.nome} className="space-y-1">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-fg">{f.nome}</span>
-                                        <span className="text-xs font-black text-figueira">{f.count}</span>
+                                        <span className="text-[14px] font-bold uppercase tracking-wide text-fg">{f.nome}</span>
+                                        <span className="text-xs font-bold text-figueira">{f.count}</span>
                                     </div>
                                     <div className="h-3 bg-soft rounded-full overflow-hidden">
                                         <div
@@ -173,7 +173,7 @@ export default async function ObreirosRelatorio({
                             )
                         })}
                         {stats.funcaoDistribuicao.length === 0 && (
-                            <p className="text-center text-xs font-black uppercase text-muted py-4">Sem dados neste periodo</p>
+                            <p className="text-center text-xs font-bold text-muted py-4">Sem dados neste periodo</p>
                         )}
                     </div>
                 </SeccaoColapsavel>
@@ -191,20 +191,20 @@ export default async function ObreirosRelatorio({
                                     const altura = maxMensal > 0 ? Math.round((m.count / maxMensal) * 100) : 0
                                     return (
                                         <div key={m.mes} className="flex-1 flex flex-col items-center gap-1">
-                                            <span className="text-[10px] font-black text-figueira">{m.count}</span>
+                                            <span className="text-[14px] font-bold text-figueira">{m.count}</span>
                                             <div className="w-full bg-soft rounded-t-lg overflow-hidden" style={{ height: '80px' }}>
                                                 <div
                                                     className="w-full bg-emerald-500 rounded-t-lg transition-all"
                                                     style={{ height: `${altura}%`, marginTop: `${100 - altura}%` }}
                                                 />
                                             </div>
-                                            <span className="text-[7px] font-black uppercase tracking-widest text-muted">{m.mes}</span>
+                                            <span className="text-[13px] font-bold uppercase tracking-wide text-muted">{m.mes}</span>
                                         </div>
                                     )
                                 })}
                             </div>
                         ) : (
-                            <p className="text-center text-xs font-black uppercase text-muted py-4">Sem dados neste periodo</p>
+                            <p className="text-center text-xs font-bold text-muted py-4">Sem dados neste periodo</p>
                         )}
                     </div>
                 </SeccaoColapsavel>

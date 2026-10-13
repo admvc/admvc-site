@@ -36,14 +36,14 @@ export default function FormCriarFundo() {
                     <PlusCircle size={20} />
                 </div>
                 <div>
-                    <h3 className="text-sm font-black uppercase italic tracking-tighter text-fg leading-none">Novo Fundo</h3>
-                    <p className="text-[9px] text-muted mt-1">Cria um novo fundo financeiro para gerir saldos.</p>
+                    <h3 className="text-sm font-bold text-fg leading-none">Novo Fundo</h3>
+                    <p className="text-[13px] text-muted mt-1">Cria um novo fundo financeiro para gerir saldos.</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Nome</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Nome</label>
                     <input
                         type="text"
                         name="nome"
@@ -54,7 +54,7 @@ export default function FormCriarFundo() {
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Tipo</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Tipo</label>
                     <select
                         name="tipo"
                         required
@@ -68,7 +68,7 @@ export default function FormCriarFundo() {
             </div>
 
             <div className="space-y-1.5">
-                <label className="text-[8px] font-black uppercase tracking-widest text-muted">Descricao (opcional)</label>
+                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Descricao (opcional)</label>
                 <textarea
                     name="descricao"
                     rows={2}
@@ -85,15 +85,15 @@ export default function FormCriarFundo() {
                     className="w-5 h-5 rounded-lg border-2 border-soft bg-bg text-figueira focus:ring-figueira/30 accent-figueira"
                 />
                 <div>
-                    <span className="text-[10px] font-black uppercase tracking-wider text-fg">Fundo Restrito</span>
-                    <p className="text-[8px] text-muted">O saldo deste fundo so pode ser usado para o seu fim especifico.</p>
+                    <span className="text-[14px] font-bold uppercase tracking-wide text-fg">Fundo Restrito</span>
+                    <p className="text-[13px] text-muted">O saldo deste fundo so pode ser usado para o seu fim especifico.</p>
                 </div>
             </label>
 
             <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-figueira text-white rounded-2xl py-3.5 text-[10px] font-black uppercase tracking-widest hover:bg-figueira/90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-figueira text-white rounded-2xl py-3.5 text-[14px] font-bold uppercase tracking-wide hover:bg-figueira/90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <PlusCircle size={16} />}
                 {loading ? 'A Criar...' : 'Criar Fundo'}

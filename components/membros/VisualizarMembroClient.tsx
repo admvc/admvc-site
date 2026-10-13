@@ -42,10 +42,10 @@ export default function VisualizarMembroClient({ membro }: any) {
                     {ok ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
                 </div>
                 <div className="flex flex-col">
-                    <span className={`text-[10px] font-black uppercase tracking-widest leading-none ${ok ? 'text-green-700' : 'text-red-600'}`}>
+                    <span className={`text-[14px] font-bold uppercase tracking-wide leading-none ${ok ? 'text-green-700' : 'text-red-600'}`}>
                         {nome}
                     </span>
-                    <span className={`text-[8px] font-bold uppercase tracking-widest mt-0.5 ${ok ? 'text-green-600/70' : 'text-red-500/70'}`}>
+                    <span className={`text-[13px] font-bold uppercase tracking-wide mt-0.5 ${ok ? 'text-green-600/70' : 'text-red-500/70'}`}>
                         {ok && validade ? `Válido até ${formatDate(validade)}` : ok ? 'Assinado' : 'Pendente / Expirado'}
                     </span>
                 </div>
@@ -78,7 +78,7 @@ export default function VisualizarMembroClient({ membro }: any) {
                 {/* BOTÃO DE AÇÃO NO TOPO (Padrão Admin) */}
                 <Link
                     href={`/admin/membros/editar/${membro.id}`}
-                    className="flex items-center gap-2 bg-fg text-bg px-5 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-figueira transition-all shadow-lg active:scale-95 shrink-0"
+                    className="flex items-center gap-2 bg-fg text-bg px-5 py-2.5 rounded-xl font-bold text-[13px] uppercase tracking-wide hover:bg-figueira transition-all shadow-lg active:scale-95 shrink-0"
                 >
                     <Edit3 size={14} /> Editar
                 </Link>
@@ -105,22 +105,22 @@ export default function VisualizarMembroClient({ membro }: any) {
                 {/* DADOS PRINCIPAIS */}
                 <div className="text-center md:text-left flex-1">
                     <div className="flex flex-wrap justify-center md:justify-start items-center gap-2 mb-2">
-                        <span className="px-2 py-0.5 bg-figueira/10 text-figueira border border-figueira/20 text-[8px] font-black uppercase tracking-widest rounded-lg">
+                        <span className="px-2 py-0.5 bg-figueira/10 text-figueira border border-figueira/20 text-[13px] font-bold uppercase tracking-wide rounded-lg">
                             #{membro.id}
                         </span>
-                        <span className="px-2 py-0.5 bg-soft text-muted border border-soft text-[8px] font-black uppercase tracking-widest rounded-lg">
+                        <span className="px-2 py-0.5 bg-soft text-muted border border-soft text-[13px] font-bold uppercase tracking-wide rounded-lg">
                             {membro.role || 'USER'}
                         </span>
-                        <span className={`px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-lg border ${membro.is_active ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
+                        <span className={`px-2 py-0.5 text-[13px] font-bold uppercase tracking-wide rounded-lg border ${membro.is_active ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
                             {membro.is_active ? 'Activo' : 'Bloqueado'}
                         </span>
                     </div>
 
-                    <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h1 className="text-3xl md:text-4xl font-bold text-fg leading-none">
                         {membro.first_name} <span className="text-muted/40">{membro.last_name}</span>
                     </h1>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 text-[11px] font-bold text-muted uppercase tracking-widest pt-2">
+                    <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 text-[14px] font-bold text-muted uppercase tracking-wide pt-2">
                         <span className="flex items-center gap-2"><Mail size={14} className="text-figueira" /> {membro.email}</span>
                         <span className="hidden sm:inline w-1 h-1 rounded-full bg-soft"></span>
                         <span className="flex items-center gap-2"><Phone size={14} className="text-figueira" /> {membro.phone_1 || '---'}</span>
@@ -134,7 +134,7 @@ export default function VisualizarMembroClient({ membro }: any) {
                     {membro.congregacao && (
                         <div className="flex items-center justify-center md:justify-start gap-2 pt-1">
                             <Church size={14} className="text-figueira" />
-                            <span className="text-[10px] font-bold text-muted uppercase tracking-widest">
+                            <span className="text-[14px] font-bold text-muted uppercase tracking-wide">
                                 {membro.congregacao.nome} — {membro.congregacao.cidade}
                             </span>
                         </div>
@@ -151,13 +151,13 @@ export default function VisualizarMembroClient({ membro }: any) {
                     <div>
                         {membro.familia ? (
                             <>
-                                <h3 className="text-xl font-black uppercase italic tracking-tighter text-fg leading-none">Família {membro.familia.surname}</h3>
-                                <p className="text-[9px] text-figueira font-black uppercase tracking-widest mt-1 bg-figueira/10 px-2 py-0.5 rounded border border-figueira/20 inline-block">Grupo Familiar Vinculado</p>
+                                <h3 className="text-xl font-bold text-fg leading-none">Família {membro.familia.surname}</h3>
+                                <p className="text-[13px] text-figueira font-bold uppercase tracking-wide mt-1 bg-figueira/10 px-2 py-0.5 rounded border border-figueira/20 inline-block">Grupo Familiar Vinculado</p>
                             </>
                         ) : (
                             <>
-                                <h3 className="text-xl font-black uppercase italic tracking-tighter text-fg leading-none">FAMÍLIA ADMVC</h3>
-                                <p className="text-[9px] text-muted font-black uppercase tracking-widest mt-1">Nenhum vínculo registrado</p>
+                                <h3 className="text-xl font-bold text-fg leading-none">FAMÍLIA ADMVC</h3>
+                                <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-1">Nenhum vínculo registrado</p>
                             </>
                         )}
                     </div>
@@ -175,7 +175,7 @@ export default function VisualizarMembroClient({ membro }: any) {
                     <button
                         key={aba.id}
                         onClick={() => setAbaAtiva(aba.id)}
-                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all ${abaAtiva === aba.id ? "bg-fg text-bg shadow-sm" : "text-muted hover:bg-soft/30 hover:text-fg"}`}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-[13px] uppercase tracking-wide transition-all ${abaAtiva === aba.id ? "bg-fg text-bg shadow-sm" : "text-muted hover:bg-soft/30 hover:text-fg"}`}
                     >
                         {aba.icon} <span className="hidden sm:inline">{aba.label}</span>
                     </button>
@@ -260,8 +260,8 @@ export default function VisualizarMembroClient({ membro }: any) {
                             <div className="flex items-center gap-4">
                                 <div className="bg-figueira text-white p-3 rounded-xl shadow-md"><CreditCard size={20} /></div>
                                 <div>
-                                    <p className="text-[9px] font-black uppercase text-figueira tracking-widest">Integração Cantina (Loyverse)</p>
-                                    <p className="text-sm font-bold text-fg uppercase">{membro.loyverse_id || 'Não Vinculado'}</p>
+                                    <p className="text-[13px] font-bold uppercase text-figueira tracking-wide">Integração Cantina (Loyverse)</p>
+                                    <p className="text-sm font-bold text-fg">{membro.loyverse_id || 'Não Vinculado'}</p>
                                 </div>
                             </div>
                             {membro.loyverse_id && <CheckCircle2 size={24} className="text-figueira opacity-50" />}
@@ -283,9 +283,9 @@ export default function VisualizarMembroClient({ membro }: any) {
 function InfoGroup({ label, value }: { label: string, value: string | null | undefined }) {
     return (
         <div className="space-y-1.5 relative group">
-            <p className="text-[9px] font-black text-muted uppercase tracking-[0.2em]">{label}</p>
+            <p className="text-[13px] font-bold text-muted uppercase tracking-wide">{label}</p>
             <div className="bg-bg border border-soft px-4 py-3 rounded-xl transition-all group-hover:border-figueira/30 shadow-sm">
-                <p className={`text-[11px] font-bold tracking-tight ${!value || value === '---' ? 'text-muted/50 italic' : 'text-fg'}`}>
+                <p className={`text-[14px] font-bold ${!value || value === '---' ? 'text-muted/50' : 'text-fg'}`}>
                     {value || '---'}
                 </p>
             </div>
@@ -296,28 +296,28 @@ function InfoGroup({ label, value }: { label: string, value: string | null | und
 function ListGroup({ title, items, color = "bg-fg text-bg", icon, showFuncao = false }: { title: string, items: any[], color?: string, icon?: React.ReactNode, showFuncao?: boolean }) {
     return (
         <div className="space-y-4">
-            <h3 className="text-[10px] font-black uppercase italic tracking-widest text-muted flex items-center gap-2 border-b border-soft pb-2">
+            <h3 className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 border-b border-soft pb-2">
                 {icon} {title}
             </h3>
             <div className="flex flex-wrap gap-3 pt-2">
                 {items && items.length > 0 ? items.map((item, idx) => (
                     <div key={item.id || idx} className={`${color} px-4 py-2 rounded-xl shadow-sm flex flex-col justify-center border border-black/5`}>
-                        <span className="text-[10px] font-black uppercase tracking-widest leading-tight">
+                        <span className="text-[14px] font-bold uppercase tracking-wide leading-tight">
                             {item.nome || item.name || "Sem Nome"}
                         </span>
                         {showFuncao && item.funcao && (
-                            <span className="text-[8px] font-bold uppercase tracking-wider opacity-70 mt-0.5">
+                            <span className="text-[13px] font-bold uppercase tracking-wide opacity-70 mt-0.5">
                                 {item.funcao}
                             </span>
                         )}
                         {item.isLider && (
-                            <span className="text-[8px] font-bold uppercase tracking-wider opacity-90 mt-0.5 bg-white/20 inline-block px-1.5 rounded w-max">
+                            <span className="text-[13px] font-bold uppercase tracking-wide opacity-90 mt-0.5 bg-white/20 inline-block px-1.5 rounded w-max">
                                 Líder
                             </span>
                         )}
                     </div>
                 )) : (
-                    <span className="text-[10px] font-bold text-muted/50 uppercase tracking-widest italic bg-bg px-5 py-3 rounded-xl border border-dashed border-soft">
+                    <span className="text-[14px] font-bold text-muted/50 uppercase tracking-wide bg-bg px-5 py-3 rounded-xl border border-dashed border-soft">
                         Nenhum registo associado
                     </span>
                 )}

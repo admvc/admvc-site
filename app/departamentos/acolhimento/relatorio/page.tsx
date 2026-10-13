@@ -127,12 +127,12 @@ export default async function RelatorioAcolhimentoPage() {
     return (
         <main className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6 animate-in fade-in duration-700 pb-20">
             <header className="space-y-1">
-                <Link href="/departamentos/acolhimento/dashboard" className="flex items-center gap-2 text-[10px] font-black uppercase text-muted hover:text-figueira transition-all mb-2">
+                <Link href="/departamentos/acolhimento/dashboard" className="flex items-center gap-2 text-[14px] font-bold uppercase text-muted hover:text-figueira transition-all mb-2">
                     <ArrowLeft size={12} /> Acolhimento
                 </Link>
                 <div className="flex items-center gap-3">
-                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Relatorio de Acolhimento</h1>
-                    <span className="text-[7px] font-black uppercase tracking-widest bg-figueira/10 text-figueira px-2 py-1 rounded-lg border border-figueira/20 flex items-center gap-1">
+                    <h1 className="text-3xl font-bold text-fg">Relatorio de Acolhimento</h1>
+                    <span className="text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira px-2 py-1 rounded-lg border border-figueira/20 flex items-center gap-1">
                         <Shield size={9} /> Lider
                     </span>
                 </div>
@@ -163,7 +163,7 @@ export default async function RelatorioAcolhimentoPage() {
             <section className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                 <div className="flex items-center gap-2 px-5 py-4 border-b border-soft">
                     <BarChart3 size={14} className="text-figueira" />
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">Funil de Integracao</h2>
+                    <h2 className="text-sm font-bold text-fg">Funil de Integracao</h2>
                 </div>
                 <div className="p-5 space-y-3">
                     {porStatus
@@ -175,7 +175,7 @@ export default async function RelatorioAcolhimentoPage() {
                             const pct = Math.round((s._count / totalFunil) * 100)
                             return (
                                 <div key={s.status} className="flex items-center gap-3">
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-muted w-28 shrink-0 text-right">
+                                    <span className="text-[13px] font-bold uppercase tracking-wide text-muted w-28 shrink-0 text-right">
                                         {statusLabels[s.status] || s.status}
                                     </span>
                                     <div className="flex-1 bg-soft/30 rounded-full h-5 overflow-hidden">
@@ -184,11 +184,11 @@ export default async function RelatorioAcolhimentoPage() {
                                             style={{ width: `${Math.max(pct, 3)}%` }}
                                         >
                                             {pct > 10 && (
-                                                <span className="text-[8px] font-black text-white">{s._count}</span>
+                                                <span className="text-[13px] font-bold text-white">{s._count}</span>
                                             )}
                                         </div>
                                     </div>
-                                    <span className="text-[9px] font-black text-fg w-10 text-right">{pct}%</span>
+                                    <span className="text-[13px] font-bold text-fg w-10 text-right">{pct}%</span>
                                 </div>
                             )
                         })}
@@ -199,7 +199,7 @@ export default async function RelatorioAcolhimentoPage() {
             <section className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                 <div className="flex items-center gap-2 px-5 py-4 border-b border-soft">
                     <TrendingUp size={14} className="text-figueira" />
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">Visitantes por Mes</h2>
+                    <h2 className="text-sm font-bold text-fg">Visitantes por Mes</h2>
                 </div>
                 <div className="p-5">
                     <div className="flex items-end gap-2 h-32">
@@ -208,11 +208,11 @@ export default async function RelatorioAcolhimentoPage() {
                             const pct = (m.count / maxCount) * 100
                             return (
                                 <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                                    <span className="text-[9px] font-black text-fg">{m.count}</span>
+                                    <span className="text-[13px] font-bold text-fg">{m.count}</span>
                                     <div className="w-full rounded-t-lg bg-figueira/20 relative" style={{ height: `${Math.max(pct, 4)}%` }}>
                                         <div className="absolute inset-0 bg-figueira rounded-t-lg" style={{ height: `${pct}%` }} />
                                     </div>
-                                    <span className="text-[8px] font-bold text-muted uppercase">{m.mes}</span>
+                                    <span className="text-[13px] font-bold text-muted uppercase">{m.mes}</span>
                                 </div>
                             )
                         })}
@@ -225,18 +225,18 @@ export default async function RelatorioAcolhimentoPage() {
                 <section className="bg-bg2 border border-figueira/20 rounded-2xl overflow-hidden">
                     <div className="flex items-center gap-2 px-5 py-4 border-b border-figueira/10">
                         <HeartHandshake size={14} className="text-figueira" />
-                        <h2 className="text-sm font-black uppercase tracking-widest text-fg">Follow-ups por Membro (este mes)</h2>
+                        <h2 className="text-sm font-bold text-fg">Follow-ups por Membro (este mes)</h2>
                     </div>
                     <div className="divide-y divide-soft">
                         {followUpsComNome.map((f, i) => (
                             <div key={i} className="flex items-center justify-between px-5 py-3 hover:bg-soft/10 transition-colors">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-figueira/10 flex items-center justify-center">
-                                        <span className="text-[9px] font-black text-figueira">{f.membro?.first_name?.[0]}</span>
+                                        <span className="text-[13px] font-bold text-figueira">{f.membro?.first_name?.[0]}</span>
                                     </div>
-                                    <span className="text-[11px] font-black uppercase text-fg">{f.membro?.first_name} {f.membro?.last_name}</span>
+                                    <span className="text-[14px] font-bold uppercase text-fg">{f.membro?.first_name} {f.membro?.last_name}</span>
                                 </div>
-                                <span className="text-sm font-black text-fg">{f.count}</span>
+                                <span className="text-sm font-bold text-fg">{f.count}</span>
                             </div>
                         ))}
                     </div>
@@ -247,11 +247,11 @@ export default async function RelatorioAcolhimentoPage() {
             <section className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                 <div className="flex items-center gap-2 px-5 py-4 border-b border-soft">
                     <UserCheck size={14} className="text-emerald-500" />
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">Ultimos Consolidados</h2>
+                    <h2 className="text-sm font-bold text-fg">Ultimos Consolidados</h2>
                 </div>
                 {ultimosConsolidados.length === 0 ? (
                     <div className="py-10 text-center">
-                        <p className="text-[10px] font-black text-muted uppercase tracking-widest">Nenhum visitante consolidado ainda.</p>
+                        <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Nenhum visitante consolidado ainda.</p>
                     </div>
                 ) : (
                     <div className="divide-y divide-soft">
@@ -259,11 +259,11 @@ export default async function RelatorioAcolhimentoPage() {
                             <div key={v.id} className="flex items-center justify-between px-5 py-3 hover:bg-soft/10 transition-colors">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                                        <span className="text-[9px] font-black text-emerald-600">{v.nome?.[0]}</span>
+                                        <span className="text-[13px] font-bold text-emerald-600">{v.nome?.[0]}</span>
                                     </div>
-                                    <span className="text-[11px] font-black uppercase text-fg">{v.nome}</span>
+                                    <span className="text-[14px] font-bold uppercase text-fg">{v.nome}</span>
                                 </div>
-                                <span className="text-[9px] font-bold text-muted uppercase tracking-widest">
+                                <span className="text-[13px] font-bold text-muted uppercase tracking-wide">
                                     {v.data_ultima_visita ? new Date(v.data_ultima_visita).toLocaleDateString('pt-PT') : '—'}
                                 </span>
                             </div>
@@ -284,10 +284,10 @@ function Kpi({ label, value, icon, cor }: { label: string; value: any; icon: Rea
     return (
         <div className={`p-4 rounded-2xl border flex flex-col gap-2 ${cor ? cores[cor] : 'bg-bg2 border-soft text-fg'}`}>
             <div className="flex items-center justify-between">
-                <p className="text-[8px] font-black uppercase tracking-widest opacity-70">{label}</p>
+                <p className="text-[13px] font-bold uppercase tracking-wide opacity-70">{label}</p>
                 <div className="opacity-40">{icon}</div>
             </div>
-            <p className="text-xl font-black italic tracking-tighter leading-none">{value}</p>
+            <p className="text-xl font-bold leading-none">{value}</p>
         </div>
     )
 }

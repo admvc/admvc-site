@@ -18,7 +18,7 @@ export default function ModalListaConsolidados({ consolidados }: { consolidados:
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className="w-full bg-fg text-bg py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-figueira hover:text-white transition-all shadow-sm active:scale-95"
+                className="w-full bg-fg text-bg py-4 rounded-2xl text-[14px] font-bold uppercase tracking-wide hover:bg-figueira hover:text-white transition-all shadow-sm active:scale-95"
             >
                 Ver Lista Completa
             </button>
@@ -32,10 +32,10 @@ export default function ModalListaConsolidados({ consolidados }: { consolidados:
                         </button>
 
                         <div className="mb-6 pr-8 shrink-0 border-b border-soft pb-6">
-                            <h2 className="text-xl md:text-2xl font-black uppercase italic tracking-tighter text-fg flex items-center gap-2">
+                            <h2 className="text-xl md:text-2xl font-bold text-fg flex items-center gap-2">
                                 <Users size={20} className="text-figueira" /> Membros Consolidados
                             </h2>
-                            <p className="text-[10px] font-bold text-muted uppercase tracking-widest mt-1">
+                            <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-1">
                                 Total: <span className="text-fg">{consolidados.length} pessoas que decidiram ficar.</span>
                             </p>
                         </div>
@@ -53,12 +53,12 @@ export default function ModalListaConsolidados({ consolidados }: { consolidados:
                                             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                                                 <div>
                                                     <div className="flex items-center gap-2 mb-1">
-                                                        <h4 className="text-sm font-black uppercase text-fg">{v.nome}</h4>
-                                                        <span className="text-[8px] font-black bg-green-500/10 text-green-600 px-2 py-0.5 rounded-md uppercase tracking-widest flex items-center gap-1">
+                                                        <h4 className="text-sm font-bold text-fg">{v.nome}</h4>
+                                                        <span className="text-[13px] font-bold bg-green-500/10 text-green-600 px-2 py-0.5 rounded-md uppercase tracking-wide flex items-center gap-1">
                                                             <CalendarCheck size={10} /> Consolidado
                                                         </span>
                                                     </div>
-                                                    <p className="text-[10px] text-muted font-bold uppercase tracking-widest flex items-center gap-1">
+                                                    <p className="text-[14px] text-muted font-bold uppercase tracking-wide flex items-center gap-1">
                                                         <Phone size={10} /> {v.telefone}
                                                     </p>
                                                 </div>
@@ -66,7 +66,7 @@ export default function ModalListaConsolidados({ consolidados }: { consolidados:
                                                 <div className="shrink-0">
                                                     <button
                                                         onClick={() => setExpandedId(isExpanded ? null : v.id)}
-                                                        className={`flex items-center gap-2 transition-all group text-[9px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl border ${isExpanded ? 'bg-figueira text-white border-figueira shadow-sm' : 'bg-bg2 text-figueira border-soft hover:border-figueira/30 hover:bg-figueira/5'}`}
+                                                        className={`flex items-center gap-2 transition-all group text-[13px] font-bold uppercase tracking-wide px-4 py-2.5 rounded-xl border ${isExpanded ? 'bg-figueira text-white border-figueira shadow-sm' : 'bg-bg2 text-figueira border-soft hover:border-figueira/30 hover:bg-figueira/5'}`}
                                                     >
                                                         <History size={12} className={isExpanded ? "" : "group-hover:-rotate-45 transition-transform"} />
                                                         {isExpanded ? "Fechar Histórico" : `Histórico (${v.acompanhamentos?.length || 0})`}
@@ -90,20 +90,20 @@ export default function ModalListaConsolidados({ consolidados }: { consolidados:
                                                                     <div className="bg-bg2 border border-soft p-4 md:p-5 rounded-[1.5rem] shadow-sm">
                                                                         <div className="flex justify-between items-start mb-3 gap-2">
                                                                             <div>
-                                                                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-figueira bg-figueira/5 px-2 py-0.5 rounded-md border border-figueira/10">
+                                                                                <span className="text-[13px] font-bold uppercase tracking-wide text-figueira bg-figueira/5 px-2 py-0.5 rounded-md border border-figueira/10">
                                                                                     {acomp.tipo_contacto}
                                                                                 </span>
-                                                                                <p className="text-[10px] font-black text-fg uppercase italic tracking-tight mt-1.5">
+                                                                                <p className="text-[14px] font-bold text-fg uppercase tracking-wide mt-1.5">
                                                                                     {acomp.membro?.first_name} {acomp.membro?.last_name}
                                                                                 </p>
                                                                             </div>
-                                                                            <span className="text-[8px] font-bold uppercase tracking-widest text-muted flex items-center gap-1.5 bg-soft/30 px-2 py-1 rounded-full border border-soft/50 shrink-0">
+                                                                            <span className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5 bg-soft/30 px-2 py-1 rounded-full border border-soft/50 shrink-0">
                                                                                 <Clock size={10} />
                                                                                 {new Date(acomp.data_contacto).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}
                                                                             </span>
                                                                         </div>
                                                                         <div className="pt-2 border-t border-soft/50">
-                                                                            <p className="text-[10px] md:text-[11px] text-fg font-medium italic leading-relaxed">
+                                                                            <p className="text-[14px] text-fg font-medium leading-relaxed">
                                                                                 "{acomp.observacoes}"
                                                                             </p>
                                                                         </div>
@@ -114,7 +114,7 @@ export default function ModalListaConsolidados({ consolidados }: { consolidados:
                                                     ) : (
                                                         <div className="text-center py-10 opacity-40 flex flex-col items-center gap-2 bg-bg2 rounded-[1.5rem] border border-dashed border-soft">
                                                             <History size={24} />
-                                                            <p className="text-[9px] font-black uppercase tracking-[0.2em] italic">Nenhum registo documentado.</p>
+                                                            <p className="text-[13px] font-bold uppercase tracking-wide">Nenhum registo documentado.</p>
                                                         </div>
                                                     )}
                                                 </div>
@@ -124,7 +124,7 @@ export default function ModalListaConsolidados({ consolidados }: { consolidados:
                                 })
                             ) : (
                                 <div className="text-center py-10 opacity-50">
-                                    <p className="text-[10px] font-bold uppercase tracking-widest italic">Ninguém foi consolidado ainda.</p>
+                                    <p className="text-[14px] font-bold uppercase tracking-wide">Ninguém foi consolidado ainda.</p>
                                 </div>
                             )}
                         </div>

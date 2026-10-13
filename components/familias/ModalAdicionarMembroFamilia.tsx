@@ -62,7 +62,7 @@ export default function ModalAdicionarMembroFamilia({ familiaId, familiaNome }: 
         <>
             <button
                 onClick={() => setAberto(true)}
-                className="w-full flex items-center justify-center gap-2 bg-bg border border-soft text-muted py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:border-figueira hover:text-figueira transition-all border-dashed"
+                className="w-full flex items-center justify-center gap-2 bg-bg border border-soft text-muted py-3 rounded-2xl text-[13px] font-bold uppercase tracking-wide hover:border-figueira hover:text-figueira transition-all border-dashed"
             >
                 <UserPlus size={14} /> Adicionar Membro
             </button>
@@ -76,8 +76,8 @@ export default function ModalAdicionarMembroFamilia({ familiaId, familiaNome }: 
                         </button>
 
                         <div className="mb-6">
-                            <span className="text-[9px] font-black text-figueira uppercase tracking-[0.2em]">Família {familiaNome}</span>
-                            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-fg mt-1">Vincular Membro</h3>
+                            <span className="text-[13px] font-bold text-figueira uppercase tracking-wide">Família {familiaNome}</span>
+                            <h3 className="text-2xl font-bold text-fg mt-1">Vincular Membro</h3>
                         </div>
 
                         {/* FASE 1: PESQUISAR MEMBRO */}
@@ -113,7 +113,7 @@ export default function ModalAdicionarMembroFamilia({ familiaId, familiaNome }: 
                                 )}
 
                                 {busca.length >= 2 && resultados.length === 0 && !loadingBusca && (
-                                    <p className="text-center text-[10px] font-bold text-muted uppercase tracking-widest p-4">
+                                    <p className="text-center text-[14px] font-bold text-muted uppercase tracking-wide p-4">
                                         Nenhum membro livre encontrado.
                                     </p>
                                 )}
@@ -123,8 +123,8 @@ export default function ModalAdicionarMembroFamilia({ familiaId, familiaNome }: 
                             <div className="space-y-6 animate-in slide-in-from-right-4">
                                 <div className="bg-figueira/10 border border-figueira/20 p-4 rounded-2xl flex items-center justify-between">
                                     <div>
-                                        <p className="text-[9px] font-black uppercase text-figueira tracking-widest mb-1">Membro Selecionado</p>
-                                        <p className="text-sm font-black text-fg">{membroSelecionado.fullName}</p>
+                                        <p className="text-[13px] font-bold uppercase text-figueira tracking-wide mb-1">Membro Selecionado</p>
+                                        <p className="text-sm font-bold text-fg">{membroSelecionado.fullName}</p>
                                     </div>
                                     <button onClick={() => setMembroSelecionado(null)} className="p-2 bg-white rounded-xl text-muted hover:text-red-500 shadow-sm transition-all">
                                         <X size={14} />
@@ -132,7 +132,7 @@ export default function ModalAdicionarMembroFamilia({ familiaId, familiaNome }: 
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted ml-2 tracking-widest">Papel na Família (Parentesco)</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-2 tracking-wide">Papel na Família (Parentesco)</label>
                                     <select
                                         value={parentesco}
                                         onChange={(e) => setParentesco(e.target.value)}
@@ -150,7 +150,7 @@ export default function ModalAdicionarMembroFamilia({ familiaId, familiaNome }: 
                                 <button
                                     onClick={handleSalvar}
                                     disabled={loadingSalvar}
-                                    className="w-full bg-figueira text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-figueira/20 hover:brightness-110 transition-all flex items-center justify-center gap-2"
+                                    className="w-full bg-figueira text-white py-4 rounded-2xl font-bold uppercase text-[14px] tracking-wide shadow-lg shadow-figueira/20 hover:brightness-110 transition-all flex items-center justify-center gap-2"
                                 >
                                     {loadingSalvar ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
                                     Confirmar Vínculo

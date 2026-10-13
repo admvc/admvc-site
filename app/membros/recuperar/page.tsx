@@ -23,7 +23,7 @@ export default function RecuperarSenhaPage() {
         <main className="min-h-screen bg-bg flex items-center justify-center p-6">
             <div className="w-full max-w-md space-y-6">
                 <div className="text-center space-y-2">
-                    <h1 className="text-3xl font-black text-fg">Esqueci-me da palavra-passe</h1>
+                    <h1 className="text-3xl font-bold text-fg">Esqueci-me da palavra-passe</h1>
                     <p className="text-sm text-muted">Enviamos um link para o seu email. O link vale 1 hora.</p>
                 </div>
 

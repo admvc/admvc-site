@@ -31,7 +31,7 @@ export default function MultiSelectFuncoes({
 
     return (
         <div className="space-y-3">
-            <label className="text-[10px] font-black uppercase text-muted ml-4 tracking-widest flex items-center gap-2">
+            <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide flex items-center gap-2">
                 <Award size={14} className="text-figueira" /> Funções do Membro neste Departamento
             </label>
 
@@ -42,7 +42,7 @@ export default function MultiSelectFuncoes({
                     className="min-h-[60px] w-full bg-bg border border-soft rounded-[1.5rem] p-3 flex flex-wrap gap-2 cursor-pointer hover:border-figueira/50 transition-all shadow-sm"
                 >
                     {selecionadas.length === 0 && (
-                        <span className="text-muted text-xs font-bold p-2 uppercase italic opacity-50">
+                        <span className="text-muted text-xs font-bold p-2 opacity-50">
                             Clique para selecionar as funções...
                         </span>
                     )}
@@ -50,7 +50,7 @@ export default function MultiSelectFuncoes({
                     {selecionadas.map(f => (
                         <span
                             key={f.id}
-                            className="bg-figueira text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl flex items-center gap-2 animate-in zoom-in-95"
+                            className="bg-figueira text-white text-[13px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-xl flex items-center gap-2 animate-in zoom-in-95"
                         >
                             {f.nome}
                             <X
@@ -76,7 +76,7 @@ export default function MultiSelectFuncoes({
                                         onClick={() => alternarFuncao(f)}
                                         className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-colors ${isSelected ? 'bg-figueira/10 text-figueira' : 'hover:bg-soft text-muted'}`}
                                     >
-                                        <span className="text-xs font-black uppercase tracking-widest">{f.nome}</span>
+                                        <span className="text-xs font-bold">{f.nome}</span>
                                         {isSelected && <Check size={16} />}
                                     </div>
                                 );
@@ -86,7 +86,7 @@ export default function MultiSelectFuncoes({
                 )}
             </div>
 
-            <p className="text-[9px] text-muted font-bold uppercase tracking-widest ml-4">
+            <p className="text-[13px] text-muted font-bold uppercase tracking-wide ml-4">
                 * Pode selecionar várias funções para o mesmo membro.
             </p>
         </div>

@@ -4,13 +4,13 @@ import { useState } from 'react'
 import {
     CalendarDays, Clock, ShieldCheck, User, CheckCircle2, Trash2,
     Edit3, X, Save, Loader2, LayoutGrid, MessageCircle, ChevronDown,
-    Music, XCircle, AlertCircle
+    Music, XCircle, AlertCircle, MonitorPlay
 } from 'lucide-react'
 import { removerEscalaAction, atualizarEscalaAction } from '@/actions/admin-actions'
 import { useConfirm, useToast } from '@/components/ui/ConfirmDialog'
 import ModalEditarEvento from '@/components/admin/ModalEditarEvento'
 import BotaoApagarEvento from '@/components/admin/BotaoApagarEvento'
-import ModalRepertorio from '@/components/louvor/ModalRepertorio'
+import Link from 'next/link'
 import SecaoMensagemEvento from '@/components/escalas/SecaoMensagemEvento'
 
 export default function ListaEscalados({
@@ -20,7 +20,8 @@ export default function ListaEscalados({
     isLouvor,
     congregacoes,
     podeEditarRepertorio,
-    podeEditarMensagem
+    podeEditarMensagem,
+    deptoId
 }: {
     eventos: any[]
     isAdmin?: boolean
@@ -29,6 +30,7 @@ export default function ListaEscalados({
     congregacoes?: { id: number; nome: string; cidade: string }[]
     podeEditarRepertorio?: boolean
     podeEditarMensagem?: boolean
+    deptoId?: number
 }) {
     const confirmar = useConfirm()
     const toast = useToast()
@@ -83,7 +85,7 @@ export default function ListaEscalados({
         return (
             <div className="py-16 text-center border-2 border-dashed border-soft rounded-[2.5rem] bg-bg2/50">
                 <ShieldCheck size={32} className="mx-auto text-muted/30 mb-4" />
-                <p className="text-[10px] font-black text-muted uppercase tracking-widest italic">
+                <p className="text-[14px] font-bold text-muted uppercase tracking-wide">
                     Nenhuma equipa escalada para os próximos eventos.
                 </p>
             </div>
@@ -122,10 +124,10 @@ export default function ListaEscalados({
                                     <ChevronDown size={16} className="group-open:rotate-180 transition-transform duration-300" />
                                 </div>
                                 <div className="min-w-0">
-                                    <h3 className="text-sm md:text-lg font-black uppercase italic tracking-tighter text-fg leading-none truncate">
+                                    <h3 className="text-sm md:text-lg font-bold text-fg leading-none truncate">
                                         {evento.nome}
                                     </h3>
-                                    <p className="text-[9px] md:text-[10px] font-black uppercase text-muted tracking-widest mt-1 flex items-center gap-1.5">
+                                    <p className="text-[13px] md:text-[14px] font-bold uppercase text-muted tracking-wide mt-1 flex items-center gap-1.5">
                                         <CalendarDays size={11} className="text-figueira" /> {dataFormatada}
                                     </p>
 
@@ -147,11 +149,11 @@ export default function ListaEscalados({
                             <div className="flex flex-wrap items-center gap-2 md:gap-3 pl-11 md:pl-0" onClick={e => e.preventDefault()}>
                                 <button
                                     onClick={() => handlePartilharWhatsApp(evento, escalasAgrupadasPorDepto)}
-                                    className="bg-green-50 text-green-600 hover:bg-green-500 hover:text-white border border-green-200 transition-all text-[8px] md:text-[9px] font-black uppercase tracking-widest px-3 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-xl shadow-sm flex items-center gap-1.5 active:scale-95"
+                                    className="bg-green-50 text-green-600 hover:bg-green-500 hover:text-white border border-green-200 transition-all text-[13px] font-bold uppercase tracking-wide px-3 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-xl shadow-sm flex items-center gap-1.5 active:scale-95"
                                 >
                                     <MessageCircle size={12} /> Partilhar
                                 </button>
-                                <span className="bg-bg border border-soft text-[8px] md:text-[9px] font-black uppercase tracking-widest text-fg px-3 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-xl shadow-sm whitespace-nowrap">
+                                <span className="bg-bg border border-soft text-[13px] font-bold uppercase tracking-wide text-fg px-3 md:px-4 py-2 md:py-2.5 rounded-lg md:rounded-xl shadow-sm whitespace-nowrap">
                                     {totalEscalas} Vol.
                                 </span>
                             </div>
@@ -163,7 +165,7 @@ export default function ListaEscalados({
                                 <div key={deptoNome}>
                                     <div className="bg-soft/20 px-4 md:px-6 py-2.5 md:py-3 flex items-center gap-2 border-b border-soft">
                                         <LayoutGrid size={11} className="text-blue-500" />
-                                        <h4 className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-fg">{deptoNome}</h4>
+                                        <h4 className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-fg">{deptoNome}</h4>
                                     </div>
 
                                     <div className="divide-y divide-soft">
@@ -213,21 +215,21 @@ export default function ListaEscalados({
                                                                 <div>
                                                                     {/* NOME + BADGE ESTADO */}
                                                                     <div className="flex items-center gap-2 flex-wrap">
-                                                                        <h4 className="text-xs font-black uppercase text-fg leading-none">
+                                                                        <h4 className="text-xs font-bold text-fg leading-none">
                                                                             {escala.membro.first_name} {escala.membro.last_name}
                                                                         </h4>
                                                                         {isConfirmado && (
-                                                                            <span className="flex items-center gap-1 text-[7px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                                                                            <span className="flex items-center gap-1 text-[13px] font-bold uppercase tracking-wide text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                                                                                 <CheckCircle2 size={9} /> Confirmado
                                                                             </span>
                                                                         )}
                                                                         {isRecusado && (
-                                                                            <span className="flex items-center gap-1 text-[7px] font-black uppercase tracking-widest text-red-500 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-full">
+                                                                            <span className="flex items-center gap-1 text-[13px] font-bold uppercase tracking-wide text-red-500 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-full">
                                                                                 <XCircle size={9} /> Recusado
                                                                             </span>
                                                                         )}
                                                                         {isPendente && (
-                                                                            <span className="flex items-center gap-1 text-[7px] font-black uppercase tracking-widest text-orange-500 bg-orange-500/10 border border-orange-500/20 px-2 py-0.5 rounded-full">
+                                                                            <span className="flex items-center gap-1 text-[13px] font-bold uppercase tracking-wide text-orange-500 bg-orange-500/10 border border-orange-500/20 px-2 py-0.5 rounded-full">
                                                                                 <AlertCircle size={9} /> Pendente
                                                                             </span>
                                                                         )}
@@ -235,11 +237,11 @@ export default function ListaEscalados({
 
                                                                     {/* FUNÇÃO E HORÁRIO */}
                                                                     <div className="flex flex-wrap items-center gap-3 mt-1.5">
-                                                                        <span className="text-[9px] font-bold uppercase tracking-widest text-blue-600 flex items-center gap-1">
+                                                                        <span className="text-[13px] font-bold uppercase tracking-wide text-blue-600 flex items-center gap-1">
                                                                             <ShieldCheck size={10} /> {escala.funcao}
                                                                         </span>
                                                                         {escala.horario && (
-                                                                            <span className="text-[9px] font-bold uppercase tracking-widest text-muted flex items-center gap-1 border-l border-soft pl-3">
+                                                                            <span className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1 border-l border-soft pl-3">
                                                                                 <Clock size={10} /> {escala.horario}
                                                                             </span>
                                                                         )}
@@ -247,7 +249,7 @@ export default function ListaEscalados({
 
                                                                     {/* MOTIVO DE RECUSA */}
                                                                     {isRecusado && escala.motivo_recusa && (
-                                                                        <p className="text-[8px] text-red-500/80 font-medium italic mt-1.5 max-w-xs">
+                                                                        <p className="text-[13px] text-red-500/80 font-medium mt-1.5 max-w-xs">
                                                                             "{escala.motivo_recusa}"
                                                                         </p>
                                                                     )}
@@ -278,7 +280,7 @@ export default function ListaEscalados({
                                                             <input type="hidden" name="id" value={escala.id} />
                                                             <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                                 <div className="space-y-1.5">
-                                                                    <label className="text-[9px] font-black uppercase text-muted tracking-widest ml-1">Alterar Função</label>
+                                                                    <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-1">Alterar Função</label>
                                                                     <div className="relative">
                                                                         <select name="funcao" defaultValue={escala.funcao} required
                                                                             className="w-full bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs font-bold focus:border-figueira outline-none shadow-sm appearance-none cursor-pointer pr-8">
@@ -290,7 +292,7 @@ export default function ListaEscalados({
                                                                     </div>
                                                                 </div>
                                                                 <div className="space-y-1.5">
-                                                                    <label className="text-[9px] font-black uppercase text-muted tracking-widest ml-1">Novo Horário</label>
+                                                                    <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-1">Novo Horário</label>
                                                                     <input type="time" name="horario" defaultValue={escala.horario} required
                                                                         className="w-full bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs font-bold focus:border-figueira outline-none cursor-pointer shadow-sm" />
                                                                 </div>
@@ -301,7 +303,7 @@ export default function ListaEscalados({
                                                                     <X size={16} />
                                                                 </button>
                                                                 <button type="submit" disabled={isPending}
-                                                                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-figueira text-white text-[10px] font-black uppercase tracking-widest hover:bg-figueira/90 transition-all shadow-sm disabled:opacity-50">
+                                                                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-figueira text-white text-[14px] font-bold uppercase tracking-wide hover:bg-figueira/90 transition-all shadow-sm disabled:opacity-50">
                                                                     {isPending ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} Salvar
                                                                 </button>
                                                             </div>
@@ -319,9 +321,18 @@ export default function ListaEscalados({
                                 <div className="p-4 sm:p-6 bg-figueira/5 border-t border-figueira/10">
                                     <div className="flex items-center gap-2 mb-3 px-1">
                                         <Music size={14} className="text-figueira" />
-                                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-fg">Gestão Musical</h4>
+                                        <h4 className="text-[14px] font-bold uppercase tracking-wide text-fg">Gestão Musical</h4>
                                     </div>
-                                    <ModalRepertorio eventoId={evento.id} repertorioInical={evento.repertorio || []} podeEditar={!!podeEditarRepertorio} />
+                                    <div className="flex flex-wrap gap-2">
+                                        <Link href={`/escalas/culto/${evento.id}${podeEditarRepertorio ? '/musicas' : ''}?equipa=${deptoId ?? ''}`}
+                                            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-soft bg-bg p-3 text-[14px] font-bold uppercase tracking-wide text-fg hover:border-figueira/40">
+                                            <Music size={14} className="text-figueira" /> {podeEditarRepertorio ? 'Alterar músicas' : 'Ver músicas'} ({evento.repertorio?.length || 0})
+                                        </Link>
+                                        <Link href={`/louvor/setlist/${evento.id}`}
+                                            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-soft bg-bg p-3 text-[14px] font-bold uppercase tracking-wide text-fg hover:border-figueira/40">
+                                            <MonitorPlay size={14} className="text-figueira" /> Modo palco
+                                        </Link>
+                                    </div>
                                     <SecaoMensagemEvento
                                         eventoId={evento.id}
                                         eventoNome={evento.nome}
@@ -355,7 +366,7 @@ function StatPill({ count, label, color, icon }: {
     }
 
     return (
-        <span className={`flex items-center gap-1 text-[7px] font-black uppercase tracking-widest px-2 py-1 rounded-full border ${styles[color]}`}>
+        <span className={`flex items-center gap-1 text-[13px] font-bold uppercase tracking-wide px-2 py-1 rounded-full border ${styles[color]}`}>
             {icon} {count} {label}{count !== 1 ? 's' : ''}
         </span>
     )

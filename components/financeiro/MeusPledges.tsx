@@ -59,7 +59,7 @@ export default function MeusPledges() {
             <div className="bg-bg2 border border-soft rounded-2xl p-6 space-y-3">
                 <div className="flex items-center gap-2">
                     <HeartHandshake size={16} className="text-figueira" />
-                    <h3 className="text-sm font-black italic uppercase tracking-tighter text-fg">Minhas Promessas</h3>
+                    <h3 className="text-sm font-bold text-fg">Minhas Promessas</h3>
                 </div>
                 <div className="flex items-center justify-center py-8">
                     <div className="w-5 h-5 border-2 border-figueira border-t-transparent rounded-full animate-spin" />
@@ -73,9 +73,9 @@ export default function MeusPledges() {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <HeartHandshake size={16} className="text-figueira" />
-                    <h3 className="text-sm font-black italic uppercase tracking-tighter text-fg">Minhas Promessas</h3>
+                    <h3 className="text-sm font-bold text-fg">Minhas Promessas</h3>
                 </div>
-                <span className="text-[8px] font-black uppercase tracking-widest text-muted">
+                <span className="text-[13px] font-bold uppercase tracking-wide text-muted">
                     {pledges.length} promessa(s)
                 </span>
             </div>
@@ -83,7 +83,7 @@ export default function MeusPledges() {
             {pledges.length === 0 ? (
                 <div className="text-center py-8 space-y-2">
                     <HeartHandshake size={28} className="text-muted mx-auto" />
-                    <p className="text-[10px] font-bold text-muted">Nenhuma promessa de contribuicao.</p>
+                    <p className="text-[14px] font-bold text-muted">Nenhuma promessa de contribuicao.</p>
                 </div>
             ) : (
                 <div className="space-y-3">
@@ -98,14 +98,14 @@ export default function MeusPledges() {
                             <div key={pledge.id} className="bg-bg border border-soft rounded-2xl p-4 space-y-3">
                                 <div className="flex items-start justify-between">
                                     <div className="space-y-1">
-                                        <p className="text-xs font-black uppercase tracking-tight text-fg">
+                                        <p className="text-xs font-bold text-fg">
                                             {pledge.fundo?.nome || 'Fundo Geral'}
                                         </p>
-                                        <p className="text-lg font-black italic tracking-tighter text-fg">
-                                            {euro(pledge.valor_mensal)}<span className="text-[9px] font-bold text-muted">/mes</span>
+                                        <p className="text-lg font-bold text-fg">
+                                            {euro(pledge.valor_mensal)}<span className="text-[13px] font-bold text-muted">/mes</span>
                                         </p>
                                     </div>
-                                    <span className={`flex items-center gap-1 text-[7px] font-black uppercase tracking-widest px-2 py-1 rounded-lg ${cfg.color}`}>
+                                    <span className={`flex items-center gap-1 text-[13px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg ${cfg.color}`}>
                                         <Icon size={10} />
                                         {cfg.label}
                                     </span>
@@ -114,10 +114,10 @@ export default function MeusPledges() {
                                 {/* Barra de progresso */}
                                 <div className="space-y-1.5">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-muted">
+                                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                             {pledge.meses_cumpridos}/{pledge.duracao_meses} meses
                                         </span>
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-muted">
+                                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                             {progresso}%
                                         </span>
                                     </div>
@@ -134,7 +134,7 @@ export default function MeusPledges() {
                                 </div>
 
                                 <div className="flex items-center justify-between pt-1 border-t border-soft">
-                                    <span className="text-[9px] text-muted">
+                                    <span className="text-[13px] text-muted">
                                         Cumprido: <span className="font-bold text-fg">{euro(pledge.valor_cumprido)}</span>
                                         {' / '}
                                         <span className="font-bold text-fg">{euro(pledge.valor_mensal * pledge.duracao_meses)}</span>
@@ -143,7 +143,7 @@ export default function MeusPledges() {
                                         <button
                                             onClick={() => handleCancelar(pledge.id)}
                                             disabled={cancelando === pledge.id}
-                                            className="text-[8px] font-black uppercase tracking-widest text-red-400 hover:text-red-300 transition-all disabled:opacity-50"
+                                            className="text-[13px] font-bold uppercase tracking-wide text-red-400 hover:text-red-300 transition-all disabled:opacity-50"
                                         >
                                             {cancelando === pledge.id ? 'A cancelar...' : 'Cancelar'}
                                         </button>
@@ -151,7 +151,7 @@ export default function MeusPledges() {
                                 </div>
 
                                 {pledge.observacao && (
-                                    <p className="text-[9px] text-muted italic">{pledge.observacao}</p>
+                                    <p className="text-[13px] text-muted">{pledge.observacao}</p>
                                 )}
                             </div>
                         )

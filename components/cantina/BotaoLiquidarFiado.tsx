@@ -24,7 +24,7 @@ export default function BotaoLiquidarFiado({ fiadoId }: { fiadoId: number }) {
 
     if (done) {
         return (
-            <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-emerald-400">
+            <span className="inline-flex items-center gap-1 text-[13px] font-bold uppercase tracking-wide text-emerald-400">
                 <CheckCircle size={12} /> Liquidado
             </span>
         )
@@ -34,7 +34,7 @@ export default function BotaoLiquidarFiado({ fiadoId }: { fiadoId: number }) {
         <button
             onClick={handleLiquidar}
             disabled={loading}
-            className="px-3 py-1.5 bg-figueira text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:opacity-90 transition-all disabled:opacity-40 inline-flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-figueira text-white rounded-xl text-[13px] font-bold uppercase tracking-wide hover:opacity-90 transition-all disabled:opacity-40 inline-flex items-center gap-1.5"
         >
             {loading ? <Loader2 size={11} className="animate-spin" /> : null}
             Liquidar

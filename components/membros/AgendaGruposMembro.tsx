@@ -41,10 +41,10 @@ export default function AgendaGruposMembro({ gruposMembro }: { gruposMembro: any
                     <Users size={18} />
                 </div>
                 <div>
-                    <h3 className="text-lg font-black uppercase italic tracking-tighter text-fg leading-none">
+                    <h3 className="text-lg font-bold text-fg leading-none">
                         Agenda do PG
                     </h3>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted mt-1">
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted mt-1">
                         Os teus próximos encontros
                     </p>
                 </div>
@@ -66,30 +66,30 @@ export default function AgendaGruposMembro({ gruposMembro }: { gruposMembro: any
                             <div>
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[8px] font-black uppercase tracking-widest bg-bg border border-soft px-2 py-1 rounded-md text-muted shadow-sm">
+                                        <span className="text-[13px] font-bold uppercase tracking-wide bg-bg border border-soft px-2 py-1 rounded-md text-muted shadow-sm">
                                             {grupo.categoria || 'Grupo'}
                                         </span>
                                         {eHoje && (
-                                            <span className="text-[8px] font-black uppercase tracking-widest bg-red-50 text-red-600 border border-red-100 px-2 py-1 rounded-md shadow-sm animate-pulse">
+                                            <span className="text-[13px] font-bold uppercase tracking-wide bg-red-50 text-red-600 border border-red-100 px-2 py-1 rounded-md shadow-sm animate-pulse">
                                                 É Hoje!
                                             </span>
                                         )}
                                     </div>
-                                    <span className="text-[9px] font-black uppercase text-blue-600 flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-lg">
+                                    <span className="text-[13px] font-bold uppercase text-blue-600 flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-lg">
                                         <CalendarDays size={12} /> {diaFormatado}
                                     </span>
                                 </div>
 
-                                <h4 className="text-lg font-black uppercase italic tracking-tighter text-fg leading-none">
+                                <h4 className="text-lg font-bold text-fg leading-none">
                                     {grupo.nome}
                                 </h4>
 
                                 <div className="mt-3 space-y-1.5">
-                                    <p className="text-[9px] font-bold text-muted uppercase tracking-widest flex items-center gap-2">
+                                    <p className="text-[13px] font-bold text-muted uppercase tracking-wide flex items-center gap-2">
                                         <Clock size={12} className="text-blue-500 shrink-0" />
                                         {grupo.dia_semana} às {grupo.horario}
                                     </p>
-                                    <p className="text-[9px] font-bold text-muted uppercase tracking-widest flex items-center gap-2">
+                                    <p className="text-[13px] font-bold text-muted uppercase tracking-wide flex items-center gap-2">
                                         <MapPin size={12} className="text-blue-500 shrink-0" />
                                         <span className="truncate">{grupo.endereco || 'Local a definir'} {grupo.numero && `, ${grupo.numero}`}</span>
                                     </p>
@@ -98,7 +98,7 @@ export default function AgendaGruposMembro({ gruposMembro }: { gruposMembro: any
 
                             <div className="mt-5 pt-3 border-t border-soft">
                                 <Link href={`/grupos/gestao/${grupo.id}`} className="flex items-center justify-between group-hover:text-blue-600 transition-colors">
-                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-fg group-hover:text-blue-600 transition-colors">
+                                    <span className="text-[13px] font-bold uppercase tracking-wide text-fg group-hover:text-blue-600 transition-colors">
                                         Acessar Grupo
                                     </span>
                                     <ArrowRight size={14} className="text-muted group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />

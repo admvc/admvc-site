@@ -84,10 +84,10 @@ export default function ModalHistoricoCantina({ loyverseId }: { loyverseId: stri
                 {/* HEADER */}
                 <div className="p-6 md:p-8 border-b border-soft flex justify-between items-center bg-bg2 relative shrink-0">
                     <div className="space-y-1">
-                        <span className="text-figueira font-black text-[9px] uppercase tracking-[0.3em] flex items-center gap-2">
+                        <span className="text-figueira font-bold text-[13px] uppercase tracking-wide flex items-center gap-2">
                             <Coffee size={12} /> O meu consumo
                         </span>
-                        <h3 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                        <h3 className="text-2xl md:text-3xl font-bold text-fg leading-none">
                             Extrato <span className="text-muted/20">Cantina.</span>
                         </h3>
                     </div>
@@ -104,13 +104,13 @@ export default function ModalHistoricoCantina({ loyverseId }: { loyverseId: stri
                     {loading && recibos.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-4">
                             <Loader2 size={32} className="animate-spin text-figueira" />
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted">A comunicar com a Cantina...</p>
+                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted">A comunicar com a Cantina...</p>
                         </div>
                     ) : recibos.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 opacity-30">
                             <ShoppingBag size={48} className="mb-4" />
-                            <h4 className="text-sm font-black uppercase tracking-widest text-fg">Sem Histórico</h4>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted mt-2 text-center">
+                            <h4 className="text-sm font-bold text-fg">Sem Histórico</h4>
+                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted mt-2 text-center">
                                 Ainda não realizou consumos<br />na cantina da igreja.
                             </p>
                         </div>
@@ -121,12 +121,12 @@ export default function ModalHistoricoCantina({ loyverseId }: { loyverseId: stri
 
                                     {/* CABEÇALHO DO MÊS (Estilo Extrato Bancário) */}
                                     <div className="sticky top-0 -mx-2 px-2 py-3 bg-bg/95 backdrop-blur-sm z-10 flex justify-between items-end border-b-2 border-soft/50">
-                                        <h4 className="text-[11px] font-black uppercase text-fg tracking-[0.2em]">
+                                        <h4 className="text-[14px] font-bold uppercase text-fg tracking-wide">
                                             {mesAno}
                                         </h4>
                                         <div className="text-right">
-                                            <span className="text-[8px] font-black uppercase text-muted tracking-widest block leading-none mb-1">Total do Mês</span>
-                                            <span className="text-sm text-figueira valor-dinheiro italic font-black leading-none">{euro(dados.total)}</span>
+                                            <span className="text-[13px] font-bold uppercase text-muted tracking-wide block leading-none mb-1">Total do Mês</span>
+                                            <span className="text-sm text-figueira valor-dinheiro font-bold leading-none">{euro(dados.total)}</span>
                                         </div>
                                     </div>
 
@@ -144,7 +144,7 @@ export default function ModalHistoricoCantina({ loyverseId }: { loyverseId: stri
 
                 {/* FOOTER */}
                 <div className="p-6 bg-soft/30 border-t border-soft text-center shrink-0">
-                    <p className="text-[9px] font-bold text-muted uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                    <p className="text-[13px] font-bold text-muted uppercase tracking-wide flex items-center justify-center gap-2">
                         <HandPlatter size={12} className="text-figueira" /> Bom apetite, ADMVC
                     </p>
                 </div>
@@ -163,7 +163,7 @@ export default function ModalHistoricoCantina({ loyverseId }: { loyverseId: stri
                 <div className="w-12 h-12 bg-white/5 text-white/70 rounded-[1rem] flex items-center justify-center group-hover/btn:bg-white/20 group-hover/btn:text-white transition-all duration-300 border border-white/5 group-active/btn:scale-95 mx-auto">
                     <Receipt size={20} />
                 </div>
-                <span className="text-[9px] font-black uppercase tracking-widest text-white/50 group-hover/btn:text-white transition-colors">
+                <span className="text-[13px] font-bold uppercase tracking-wide text-white/50 group-hover/btn:text-white transition-colors">
                     Histórico
                 </span>
             </button>
@@ -199,23 +199,23 @@ function ReciboItem({ recibo, euro }: { recibo: any, euro: (v: number) => string
                 <div className="flex items-center gap-4">
                     {/* Bloco de Data (Estilo Calendário Apple) */}
                     <div className="flex flex-col items-center justify-center bg-bg border border-soft w-12 h-12 rounded-2xl shrink-0 shadow-sm">
-                        <span className="text-sm font-black text-fg leading-none">{dia}</span>
-                        <span className="text-[8px] font-black text-figueira mt-0.5">{mes}</span>
+                        <span className="text-sm font-bold text-fg leading-none">{dia}</span>
+                        <span className="text-[13px] font-bold text-figueira mt-0.5">{mes}</span>
                     </div>
 
                     <div className="space-y-0.5">
-                        <h4 className="text-xs font-black uppercase tracking-tight text-fg flex items-center gap-1.5">
+                        <h4 className="text-xs font-bold text-fg flex items-center gap-1.5">
                             Consumo
                             <ChevronDown size={14} className={`transition-transform duration-300 ${isExpanded ? 'rotate-180 text-figueira' : 'text-muted/50'}`} />
                         </h4>
-                        <p className="text-[9px] font-bold text-muted uppercase tracking-widest">
+                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide">
                             {hora}H{min} • TICKET #{recibo.receipt_number.slice(-4)}
                         </p>
                     </div>
                 </div>
 
                 <div className="text-right shrink-0">
-                    <p className="text-sm font-black italic text-fg valor-dinheiro leading-none">{euro(valorTotal)}</p>
+                    <p className="text-sm font-bold text-fg valor-dinheiro leading-none">{euro(valorTotal)}</p>
                 </div>
             </button>
 
@@ -224,12 +224,12 @@ function ReciboItem({ recibo, euro }: { recibo: any, euro: (v: number) => string
                 <div className="border-t border-soft/50 bg-bg p-5 animate-in slide-in-from-top-2 duration-200">
                     <div className="space-y-2">
                         {itens.map((item: any, i: number) => (
-                            <div key={i} className="flex justify-between items-start group/item text-[10px]">
+                            <div key={i} className="flex justify-between items-start group/item text-[14px]">
                                 <div className="flex gap-2">
-                                    <span className="font-black text-muted w-4 text-right shrink-0">{item.quantity}x</span>
-                                    <span className="font-bold text-fg uppercase tracking-tight">{item.item_name}</span>
+                                    <span className="font-bold text-muted w-4 text-right shrink-0">{item.quantity}x</span>
+                                    <span className="font-bold text-fg">{item.item_name}</span>
                                 </div>
-                                <span className="font-black valor-dinheirotext-fg shrink-0 pl-4">{euro(Math.abs(item.total_money))}</span>
+                                <span className="font-bold valor-dinheirotext-fg shrink-0 pl-4">{euro(Math.abs(item.total_money))}</span>
                             </div>
                         ))}
                     </div>

@@ -37,8 +37,8 @@ export default function ModalEditarCompromisso({ comp }: { comp: any }) {
                     <div className="bg-bg w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden border border-soft flex flex-col animate-in zoom-in-95 duration-300">
                         <div className="p-8 border-b border-soft flex justify-between items-center bg-bg2">
                             <div>
-                                <span className="text-figueira font-black text-[9px] uppercase tracking-[0.3em]">Ajustar</span>
-                                <h3 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Editar <span className="text-muted/20">Marcação.</span></h3>
+                                <span className="text-figueira font-bold text-[13px] uppercase tracking-wide">Ajustar</span>
+                                <h3 className="text-3xl font-bold text-fg">Editar <span className="text-muted/20">Marcação.</span></h3>
                             </div>
                             <button onClick={() => !isPending && setIsOpen(false)} className="p-4 bg-soft text-fg rounded-2xl hover:bg-red-500 hover:text-white transition-all">
                                 <X size={20} strokeWidth={3} />
@@ -53,8 +53,8 @@ export default function ModalEditarCompromisso({ comp }: { comp: any }) {
                             {comp.visitantes?.map((v: any) => <input key={`v_${v.id}`} type="hidden" name="visitantes[]" value={v.id} />)}
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2">Categoria</label>
-                                <select name="categoria" defaultValue={comp.categoria} className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none cursor-pointer">
+                                <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2">Categoria</label>
+                                <select name="categoria" defaultValue={comp.categoria} className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer">
                                     <option value="CAFE">☕ Café com Pastor</option>
                                     <option value="PERMANECER">🌱 Plano Permanecer</option>
                                     <option value="DISCIPULADO">📖 Discipulado</option>
@@ -65,27 +65,27 @@ export default function ModalEditarCompromisso({ comp }: { comp: any }) {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2 flex items-center gap-2"><Type size={12}/> Título</label>
-                                <input name="titulo" defaultValue={comp.titulo} required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none" />
+                                <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2"><Type size={12}/> Título</label>
+                                <input name="titulo" defaultValue={comp.titulo} required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none" />
                             </div>
 
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2"><CalendarDays size={12}/> Data</label>
-                                    <input type="date" name="data" defaultValue={defaultData} required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none" />
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2"><CalendarDays size={12}/> Data</label>
+                                    <input type="date" name="data" defaultValue={defaultData} required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2"><Clock size={12}/> Início</label>
-                                    <input type="time" name="hora_inicio" defaultValue={defaultHoraInicio} required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none" />
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2"><Clock size={12}/> Início</label>
+                                    <input type="time" name="hora_inicio" defaultValue={defaultHoraInicio} required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-muted tracking-[0.2em] ml-2"><Clock size={12}/> Fim</label>
-                                    <input type="time" name="hora_fim" defaultValue={defaultHoraFim} required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-black text-fg focus:border-figueira outline-none" />
+                                    <label className="text-[14px] font-bold uppercase text-muted tracking-wide ml-2"><Clock size={12}/> Fim</label>
+                                    <input type="time" name="hora_fim" defaultValue={defaultHoraFim} required className="w-full bg-bg2 border-2 border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg focus:border-figueira outline-none" />
                                 </div>
                             </div>
 
                             <div className="pt-4 border-t border-soft mt-6">
-                                <button disabled={isPending} type="submit" className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50">
+                                <button disabled={isPending} type="submit" className="w-full flex items-center justify-center gap-3 bg-fg text-bg px-8 py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-sm active:scale-95 disabled:opacity-50">
                                     {isPending ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />} Atualizar
                                 </button>
                             </div>

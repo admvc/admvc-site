@@ -35,7 +35,7 @@ export default function ModuloBloqueado() {
                 </div>
 
                 <div>
-                    <h2 className="text-lg font-black italic uppercase tracking-tighter text-fg">
+                    <h2 className="text-lg font-bold text-fg">
                         {nomeModulo}
                     </h2>
                     <p className="text-sm text-muted mt-2">
@@ -48,7 +48,7 @@ export default function ModuloBloqueado() {
 
                 <Link
                     href="/membros/dashboard"
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-figueira text-white text-xs font-black uppercase tracking-widest hover:brightness-110 transition-all active:scale-95"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-figueira text-white text-xs font-bold hover:brightness-110 transition-all active:scale-95"
                 >
                     <ArrowLeft size={14} /> Voltar ao Painel
                 </Link>

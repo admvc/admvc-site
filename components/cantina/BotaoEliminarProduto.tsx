@@ -30,7 +30,7 @@ export default function BotaoEliminarProduto({ produtoId }: Props) {
                 <button
                     onClick={handleDelete}
                     disabled={loading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 transition-all active:scale-95 disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[13px] font-bold uppercase tracking-wide bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 transition-all active:scale-95 disabled:opacity-50"
                 >
                     {loading ? (
                         <Loader2 size={12} className="animate-spin" />
@@ -42,7 +42,7 @@ export default function BotaoEliminarProduto({ produtoId }: Props) {
                 <button
                     onClick={() => setConfirmar(false)}
                     disabled={loading}
-                    className="px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest text-muted bg-bg border border-soft hover:border-figueira/50 transition-all active:scale-95"
+                    className="px-3 py-1.5 rounded-xl text-[13px] font-bold uppercase tracking-wide text-muted bg-bg border border-soft hover:border-figueira/50 transition-all active:scale-95"
                 >
                     Cancelar
                 </button>
@@ -53,7 +53,7 @@ export default function BotaoEliminarProduto({ produtoId }: Props) {
     return (
         <button
             onClick={() => setConfirmar(true)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[13px] font-bold uppercase tracking-wide bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 transition-all active:scale-95"
             title="Eliminar produto"
         >
             <Trash2 size={12} />

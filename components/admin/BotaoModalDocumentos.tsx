@@ -38,7 +38,7 @@ export default function BotaoModalDocumentos({ membrosPendentes }: { membrosPend
             {/* O BOTÃO QUE FICA NA DASHBOARD */}
             <button
                 onClick={() => setAberto(true)}
-                className="w-full md:w-auto px-6 py-3 bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-orange-600 transition-all active:scale-95 text-center shrink-0 shadow-lg shadow-orange-500/20"
+                className="w-full md:w-auto px-6 py-3 bg-orange-500 text-white text-[14px] font-bold uppercase tracking-wide rounded-xl hover:bg-orange-600 transition-all active:scale-95 text-center shrink-0 shadow-lg shadow-orange-500/20"
             >
                 Ver Relatório
             </button>
@@ -55,8 +55,8 @@ export default function BotaoModalDocumentos({ membrosPendentes }: { membrosPend
                                     <FileSignature size={24} />
                                 </div>
                                 <div>
-                                    <h3 className="text-2xl font-black italic uppercase tracking-tighter text-fg">Status de Assinaturas</h3>
-                                    <p className="text-[10px] font-bold text-muted uppercase tracking-[0.2em] mt-1">
+                                    <h3 className="text-2xl font-bold text-fg">Status de Assinaturas</h3>
+                                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-1">
                                         {membrosPendentes.length} membros requerem atenção
                                     </p>
                                 </div>
@@ -81,15 +81,15 @@ export default function BotaoModalDocumentos({ membrosPendentes }: { membrosPend
                                                 {membro.avatar_file ? (
                                                     <img src={membro.avatar_file} alt={membro.first_name} className="w-full h-full object-cover" />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-[10px] font-black uppercase text-muted">
+                                                    <div className="w-full h-full flex items-center justify-center text-[14px] font-bold uppercase text-muted">
                                                         {membro.first_name[0]}{membro.last_name[0]}
                                                     </div>
                                                 )}
                                             </div>
                                             <div>
-                                                <h4 className="text-sm font-black text-fg uppercase">{membro.first_name} {membro.last_name}</h4>
+                                                <h4 className="text-sm font-bold text-fg">{membro.first_name} {membro.last_name}</h4>
                                                 {membro.phone_1 && (
-                                                    <p className="text-[9px] font-bold text-muted uppercase tracking-widest mt-0.5">{membro.phone_1}</p>
+                                                    <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-0.5">{membro.phone_1}</p>
                                                 )}
                                             </div>
                                         </div>
@@ -99,8 +99,8 @@ export default function BotaoModalDocumentos({ membrosPendentes }: { membrosPend
                                             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg ${statusGDPR.bg} ${statusGDPR.cor}`}>
                                                 {statusGDPR.icon}
                                                 <div className="flex flex-col">
-                                                    <span className="text-[8px] font-black uppercase tracking-widest leading-none">GDPR</span>
-                                                    <span className="text-[9px] font-bold leading-none mt-0.5">{statusGDPR.texto}</span>
+                                                    <span className="text-[13px] font-bold uppercase tracking-wide leading-none">GDPR</span>
+                                                    <span className="text-[13px] font-bold leading-none mt-0.5">{statusGDPR.texto}</span>
                                                 </div>
                                             </div>
                                             {statusGDPR.texto !== 'Regular' && (
@@ -117,8 +117,8 @@ export default function BotaoModalDocumentos({ membrosPendentes }: { membrosPend
                                             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg ${statusPermanecer.bg} ${statusPermanecer.cor}`}>
                                                 {statusPermanecer.icon}
                                                 <div className="flex flex-col">
-                                                    <span className="text-[8px] font-black uppercase tracking-widest leading-none">Permanecer</span>
-                                                    <span className="text-[9px] font-bold leading-none mt-0.5">{statusPermanecer.texto}</span>
+                                                    <span className="text-[13px] font-bold uppercase tracking-wide leading-none">Permanecer</span>
+                                                    <span className="text-[13px] font-bold leading-none mt-0.5">{statusPermanecer.texto}</span>
                                                 </div>
                                             </div>
                                             {statusPermanecer.texto !== 'Regular' && (

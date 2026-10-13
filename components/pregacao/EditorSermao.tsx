@@ -165,7 +165,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
             <div className="flex items-center gap-4 mb-8">
                 <Link
                     href="/pregacao"
-                    className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted hover:text-figueira transition-colors"
+                    className="flex items-center gap-1.5 text-[14px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors"
                 >
                     <ArrowLeft size={12} />
                     Voltar
@@ -173,14 +173,14 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                 <div className="flex-1" />
                 <div className="flex items-center gap-2">
                     {saveMsg && (
-                        <span className={`text-[9px] font-bold uppercase tracking-widest ${saveMsg.includes('sucesso') ? 'text-green-500' : 'text-red-400'}`}>
+                        <span className={`text-[13px] font-bold uppercase tracking-wide ${saveMsg.includes('sucesso') ? 'text-green-500' : 'text-red-400'}`}>
                             {saveMsg}
                         </span>
                     )}
                     <button
                         onClick={handleSalvar}
                         disabled={saving}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[9px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[13px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50"
                     >
                         {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
                         {saving ? 'A guardar...' : 'Guardar'}
@@ -195,7 +195,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                     <input
                         value={titulo}
                         onChange={(e) => setTitulo(e.target.value)}
-                        className="w-full bg-transparent text-2xl sm:text-3xl font-black italic uppercase tracking-tighter text-fg border-b border-soft pb-3 focus:outline-none focus:border-figueira transition-colors placeholder:text-muted/30"
+                        className="w-full bg-transparent text-2xl sm:text-3xl font-bold text-fg border-b border-soft pb-3 focus:outline-none focus:border-figueira transition-colors placeholder:text-muted/30"
                         placeholder="Titulo do sermao"
                     />
 
@@ -232,7 +232,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
 
                     {/* Tags */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Tags</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Tags</label>
                         <input
                             value={tagsStr}
                             onChange={(e) => setTagsStr(e.target.value)}
@@ -242,7 +242,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                         {tagsArr.length > 0 && (
                             <div className="flex flex-wrap gap-1.5 mt-2">
                                 {tagsArr.map((tag, i) => (
-                                    <span key={i} className="text-[8px] font-bold uppercase tracking-wider bg-figueira/10 text-figueira px-2.5 py-0.5 rounded-full">
+                                    <span key={i} className="text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira px-2.5 py-0.5 rounded-full">
                                         {tag}
                                     </span>
                                 ))}
@@ -252,7 +252,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
 
                     {/* References */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Referencias Biblicas</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Referencias Biblicas</label>
                         <div className="flex gap-2">
                             <input
                                 value={refInput}
@@ -263,7 +263,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                             />
                             <button
                                 onClick={adicionarRef}
-                                className="px-4 py-2 bg-figueira text-white text-[9px] font-black uppercase tracking-widest rounded-2xl hover:opacity-90 transition-opacity"
+                                className="px-4 py-2 bg-figueira text-white text-[13px] font-bold uppercase tracking-wide rounded-2xl hover:opacity-90 transition-opacity"
                             >
                                 <Plus size={12} />
                             </button>
@@ -271,7 +271,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                         {refs.length > 0 && (
                             <div className="flex flex-wrap gap-1.5 mt-2">
                                 {refs.map((ref, i) => (
-                                    <span key={i} className="inline-flex items-center gap-1 bg-figueira/10 text-figueira text-[9px] font-bold px-3 py-1 rounded-full">
+                                    <span key={i} className="inline-flex items-center gap-1 bg-figueira/10 text-figueira text-[13px] font-bold px-3 py-1 rounded-full">
                                         {formatarRef(ref)}
                                         <button onClick={() => removerRef(i)} className="hover:text-red-400 transition-colors">
                                             <X size={10} />
@@ -284,7 +284,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
 
                     {/* Main textarea */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Corpo do Sermao</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Corpo do Sermao</label>
                         <textarea
                             value={textCorpo}
                             onChange={(e) => setTextCorpo(e.target.value)}
@@ -296,7 +296,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
 
                     {/* Private notes */}
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Notas Privadas</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Notas Privadas</label>
                         <textarea
                             value={notasPrivadas}
                             onChange={(e) => setNotasPrivadas(e.target.value)}
@@ -314,7 +314,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                             onChange={(e) => setPublicado(e.target.checked)}
                             className="w-4 h-4 rounded border-soft accent-figueira"
                         />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                        <span className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                             {publicado ? <Eye size={12} className="text-green-500" /> : <EyeOff size={12} />}
                             {publicado ? 'Publicado' : 'Rascunho'}
                         </span>
@@ -323,10 +323,10 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                     {/* Linked EBDs */}
                     {sermao.escolasBiblicas.length > 0 && (
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-muted mb-2">Aulas EBD vinculadas</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-2">Aulas EBD vinculadas</p>
                             <div className="space-y-1">
                                 {sermao.escolasBiblicas.map(ebd => (
-                                    <div key={ebd.id} className="text-[10px] text-fg/70 bg-bg border border-soft rounded-xl px-3 py-2">
+                                    <div key={ebd.id} className="text-[14px] text-fg/70 bg-bg border border-soft rounded-xl px-3 py-2">
                                         {ebd.titulo} — {new Date(ebd.data).toLocaleDateString('pt-PT')}
                                     </div>
                                 ))}
@@ -340,7 +340,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                     <div className="sticky top-4 bg-bg2 border border-soft rounded-2xl overflow-hidden">
                         <button
                             onClick={() => setBiblePanelOpen(!biblePanelOpen)}
-                            className="w-full px-5 py-3 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-fg hover:bg-bg transition-colors"
+                            className="w-full px-5 py-3 flex items-center justify-between text-[14px] font-bold uppercase tracking-wide text-fg hover:bg-bg transition-colors"
                         >
                             <span className="flex items-center gap-2">
                                 <BookOpen size={12} className="text-figueira" />
@@ -372,12 +372,12 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                                 {/* Result */}
                                 {bibleResult && (
                                     <div className="bg-bg border border-soft rounded-2xl p-4 space-y-2">
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-figueira">{bibleResult.reference}</p>
-                                        <p className="text-[11px] text-fg/80 leading-relaxed italic">{bibleResult.text}</p>
+                                        <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">{bibleResult.reference}</p>
+                                        <p className="text-[14px] text-fg/80 leading-relaxed">{bibleResult.text}</p>
                                         {bibleResult.reference !== 'Erro' && (
                                             <button
                                                 onClick={inserirNoSermao}
-                                                className="w-full mt-2 py-2 bg-figueira/10 text-figueira text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-figueira/20 transition-colors"
+                                                className="w-full mt-2 py-2 bg-figueira/10 text-figueira text-[13px] font-bold uppercase tracking-wide rounded-xl hover:bg-figueira/20 transition-colors"
                                             >
                                                 Inserir no Sermao
                                             </button>
@@ -388,7 +388,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                                 {/* References list */}
                                 {refs.length > 0 && (
                                     <div>
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-muted mb-2">Referencias usadas ({refs.length})</p>
+                                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-2">Referencias usadas ({refs.length})</p>
                                         <div className="space-y-1">
                                             {refs.map((ref, i) => (
                                                 <div
@@ -397,7 +397,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                                                 >
                                                     <button
                                                         onClick={() => { setBibleSearch(formatarRef(ref)); buscarBiblia() }}
-                                                        className="text-[10px] font-bold text-fg hover:text-figueira transition-colors text-left"
+                                                        className="text-[14px] font-bold text-fg hover:text-figueira transition-colors text-left"
                                                     >
                                                         {formatarRef(ref)}
                                                     </button>

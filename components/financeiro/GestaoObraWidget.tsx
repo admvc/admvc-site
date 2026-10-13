@@ -77,15 +77,15 @@ export default async function GestaoObraWidget() {
             {/* Cabeçalho Compacto */}
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <div className="inline-flex items-center gap-1.5 text-green-500 font-black text-[9px] uppercase tracking-[0.2em] mb-1">
+                    <div className="inline-flex items-center gap-1.5 text-green-500 font-bold text-[13px] uppercase tracking-wide mb-1">
                         <Building2 size={12} /> Gestão da Obra
                     </div>
-                    <h3 className="text-xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h3 className="text-xl font-bold text-fg leading-none">
                         Progresso Financeiro
                     </h3>
                 </div>
                 <div className="text-right bg-green-500/10 px-3 py-1.5 rounded-xl border border-green-500/20">
-                    <span className="text-xs font-black text-green-600 italic">{porcentagemGeral}%</span>
+                    <span className="text-xs font-bold text-green-600">{porcentagemGeral}%</span>
                 </div>
             </div>
 
@@ -95,11 +95,11 @@ export default async function GestaoObraWidget() {
                 {/* Resumo Global (Mais apertado) */}
                 <div className="flex items-center justify-between bg-bg border border-soft p-4 rounded-2xl">
                     <div>
-                        <span className="text-[9px] font-black uppercase tracking-widest text-muted block">Arrecadado</span>
-                        <span className="text-lg font-black italic valor-dinheiro text-green-500">{euro(totalArrecadado)}</span>
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted block">Arrecadado</span>
+                        <span className="text-lg font-bold valor-dinheiro text-green-500">{euro(totalArrecadado)}</span>
                     </div>
                     <div className="text-right">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-muted block mb-1">Objetivo (€)</span>
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted block mb-1">Objetivo (€)</span>
                         <input
                             type="number"
                             name="objetivoFinal"
@@ -111,12 +111,12 @@ export default async function GestaoObraWidget() {
 
                 {/* Lista de Etapas Compacta */}
                 <div className="space-y-3 flex-1 mt-2">
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-muted border-b border-soft pb-2">Etapas / Fases</h4>
+                    <h4 className="text-[14px] font-bold uppercase tracking-wide text-muted border-b border-soft pb-2">Etapas / Fases</h4>
                     {projeto.etapas.map((etapa) => (
                         <div key={etapa.id} className="flex items-center justify-between gap-4 border-b border-soft/50 pb-3 last:border-0 last:pb-0">
                             <div className="flex-1 overflow-hidden">
-                                <h4 className="font-black text-fg uppercase text-[11px] truncate">{etapa.nome}</h4>
-                                <span className="text-[8px] font-bold text-muted valor-dinheiro uppercase tracking-widest block truncate">
+                                <h4 className="font-bold text-fg uppercase text-[14px] truncate">{etapa.nome}</h4>
+                                <span className="text-[13px] font-bold text-muted valor-dinheiro uppercase tracking-wide block truncate">
                                     Alvo: {euro(etapa.alvo)}
                                 </span>
                             </div>
@@ -135,7 +135,7 @@ export default async function GestaoObraWidget() {
                 </div>
 
                 {/* Botão Salvar Compacto */}
-                <button type="submit" className="w-full mt-2 flex justify-center items-center gap-2 bg-green-600 text-white p-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-green-700 transition-all active:scale-95 shadow-md">
+                <button type="submit" className="w-full mt-2 flex justify-center items-center gap-2 bg-green-600 text-white p-3.5 rounded-xl text-[14px] font-bold uppercase tracking-wide hover:bg-green-700 transition-all active:scale-95 shadow-md">
                     <Save size={14} /> Atualizar Site
                 </button>
             </form>

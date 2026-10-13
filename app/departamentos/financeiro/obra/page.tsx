@@ -82,22 +82,22 @@ export default async function GestaoObraFinanceiro() {
 
     return (
         <main className="max-w-4xl mx-auto pt-16 md:pt-8 pb-28 px-6 space-y-8 animate-in fade-in duration-700">
-            <nav className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted mb-8">
+            <nav className="flex items-center gap-4 text-[14px] font-bold uppercase tracking-wide text-muted mb-8">
                 <Link href="/departamentos/financeiro/dashboard" className="hover:text-green-500 transition-colors flex items-center gap-2">
                     <ArrowLeft size={12} strokeWidth={3} /> Dashboard Financeira
                 </Link>
                 <ChevronRight size={10} className="opacity-30" />
-                <span className="text-fg italic">Campanha de Construção</span>
+                <span className="text-fg">Campanha de Construção</span>
             </nav>
 
             <div className="space-y-2">
-                <div className="inline-flex items-center gap-2 text-green-500 font-black text-[10px] uppercase tracking-[0.3em] mb-1">
+                <div className="inline-flex items-center gap-2 text-green-500 font-bold text-[14px] uppercase tracking-wide mb-1">
                     <Building2 size={14} /> Atualização de Valores
                 </div>
-                <h1 className="text-4xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                <h1 className="text-4xl font-bold text-fg leading-none">
                     Progresso <span className="text-muted/30">Financeiro.</span>
                 </h1>
-                <p className="text-xs text-muted font-bold tracking-widest uppercase mt-2">
+                <p className="text-xs text-muted font-bold mt-2">
                     Os valores inseridos aqui irão refletir em percentagem no site público.
                 </p>
             </div>
@@ -108,32 +108,32 @@ export default async function GestaoObraFinanceiro() {
 
                     <div className="p-6 bg-green-500/5 border border-green-500/20 rounded-2xl flex justify-between items-center">
                         <div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted block mb-1">Total Arrecadado até Hoje</span>
-                            <span className="text-4xl font-black italic text-green-500 valor-dinheiro inline-block">{euro(totalArrecadado)}</span>
+                            <span className="text-[14px] font-bold uppercase tracking-wide text-muted block mb-1">Total Arrecadado até Hoje</span>
+                            <span className="text-4xl font-bold text-green-500 valor-dinheiro inline-block">{euro(totalArrecadado)}</span>
                         </div>
                         <div className="text-right">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted block mb-1">Objetivo Global</span>
+                            <span className="text-[14px] font-bold uppercase tracking-wide text-muted block mb-1">Objetivo Global</span>
                             <input
                                 type="number"
                                 name="objetivoFinal"
                                 defaultValue={projeto.objetivoFinal}
-                                className="bg-bg border border-soft p-3 rounded-2xl text-xl font-black text-fg text-right w-40 outline-none focus:border-green-500"
+                                className="bg-bg border border-soft p-3 rounded-2xl text-xl font-bold text-fg text-right w-40 outline-none focus:border-green-500"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-4">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-fg border-b border-soft pb-2">Etapas do Projeto</h3>
+                        <h3 className="text-sm font-bold text-fg border-b border-soft pb-2">Etapas do Projeto</h3>
 
                         {projeto.etapas.map((etapa) => (
                             <div key={etapa.id} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center p-6 bg-bg border border-soft rounded-2xl hover:border-green-500/30 transition-colors">
                                 <div>
-                                    <h4 className="font-black text-fg uppercase text-sm">{etapa.nome}</h4>
-                                    <span className="text-[9px] font-bold text-muted uppercase tracking-widest">Alvo: {euro(etapa.alvo)}</span>
+                                    <h4 className="font-bold text-fg text-sm">{etapa.nome}</h4>
+                                    <span className="text-[13px] font-bold text-muted uppercase tracking-wide">Alvo: {euro(etapa.alvo)}</span>
                                 </div>
 
                                 <div className="md:col-span-2 space-y-2 relative">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-green-500 ml-4">Valor Arrecadado (€)</label>
+                                    <label className="text-[14px] font-bold uppercase tracking-wide text-green-500 ml-4">Valor Arrecadado (€)</label>
                                     <input
                                         type="number"
                                         step="0.01"
@@ -147,7 +147,7 @@ export default async function GestaoObraFinanceiro() {
                     </div>
 
                     <div className="pt-4 border-t border-soft flex justify-end">
-                        <button type="submit" className="flex items-center gap-2 bg-green-600 text-white px-8 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-green-700 transition-all active:scale-95 shadow-lg shadow-green-600/20">
+                        <button type="submit" className="flex items-center gap-2 bg-green-600 text-white px-8 py-5 rounded-2xl text-[14px] font-bold uppercase tracking-wide hover:bg-green-700 transition-all active:scale-95 shadow-lg shadow-green-600/20">
                             <Save size={16} /> Gravar e Atualizar Site
                         </button>
                     </div>

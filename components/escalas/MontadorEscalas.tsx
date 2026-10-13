@@ -97,7 +97,7 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
         <div className="relative">
             <section className="relative animate-in fade-in duration-500">
                 {sucesso && (
-                    <div className="absolute -top-4 left-0 right-0 bg-emerald-500 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] animate-in slide-in-from-top-4 duration-300 z-50 flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20">
+                    <div className="absolute -top-4 left-0 right-0 bg-emerald-500 text-white px-6 py-3 rounded-2xl text-[14px] font-bold uppercase tracking-wide animate-in slide-in-from-top-4 duration-300 z-50 flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20">
                         <CheckCircle2 size={16} /> Voluntário Escalado!
                     </div>
                 )}
@@ -132,8 +132,8 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                     {departamentos && (
                         <div className="space-y-2 relative">
                             <div className="flex items-center gap-2">
-                                <span className="w-5 h-5 rounded-full bg-figueira text-white text-[9px] font-black flex items-center justify-center shadow-sm">1</span>
-                                <label className="text-[10px] font-black uppercase text-muted tracking-widest">Departamento</label>
+                                <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center shadow-sm">1</span>
+                                <label className="text-[14px] font-bold uppercase text-muted tracking-wide">Departamento</label>
                             </div>
                             <div className="relative">
                                 <ShieldCheck size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-figueira" />
@@ -141,7 +141,7 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                                     required
                                     value={deptoSelecionadoId}
                                     onChange={e => { setDeptoSelecionadoId(e.target.value); setEventoId(''); setFuncaoId(''); setMembroId('') }}
-                                    className="w-full bg-bg border border-soft rounded-xl md:rounded-2xl pl-10 md:pl-12 pr-8 md:pr-10 py-3 md:py-4 text-[11px] md:text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer appearance-none shadow-sm transition-all"
+                                    className="w-full bg-bg border border-soft rounded-xl md:rounded-2xl pl-10 md:pl-12 pr-8 md:pr-10 py-3 md:py-4 text-[14px] md:text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer appearance-none shadow-sm transition-all"
                                 >
                                     <option value="">Selecionar Departamento...</option>
                                     {departamentos.map((d: any) => (
@@ -156,8 +156,8 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                     {/* PASSO 1 — EVENTO (filtrado por congregacao do departamento) */}
                     <div className={`space-y-2 relative transition-all duration-300 ${departamentos && !deptoSelecionadoId ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
                         <div className="flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[9px] font-black flex items-center justify-center shadow-sm">{departamentos ? '2' : '1'}</span>
-                            <label className="text-[10px] font-black uppercase text-muted tracking-widest">Evento</label>
+                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center shadow-sm">{departamentos ? '2' : '1'}</span>
+                            <label className="text-[14px] font-bold uppercase text-muted tracking-wide">Evento</label>
                         </div>
                         <div className="relative">
                             <CalendarDays size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-figueira" />
@@ -165,7 +165,7 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                                 required
                                 value={eventoId}
                                 onChange={handleEventoChange}
-                                className="w-full bg-bg border border-soft rounded-xl md:rounded-2xl pl-10 md:pl-12 pr-8 md:pr-10 py-3 md:py-4 text-[11px] md:text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer appearance-none shadow-sm transition-all"
+                                className="w-full bg-bg border border-soft rounded-xl md:rounded-2xl pl-10 md:pl-12 pr-8 md:pr-10 py-3 md:py-4 text-[14px] md:text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer appearance-none shadow-sm transition-all"
                             >
                                 <option value="">Selecionar Culto/Evento...</option>
                                 {eventosFiltrados.map((ev: any) => (
@@ -181,8 +181,8 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                     {/* FUNÇÃO */}
                     <div className={`space-y-2 transition-all duration-300 ${!eventoId ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
                         <div className="flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[9px] font-black flex items-center justify-center shadow-sm">{departamentos ? '3' : '2'}</span>
-                            <label className="text-[10px] font-black uppercase text-muted tracking-widest">Funcao</label>
+                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center shadow-sm">{departamentos ? '3' : '2'}</span>
+                            <label className="text-[14px] font-bold uppercase text-muted tracking-wide">Funcao</label>
                         </div>
                         <div className="relative">
                             <ShieldCheck size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-figueira" />
@@ -190,7 +190,7 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                                 required
                                 value={funcaoId}
                                 onChange={e => { setFuncaoId(e.target.value); setMembroId('') }}
-                                className="w-full bg-bg border border-soft rounded-xl md:rounded-2xl pl-10 md:pl-12 pr-8 md:pr-10 py-3 md:py-4 text-[11px] md:text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer appearance-none shadow-sm transition-all"
+                                className="w-full bg-bg border border-soft rounded-xl md:rounded-2xl pl-10 md:pl-12 pr-8 md:pr-10 py-3 md:py-4 text-[14px] md:text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer appearance-none shadow-sm transition-all"
                             >
                                 <option value="">Selecionar Cargo...</option>
                                 {funcoesActuais.map((f: any) => (
@@ -204,11 +204,11 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                     {/* PASSO 3 — MEMBRO */}
                     <div className={`space-y-2 transition-all duration-300 ${!funcaoId ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
                         <div className="flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[9px] font-black flex items-center justify-center shadow-sm">{departamentos ? '4' : '3'}</span>
-                            <label className="text-[10px] font-black uppercase text-muted tracking-widest flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center shadow-sm">{departamentos ? '4' : '3'}</span>
+                            <label className="text-[14px] font-bold uppercase text-muted tracking-wide flex items-center gap-2">
                                 Membro
                                 {funcaoId && (
-                                    <span className={`px-2 py-0.5 rounded-md text-[8px] ${membrosAptos.length > 0 ? 'bg-emerald-500/10 text-emerald-600' : 'bg-red-500/10 text-red-500'}`}>
+                                    <span className={`px-2 py-0.5 rounded-md text-[13px] ${membrosAptos.length > 0 ? 'bg-emerald-500/10 text-emerald-600' : 'bg-red-500/10 text-red-500'}`}>
                                         {membrosAptos.length} Apto(s)
                                     </span>
                                 )}
@@ -220,7 +220,7 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                                 required
                                 value={membroId}
                                 onChange={handleMembroChange}
-                                className="w-full bg-bg border border-soft rounded-xl md:rounded-2xl pl-10 md:pl-12 pr-8 md:pr-10 py-3 md:py-4 text-[11px] md:text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer appearance-none shadow-sm transition-all"
+                                className="w-full bg-bg border border-soft rounded-xl md:rounded-2xl pl-10 md:pl-12 pr-8 md:pr-10 py-3 md:py-4 text-[14px] md:text-xs font-bold text-fg focus:border-figueira outline-none cursor-pointer appearance-none shadow-sm transition-all"
                             >
                                 <option value="">
                                     {funcaoId
@@ -245,10 +245,10 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                             <div className="flex items-start gap-3 bg-red-500/8 border border-red-500/25 rounded-2xl px-4 py-3 animate-in slide-in-from-top-2 duration-200">
                                 <AlertTriangle size={16} className="text-red-500 shrink-0 mt-0.5" />
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-red-600 leading-none">
+                                    <p className="text-[14px] font-bold uppercase tracking-wide text-red-600 leading-none">
                                         Membro indisponível
                                     </p>
-                                    <p className="text-[9px] text-red-500/80 font-medium mt-1">
+                                    <p className="text-[13px] text-red-500/80 font-medium mt-1">
                                         {bloqueio.motivo || 'Este membro registou indisponibilidade para este período.'}
                                     </p>
                                 </div>
@@ -266,7 +266,7 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                         {membroId && bloqueio && !bloqueio.bloqueado && !verificando && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/8 border border-emerald-500/20 rounded-xl animate-in fade-in duration-200">
                                 <CheckCircle2 size={13} className="text-emerald-500 shrink-0" />
-                                <p className="text-[9px] font-black uppercase tracking-widest text-emerald-700">
+                                <p className="text-[13px] font-bold uppercase tracking-wide text-emerald-700">
                                     Disponível para este evento
                                 </p>
                             </div>
@@ -276,11 +276,11 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                     {/* HORÁRIO */}
                     <div className={`space-y-2 transition-all duration-300 ${!membroId ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
                         <div className="flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[9px] font-black flex items-center justify-center shadow-sm">{departamentos ? '5' : '4'}</span>
-                            <label className="text-[10px] font-black uppercase text-muted tracking-widest">Horario</label>
+                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center shadow-sm">{departamentos ? '5' : '4'}</span>
+                            <label className="text-[14px] font-bold uppercase text-muted tracking-wide">Horario</label>
                         </div>
                         <div className="flex items-center justify-between bg-figueira/5 border border-figueira/20 px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl">
-                            <label className="text-[10px] font-black uppercase text-figueira tracking-widest flex items-center gap-2">
+                            <label className="text-[14px] font-bold uppercase text-figueira tracking-wide flex items-center gap-2">
                                 <Clock size={14} /> Chegada
                             </label>
                             <input
@@ -288,7 +288,7 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                                 required
                                 value={horarioEscala}
                                 onChange={e => setHorarioEscala(e.target.value)}
-                                className="bg-transparent text-figueira font-black text-sm outline-none w-[70px] text-right"
+                                className="bg-transparent text-figueira font-bold text-sm outline-none w-[70px] text-right"
                             />
                         </div>
                     </div>

@@ -39,27 +39,27 @@ export default function FormTransferirParaFundo({ fundos, saldoDisponivel, recei
             {/* Summary */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="bg-bg border border-soft rounded-2xl p-4 space-y-1">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                         <Wallet size={10} className="text-figueira" />
                         Receita Cash Total
                     </p>
-                    <p className="text-xl font-black text-fg">{fmt(receitaCash)} EUR</p>
+                    <p className="text-xl font-bold text-fg">{fmt(receitaCash)} EUR</p>
                 </div>
 
                 <div className="bg-bg border border-soft rounded-2xl p-4 space-y-1">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                         <CheckCircle size={10} className="text-green-500" />
                         Ja Transferido
                     </p>
-                    <p className="text-xl font-black text-fg">{fmt(jaTransferido)} EUR</p>
+                    <p className="text-xl font-bold text-fg">{fmt(jaTransferido)} EUR</p>
                 </div>
 
                 <div className="bg-bg border border-soft rounded-2xl p-4 space-y-1">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted flex items-center gap-1.5">
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                         <ArrowRightLeft size={10} className="text-blue-500" />
                         Disponivel
                     </p>
-                    <p className={`text-xl font-black ${saldoDisponivel > 0 ? 'text-green-500' : 'text-muted'}`}>
+                    <p className={`text-xl font-bold ${saldoDisponivel > 0 ? 'text-green-500' : 'text-muted'}`}>
                         {fmt(saldoDisponivel)} EUR
                     </p>
                 </div>
@@ -71,7 +71,7 @@ export default function FormTransferirParaFundo({ fundos, saldoDisponivel, recei
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {/* Fundo destino */}
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Fundo Destino
                             </label>
                             <select
@@ -90,7 +90,7 @@ export default function FormTransferirParaFundo({ fundos, saldoDisponivel, recei
 
                         {/* Valor */}
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Valor (EUR)
                             </label>
                             <input
@@ -107,7 +107,7 @@ export default function FormTransferirParaFundo({ fundos, saldoDisponivel, recei
 
                         {/* Motivo */}
                         <div className="space-y-1.5">
-                            <label className="text-[9px] font-black uppercase tracking-widest text-muted">
+                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                                 Motivo
                             </label>
                             <input
@@ -122,7 +122,7 @@ export default function FormTransferirParaFundo({ fundos, saldoDisponivel, recei
                     <button
                         type="submit"
                         disabled={loading}
-                        className="flex items-center gap-2 bg-figueira text-bg px-6 py-3.5 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:brightness-110 transition-all active:scale-95 disabled:opacity-50"
+                        className="flex items-center gap-2 bg-figueira text-bg px-6 py-3.5 rounded-2xl font-bold text-[13px] uppercase tracking-wide hover:brightness-110 transition-all active:scale-95 disabled:opacity-50"
                     >
                         {loading ? <Loader2 size={14} className="animate-spin" /> : <ArrowRightLeft size={14} />}
                         Transferir

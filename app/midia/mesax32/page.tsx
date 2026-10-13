@@ -29,7 +29,7 @@ export default async function X32Page() {
     return (
         <main className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6 animate-in fade-in duration-700 pb-20">
             <header className="space-y-1">
-                <h1 className="text-3xl font-black italic uppercase tracking-tighter text-fg">Mesa de Som</h1>
+                <h1 className="text-3xl font-bold text-fg">Mesa de Som</h1>
                 <p className="text-xs text-muted">
                     {temPresets && temHolyrics
                         ? 'Presets via Holyrics — sem proxy necessario.'
@@ -55,7 +55,7 @@ export default async function X32Page() {
             {temPresets && temHolyrics && tenant?.x32_ip && (
                 <details className="group">
                     <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                        <div className="flex items-center gap-2 px-4 py-3 bg-bg2 border border-soft rounded-2xl text-[9px] font-black uppercase tracking-widest text-muted hover:text-fg transition-colors">
+                        <div className="flex items-center gap-2 px-4 py-3 bg-bg2 border border-soft rounded-2xl text-[13px] font-bold uppercase tracking-wide text-muted hover:text-fg transition-colors">
                             <span className="group-open:rotate-90 transition-transform">&#9654;</span>
                             Modo Avancado (Faders — requer proxy local)
                         </div>

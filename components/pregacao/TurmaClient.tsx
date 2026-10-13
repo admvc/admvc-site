@@ -304,12 +304,12 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="relative w-full max-w-lg bg-bg2 border border-soft rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl flex-shrink-0">
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">Matricular Alunos</h2>
+                    <h2 className="text-sm font-bold text-fg">Matricular Alunos</h2>
                     <button onClick={() => { setModalMatricula(false); setMatSelecionados([]) }} className="text-muted hover:text-fg transition-colors"><X size={18} /></button>
                 </div>
                 <div className="px-6 pt-4 flex-shrink-0">
                     <input value={matSearch} onChange={e => setMatSearch(e.target.value)} className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors" placeholder="Pesquisar membro..." />
-                    <p className="text-[9px] font-bold text-figueira mt-2">{matSelecionados.length} selecionado{matSelecionados.length !== 1 ? 's' : ''}</p>
+                    <p className="text-[13px] font-bold text-figueira mt-2">{matSelecionados.length} selecionado{matSelecionados.length !== 1 ? 's' : ''}</p>
                 </div>
                 <div className="flex-1 overflow-y-auto px-6 py-3 space-y-1">
                     {membrosFiltrados.map(m => {
@@ -320,14 +320,14 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                                 <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 transition-colors ${sel ? 'bg-figueira text-white' : 'border border-soft'}`}>
                                     {sel && <Check size={12} />}
                                 </div>
-                                <span className="text-[11px] font-bold text-fg">{m.first_name} {m.last_name}</span>
+                                <span className="text-[14px] font-bold text-fg">{m.first_name} {m.last_name}</span>
                             </button>
                         )
                     })}
-                    {membrosFiltrados.length === 0 && <p className="text-center text-[10px] text-muted py-4">Nenhum membro disponivel.</p>}
+                    {membrosFiltrados.length === 0 && <p className="text-center text-[14px] text-muted py-4">Nenhum membro disponivel.</p>}
                 </div>
                 <div className="px-6 py-4 border-t border-soft flex-shrink-0">
-                    <button onClick={handleMatricular} disabled={loading || matSelecionados.length === 0} className="w-full py-3 bg-figueira text-white text-[10px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
+                    <button onClick={handleMatricular} disabled={loading || matSelecionados.length === 0} className="w-full py-3 bg-figueira text-white text-[14px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
                         {loading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
                         {loading ? 'A matricular...' : 'Matricular'}
                     </button>
@@ -341,44 +341,44 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="relative w-full max-w-2xl bg-bg2 border border-soft rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-300" onClick={e => e.stopPropagation()}>
                 <div className="sticky top-0 z-10 bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl">
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">Nova Aula</h2>
+                    <h2 className="text-sm font-bold text-fg">Nova Aula</h2>
                     <button onClick={() => setModalAula(false)} className="text-muted hover:text-fg transition-colors"><X size={18} /></button>
                 </div>
                 <form onSubmit={handleCriarAula} className="p-6 space-y-4">
                     <input type="hidden" name="turma_id" value={turma.id} />
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Titulo *</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Titulo *</label>
                         <input name="titulo" required className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Professor *</label>
+                            <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Professor *</label>
                             <select name="professor_id" required defaultValue={turma.professores[0]?.id} className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg focus:outline-none focus:border-figueira transition-colors">
                                 {membros.map(m => (<option key={m.id} value={m.id}>{m.first_name} {m.last_name}</option>))}
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Data *</label>
+                            <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Data *</label>
                             <input name="data" type="date" required className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg focus:outline-none focus:border-figueira transition-colors" />
                         </div>
                     </div>
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Tema</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Tema</label>
                         <input name="tema" className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors" />
                     </div>
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Link da Aula (Teams, YouTube, Zoom...)</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Link da Aula (Teams, YouTube, Zoom...)</label>
                         <input name="link_aula" className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors" placeholder="https://..." />
                     </div>
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Conteudo da Aula</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Conteudo da Aula</label>
                         <textarea name="conteudo" rows={4} className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors resize-y" placeholder="Conteudo detalhado da aula..." />
                     </div>
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Perguntas de Discussao (uma por linha)</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Perguntas de Discussao (uma por linha)</label>
                         <textarea name="perguntas_discussao" rows={3} className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors resize-y" />
                     </div>
-                    <button type="submit" disabled={loading} className="w-full py-3 bg-figueira text-white text-[10px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
+                    <button type="submit" disabled={loading} className="w-full py-3 bg-figueira text-white text-[14px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
                         {loading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
                         {loading ? 'A criar...' : 'Criar Aula'}
                     </button>
@@ -392,17 +392,17 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="relative w-full max-w-lg bg-bg2 border border-soft rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-300" onClick={e => e.stopPropagation()}>
                 <div className="sticky top-0 z-10 bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl">
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">{editandoAtividade ? 'Editar Atividade' : 'Nova Atividade'}</h2>
+                    <h2 className="text-sm font-bold text-fg">{editandoAtividade ? 'Editar Atividade' : 'Nova Atividade'}</h2>
                     <button onClick={() => { setModalAtividade(false); setEditandoAtividade(null); setPerguntasEditor([]) }} className="text-muted hover:text-fg transition-colors"><X size={18} /></button>
                 </div>
                 <form onSubmit={handleCriarAtividade} className="p-6 space-y-4">
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Titulo *</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Titulo *</label>
                         <input name="titulo" required defaultValue={editandoAtividade?.titulo || ''} className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors" placeholder="Ex: Exercicio Licao 3" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Tipo *</label>
+                            <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Tipo *</label>
                             <select name="tipo" required defaultValue={editandoAtividade?.tipo || 'EXERCICIO'} className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg focus:outline-none focus:border-figueira transition-colors">
                                 <option value="EXERCICIO">Exercicio</option>
                                 <option value="PROVA">Prova</option>
@@ -411,43 +411,43 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Data Entrega</label>
+                            <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Data Entrega</label>
                             <input name="data_entrega" type="date" defaultValue={editandoAtividade?.data_entrega?.slice(0, 10) || ''} className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg focus:outline-none focus:border-figueira transition-colors" />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Peso</label>
+                            <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Peso</label>
                             <input name="peso" type="number" step="0.1" defaultValue={editandoAtividade?.peso ?? 1} className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg focus:outline-none focus:border-figueira transition-colors" />
                         </div>
                         <div>
-                            <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Nota Maxima</label>
+                            <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Nota Maxima</label>
                             <input name="nota_maxima" type="number" step="0.1" defaultValue={editandoAtividade?.nota_maxima ?? 10} className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg focus:outline-none focus:border-figueira transition-colors" />
                         </div>
                     </div>
                     <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-muted mb-1">Descricao</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Descricao</label>
                         <textarea name="descricao" rows={2} defaultValue={editandoAtividade?.descricao || ''} className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors resize-y" />
                     </div>
 
                     {/* EDITOR DE PERGUNTAS */}
                     <div className="space-y-3 pt-2 border-t border-soft">
                         <div className="flex items-center justify-between">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-muted">Questionario ({perguntasEditor.length} perguntas)</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Questionario ({perguntasEditor.length} perguntas)</p>
                             <div className="flex gap-1">
                                 <button type="button" onClick={() => setPerguntasEditor(prev => [...prev, { id: crypto.randomUUID(), texto: '', tipo: 'ESCRITA', opcoes: [], correta: null }])}
-                                    className="px-2 py-1 bg-bg border border-soft rounded-lg text-[7px] font-black uppercase text-muted hover:text-fg transition-colors">+ Escrita</button>
+                                    className="px-2 py-1 bg-bg border border-soft rounded-lg text-[13px] font-bold uppercase text-muted hover:text-fg transition-colors">+ Escrita</button>
                                 <button type="button" onClick={() => setPerguntasEditor(prev => [...prev, { id: crypto.randomUUID(), texto: '', tipo: 'MULTIPLA', opcoes: ['', '', '', ''], correta: 0 }])}
-                                    className="px-2 py-1 bg-bg border border-soft rounded-lg text-[7px] font-black uppercase text-muted hover:text-fg transition-colors">+ Multipla</button>
+                                    className="px-2 py-1 bg-bg border border-soft rounded-lg text-[13px] font-bold uppercase text-muted hover:text-fg transition-colors">+ Multipla</button>
                                 <button type="button" onClick={() => setPerguntasEditor(prev => [...prev, { id: crypto.randomUUID(), texto: '', tipo: 'VERDADEIRO_FALSO', opcoes: [], correta: true }])}
-                                    className="px-2 py-1 bg-bg border border-soft rounded-lg text-[7px] font-black uppercase text-muted hover:text-fg transition-colors">+ V/F</button>
+                                    className="px-2 py-1 bg-bg border border-soft rounded-lg text-[13px] font-bold uppercase text-muted hover:text-fg transition-colors">+ V/F</button>
                             </div>
                         </div>
 
                         {perguntasEditor.map((p, idx) => (
                             <div key={p.id} className="bg-bg border border-soft rounded-xl p-3 space-y-2">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[8px] font-black text-muted">{idx + 1}.</span>
+                                    <span className="text-[13px] font-bold text-muted">{idx + 1}.</span>
                                     <span className={`text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${
                                         p.tipo === 'ESCRITA' ? 'bg-blue-500/10 text-blue-400' : p.tipo === 'MULTIPLA' ? 'bg-purple-500/10 text-purple-400' : 'bg-amber-500/10 text-amber-400'
                                     }`}>{p.tipo === 'ESCRITA' ? 'Escrita' : p.tipo === 'MULTIPLA' ? 'Multipla' : 'V/F'}</span>
@@ -464,28 +464,28 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                                                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${p.correta === oi ? 'border-emerald-500 bg-emerald-500' : 'border-soft'}`}>
                                                     {p.correta === oi && <Check size={10} className="text-white" />}
                                                 </button>
-                                                <span className="text-[9px] font-bold text-muted w-4">{String.fromCharCode(65 + oi)})</span>
+                                                <span className="text-[13px] font-bold text-muted w-4">{String.fromCharCode(65 + oi)})</span>
                                                 <input value={op} onChange={e => { const n = [...perguntasEditor]; (n[idx].opcoes as string[])[oi] = e.target.value; setPerguntasEditor(n) }}
                                                     placeholder={`Opcao ${String.fromCharCode(65 + oi)}`} className="flex-1 bg-bg2 border border-soft rounded-lg px-2 py-1.5 text-xs text-fg focus:border-figueira outline-none placeholder:text-muted/30" />
                                             </div>
                                         ))}
-                                        <p className="text-[7px] text-emerald-500 font-bold">Clique no circulo para marcar a resposta correcta</p>
+                                        <p className="text-[13px] text-emerald-500 font-bold">Clique no circulo para marcar a resposta correcta</p>
                                     </div>
                                 )}
 
                                 {p.tipo === 'VERDADEIRO_FALSO' && (
                                     <div className="flex gap-2 pl-2">
                                         <button type="button" onClick={() => { const n = [...perguntasEditor]; n[idx].correta = true; setPerguntasEditor(n) }}
-                                            className={`flex-1 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${p.correta === true ? 'bg-emerald-500 text-white' : 'bg-bg2 border border-soft text-muted'}`}>Verdadeiro</button>
+                                            className={`flex-1 py-1.5 rounded-lg text-[13px] font-bold uppercase transition-all ${p.correta === true ? 'bg-emerald-500 text-white' : 'bg-bg2 border border-soft text-muted'}`}>Verdadeiro</button>
                                         <button type="button" onClick={() => { const n = [...perguntasEditor]; n[idx].correta = false; setPerguntasEditor(n) }}
-                                            className={`flex-1 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${p.correta === false ? 'bg-red-500 text-white' : 'bg-bg2 border border-soft text-muted'}`}>Falso</button>
+                                            className={`flex-1 py-1.5 rounded-lg text-[13px] font-bold uppercase transition-all ${p.correta === false ? 'bg-red-500 text-white' : 'bg-bg2 border border-soft text-muted'}`}>Falso</button>
                                     </div>
                                 )}
                             </div>
                         ))}
                     </div>
 
-                    <button type="submit" disabled={loading} className="w-full py-3 bg-figueira text-white text-[10px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
+                    <button type="submit" disabled={loading} className="w-full py-3 bg-figueira text-white text-[14px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
                         {loading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
                         {loading ? 'A guardar...' : editandoAtividade ? 'Guardar Alteracoes' : 'Criar Atividade'}
                     </button>
@@ -503,8 +503,8 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                 <div className="relative w-full max-w-lg bg-bg2 border border-soft rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col" onClick={e => e.stopPropagation()}>
                     <div className="bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl flex-shrink-0">
                         <div>
-                            <h2 className="text-sm font-black uppercase tracking-widest text-fg">Notas</h2>
-                            <p className="text-[9px] text-muted font-bold">{atv.titulo} (max: {atv.nota_maxima})</p>
+                            <h2 className="text-sm font-bold text-fg">Notas</h2>
+                            <p className="text-[13px] text-muted font-bold">{atv.titulo} (max: {atv.nota_maxima})</p>
                         </div>
                         <button onClick={() => setModalNotas(null)} className="text-muted hover:text-fg transition-colors"><X size={18} /></button>
                     </div>
@@ -514,13 +514,13 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                             return (
                                 <div key={mat.membro_id} className="flex items-center gap-3 bg-bg border border-soft rounded-xl px-4 py-2.5">
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[11px] font-bold text-fg truncate">{mat.membro.first_name} {mat.membro.last_name}</p>
+                                        <p className="text-[14px] font-bold text-fg truncate">{mat.membro.first_name} {mat.membro.last_name}</p>
                                     </div>
                                     <label className="flex items-center gap-1.5 cursor-pointer">
                                         <input type="checkbox" checked={edit.entregue}
                                             onChange={e => setNotasEdit(prev => ({ ...prev, [mat.membro_id]: { ...prev[mat.membro_id], entregue: e.target.checked } }))}
                                             className="w-4 h-4 rounded border-soft accent-figueira" />
-                                        <span className="text-[8px] font-bold text-muted uppercase">Entregue</span>
+                                        <span className="text-[13px] font-bold text-muted uppercase">Entregue</span>
                                     </label>
                                     <input type="number" step="0.1" min="0" max={atv.nota_maxima}
                                         value={edit.nota}
@@ -532,7 +532,7 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                         })}
                     </div>
                     <div className="px-6 py-4 border-t border-soft flex-shrink-0">
-                        <button onClick={handleSalvarNotas} disabled={loading} className="w-full py-3 bg-figueira text-white text-[10px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
+                        <button onClick={handleSalvarNotas} disabled={loading} className="w-full py-3 bg-figueira text-white text-[14px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
                             {loading ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
                             {loading ? 'A guardar...' : 'Guardar Notas'}
                         </button>
@@ -547,11 +547,11 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="relative w-full max-w-lg bg-bg2 border border-soft rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl flex-shrink-0">
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">Marcar Presencas</h2>
+                    <h2 className="text-sm font-bold text-fg">Marcar Presencas</h2>
                     <button onClick={() => { setPresencaAulaId(null); setPresentes([]) }} className="text-muted hover:text-fg transition-colors"><X size={18} /></button>
                 </div>
                 <div className="px-6 pt-3 flex-shrink-0">
-                    <p className="text-[9px] font-bold text-figueira">{presentes.length} presente{presentes.length !== 1 ? 's' : ''}</p>
+                    <p className="text-[13px] font-bold text-figueira">{presentes.length} presente{presentes.length !== 1 ? 's' : ''}</p>
                 </div>
                 <div className="flex-1 overflow-y-auto px-6 py-3 space-y-1">
                     {turma.matriculas.map(mat => {
@@ -562,13 +562,13 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                                 <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 transition-colors ${isP ? 'bg-figueira text-white' : 'border border-soft'}`}>
                                     {isP && <Check size={12} />}
                                 </div>
-                                <span className="text-[11px] font-bold text-fg">{mat.membro.first_name} {mat.membro.last_name}</span>
+                                <span className="text-[14px] font-bold text-fg">{mat.membro.first_name} {mat.membro.last_name}</span>
                             </button>
                         )
                     })}
                 </div>
                 <div className="px-6 py-4 border-t border-soft flex-shrink-0">
-                    <button onClick={salvarPresencasHandler} disabled={presencaLoading} className="w-full py-3 bg-figueira text-white text-[10px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
+                    <button onClick={salvarPresencasHandler} disabled={presencaLoading} className="w-full py-3 bg-figueira text-white text-[14px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
                         {presencaLoading ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
                         {presencaLoading ? 'A guardar...' : 'Guardar Presencas'}
                     </button>
@@ -582,21 +582,21 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
         <main className="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-8 pb-24 animate-in fade-in duration-700">
             {/* Back + Header */}
             <div>
-                <Link href={basePath} className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-muted hover:text-figueira transition-colors mb-4">
+                <Link href={basePath} className="inline-flex items-center gap-1.5 text-[14px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors mb-4">
                     <ChevronLeft size={14} /> Voltar a EBD
                 </Link>
                 <header className="space-y-2">
                     <div className="flex items-center gap-2 text-figueira">
                         <GraduationCap size={16} />
-                        <span className="font-black text-[10px] uppercase tracking-[0.3em]">
+                        <span className="font-bold text-[14px] uppercase tracking-wide">
                             {turma.curso.titulo}
                             {turma.curso.trimestre ? ` — T${turma.curso.trimestre}/${turma.curso.ano}` : ` — ${turma.curso.ano}`}
                         </span>
                     </div>
-                    <h1 className="text-3xl sm:text-4xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h1 className="text-3xl sm:text-4xl font-bold text-fg leading-none">
                         {turma.nome}<span className="text-muted/20">.</span>
                     </h1>
-                    <p className="text-[10px] font-bold text-muted">
+                    <p className="text-[14px] font-bold text-muted">
                         <User size={10} className="inline mr-1" />Prof. {turma.professores.map(p => `${p.first_name} ${p.last_name}`).join(', ')}
                         {turma.faixa_etaria && <span className="ml-3">{turma.faixa_etaria}</span>}
                     </p>
@@ -607,30 +607,30 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="bg-bg2 border border-soft rounded-2xl p-4 text-center">
                     <Users size={16} className="mx-auto text-figueira mb-1" />
-                    <p className="text-lg font-black text-fg">{turma.matriculas.length}</p>
-                    <p className="text-[8px] font-bold uppercase tracking-widest text-muted">Alunos</p>
+                    <p className="text-lg font-bold text-fg">{turma.matriculas.length}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Alunos</p>
                 </div>
                 <div className="bg-bg2 border border-soft rounded-2xl p-4 text-center">
                     <BookOpen size={16} className="mx-auto text-figueira mb-1" />
-                    <p className="text-lg font-black text-fg">{turma.aulas.length}</p>
-                    <p className="text-[8px] font-bold uppercase tracking-widest text-muted">Aulas</p>
+                    <p className="text-lg font-bold text-fg">{turma.aulas.length}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Aulas</p>
                 </div>
                 <div className="bg-bg2 border border-soft rounded-2xl p-4 text-center">
                     <ClipboardList size={16} className="mx-auto text-figueira mb-1" />
-                    <p className="text-lg font-black text-fg">{turma.atividades.length}</p>
-                    <p className="text-[8px] font-bold uppercase tracking-widest text-muted">Atividades</p>
+                    <p className="text-lg font-bold text-fg">{turma.atividades.length}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Atividades</p>
                 </div>
                 <div className="bg-bg2 border border-soft rounded-2xl p-4 text-center">
                     <Award size={16} className="mx-auto text-figueira mb-1" />
-                    <p className="text-lg font-black text-fg">{turma.matriculas.filter(m => m.aprovado === true).length}</p>
-                    <p className="text-[8px] font-bold uppercase tracking-widest text-muted">Aprovados</p>
+                    <p className="text-lg font-bold text-fg">{turma.matriculas.filter(m => m.aprovado === true).length}</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Aprovados</p>
                 </div>
             </div>
 
             {/* Tabs */}
             <div className="flex gap-1 bg-bg2 border border-soft rounded-2xl p-1 overflow-x-auto">
                 {(['alunos', 'aulas', 'atividades', 'resultados'] as const).map(t => (
-                    <button key={t} onClick={() => setTab(t)} className={`flex-1 py-2.5 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all whitespace-nowrap px-2 ${tab === t ? 'bg-figueira text-white' : 'text-muted hover:text-fg'}`}>
+                    <button key={t} onClick={() => setTab(t)} className={`flex-1 py-2.5 text-[13px] font-bold uppercase tracking-wide rounded-xl transition-all whitespace-nowrap px-2 ${tab === t ? 'bg-figueira text-white' : 'text-muted hover:text-fg'}`}>
                         {t === 'alunos' ? 'Alunos' : t === 'aulas' ? 'Aulas' : t === 'atividades' ? 'Atividades' : 'Resultados'}
                     </button>
                 ))}
@@ -640,9 +640,9 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
             {tab === 'alunos' && (
                 <section className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted">{turma.matriculas.length} aluno{turma.matriculas.length !== 1 ? 's' : ''}</p>
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted">{turma.matriculas.length} aluno{turma.matriculas.length !== 1 ? 's' : ''}</p>
                         {podeGerir && (
-                            <button onClick={() => setModalMatricula(true)} className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[9px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity">
+                            <button onClick={() => setModalMatricula(true)} className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[13px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity">
                                 <Plus size={12} /> Matricular
                             </button>
                         )}
@@ -650,15 +650,15 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                     {turma.matriculas.length === 0 ? (
                         <div className="py-16 text-center border-2 border-dashed border-soft rounded-[2.5rem]">
                             <Users size={28} className="mx-auto text-muted/30 mb-3" />
-                            <p className="text-xs font-black uppercase text-muted tracking-widest">Nenhum aluno matriculado.</p>
+                            <p className="text-xs font-bold text-muted">Nenhum aluno matriculado.</p>
                         </div>
                     ) : (
                         <div className="space-y-2">
                             {turma.matriculas.map(mat => (
                                 <div key={mat.membro_id} className="flex items-center gap-3 bg-bg2 border border-soft rounded-xl px-4 py-3">
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[11px] font-black text-fg">{mat.membro.first_name} {mat.membro.last_name}</p>
-                                        <p className="text-[9px] text-muted font-bold">
+                                        <p className="text-[14px] font-bold text-fg">{mat.membro.first_name} {mat.membro.last_name}</p>
+                                        <p className="text-[13px] text-muted font-bold">
                                             {mat.status === 'ATIVA' ? 'Ativa' : mat.status === 'CONCLUIDA' ? 'Concluida' : mat.status}
                                             {mat.nota_final != null && <span className="ml-2">Nota: {mat.nota_final}</span>}
                                             {mat.percentual_presenca != null && <span className="ml-2">Presenca: {mat.percentual_presenca}%</span>}
@@ -682,9 +682,9 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
             {tab === 'aulas' && (
                 <section className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted">{turma.aulas.length} aula{turma.aulas.length !== 1 ? 's' : ''}</p>
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted">{turma.aulas.length} aula{turma.aulas.length !== 1 ? 's' : ''}</p>
                         {podeGerir && (
-                            <button onClick={() => setModalAula(true)} className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[9px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity">
+                            <button onClick={() => setModalAula(true)} className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[13px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity">
                                 <Plus size={12} /> Nova Aula
                             </button>
                         )}
@@ -692,7 +692,7 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                     {turma.aulas.length === 0 ? (
                         <div className="py-16 text-center border-2 border-dashed border-soft rounded-[2.5rem]">
                             <BookOpen size={28} className="mx-auto text-muted/30 mb-3" />
-                            <p className="text-xs font-black uppercase text-muted tracking-widest">Nenhuma aula registada.</p>
+                            <p className="text-xs font-bold text-muted">Nenhuma aula registada.</p>
                         </div>
                     ) : (
                         <div className="space-y-2">
@@ -702,36 +702,36 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                                 <details key={a.id} className="group bg-bg2 border border-soft rounded-xl overflow-hidden hover:border-figueira/30 transition-all">
                                     <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center gap-3 px-4 py-3">
                                         <div className="flex-shrink-0 w-10 h-10 bg-bg border border-soft rounded-lg flex flex-col items-center justify-center">
-                                            <span className="text-[9px] font-black text-figueira leading-none">{new Date(a.data).getDate()}</span>
-                                            <span className="text-[7px] font-bold text-muted uppercase">{new Date(a.data).toLocaleDateString('pt-PT', { month: 'short' })}</span>
+                                            <span className="text-[13px] font-bold text-figueira leading-none">{new Date(a.data).getDate()}</span>
+                                            <span className="text-[13px] font-bold text-muted uppercase">{new Date(a.data).toLocaleDateString('pt-PT', { month: 'short' })}</span>
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-[11px] font-black uppercase tracking-wide text-fg truncate">{a.titulo}</p>
-                                            <p className="text-[9px] text-muted font-bold">{a.professor.first_name} {a.professor.last_name}</p>
+                                            <p className="text-[14px] font-bold uppercase tracking-wide text-fg truncate">{a.titulo}</p>
+                                            <p className="text-[13px] text-muted font-bold">{a.professor.first_name} {a.professor.last_name}</p>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             {aulaAny.link_aula && <Video size={10} className="text-blue-400" />}
-                                            <span className="text-[9px] font-bold text-muted"><Users size={10} className="inline mr-0.5" />{a._count.presencas}</span>
+                                            <span className="text-[13px] font-bold text-muted"><Users size={10} className="inline mr-0.5" />{a._count.presencas}</span>
                                             <ChevronDown size={12} className="text-muted group-open:rotate-180 transition-transform" />
                                         </div>
                                     </summary>
                                     <div className="px-4 pb-4 pt-2 border-t border-soft space-y-3">
-                                        {aulaAny.tema && <div><p className="text-[8px] font-black uppercase tracking-widest text-muted mb-0.5">Tema</p><p className="text-[10px] text-fg/80">{aulaAny.tema}</p></div>}
-                                        {aulaAny.conteudo && <div><p className="text-[8px] font-black uppercase tracking-widest text-muted mb-0.5">Conteudo</p><p className="text-[10px] text-fg/80 whitespace-pre-wrap">{aulaAny.conteudo}</p></div>}
-                                        {aulaAny.material_apoio && <div><p className="text-[8px] font-black uppercase tracking-widest text-muted mb-0.5">Material de Apoio</p><p className="text-[10px] text-fg/80 whitespace-pre-wrap">{aulaAny.material_apoio}</p></div>}
+                                        {aulaAny.tema && <div><p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-0.5">Tema</p><p className="text-[14px] text-fg/80">{aulaAny.tema}</p></div>}
+                                        {aulaAny.conteudo && <div><p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-0.5">Conteudo</p><p className="text-[14px] text-fg/80 whitespace-pre-wrap">{aulaAny.conteudo}</p></div>}
+                                        {aulaAny.material_apoio && <div><p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-0.5">Material de Apoio</p><p className="text-[14px] text-fg/80 whitespace-pre-wrap">{aulaAny.material_apoio}</p></div>}
                                         {aulaAny.perguntas_discussao && Array.isArray(aulaAny.perguntas_discussao) && aulaAny.perguntas_discussao.length > 0 && (
-                                            <div><p className="text-[8px] font-black uppercase tracking-widest text-muted mb-0.5">Perguntas de Discussao</p>
-                                                <ol className="list-decimal list-inside space-y-0.5">{(aulaAny.perguntas_discussao as string[]).map((p, i) => <li key={i} className="text-[10px] text-fg/80">{p}</li>)}</ol>
+                                            <div><p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-0.5">Perguntas de Discussao</p>
+                                                <ol className="list-decimal list-inside space-y-0.5">{(aulaAny.perguntas_discussao as string[]).map((p, i) => <li key={i} className="text-[14px] text-fg/80">{p}</li>)}</ol>
                                             </div>
                                         )}
                                         {aulaAny.link_aula && (
-                                            <a href={aulaAny.link_aula} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600/10 border border-blue-600/20 rounded-2xl text-[9px] font-black uppercase tracking-widest text-blue-400 hover:bg-blue-600/20 transition-colors">
+                                            <a href={aulaAny.link_aula} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600/10 border border-blue-600/20 rounded-2xl text-[13px] font-bold uppercase tracking-wide text-blue-400 hover:bg-blue-600/20 transition-colors">
                                                 <ExternalLink size={10} /> Assistir Aula
                                             </a>
                                         )}
                                         {podeGerir && (
                                             <div className="flex items-center gap-2 pt-2 border-t border-soft/50">
-                                                <button onClick={() => abrirPresencas(a)} className="text-[8px] font-black uppercase text-figueira hover:underline flex items-center gap-1"><Users size={10} /> Presencas</button>
+                                                <button onClick={() => abrirPresencas(a)} className="text-[13px] font-bold uppercase text-figueira hover:underline flex items-center gap-1"><Users size={10} /> Presencas</button>
                                                 <button onClick={async () => { const ok = await confirmar({ mensagem: 'Remover aula?', tipo: 'perigo' }); if (ok) { const r = await removerEBD(a.id); if (r.ok) router.refresh() } }} className="text-red-400 hover:text-red-300 p-1 ml-auto"><Trash2 size={12} /></button>
                                             </div>
                                         )}
@@ -748,9 +748,9 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
             {tab === 'atividades' && (
                 <section className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted">{turma.atividades.length} atividade{turma.atividades.length !== 1 ? 's' : ''}</p>
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted">{turma.atividades.length} atividade{turma.atividades.length !== 1 ? 's' : ''}</p>
                         {podeGerir && (
-                            <button onClick={() => setModalAtividade(true)} className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[9px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity">
+                            <button onClick={() => setModalAtividade(true)} className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[13px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity">
                                 <Plus size={12} /> Nova Atividade
                             </button>
                         )}
@@ -758,29 +758,29 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                     {turma.atividades.length === 0 ? (
                         <div className="py-16 text-center border-2 border-dashed border-soft rounded-[2.5rem]">
                             <ClipboardList size={28} className="mx-auto text-muted/30 mb-3" />
-                            <p className="text-xs font-black uppercase text-muted tracking-widest">Nenhuma atividade criada.</p>
+                            <p className="text-xs font-bold text-muted">Nenhuma atividade criada.</p>
                         </div>
                     ) : (
                         <div className="space-y-2">
                             {turma.atividades.map(atv => (
                                 <div key={atv.id} className="flex items-center gap-3 bg-bg2 border border-soft rounded-xl px-4 py-3">
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-[11px] font-black uppercase tracking-wide text-fg truncate">{atv.titulo}</p>
-                                        <p className="text-[9px] text-muted font-bold">
+                                        <p className="text-[14px] font-bold uppercase tracking-wide text-fg truncate">{atv.titulo}</p>
+                                        <p className="text-[13px] text-muted font-bold">
                                             {TIPO_LABELS[atv.tipo] || atv.tipo} — Peso: {atv.peso} — Max: {atv.nota_maxima}
                                             {atv.data_entrega && <span className="ml-2">{new Date(atv.data_entrega).toLocaleDateString('pt-PT')}</span>}
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[9px] font-bold text-muted">{atv._count.notas} notas</span>
+                                        <span className="text-[13px] font-bold text-muted">{atv._count.notas} notas</span>
                                         {/* Aluno: responder questionario */}
                                         {!podeGerir && (atv.perguntas as any[])?.length > 0 && (
-                                            <button onClick={() => abrirQuestionario(atv.id)} className="text-[8px] font-black uppercase text-figueira hover:underline flex items-center gap-0.5">
+                                            <button onClick={() => abrirQuestionario(atv.id)} className="text-[13px] font-bold uppercase text-figueira hover:underline flex items-center gap-0.5">
                                                 <ClipboardList size={10} /> Responder
                                             </button>
                                         )}
-                                        {podeGerir && <button onClick={() => abrirEdicaoAtividade(atv)} className="text-[8px] font-black uppercase text-blue-400 hover:underline">Editar</button>}
-                                        {podeGerir && <button onClick={() => abrirNotas(atv.id)} className="text-[8px] font-black uppercase text-figueira hover:underline">Lancar Notas</button>}
+                                        {podeGerir && <button onClick={() => abrirEdicaoAtividade(atv)} className="text-[13px] font-bold uppercase text-blue-400 hover:underline">Editar</button>}
+                                        {podeGerir && <button onClick={() => abrirNotas(atv.id)} className="text-[13px] font-bold uppercase text-figueira hover:underline">Lancar Notas</button>}
                                         {podeGerir && <button onClick={async () => { const ok = await confirmar({ mensagem: 'Remover atividade?', tipo: 'perigo' }); if (ok) { const r = await removerAtividade(atv.id); if (r.ok) router.refresh() } }} className="text-red-400 hover:text-red-300 p-1"><Trash2 size={12} /></button>}
                                     </div>
                                 </div>
@@ -794,11 +794,11 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
             {tab === 'resultados' && (
                 <section className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted">
+                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted">
                             Nota min: {turma.curso.nota_minima} | Presenca min: {turma.curso.presenca_minima}%
                         </p>
                         {podeGerir && (
-                            <button onClick={handleCalcularAprovacao} disabled={loading} className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[9px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50">
+                            <button onClick={handleCalcularAprovacao} disabled={loading} className="flex items-center gap-2 px-5 py-2.5 bg-figueira text-white text-[13px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50">
                                 {loading ? <Loader2 size={12} className="animate-spin" /> : <Calculator size={12} />}
                                 Calcular Aprovacao
                             </button>
@@ -810,7 +810,7 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                         return matriculasVisiveis.length === 0 ? (
                         <div className="py-16 text-center border-2 border-dashed border-soft rounded-[2.5rem]">
                             <Award size={28} className="mx-auto text-muted/30 mb-3" />
-                            <p className="text-xs font-black uppercase text-muted tracking-widest">{podeGerir ? 'Nenhum aluno matriculado.' : 'Sem resultados disponiveis.'}</p>
+                            <p className="text-xs font-bold text-muted">{podeGerir ? 'Nenhum aluno matriculado.' : 'Sem resultados disponiveis.'}</p>
                         </div>
                     ) : (
                         <div className="space-y-2">
@@ -819,18 +819,18 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                                 return (
                                     <div key={mat.membro_id} className={`flex items-center gap-3 bg-bg2 border rounded-xl px-4 py-3 ${aprovado === true ? 'border-green-600/30' : aprovado === false ? 'border-red-600/30' : 'border-soft'}`}>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-[11px] font-black text-fg">{mat.membro.first_name} {mat.membro.last_name}</p>
+                                            <p className="text-[14px] font-bold text-fg">{mat.membro.first_name} {mat.membro.last_name}</p>
                                         </div>
-                                        <div className="flex items-center gap-4 text-[10px] font-bold">
+                                        <div className="flex items-center gap-4 text-[14px] font-bold">
                                             <span className={mat.nota_final != null && mat.nota_final >= turma.curso.nota_minima ? 'text-green-400' : mat.nota_final != null ? 'text-red-400' : 'text-muted'}>
                                                 Nota: {mat.nota_final != null ? mat.nota_final : '--'}
                                             </span>
                                             <span className={mat.percentual_presenca != null && mat.percentual_presenca >= turma.curso.presenca_minima ? 'text-green-400' : mat.percentual_presenca != null ? 'text-red-400' : 'text-muted'}>
                                                 Presenca: {mat.percentual_presenca != null ? `${mat.percentual_presenca}%` : '--'}
                                             </span>
-                                            {aprovado === true && <span className="text-[8px] font-black uppercase tracking-wider bg-green-600/10 text-green-400 px-2 py-0.5 rounded-full border border-green-600/20">Aprovado</span>}
-                                            {aprovado === false && <span className="text-[8px] font-black uppercase tracking-wider bg-red-600/10 text-red-400 px-2 py-0.5 rounded-full border border-red-600/20">Reprovado</span>}
-                                            {aprovado == null && <span className="text-[8px] font-black uppercase tracking-wider bg-bg text-muted px-2 py-0.5 rounded-full border border-soft">Pendente</span>}
+                                            {aprovado === true && <span className="text-[13px] font-bold uppercase tracking-wide bg-green-600/10 text-green-400 px-2 py-0.5 rounded-full border border-green-600/20">Aprovado</span>}
+                                            {aprovado === false && <span className="text-[13px] font-bold uppercase tracking-wide bg-red-600/10 text-red-400 px-2 py-0.5 rounded-full border border-red-600/20">Reprovado</span>}
+                                            {aprovado == null && <span className="text-[13px] font-bold uppercase tracking-wide bg-bg text-muted px-2 py-0.5 rounded-full border border-soft">Pendente</span>}
                                         </div>
                                     </div>
                                 )
@@ -859,22 +859,22 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                         <div className="relative w-full max-w-2xl bg-bg2 border border-soft rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col" onClick={e => e.stopPropagation()}>
                             <div className="bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl flex-shrink-0">
                                 <div>
-                                    <h2 className="text-sm font-black uppercase tracking-widest text-fg">{atv.titulo}</h2>
-                                    <p className="text-[9px] text-muted font-bold">{TIPO_LABELS[atv.tipo]} — Nota max: {atv.nota_maxima}</p>
+                                    <h2 className="text-sm font-bold text-fg">{atv.titulo}</h2>
+                                    <p className="text-[13px] text-muted font-bold">{TIPO_LABELS[atv.tipo]} — Nota max: {atv.nota_maxima}</p>
                                 </div>
                                 <button onClick={() => setQuestionarioAberto(null)} className="text-muted hover:text-fg transition-colors"><X size={18} /></button>
                             </div>
 
                             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
                                 {jaRespondeu && (
-                                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 text-[10px] font-bold text-emerald-400">
+                                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 text-[14px] font-bold text-emerald-400">
                                         <Check size={12} className="inline mr-1" /> Ja respondeu esta atividade. Pode alterar as respostas.
                                     </div>
                                 )}
 
                                 {perguntas.map((p: any, idx: number) => (
                                     <div key={p.id} className="space-y-2">
-                                        <p className="text-[11px] font-black text-fg">
+                                        <p className="text-[14px] font-bold text-fg">
                                             <span className="text-muted mr-1">{idx + 1}.</span> {p.texto}
                                         </p>
 
@@ -929,7 +929,7 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
 
                             <div className="px-6 py-4 border-t border-soft flex-shrink-0">
                                 <button onClick={handleEnviarRespostas} disabled={enviandoResposta}
-                                    className="w-full py-3 bg-figueira text-white text-[10px] font-black uppercase tracking-widest rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
+                                    className="w-full py-3 bg-figueira text-white text-[14px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
                                     {enviandoResposta ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                                     {enviandoResposta ? 'A enviar...' : 'Enviar Respostas'}
                                 </button>

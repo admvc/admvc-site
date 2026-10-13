@@ -42,8 +42,8 @@ export default function BotaoCriarPermanecer() {
                         <BookOpen size={18} className="text-figueira" />
                     </div>
                     <div>
-                        <p className="text-sm font-black uppercase italic tracking-tighter text-fg">Curso Permanecer</p>
-                        <p className="text-[9px] text-muted font-bold uppercase tracking-widest mt-0.5">
+                        <p className="text-sm font-bold text-fg">Curso Permanecer</p>
+                        <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-0.5">
                             Cria o curso de integracao com questionario baseado na apostila.
                         </p>
                     </div>
@@ -51,7 +51,7 @@ export default function BotaoCriarPermanecer() {
                 <button
                     onClick={handleCriar}
                     disabled={loading}
-                    className="shrink-0 flex items-center justify-center gap-2 px-5 py-3 bg-figueira text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:brightness-110 transition-all disabled:opacity-50 shadow-sm"
+                    className="shrink-0 flex items-center justify-center gap-2 px-5 py-3 bg-figueira text-white rounded-xl text-[13px] font-bold uppercase tracking-wide hover:brightness-110 transition-all disabled:opacity-50 shadow-sm"
                 >
                     {loading ? <Loader2 size={13} className="animate-spin" /> : <BookOpen size={13} />}
                     {loading ? 'A criar...' : 'Criar Curso Permanecer'}

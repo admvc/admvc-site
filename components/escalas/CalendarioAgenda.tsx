@@ -46,14 +46,14 @@ export default function CalendarioAgenda({ eventos, congregacoes }: { eventos: a
 
                 {/* HEADER DO CALENDÁRIO */}
                 <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-2xl font-black italic uppercase tracking-tighter text-fg capitalize">
+                    <h2 className="text-2xl font-bold text-fg capitalize">
                         {format(mesAtual, 'MMMM yyyy', { locale: pt })}
                     </h2>
                     <div className="flex items-center gap-2">
                         <button onClick={mesAnterior} className="p-3 bg-soft rounded-2xl hover:bg-figueira hover:text-white transition-all">
                             <ChevronLeft size={16} />
                         </button>
-                        <button onClick={() => { setMesAtual(new Date()); setDiaSelecionado(new Date()); }} className="px-4 py-3 bg-soft rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-figueira hover:text-white transition-all hidden sm:block">
+                        <button onClick={() => { setMesAtual(new Date()); setDiaSelecionado(new Date()); }} className="px-4 py-3 bg-soft rounded-2xl text-[13px] font-bold uppercase tracking-wide hover:bg-figueira hover:text-white transition-all hidden sm:block">
                             Hoje
                         </button>
                         <button onClick={proximoMes} className="p-3 bg-soft rounded-2xl hover:bg-figueira hover:text-white transition-all">
@@ -65,7 +65,7 @@ export default function CalendarioAgenda({ eventos, congregacoes }: { eventos: a
                 {/* DIAS DA SEMANA */}
                 <div className="grid grid-cols-7 mb-4">
                     {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].map(dia => (
-                        <div key={dia} className="text-center text-[10px] font-black text-muted uppercase tracking-widest pb-4 border-b border-soft">
+                        <div key={dia} className="text-center text-[14px] font-bold text-muted uppercase tracking-wide pb-4 border-b border-soft">
                             {dia}
                         </div>
                     ))}
@@ -90,7 +90,7 @@ export default function CalendarioAgenda({ eventos, congregacoes }: { eventos: a
                                     ${selecionado ? 'bg-fg text-bg shadow-xl scale-105 z-10' : 'bg-transparent text-fg'}
                                 `}
                             >
-                                <span className={`text-lg font-black italic leading-none ${hoje && !selecionado ? 'text-figueira' : ''}`}>
+                                <span className={`text-lg font-bold leading-none ${hoje && !selecionado ? 'text-figueira' : ''}`}>
                                     {format(dia, 'd')}
                                 </span>
 
@@ -112,10 +112,10 @@ export default function CalendarioAgenda({ eventos, congregacoes }: { eventos: a
                 <div className="flex items-center gap-3 mb-6 pb-4 border-b border-soft border-dashed">
                     <Calendar size={20} className="text-figueira" />
                     <div>
-                        <h3 className="text-lg font-black uppercase italic tracking-tighter text-fg">
+                        <h3 className="text-lg font-bold text-fg">
                             {format(diaSelecionado, "EEEE, dd 'de' MMMM", { locale: pt })}
                         </h3>
-                        <p className="text-[9px] font-bold text-muted uppercase tracking-widest mt-1">Eventos Agendados</p>
+                        <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-1">Eventos Agendados</p>
                     </div>
                 </div>
 
@@ -148,8 +148,8 @@ return (
 
                                     {/* DETALHES DO EVENTO */}
                                     <div className="pr-20"> {/* Aumentei o padding direito para o texto não ficar por baixo dos botões */}
-                                        <h4 className="text-sm font-black uppercase tracking-tight text-fg group-hover:text-figueira transition-colors truncate">{ev.nome}</h4>
-                                        <div className="flex items-center gap-3 mt-2 text-[9px] font-black uppercase text-muted tracking-widest">
+                                        <h4 className="text-sm font-bold text-fg group-hover:text-figueira transition-colors truncate">{ev.nome}</h4>
+                                        <div className="flex items-center gap-3 mt-2 text-[13px] font-bold uppercase text-muted tracking-wide">
                                             {/* MOSTRA O HORÁRIO CORRETO AQUI */}
                                             <span className="flex items-center gap-1"><Clock size={10} /> {horarioEvento}</span>
                                             <span className="flex items-center gap-1"><MapPin size={10} /> Presencial</span>
@@ -158,9 +158,9 @@ return (
 
                                     {/* CONTADOR DE VOLUNTÁRIOS */}
                                     <div className="flex items-center justify-between border-t border-soft/50 pt-3 mt-1">
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-muted">Voluntários:</span>
+                                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Voluntários:</span>
 
-                                        <span className={`text-[10px] font-black px-3 py-1.5 rounded-xl border flex items-center gap-1.5 ${totalEscalados > 0 ? 'bg-soft/50 text-fg border-soft' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
+                                        <span className={`text-[14px] font-bold px-3 py-1.5 rounded-xl border flex items-center gap-1.5 ${totalEscalados > 0 ? 'bg-soft/50 text-fg border-soft' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>
                                             <Users size={12} />
                                             {totalEscalados} {totalEscalados === 1 ? 'Escalado' : 'Escalados'}
                                         </span>
@@ -172,7 +172,7 @@ return (
                 ) : (
                     <div className="text-center py-10 opacity-50">
                         <Calendar size={32} className="mx-auto mb-3" />
-                        <p className="text-[10px] font-black uppercase tracking-widest">Nenhum evento neste dia.</p>
+                        <p className="text-[14px] font-bold uppercase tracking-wide">Nenhum evento neste dia.</p>
                     </div>
                 )}
             </div>

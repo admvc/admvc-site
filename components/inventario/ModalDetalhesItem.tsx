@@ -86,8 +86,8 @@ export default function ModalDetalhesItem({ item, onClose, onMovimento, onSucess
         if (!value) return null
         return (
             <div className="flex items-start justify-between gap-4 py-2 border-b border-soft/50">
-                <span className="text-[8px] font-black uppercase tracking-widest text-muted shrink-0">{label}</span>
-                <span className="text-[10px] font-bold text-fg text-right">{value}</span>
+                <span className="text-[13px] font-bold uppercase tracking-wide text-muted shrink-0">{label}</span>
+                <span className="text-[14px] font-bold text-fg text-right">{value}</span>
             </div>
         )
     }
@@ -101,9 +101,9 @@ export default function ModalDetalhesItem({ item, onClose, onMovimento, onSucess
                     <div className="px-7 py-5 border-b border-soft bg-bg2 shrink-0">
                         <div className="flex items-start justify-between gap-3">
                             <div>
-                                <h3 className="text-base font-black uppercase italic tracking-tighter text-fg leading-tight">{item.nome}</h3>
+                                <h3 className="text-base font-bold text-fg leading-tight">{item.nome}</h3>
                                 <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                    <span className="text-[8px] font-bold text-muted uppercase tracking-widest">
+                                    <span className="text-[13px] font-bold text-muted uppercase tracking-wide">
                                         {nomeDono()} · {item.localizacao || 'Sem localização'}
                                     </span>
                                     <span className={`text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full
@@ -113,7 +113,7 @@ export default function ModalDetalhesItem({ item, onClose, onMovimento, onSucess
                                         {item.quantidade_disponivel}/{item.quantidade_total} disp.
                                     </span>
                                     {garantiaExpirando && (
-                                        <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-600 flex items-center gap-1">
+                                        <span className="text-[13px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-600 flex items-center gap-1">
                                             <AlertTriangle size={8} /> Garantia a expirar
                                         </span>
                                     )}
@@ -165,16 +165,16 @@ export default function ModalDetalhesItem({ item, onClose, onMovimento, onSucess
                                         ${garantiaExpirando ? 'bg-orange-500/5 border-orange-500/20' : 'bg-emerald-500/5 border-emerald-500/20'}`}>
                                         <ShieldCheck size={16} className={garantiaExpirando ? 'text-orange-500 shrink-0 mt-0.5' : 'text-emerald-500 shrink-0 mt-0.5'} />
                                         <div>
-                                            <p className={`text-[9px] font-black uppercase tracking-widest ${garantiaExpirando ? 'text-orange-700' : 'text-emerald-700'}`}>
+                                            <p className={`text-[13px] font-bold uppercase tracking-wide ${garantiaExpirando ? 'text-orange-700' : 'text-emerald-700'}`}>
                                                 {garantiaExpirando ? 'Garantia a expirar em breve' : 'Em Garantia'}
                                             </p>
                                             {item.garantia_validade && (
-                                                <p className="text-[8px] font-bold text-muted mt-0.5">
+                                                <p className="text-[13px] font-bold text-muted mt-0.5">
                                                     Válida até {new Date(item.garantia_validade).toLocaleDateString('pt-PT')}
                                                 </p>
                                             )}
                                             {item.garantia_info && (
-                                                <p className="text-[8px] font-medium text-muted mt-0.5">{item.garantia_info}</p>
+                                                <p className="text-[13px] font-medium text-muted mt-0.5">{item.garantia_info}</p>
                                             )}
                                         </div>
                                     </div>
@@ -182,14 +182,14 @@ export default function ModalDetalhesItem({ item, onClose, onMovimento, onSucess
 
                                 {item.notas && (
                                     <div className="mt-2 bg-bg2 border border-soft rounded-xl p-4">
-                                        <p className="text-[8px] font-black uppercase tracking-widest text-muted mb-1">Notas</p>
-                                        <p className="text-[10px] font-medium text-fg leading-relaxed">{item.notas}</p>
+                                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Notas</p>
+                                        <p className="text-[14px] font-medium text-fg leading-relaxed">{item.notas}</p>
                                     </div>
                                 )}
 
                                 <div className="flex gap-2 pt-4">
                                     <button onClick={onMovimento}
-                                        className="flex-1 flex items-center justify-center gap-2 bg-blue-500/10 text-blue-700 border border-blue-500/20 py-3 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all active:scale-95">
+                                        className="flex-1 flex items-center justify-center gap-2 bg-blue-500/10 text-blue-700 border border-blue-500/20 py-3 rounded-2xl font-bold text-[13px] uppercase tracking-wide hover:bg-blue-500 hover:text-white transition-all active:scale-95">
                                         <ArrowLeftRight size={13} /> Registar Movimento
                                     </button>
                                     {!confirmArchive ? (
@@ -199,7 +199,7 @@ export default function ModalDetalhesItem({ item, onClose, onMovimento, onSucess
                                         </button>
                                     ) : (
                                         <button onClick={handleArquivar} disabled={isPending}
-                                            className="flex items-center gap-2 bg-red-500 text-white px-4 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-red-600 transition-all active:scale-95 disabled:opacity-50">
+                                            className="flex items-center gap-2 bg-red-500 text-white px-4 rounded-2xl font-bold text-[13px] uppercase tracking-wide hover:bg-red-600 transition-all active:scale-95 disabled:opacity-50">
                                             {isPending ? <Loader2 size={12} className="animate-spin" /> : <Archive size={12} />}
                                             Confirmar
                                         </button>
@@ -214,27 +214,27 @@ export default function ModalDetalhesItem({ item, onClose, onMovimento, onSucess
                                 {item.movimentos.length === 0 ? (
                                     <div className="py-12 text-center">
                                         <Clock size={24} className="mx-auto text-muted/20 mb-3" />
-                                        <p className="text-[9px] font-black uppercase tracking-widest text-muted">Sem movimentos registados</p>
+                                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Sem movimentos registados</p>
                                     </div>
                                 ) : item.movimentos.map((m: any) => (
                                     <div key={m.id} className="flex items-start gap-3 p-4 bg-bg2 border border-soft rounded-2xl">
-                                        <span className={`text-[7px] font-black uppercase tracking-widest px-2 py-1 rounded-lg shrink-0 ${TIPO_COR[m.tipo] || 'bg-soft text-muted'}`}>
+                                        <span className={`text-[13px] font-bold uppercase tracking-wide px-2 py-1 rounded-lg shrink-0 ${TIPO_COR[m.tipo] || 'bg-soft text-muted'}`}>
                                             {TIPO_LABEL[m.tipo] || m.tipo}
                                         </span>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[10px] font-black text-fg">Qty: {m.quantidade}</span>
-                                                {m.destino && <span className="text-[9px] text-muted">→ {m.destino}</span>}
+                                                <span className="text-[14px] font-bold text-fg">Qty: {m.quantidade}</span>
+                                                {m.destino && <span className="text-[13px] text-muted">→ {m.destino}</span>}
                                             </div>
-                                            {m.observacao && <p className="text-[9px] text-muted mt-0.5 italic">{m.observacao}</p>}
-                                            {m.responsavel && <p className="text-[8px] text-muted mt-0.5">Por: {m.responsavel}</p>}
+                                            {m.observacao && <p className="text-[13px] text-muted mt-0.5">{m.observacao}</p>}
+                                            {m.responsavel && <p className="text-[13px] text-muted mt-0.5">Por: {m.responsavel}</p>}
                                             {m.data_retorno_prevista && (
-                                                <p className="text-[8px] text-orange-500 mt-0.5">
+                                                <p className="text-[13px] text-orange-500 mt-0.5">
                                                     Retorno previsto: {new Date(m.data_retorno_prevista).toLocaleDateString('pt-PT')}
                                                 </p>
                                             )}
                                         </div>
-                                        <span className="text-[7px] font-bold text-muted shrink-0">
+                                        <span className="text-[13px] font-bold text-muted shrink-0">
                                             {new Date(m.created_at).toLocaleDateString('pt-PT')}
                                         </span>
                                     </div>
@@ -246,31 +246,31 @@ export default function ModalDetalhesItem({ item, onClose, onMovimento, onSucess
                         {tab === 'editar' && (
                             <form onSubmit={handleEditar} className="space-y-4">
                                 {editErro && (
-                                    <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-[9px] font-bold text-red-600">
+                                    <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-[13px] font-bold text-red-600">
                                         {editErro}
                                     </div>
                                 )}
 
                                 <div className="space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Nome *</label>
+                                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Nome *</label>
                                     <input name="nome" defaultValue={item.nome} required
-                                        className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none" />
+                                        className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none" />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1.5">
-                                        <label className="text-[8px] font-black uppercase tracking-widest text-muted">Categoria</label>
+                                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Categoria</label>
                                         <select name="categoria" defaultValue={item.categoria}
-                                            className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                                            className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                                             {['ELETRONICO', 'INSTRUMENTO', 'MOVEL', 'VEICULO', 'FERRAMENTA', 'VESTUARIO', 'LIVRO', 'CONSUMIVEL', 'OUTRO'].map(c => (
                                                 <option key={c} value={c}>{c}</option>
                                             ))}
                                         </select>
                                     </div>
                                     <div className="space-y-1.5">
-                                        <label className="text-[8px] font-black uppercase tracking-widest text-muted">Estado</label>
+                                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Estado</label>
                                         <select name="estado" defaultValue={item.estado}
-                                            className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
+                                            className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
                                             {['OTIMO', 'BOM', 'REGULAR', 'DANIFICADO', 'INUTILIZAVEL'].map(e => (
                                                 <option key={e} value={e}>{e}</option>
                                             ))}
@@ -279,14 +279,14 @@ export default function ModalDetalhesItem({ item, onClose, onMovimento, onSucess
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Localização</label>
+                                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Localização</label>
                                     <input name="localizacao" defaultValue={item.localizacao || ''}
-                                        className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none" />
+                                        className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none" />
                                 </div>
 
                                 {/* GARANTIA */}
                                 <div className="flex items-center justify-between p-3 bg-bg2 border border-soft rounded-xl">
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-fg">Tem Garantia</span>
+                                    <span className="text-[13px] font-bold uppercase tracking-wide text-fg">Tem Garantia</span>
                                     <div onClick={() => setTemGarantia(!temGarantia)} className={`w-10 h-6 rounded-full transition-all relative cursor-pointer ${temGarantia ? 'bg-figueira' : 'bg-soft'}`}>
                                         <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${temGarantia ? 'left-5' : 'left-1'}`} />
                                     </div>
@@ -294,23 +294,23 @@ export default function ModalDetalhesItem({ item, onClose, onMovimento, onSucess
                                 {temGarantia && (
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="space-y-1.5">
-                                            <label className="text-[8px] font-black uppercase tracking-widest text-muted">Válida até</label>
+                                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Válida até</label>
                                             <input type="date" name="garantia_validade"
                                                 defaultValue={item.garantia_validade ? item.garantia_validade.split('T')[0] : ''}
-                                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none" />
+                                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none" />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-[8px] font-black uppercase tracking-widest text-muted">Info Garantia</label>
+                                            <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Info Garantia</label>
                                             <input name="garantia_info" defaultValue={item.garantia_info || ''}
-                                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none" />
+                                                className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none" />
                                         </div>
                                     </div>
                                 )}
 
                                 <div className="space-y-1.5">
-                                    <label className="text-[8px] font-black uppercase tracking-widest text-muted">Notas</label>
+                                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Notas</label>
                                     <textarea name="notas" rows={2} defaultValue={item.notas || ''}
-                                        className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[11px] font-bold text-fg focus:border-figueira outline-none resize-none" />
+                                        className="w-full bg-bg border border-soft rounded-xl px-3 py-2.5 text-[14px] font-bold text-fg focus:border-figueira outline-none resize-none" />
                                 </div>
 
                                 <button type="submit" disabled={isPending}

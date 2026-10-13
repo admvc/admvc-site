@@ -63,10 +63,10 @@ export default async function StockPage() {
         <main className="max-w-7xl mx-auto pt-16 md:py-10 px-4 sm:px-6 lg:px-8 space-y-6 md:space-y-10 animate-in fade-in duration-700 pb-28 md:pb-32">
             {/* Header */}
             <header className="space-y-2">
-                <Link href="/assistencia" className="text-figueira font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2 hover:brightness-125 transition-all">
+                <Link href="/assistencia" className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center gap-2 hover:brightness-125 transition-all">
                     <HeartHandshake size={14} /> Assistencia Social
                 </Link>
-                <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-fg">
+                <h1 className="text-3xl md:text-4xl font-bold text-fg">
                     Gestao de Stock
                 </h1>
                 <p className="text-xs text-muted">Adicionar, editar e remover itens do inventario social.</p>
@@ -75,7 +75,7 @@ export default async function StockPage() {
             {/* Form to add new item — apenas líder/admin */}
             {podeGerirStock && (
                 <section className="space-y-4">
-                    <h2 className="text-sm font-black uppercase tracking-widest text-fg flex items-center gap-2">
+                    <h2 className="text-sm font-bold text-fg flex items-center gap-2">
                         <Plus size={14} className="text-figueira" /> Novo Item
                     </h2>
                     <div className="bg-bg2 border border-soft rounded-2xl p-6">
@@ -86,7 +86,7 @@ export default async function StockPage() {
 
             {/* Items table */}
             <section className="space-y-4">
-                <h2 className="text-sm font-black uppercase tracking-widest text-fg flex items-center gap-2">
+                <h2 className="text-sm font-bold text-fg flex items-center gap-2">
                     <Package size={14} className="text-figueira" /> Itens ({itens.length})
                 </h2>
 
@@ -99,11 +99,11 @@ export default async function StockPage() {
                     <div className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                         {/* Header row */}
                         <div className="hidden sm:grid sm:grid-cols-6 gap-4 px-6 py-3 border-b border-soft">
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted col-span-2">Nome</p>
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted">Categoria</p>
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted">Unidade</p>
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted text-right">Stock</p>
-                            <p className="text-[8px] font-black uppercase tracking-widest text-muted text-right">Acoes</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted col-span-2">Nome</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Categoria</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Unidade</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted text-right">Stock</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted text-right">Acoes</p>
                         </div>
 
                         {itens.map((item, idx) => {
@@ -112,9 +112,9 @@ export default async function StockPage() {
                                 <div key={item.id} className={`grid grid-cols-2 sm:grid-cols-6 gap-4 px-6 py-4 items-center ${idx > 0 ? 'border-t border-soft' : ''}`}>
                                     {/* Nome */}
                                     <div className="col-span-2">
-                                        <p className="text-sm font-black uppercase text-fg">{item.nome}</p>
+                                        <p className="text-sm font-bold text-fg">{item.nome}</p>
                                         {lowStock && (
-                                            <p className="text-[9px] text-orange-500 font-bold flex items-center gap-1 mt-0.5">
+                                            <p className="text-[13px] text-orange-500 font-bold flex items-center gap-1 mt-0.5">
                                                 <AlertTriangle size={10} /> Stock baixo (min: {item.stock_minimo})
                                             </p>
                                         )}
@@ -122,7 +122,7 @@ export default async function StockPage() {
 
                                     {/* Categoria badge */}
                                     <div>
-                                        <span className={`inline-block text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-xl border ${CATEGORIA_BADGES[item.categoria] || CATEGORIA_BADGES.OUTRO}`}>
+                                        <span className={`inline-block text-[13px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-xl border ${CATEGORIA_BADGES[item.categoria] || CATEGORIA_BADGES.OUTRO}`}>
                                             {CATEGORIA_LABELS[item.categoria] || item.categoria}
                                         </span>
                                     </div>
@@ -131,7 +131,7 @@ export default async function StockPage() {
                                     <p className="text-sm text-muted font-bold">{item.unidade}</p>
 
                                     {/* Stock */}
-                                    <p className={`text-lg font-black italic text-right ${lowStock ? 'text-orange-500' : 'text-fg'}`}>
+                                    <p className={`text-lg font-bold text-right ${lowStock ? 'text-orange-500' : 'text-fg'}`}>
                                         {item.stock}
                                     </p>
 

@@ -42,12 +42,12 @@ export default async function TermosPage() {
             <header className="text-center space-y-4">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-figueira/10 rounded-full text-figueira">
                     <ShieldCheck size={16} strokeWidth={3} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em]">Central de Assinaturas</span>
+                    <span className="text-[14px] font-bold uppercase tracking-wide">Central de Assinaturas</span>
                 </div>
-                <h1 className="text-5xl md:text-6xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                <h1 className="text-5xl md:text-6xl font-bold text-fg leading-none">
                     Aceite <span className="text-muted">&</span> Compromisso
                 </h1>
-                <p className="text-xs font-bold text-muted uppercase tracking-widest max-w-lg mx-auto">
+                <p className="text-xs font-bold text-muted max-w-lg mx-auto">
                     Analise e assine os documentos pendentes para regularizar o seu registo na igreja.
                 </p>
             </header>
@@ -67,8 +67,8 @@ export default async function TermosPage() {
                                     {permanecerPendente ? <Anchor size={24} /> : <CheckCircle2 size={24} />}
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-black uppercase italic text-fg leading-none tracking-tight">Termo Permanecer</h2>
-                                    <p className="text-[9px] font-black text-muted uppercase tracking-[0.2em] mt-1">Compromisso de Membresia</p>
+                                    <h2 className="text-2xl font-bold text-fg leading-none">Termo Permanecer</h2>
+                                    <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-1">Compromisso de Membresia</p>
                                 </div>
                             </div>
 
@@ -77,7 +77,7 @@ export default async function TermosPage() {
                                 href="/documentos/termo_permanecer.pdf"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-2 px-4 py-2 bg-bg2 border border-soft text-muted hover:text-figueira hover:border-figueira rounded-xl text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 shrink-0"
+                                className="flex items-center gap-2 px-4 py-2 bg-bg2 border border-soft text-muted hover:text-figueira hover:border-figueira rounded-xl text-[13px] font-bold uppercase tracking-wide transition-all active:scale-95 shrink-0"
                             >
                                 <FileText size={14} />
                                 Ler Documento Completo
@@ -94,7 +94,7 @@ export default async function TermosPage() {
                                     'Submeto-me à mentoria e ao cuidado da liderança espiritual.',
                                     'Zelarei pela unidade e paz do corpo de membros.'
                                 ].map((item, i) => (
-                                    <li key={i} className="flex items-start gap-3 text-[10px] font-bold uppercase text-fg leading-tight">
+                                    <li key={i} className="flex items-start gap-3 text-[14px] font-bold uppercase text-fg leading-tight">
                                         <CheckCircle2 size={14} className={permanecerPendente ? 'text-figueira shrink-0' : 'text-green-500 shrink-0'} /> {item}
                                     </li>
                                 ))}
@@ -109,10 +109,10 @@ export default async function TermosPage() {
                                 <div className="flex items-center justify-between bg-green-500/10 p-4 rounded-2xl border border-green-500/20">
                                     <div className="flex items-center gap-3">
                                         <CalendarCheck size={18} className="text-green-600" />
-                                        <span className="text-[10px] font-black text-green-700 uppercase tracking-widest">Documento Válido e Assinado</span>
+                                        <span className="text-[14px] font-bold text-green-700 uppercase tracking-wide">Documento Válido e Assinado</span>
                                     </div>
                                     {membro.permanecer_validade && (
-                                        <span className="text-[9px] font-bold text-green-600/70 uppercase tracking-widest">
+                                        <span className="text-[13px] font-bold text-green-600/70 uppercase tracking-wide">
                                             Válido até: {membro.permanecer_validade.toLocaleDateString('pt-PT')}
                                         </span>
                                     )}
@@ -134,19 +134,19 @@ export default async function TermosPage() {
                                 {gdprPendente ? <Fingerprint size={24} /> : <CheckCircle2 size={24} />}
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black uppercase italic text-fg leading-none tracking-tight">Privacidade GDPR</h2>
-                                <p className="text-[9px] font-black text-muted uppercase tracking-[0.2em] mt-1">Tratamento de Dados</p>
+                                <h2 className="text-2xl font-bold text-fg leading-none">Privacidade GDPR</h2>
+                                <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-1">Tratamento de Dados</p>
                             </div>
                         </div>
 
                         <div className="prose prose-sm text-muted font-medium leading-relaxed">
                             <p>De acordo com o Regulamento Geral sobre a Proteção de Dados (GDPR), autorizo o tratamento dos meus dados para:</p>
                             <div className="grid md:grid-cols-2 gap-4 mt-4">
-                                <div className="p-4 bg-bg rounded-2xl border border-soft text-[9px] font-black uppercase tracking-widest text-muted">
+                                <div className="p-4 bg-bg rounded-2xl border border-soft text-[13px] font-bold uppercase tracking-wide text-muted">
                                     <span className="text-fg block mb-1">Gestão Interna</span>
                                     Cadastro, escalas e aniversários.
                                 </div>
-                                <div className="p-4 bg-bg rounded-2xl border border-soft text-[9px] font-black uppercase tracking-widest text-muted">
+                                <div className="p-4 bg-bg rounded-2xl border border-soft text-[13px] font-bold uppercase tracking-wide text-muted">
                                     <span className="text-fg block mb-1">Comunicação</span>
                                     Envio de avisos via WhatsApp e E-mail.
                                 </div>
@@ -161,10 +161,10 @@ export default async function TermosPage() {
                                 <div className="flex items-center justify-between bg-green-500/10 p-4 rounded-2xl border border-green-500/20">
                                     <div className="flex items-center gap-3">
                                         <CalendarCheck size={18} className="text-green-600" />
-                                        <span className="text-[10px] font-black text-green-700 uppercase tracking-widest">Documento Válido e Assinado</span>
+                                        <span className="text-[14px] font-bold text-green-700 uppercase tracking-wide">Documento Válido e Assinado</span>
                                     </div>
                                     {membro.gdpr_validade && (
-                                        <span className="text-[9px] font-bold text-green-600/70 uppercase tracking-widest">
+                                        <span className="text-[13px] font-bold text-green-600/70 uppercase tracking-wide">
                                             Válido até: {membro.gdpr_validade.toLocaleDateString('pt-PT')}
                                         </span>
                                     )}
@@ -174,7 +174,7 @@ export default async function TermosPage() {
                     </div>
                 </section>
 
-                <p className="text-[8px] text-center text-muted uppercase font-black tracking-[0.3em]">
+                <p className="text-[13px] text-center text-muted uppercase font-bold tracking-wide">
                     Identificador Digital Único: MEMB_AUTH_{membroId}
                 </p>
             </div>

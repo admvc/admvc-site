@@ -45,13 +45,13 @@ export default async function ProgressoObra() {
             {/* Cabeçalho */}
             <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                 <div className="space-y-2">
-                    <div className="inline-flex items-center gap-2 text-figueira font-black text-[10px] uppercase tracking-[0.3em] mb-1">
+                    <div className="inline-flex items-center gap-2 text-figueira font-bold text-[14px] uppercase tracking-wide mb-1">
                         <Building2 size={14} /> Campanha Ativa
                     </div>
-                    <h2 className="text-3xl font-black italic uppercase tracking-tighter text-fg leading-none">
+                    <h2 className="text-3xl font-bold text-fg leading-none">
                         Progresso da <span className="text-muted/30">Obra.</span>
                     </h2>
-                    <p className="text-xs text-muted font-bold tracking-widest uppercase">
+                    <p className="text-xs text-muted font-bold">
                         {DADOS_CONSTRUCAO.descricao}
                     </p>
                 </div>
@@ -61,14 +61,14 @@ export default async function ProgressoObra() {
                         <Target size={24} />
                     </div>
                     <div>
-                        <span className="text-[9px] font-black text-muted uppercase tracking-widest block mb-0.5">Arrecadação Total</span>
+                        <span className="text-[13px] font-bold text-muted uppercase tracking-wide block mb-0.5">Arrecadação Total</span>
                         <div className="flex items-baseline gap-2">
-                            <span className="text-2xl font-black text-fg valor-dinheiro italic">{euro(totalArrecadadoGeral)}</span>
+                            <span className="text-2xl font-bold text-fg valor-dinheiro">{euro(totalArrecadadoGeral)}</span>
                             <span className="text-xs font-bold valor-dinheiro text-muted">/ {euro(DADOS_CONSTRUCAO.objetivoFinal)}</span>
                         </div>
                     </div>
                     <div className="border-l border-soft pl-4 ml-2">
-                        <span className="text-3xl font-black text-figueira">{porcentagemGeral}%</span>
+                        <span className="text-3xl font-bold text-figueira">{porcentagemGeral}%</span>
                     </div>
                 </div>
             </div>
@@ -82,8 +82,8 @@ export default async function ProgressoObra() {
                     return (
                         <div key={index} className="space-y-4 rounded-2xl border border-soft bg-bg p-6 transition-transform hover:border-figueira/30 group">
                             <div>
-                                <h3 className="font-black text-fg text-sm uppercase tracking-tight">{etapa.nome}</h3>
-                                <p className="text-[10px] font-bold text-muted mt-1 uppercase tracking-widest">
+                                <h3 className="font-bold text-fg text-sm">{etapa.nome}</h3>
+                                <p className="text-[14px] font-bold text-muted mt-1 uppercase tracking-wide">
                                     {euro(etapa.atual)} angariados
                                 </p>
                             </div>
@@ -98,11 +98,11 @@ export default async function ProgressoObra() {
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center gap-1.5">
                                     <TrendingUp size={12} className={concluido ? 'text-green-500' : 'text-figueira'} />
-                                    <p className={`text-[9px] font-black uppercase tracking-wider ${concluido ? 'text-green-500' : 'text-figueira'}`}>
+                                    <p className={`text-[13px] font-bold uppercase tracking-wide ${concluido ? 'text-green-500' : 'text-figueira'}`}>
                                         {concluido ? "Meta Concluída" : "Em Andamento"}
                                     </p>
                                 </div>
-                                <span className="text-sm font-black text-fg italic">{porcentagemEtapa}%</span>
+                                <span className="text-sm font-bold text-fg">{porcentagemEtapa}%</span>
                             </div>
                         </div>
                     );
@@ -116,7 +116,7 @@ export default async function ProgressoObra() {
                         href={DADOS_CONSTRUCAO.videoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-bg border border-soft text-fg px-6 py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:border-figueira hover:text-figueira transition-all"
+                        className="inline-flex items-center gap-2 bg-bg border border-soft text-fg px-6 py-3 rounded-2xl text-[13px] font-bold uppercase tracking-wide hover:border-figueira hover:text-figueira transition-all"
                     >
                         ▶ Assista ao Projeto Completo no YouTube
                     </a>
