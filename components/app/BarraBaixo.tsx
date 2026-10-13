@@ -93,7 +93,7 @@ export default function BarraBaixo({ itensMais, repertorio = false }: { itensMai
                             )
                         })}
                         <li>
-                            <ModalAjuda trigger={
+                            <ModalAjuda itens={itensMais.map((i) => i.chave)} repertorio={repertorio} trigger={
                                 <span className="a-card a-foco flex min-h-[60px] w-full items-center gap-4 px-4 py-3">
                                     <HelpCircle size={24} style={{ color: 'var(--a-destaque)' }} aria-hidden />
                                     <span className="text-[17px] font-semibold">Ajuda</span>

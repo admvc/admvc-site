@@ -38,7 +38,12 @@ export async function aniversariantesDoMes(sessao: SessionData): Promise<Anivers
             dia: m.birthdate!.getUTCDate(),
             hoje: m.birthdate!.getUTCDate() === hoje.getDate(),
         }))
-        .sort((a, b) => a.dia - b.dia)
+        // Primeiro quem faz anos de hoje em diante, depois os que ja passaram
+        .sort((a, b) => {
+            const d = hoje.getDate()
+            const ja = (x: Aniversariante) => (x.dia < d ? 1 : 0)
+            return ja(a) - ja(b) || a.dia - b.dia
+        })
 }
 
 export interface CultoDaSemana {
@@ -58,4 +63,43 @@ export async function cultosDaSemana(sessao: SessionData): Promise<CultoDaSemana
         take: 8,
     })
     return eventos.map((e) => ({ id: e.id, nome: e.nome, data: e.data.toISOString() }))
+}
+
+export interface MeuGrupo {
+    id: number
+    nome: string
+    quando: string
+    morada: string
+    mapa: string | null
+    lideres: string[]
+    souLider: boolean
+}
+
+/** Grupos em que participo ou que lidero, com quando e onde se juntam. */
+export async function meusGrupos(sessao: SessionData): Promise<MeuGrupo[]> {
+    const db = getTenantClient(sessao.tenantId)
+    const eu = { some: { id: sessao.membroId } }
+    const grupos = await db.grupo.findMany({
+        where: { OR: [{ membros: eu }, { lideres: eu }] },
+        select: {
+            id: true, nome: true, dia_semana: true, horario: true, endereco: true, numero: true,
+            bairro: true, cidade: true, latitude: true, longitude: true,
+            lideres: { select: { id: true, first_name: true, last_name: true } },
+        },
+        orderBy: { nome: 'asc' },
+    })
+    return grupos.map((g) => {
+        const morada = [[g.endereco, g.numero].filter(Boolean).join(', '), g.bairro, g.cidade]
+            .map((p) => p?.trim()).filter(Boolean).join(' · ')
+        const destino = g.latitude != null && g.longitude != null ? `${g.latitude},${g.longitude}` : morada
+        return {
+            id: g.id,
+            nome: g.nome,
+            quando: [g.dia_semana, g.horario].map((p) => p?.trim()).filter(Boolean).join(', às '),
+            morada,
+            mapa: destino ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destino)}` : null,
+            lideres: g.lideres.map((l) => `${l.first_name} ${l.last_name}`.trim()),
+            souLider: g.lideres.some((l) => l.id === sessao.membroId),
+        }
+    })
 }

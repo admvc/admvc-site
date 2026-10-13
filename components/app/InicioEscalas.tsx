@@ -1,14 +1,16 @@
 // Ecra inicial (telemovel e computador, como o LouveApp): termos por assinar,
 // os meus ministerios, as minhas escalas (a proxima com os botoes grandes), as
-// datas em que nao posso; ao lado (computador) a semana e os aniversariantes.
+// meus grupos, as datas em que nao posso; a semana e os aniversariantes ao lado
+// (computador) ou logo a seguir a proxima escala (telemovel).
 import Link from 'next/link'
 import { CalendarHeart, FileSignature, Music2, Users } from 'lucide-react'
 import type { SessionData } from '@/lib/auth-utils'
 import { getTenantClient } from '@/lib/prisma'
 import { minhasEscalas, minhasIndisponibilidades } from '@/lib/escalas-app'
 import { meusMinisterios } from '@/lib/ministerios-app'
-import { aniversariantesDoMes, cultosDaSemana, termosPorAssinar } from '@/lib/inicio-app'
+import { aniversariantesDoMes, cultosDaSemana, meusGrupos, termosPorAssinar } from '@/lib/inicio-app'
 import Aniversariantes from './Aniversariantes'
+import MeusGrupos from './MeusGrupos'
 import AtivarNotificacoes from './AtivarNotificacoes'
 import EstaSemana from './EstaSemana'
 import CartaoProximaEscala from './CartaoProximaEscala'
@@ -17,7 +19,7 @@ import { diaPorExtenso, hora } from './datas'
 
 export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: SessionData; primeiroNome: string }) {
     const db = getTenantClient(sessao.tenantId)
-    const [escalas, indisponiveis, ministerios, proximoCulto, termos, aniversariantes, semana] = await Promise.all([
+    const [escalas, indisponiveis, ministerios, proximoCulto, termos, aniversariantes, semana, grupos] = await Promise.all([
         minhasEscalas(sessao),
         minhasIndisponibilidades(sessao),
         meusMinisterios(sessao),
@@ -25,8 +27,11 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
         termosPorAssinar(sessao),
         aniversariantesDoMes(sessao),
         cultosDaSemana(sessao),
+        meusGrupos(sessao),
     ])
     const [proxima, ...seguintes] = escalas
+    // Quem nao serve em nenhum ministerio nao precisa dos cartoes de escalas
+    const sirvo = ministerios.length > 0 || escalas.length > 0
     const linkEscala = (e: (typeof escalas)[number]) => `/escalas/culto/${e.evento.id}?equipa=${e.departamento.id}`
 
     return (
@@ -73,7 +78,7 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
 
             {proxima ? (
                 <CartaoProximaEscala escala={proxima} href={linkEscala(proxima)} />
-            ) : (
+            ) : sirvo && (
                 <section className="a-card p-5 space-y-2">
                     <p className="flex items-center gap-2 text-[18px] font-semibold"><CalendarHeart size={22} aria-hidden /> Não tem escalas marcadas</p>
                     {proximoCulto && (
@@ -84,6 +89,12 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
                 </section>
             )}
 
+            {/* Telemovel: a semana e os aniversarios logo a seguir a proxima escala */}
+            <div className="space-y-6 md:hidden">
+                <EstaSemana cultos={semana} />
+                <Aniversariantes lista={aniversariantes} />
+            </div>
+
             {seguintes.length > 0 && (
                 <section className="space-y-3" aria-label="Próximas escalas">
                     <h2 className="text-[19px] font-bold">Depois</h2>
@@ -93,11 +104,13 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
                 </section>
             )}
 
-            <Indisponibilidades lista={indisponiveis} />
+            <MeusGrupos grupos={grupos} />
+
+            {sirvo && <Indisponibilidades lista={indisponiveis} />}
         </div>
 
-        <aside className="space-y-6">
-            <div className="hidden md:block"><EstaSemana cultos={semana} /></div>
+        <aside className="hidden space-y-6 md:block">
+            <EstaSemana cultos={semana} />
             <Aniversariantes lista={aniversariantes} />
         </aside>
         </div>

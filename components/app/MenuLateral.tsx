@@ -84,7 +84,7 @@ export default function MenuLateral({ igreja, nome, avatar, perfilHref, itensMai
 
             <ul className="space-y-1 border-t p-3" style={{ borderColor: 'var(--a-borda)' }}>
                 <li>
-                    <ModalAjuda trigger={
+                    <ModalAjuda itens={itensMais.map((i) => i.chave)} repertorio={repertorio} trigger={
                         <span className={`${item} w-full cursor-pointer`} title="Ajuda">
                             <HelpCircle size={22} strokeWidth={1.8} aria-hidden className="shrink-0" />
                             <span className="md:sr-only lg:not-sr-only">Ajuda</span>

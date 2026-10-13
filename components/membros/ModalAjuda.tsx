@@ -1,119 +1,166 @@
 'use client'
 
-import { useState } from 'react'
-import { Smartphone, Download, QrCode, ShoppingCart, Wallet2, HelpCircle, X, Shield, HeartHandshake } from 'lucide-react'
+// Ajuda da app do membro: perguntas curtas, so sobre o que a pessoa tem no menu
+// (os mesmos itens da barra de baixo / menu lateral). Atualizada a 13/10.
 
-const SECOES = [
+import { useState } from 'react'
+import {
+    BellRing, BookOpen, CalendarCheck2, CalendarClock, CalendarDays, CalendarX2, Car, GraduationCap, HelpCircle,
+    Home, KeyRound, ListMusic, Megaphone, Shield, Smartphone, Users, X,
+} from 'lucide-react'
+import type { ItemMais } from '@/components/app/BarraBaixo'
+
+type Secao = {
+    Icone: typeof HelpCircle
+    titulo: string
+    texto: string[]
+    /** So aparece a quem tem este item no menu ('repertorio' = louvor). */
+    quando?: ItemMais['chave'] | 'repertorio'
+}
+
+const SECOES: Secao[] = [
     {
-        icon: Smartphone,
-        titulo: 'Instalar no Android',
-        conteudo: 'Chrome > Menu (3 pontos) > "Adicionar ao ecra inicial"',
+        Icone: Smartphone, titulo: 'Instalar a app no telemóvel',
+        texto: [
+            'Android: no Chrome, toque no menu (3 pontos) e em "Adicionar ao ecrã principal".',
+            'iPhone: no Safari, toque em Partilhar (quadrado com seta) e em "Adicionar ao ecrã principal".',
+            'Depois abra a app pelo ícone, como as outras.',
+        ],
     },
     {
-        icon: Download,
-        titulo: 'Instalar no iPhone',
-        conteudo: 'Safari > Partilhar (icone quadrado com seta) > "Adicionar ao ecra inicial"',
+        Icone: BellRing, titulo: 'Receber avisos no telemóvel',
+        texto: [
+            'No Início, no cartão "Receber avisos no telemóvel", toque em "Ligar avisos" e autorize. Recebe um aviso quando for escalado, na véspera e no dia do culto.',
+            'No iPhone só funciona com a app instalada no ecrã principal.',
+        ],
     },
     {
-        icon: QrCode,
-        titulo: 'Como usar QR Code',
-        conteudo: 'Va ao seu dashboard > seccao Cantina > clique em "Gerar Cartao"',
+        Icone: Home, titulo: 'O que aparece no Início',
+        texto: [
+            'A sua próxima escala, os cultos desta semana, os aniversários do mês e os seus grupos.',
+            'Se serve num ministério, vê também os seus ministérios, as escalas seguintes e as datas em que não pode servir.',
+            'Puxe o ecrã para baixo para atualizar.',
+        ],
     },
     {
-        icon: ShoppingCart,
-        titulo: 'Como encomendar',
-        conteudo: 'Menu Cantina > selecione o evento > escolha produtos > confirme',
+        Icone: CalendarCheck2, titulo: 'Responder a uma escala',
+        texto: [
+            'Quando é escalado, a escala aparece no Início. Toque em "Vou servir" ou em "Não posso" (escolha o motivo com um toque).',
+            'Ao abrir a escala vê a equipa, as músicas e pode partilhar ou pôr no Google Agenda.',
+        ],
     },
     {
-        icon: Wallet2,
-        titulo: 'Como carregar saldo',
-        conteudo: 'Menu Cantina > "Carregar Saldo" > escolha valor e forma de pagamento',
+        Icone: CalendarX2, titulo: 'Avisar que vou faltar',
+        texto: [
+            'No Início, em "Datas em que não posso servir", toque em "Marcar uma data". Para vários dias, preencha também "Até".',
+            'O líder vê estas datas antes de fazer a escala.',
+        ],
+    },
+    {
+        Icone: CalendarDays, titulo: 'Escalas do ministério',
+        texto: [
+            'Em "Escalas" vê os cultos de cada ministério com a equipa de cada um, em lista ou calendário.',
+            'Se está em mais do que um ministério, troque nos botões do topo.',
+        ],
+    },
+    {
+        Icone: ListMusic, titulo: 'Repertório e modo palco', quando: 'repertorio',
+        texto: [
+            'Em "Repertório" estão as músicas da igreja, com tom, BPM e links (vídeo, letra, cifra, áudio).',
+            'Na escala do culto, "Modo palco" mostra a cifra com rolagem automática.',
+        ],
+    },
+    {
+        Icone: CalendarDays, titulo: 'Agenda da igreja', quando: 'agenda',
+        texto: ['Em Mais > Agenda vê os cultos e eventos das próximas semanas. Toque num para ver a mensagem e quem serve.'],
+    },
+    {
+        Icone: Users, titulo: 'O meu grupo',
+        texto: [
+            'Se participa num grupo, ele aparece no Início com o dia, a hora, a morada (toque para abrir o mapa) e os líderes.',
+            'Os líderes têm ainda "Gerir o grupo".',
+        ],
+    },
+    {
+        Icone: Megaphone, titulo: 'Avisos', quando: 'avisos',
+        texto: ['Em Mais > Avisos estão as mensagens da igreja e das suas equipas e grupos.'],
+    },
+    {
+        Icone: Car, titulo: 'Boleias', quando: 'boleias',
+        texto: ['Em Mais > Boleias pode reservar lugar numa boleia para o culto ou oferecer a sua.'],
+    },
+    {
+        Icone: BookOpen, titulo: 'Pregações', quando: 'pregacao',
+        texto: ['Em Mais > Pregações estão as mensagens pregadas na igreja.'],
+    },
+    {
+        Icone: GraduationCap, titulo: 'Cursos', quando: 'cursos',
+        texto: ['Em Mais > Cursos estão as turmas e aulas da escola bíblica.'],
+    },
+    {
+        Icone: CalendarClock, titulo: 'Marcar atendimento', quando: 'atendimento',
+        texto: ['Em Mais > Marcar atendimento pede uma conversa com o pastor ou a liderança, num dos horários livres.'],
+    },
+    {
+        Icone: KeyRound, titulo: 'Perfil e palavra-passe', quando: 'perfil',
+        texto: [
+            'Em Mais > O meu perfil altera os seus dados, a foto e a palavra-passe.',
+            'Esqueceu-se da palavra-passe? No ecrã de entrada toque em "Esqueci-me da palavra-passe" e receba um link por email.',
+        ],
+    },
+    {
+        Icone: Shield, titulo: 'Os meus dados e o Permanecer', quando: 'privacidade',
+        texto: [
+            'A igreja guarda os seus dados de forma segura, só para a vida da igreja (RGPD). Em Mais > Privacidade pode pedir para ver, corrigir, levar ou apagar os seus dados.',
+            'O Permanecer é o compromisso voluntário de fazer parte desta igreja local. Pode aceitá-lo em "Termos", quando o Início o pedir.',
+        ],
     },
 ]
 
-export default function ModalAjuda({ isMenuItem = false, trigger }: { isMenuItem?: boolean; trigger?: React.ReactNode }) {
+export default function ModalAjuda({ trigger, itens = [], repertorio = false }: {
+    trigger: React.ReactNode
+    itens?: ItemMais['chave'][]
+    repertorio?: boolean
+}) {
     const [aberto, setAberto] = useState(false)
+    const visiveis = SECOES.filter((s) => !s.quando || (s.quando === 'repertorio' ? repertorio : itens.includes(s.quando)))
 
     return (
         <>
-            {trigger ? (
-                <div onClick={() => setAberto(true)} className="cursor-pointer">
-                    {trigger}
-                </div>
-            ) : isMenuItem ? (
-                <button
-                    onClick={() => setAberto(true)}
-                    className="text-[13px] font-bold uppercase tracking-wide text-fg hover:bg-soft px-2.5 py-2 rounded-lg transition-all flex items-center gap-2.5 w-full text-left"
-                >
-                    <HelpCircle size={12} className="text-figueira" /> Ajuda
-                </button>
-            ) : (
-                <button
-                    onClick={() => setAberto(true)}
-                    className="h-9 w-9 flex items-center justify-center bg-bg2 border border-soft text-muted rounded-lg hover:text-figueira hover:border-figueira/30 transition-all"
-                    title="Ajuda"
-                >
-                    <HelpCircle size={14} />
-                </button>
-            )}
+            <button type="button" onClick={() => setAberto(true)} className="block w-full text-left">{trigger}</button>
 
             {aberto && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setAberto(false)} />
-                    <div className="relative w-full max-w-md bg-bg border border-soft rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] overflow-y-auto">
-                        {/* Header */}
-                        <div className="flex items-center justify-between px-5 py-4 border-b border-soft">
-                            <div className="flex items-center gap-2.5">
-                                <HelpCircle size={18} className="text-figueira" />
-                                <h2 className="text-sm font-bold text-fg">Ajuda</h2>
-                            </div>
-                            <button
-                                onClick={() => setAberto(false)}
-                                className="p-1.5 rounded-lg text-muted hover:text-fg hover:bg-soft/30 transition-all"
-                            >
-                                <X size={16} />
+                <div className="app-novo fixed inset-0 z-[100] flex items-end justify-center md:items-center md:p-4" role="dialog" aria-modal="true" aria-labelledby="ajuda-titulo">
+                    <div className="absolute inset-0 bg-black/60" onClick={() => setAberto(false)} />
+                    <div className="a-card relative flex max-h-[90vh] w-full max-w-md flex-col !rounded-b-none md:!rounded-b-[16px]"
+                        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+                        <div className="flex items-center justify-between border-b px-4 py-3" style={{ borderColor: 'var(--a-borda)' }}>
+                            <h2 id="ajuda-titulo" className="flex items-center gap-2 text-[22px] font-bold">
+                                <HelpCircle size={24} style={{ color: 'var(--a-destaque)' }} aria-hidden /> Ajuda
+                            </h2>
+                            <button type="button" onClick={() => setAberto(false)} className="a-botao a-botao-secundario !px-3" aria-label="Fechar">
+                                <X size={22} aria-hidden />
                             </button>
                         </div>
 
-                        {/* Sections */}
-                        <div className="p-4 space-y-2">
-                            {SECOES.map((secao) => {
-                                const Icon = secao.icon
-                                return (
-                                    <details key={secao.titulo} className="group rounded-xl border border-soft overflow-hidden">
-                                        <summary className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none hover:bg-soft/20 transition-all">
-                                            <Icon size={14} className="text-figueira shrink-0" />
-                                            <span className="text-[14px] font-bold uppercase tracking-wide text-fg">{secao.titulo}</span>
+                        <ul className="space-y-2 overflow-y-auto p-4">
+                            {visiveis.map(({ Icone, titulo, texto }) => (
+                                <li key={titulo}>
+                                    <details className="a-card group">
+                                        <summary className="a-foco flex min-h-[56px] cursor-pointer list-none items-center gap-3 px-4 py-3">
+                                            <Icone size={22} className="shrink-0" style={{ color: 'var(--a-destaque)' }} aria-hidden />
+                                            <span className="flex-1 text-[17px] font-semibold">{titulo}</span>
                                         </summary>
-                                        <div className="px-4 pb-3 pt-0">
-                                            <p className="text-xs text-muted leading-relaxed pl-[26px]">{secao.conteudo}</p>
+                                        <div className="space-y-2 border-t px-4 py-3 text-[16px] leading-relaxed" style={{ borderColor: 'var(--a-borda)' }}>
+                                            {texto.map((t) => <p key={t}>{t}</p>)}
                                         </div>
                                     </details>
-                                )
-                            })}
-
-                            <details className="group rounded-xl border border-soft overflow-hidden">
-                                <summary className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none hover:bg-soft/20 transition-all">
-                                    <Shield size={14} className="text-figueira shrink-0" />
-                                    <span className="text-[14px] font-bold uppercase tracking-wide text-fg">O que e o GDPR?</span>
-                                </summary>
-                                <div className="px-4 pb-3 pt-0">
-                                    <p className="text-xs text-muted leading-relaxed pl-[26px]">O GDPR (Regulamento Geral de Protecao de Dados) e a lei europeia que protege os seus dados pessoais. Ao aceitar o GDPR na nossa plataforma, voce autoriza a igreja a guardar os seus dados (nome, contacto, etc.) de forma segura e apenas para fins de gestao eclesiastica.</p>
-                                    <p className="text-xs text-muted leading-relaxed pl-[26px] mt-2">Pode solicitar a remocao dos seus dados a qualquer momento contactando a lideranca da igreja.</p>
-                                </div>
-                            </details>
-
-                            <details className="group rounded-xl border border-soft overflow-hidden">
-                                <summary className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none hover:bg-soft/20 transition-all">
-                                    <HeartHandshake size={14} className="text-figueira shrink-0" />
-                                    <span className="text-[14px] font-bold uppercase tracking-wide text-fg">O que e o Permanecer?</span>
-                                </summary>
-                                <div className="px-4 pb-3 pt-0">
-                                    <p className="text-xs text-muted leading-relaxed pl-[26px]">O Permanecer e o processo de integracao a membresia da igreja. Ao aceitar o Permanecer, voce declara o seu compromisso de caminhar em comunhao, participar na vida da igreja e crescer espiritualmente.</p>
-                                    <p className="text-xs text-muted leading-relaxed pl-[26px] mt-2">E um passo voluntario que demonstra a sua decisao de fazer parte da familia da igreja de forma activa e comprometida.</p>
-                                </div>
-                            </details>
-                        </div>
+                                </li>
+                            ))}
+                        </ul>
+                        <p className="border-t px-4 py-3 text-[15px] a-suave" style={{ borderColor: 'var(--a-borda)' }}>
+                            Não encontrou o que procurava? Fale com o líder do seu ministério ou com a equipa de acolhimento.
+                        </p>
                     </div>
                 </div>
             )}
