@@ -39,12 +39,14 @@ export default function GerenciadorGrupos({ grupos, departamentos, membrosDispon
     const [selecionadosMembros, setSelecionadosMembros] = useState<number[]>([]);
     const [selecionadosLideres, setSelecionadosLideres] = useState<number[]>([]);
     const [area, setArea] = useState<PontoArea[] | null>(null);
+    const [mostrarMapa, setMostrarMapa] = useState(false);
 
     const abrirFormulario = (grupo: any = null) => {
         setGrupoAtual(grupo);
         setSelecionadosMembros(grupo?.membros?.map((m: any) => m.id) || []);
         setSelecionadosLideres(grupo?.lideres?.map((l: any) => l.id) || []);
         setArea(grupo?.area ?? null);
+        setMostrarMapa(grupo?.mostrar_mapa ?? false);
         setBuscaMembros("");
         setModo('form');
     };
@@ -123,7 +125,8 @@ export default function GerenciadorGrupos({ grupos, departamentos, membrosDispon
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500">
+        // app-novo: os cartoes e botoes (a-card, a-botao) so tem estilo dentro dele
+        <div className="app-novo space-y-6 animate-in fade-in duration-500" style={{ background: 'transparent' }}>
 
             {/* ── MODO LISTA ──────────────────────────────────────────────── */}
             {modo === 'lista' && (
@@ -356,13 +359,26 @@ export default function GerenciadorGrupos({ grupos, departamentos, membrosDispon
                                     className="h-5 w-5" style={{ accentColor: 'var(--a-destaque)' }} />
                                 <span className="text-[15px] font-semibold">Mostrar no site público</span>
                             </label>
+
+                            <label className="flex min-h-[48px] cursor-pointer items-center gap-3 rounded-[14px] border px-4"
+                                style={{ borderColor: 'var(--a-borda)' }}>
+                                <input type="checkbox" name="mostrar_mapa"
+                                    checked={mostrarMapa} onChange={(e) => setMostrarMapa(e.target.checked)}
+                                    className="h-5 w-5 shrink-0" style={{ accentColor: 'var(--a-destaque)' }} />
+                                <span className="text-[15px] font-semibold">
+                                    Mostrar mapa aos membros
+                                    <span className="block text-[13px] font-normal a-suave">Desligado para grupos que se juntam na igreja</span>
+                                </span>
+                            </label>
                         </div>
 
-                        <div className="space-y-2 px-4 pb-4">
-                            <p className="text-[14px] font-semibold a-suave">Zona que o grupo abrange</p>
-                            <EditorAreaGrupo key={grupoAtual?.id ?? 'novo'} latitude={grupoAtual?.latitude} longitude={grupoAtual?.longitude}
-                                valor={grupoAtual?.area} onChange={setArea} />
-                        </div>
+                        {mostrarMapa && (
+                            <div className="space-y-2 px-4 pb-4">
+                                <p className="text-[14px] font-semibold a-suave">Zona que o grupo abrange</p>
+                                <EditorAreaGrupo key={grupoAtual?.id ?? 'novo'} latitude={grupoAtual?.latitude} longitude={grupoAtual?.longitude}
+                                    valor={area} onChange={setArea} />
+                            </div>
+                        )}
                     </SeccaoColapsavel>
 
                     {/* BLOCO 2: EQUIPA */}

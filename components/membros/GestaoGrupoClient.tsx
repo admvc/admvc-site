@@ -83,7 +83,8 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
         const formData = new FormData();
         formData.append('grupo_id', grupo.id.toString());
         Object.entries(dadosForm).forEach(([key, value]) => formData.append(key, value));
-        formData.append('area', area ? JSON.stringify(area) : '');
+        // Sem mapa ligado o editor nao aparece: a zona guardada fica como esta
+        if (grupo.mostrar_mapa) formData.append('area', area ? JSON.stringify(area) : '');
         
         const res = await atualizarDadosGrupoAction(formData);
         setLoading(false);
@@ -300,14 +301,14 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
                                 </div>
                             </div>
 
-                            <div className="pt-8 border-t border-soft space-y-3">
+                            {grupo.mostrar_mapa && <div className="pt-8 border-t border-soft space-y-3">
                                 <h5 className="text-[14px] font-bold uppercase text-muted tracking-wide flex items-center gap-2">
                                     <MapPin size={16} className="text-blue-500" /> Zona que o grupo abrange
                                 </h5>
                                 {ehLider && <p className="text-[14px] text-muted">Desenhe a zona no mapa e depois toque em &quot;Guardar Dados&quot;.</p>}
                                 <EditorAreaGrupo latitude={grupo.latitude} longitude={grupo.longitude} valor={grupo.area}
                                     onChange={ehLider ? setArea : undefined} />
-                            </div>
+                            </div>}
                         </section>
                     </div>
                 )}

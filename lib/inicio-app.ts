@@ -87,7 +87,7 @@ export async function meusGrupos(sessao: SessionData): Promise<MeuGrupo[]> {
         where: { OR: [{ membros: eu }, { lideres: eu }] },
         select: {
             id: true, nome: true, dia_semana: true, horario: true, endereco: true, numero: true,
-            bairro: true, cidade: true, latitude: true, longitude: true, area: true,
+            bairro: true, cidade: true, latitude: true, longitude: true, area: true, mostrar_mapa: true,
             lideres: { select: { id: true, first_name: true, last_name: true } },
         },
         orderBy: { nome: 'asc' },
@@ -104,9 +104,10 @@ export async function meusGrupos(sessao: SessionData): Promise<MeuGrupo[]> {
             mapa: destino ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destino)}` : null,
             lideres: g.lideres.map((l) => `${l.first_name} ${l.last_name}`.trim()),
             souLider: g.lideres.some((l) => l.id === sessao.membroId),
-            latitude: g.latitude,
-            longitude: g.longitude,
-            area: lerArea(g.area),
+            // O mapa so aparece nos grupos em que o admin o ligou
+            latitude: g.mostrar_mapa ? g.latitude : null,
+            longitude: g.mostrar_mapa ? g.longitude : null,
+            area: g.mostrar_mapa ? lerArea(g.area) : null,
         }
     })
 }

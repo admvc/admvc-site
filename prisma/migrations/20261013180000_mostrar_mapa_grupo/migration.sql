@@ -1,0 +1,1 @@
+ALTER TABLE "Grupo" ADD COLUMN "mostrar_mapa" BOOLEAN NOT NULL DEFAULT false;

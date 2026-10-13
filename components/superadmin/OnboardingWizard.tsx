@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation'
 import {
     Building, MapPin, Users, UserCog, CheckCircle2,
     Loader2, Plus, Palette, ArrowRight, ArrowLeft,
-    Globe, ToggleLeft, ToggleRight, ExternalLink
+    Globe, ToggleLeft, ToggleRight, ExternalLink, Pencil
 } from 'lucide-react'
 import {
     atualizarBrandingIgreja,
     criarCongregacaoSA,
+    atualizarCongregacaoSA,
     criarDepartamentoSA,
     atualizarAdminIgreja,
     marcarOnboardingCompleto,
@@ -64,11 +65,14 @@ const STEPS = [
     { num: 5, label: 'Checklist', icon: CheckCircle2 },
 ]
 
+const CONG_VAZIA = { nome: '', cidade: '', endereco: '', editandoId: null as number | null }
+
 export default function OnboardingWizard({ igreja, congregacoes, departamentos, admin, initialStep }: Props) {
     const router = useRouter()
     const [step, setStep] = useState(initialStep)
     const [loading, setLoading] = useState(false)
     const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
+    const [congForm, setCongForm] = useState(CONG_VAZIA)
 
     function goStep(n: number) {
         setStep(n)
@@ -141,10 +145,21 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
     }
 
     // ── Step 2: Congregacoes ──
+    // O estado fica fora do passo: os passos sao recriados a cada render do assistente
     function Step2() {
-        const [nome, setNome] = useState('')
-        const [cidade, setCidade] = useState('')
-        const [endereco, setEndereco] = useState('')
+        const { nome, cidade, endereco, editandoId } = congForm
+        const setNome = (v: string) => setCongForm((f) => ({ ...f, nome: v }))
+        const setCidade = (v: string) => setCongForm((f) => ({ ...f, cidade: v }))
+        const setEndereco = (v: string) => setCongForm((f) => ({ ...f, endereco: v }))
+
+        function limpar() {
+            setCongForm(CONG_VAZIA)
+        }
+
+        function editar(c: Congregacao) {
+            setCongForm({ nome: c.nome, cidade: c.cidade, endereco: c.endereco, editandoId: c.id })
+            setMsg(null)
+        }
 
         async function handleAdd() {
             setLoading(true)
@@ -152,12 +167,14 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
             fd.set('nome', nome)
             fd.set('cidade', cidade)
             fd.set('endereco', endereco)
-            const res = await criarCongregacaoSA(igreja.id, fd)
+            const res = editandoId
+                ? await atualizarCongregacaoSA(igreja.id, editandoId, fd)
+                : await criarCongregacaoSA(igreja.id, fd)
             setLoading(false)
             if (res.error) setMsg({ type: 'err', text: res.error })
             else {
-                setMsg({ type: 'ok', text: res.message || 'Criada!' })
-                setNome(''); setCidade(''); setEndereco('')
+                setMsg({ type: 'ok', text: res.message || 'Guardado!' })
+                limpar()
                 router.refresh()
             }
         }
@@ -169,12 +186,16 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
                         <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Congregacoes Existentes ({congregacoes.length})</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {congregacoes.map(c => (
-                                <div key={c.id} className="bg-[#1A1A1A] border border-[#333] rounded-xl p-4 flex items-start gap-3">
+                                <div key={c.id} className={`bg-[#1A1A1A] border rounded-xl p-4 flex items-start gap-3 ${editandoId === c.id ? 'border-blue-500' : 'border-[#333]'}`}>
                                     <MapPin size={16} className="text-blue-400 mt-0.5 shrink-0" />
-                                    <div>
+                                    <div className="min-w-0 flex-1">
                                         <p className="text-sm font-bold text-white">{c.nome}</p>
                                         <p className="text-xs text-gray-500">{c.cidade} - {c.endereco}</p>
                                     </div>
+                                    <button type="button" onClick={() => editar(c)}
+                                        className="shrink-0 flex items-center gap-1.5 rounded-lg border border-[#333] px-3 py-1.5 text-xs font-bold text-gray-300 hover:border-blue-500 hover:text-white">
+                                        <Pencil size={12} /> Editar
+                                    </button>
                                 </div>
                             ))}
                         </div>
@@ -182,16 +203,23 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
                 )}
 
                 <div className="border border-[#333] rounded-xl p-5 space-y-4 bg-[#111]">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-blue-400">Adicionar Congregacao</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-blue-400">{editandoId ? 'Editar congregação' : 'Adicionar congregação'}</p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <input value={nome} onChange={e => setNome(e.target.value)} placeholder="Nome" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-blue-500" />
                         <input value={cidade} onChange={e => setCidade(e.target.value)} placeholder="Cidade" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-blue-500" />
                         <input value={endereco} onChange={e => setEndereco(e.target.value)} placeholder="Endereco" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-blue-500" />
                     </div>
-                    <button onClick={handleAdd} disabled={loading || !nome || !cidade || !endereco} className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 flex items-center gap-2">
-                        {loading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                        Adicionar
-                    </button>
+                    <div className="flex flex-wrap gap-2">
+                        <button onClick={handleAdd} disabled={loading || !nome || !cidade || !endereco} className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 flex items-center gap-2">
+                            {loading ? <Loader2 size={14} className="animate-spin" /> : editandoId ? <CheckCircle2 size={14} /> : <Plus size={14} />}
+                            {editandoId ? 'Guardar alterações' : 'Adicionar'}
+                        </button>
+                        {editandoId && (
+                            <button type="button" onClick={limpar} disabled={loading} className="px-5 py-2.5 rounded-xl border border-[#333] text-gray-300 text-xs font-black uppercase tracking-widest hover:border-gray-500">
+                                Cancelar
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         )
@@ -442,7 +470,8 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
             )}
 
             {/* Step content */}
-            <CurrentStep />
+            {/* Step2 sem hooks: chamado como funcao para os campos nao perderem o foco */}
+            {step === 2 ? Step2() : <CurrentStep />}
         </div>
     )
 }

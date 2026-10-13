@@ -248,6 +248,33 @@ export async function criarCongregacaoSA(tenantId: number, formData: FormData) {
     }
 }
 
+export async function atualizarCongregacaoSA(tenantId: number, congregacaoId: number, formData: FormData) {
+    await requireSAAuth()
+
+    const nome = (formData.get('nome') as string)?.trim()
+    const cidade = (formData.get('cidade') as string)?.trim()
+    const endereco = (formData.get('endereco') as string)?.trim()
+
+    if (!nome || !cidade || !endereco) {
+        return { error: 'Preencha todos os campos obrigatórios.' }
+    }
+
+    try {
+        // So a congregacao desta igreja (o id sozinho nao chega)
+        const r = await prisma.congregacao.updateMany({
+            where: { id: congregacaoId, tenant_id: tenantId },
+            data: { nome, cidade, endereco },
+        })
+        if (r.count === 0) return { error: 'Congregação não encontrada nesta igreja.' }
+
+        revalidatePath(`/super-admin/onboarding/${tenantId}`)
+        return { ok: true, message: 'Congregação atualizada.' }
+    } catch (error) {
+        console.error('Erro ao atualizar congregação:', error)
+        return { error: 'Erro ao atualizar congregação.' }
+    }
+}
+
 export async function criarDepartamentoSA(tenantId: number, formData: FormData) {
     await requireSAAuth()
 

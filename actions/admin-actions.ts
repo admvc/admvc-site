@@ -233,6 +233,7 @@ export async function salvarGrupo(formData: FormData) {
         const pais = formData.get('pais') as string || 'Portugal'
         const regiao = formData.get('regiao') as string || null
         const publico = formData.get('publico') === 'on' || formData.get('publico') === 'true'
+        const mostrar_mapa = formData.get('mostrar_mapa') === 'on'
 
         // ── GEOCODIFICAÇÃO ──
         let latitude: number | null = null
@@ -272,6 +273,7 @@ export async function salvarGrupo(formData: FormData) {
             descricao: formData.get('descricao') as string || null,
             regiao,
             publico,
+            mostrar_mapa,
             area: lerArea(formData.get('area')) ?? Prisma.DbNull,
             ...(latitude !== null && { latitude }),
             ...(longitude !== null && { longitude }),

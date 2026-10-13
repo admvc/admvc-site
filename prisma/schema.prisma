@@ -402,6 +402,7 @@ model Grupo {
   regiao          String? // Ex: "Norte", "Centro", "Sul", "Online"
   publico         Boolean          @default(false) // aparece no site público?
   area            Json? // zona que o grupo abrange: contorno [[lat, lng], ...]
+  mostrar_mapa    Boolean          @default(false) // mapa no Início (quem se junta na igreja não precisa)
   avisoMurals     AvisoMural[]
   encontros       EncontroGrupo[]
   congregacao     Congregacao?     @relation(fields: [congregacaoId], references: [id])

@@ -38,6 +38,10 @@ export async function importarCifraDeUrlAction(musicaId: string, url: string) {
         if (res.status === 404) {
             return { ok: false, error: 'Essa página não existe no CifraClub. Confirme o link da cifra (Editar música).' }
         }
+        // O CifraClub (Akamai) recusa pedidos que nao venham de um browser: 403 sempre
+        if (res.status === 403) {
+            return { ok: false, error: 'O CifraClub não deixa importar automaticamente. Abra a cifra no CifraClub, copie o texto e cole-o em "Escrever ou colar".' }
+        }
         if (!res.ok) {
             return { ok: false, error: `O CifraClub não respondeu (${res.status}). Tente mais tarde.` }
         }

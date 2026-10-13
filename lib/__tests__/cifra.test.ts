@@ -138,3 +138,17 @@ describe('notaRaiz', () => {
     expect(notaRaiz('Bb7')).toBe('Bb')
   })
 })
+
+describe('importarCifraClub com texto colado', () => {
+  it('so letra (sem acordes) fica como esta', () => {
+    const letra = 'A Deus seja a glória\nE em Ti eu confio\n\nRefrão\nSanto, santo é o Senhor'
+    expect(importarCifraClub(letra)).toBe(letra)
+  })
+
+  it('acordes por cima da letra passam para dentro da letra', () => {
+    const r = importarCifraClub('Am            G\nQuando eu chorei Tu enxugaste')
+    expect(r).toContain('[Am]')
+    expect(r).toContain('[G]')
+    expect(r.replace(/\[[^\]]+\]/g, '').trim()).toBe('Quando eu chorei Tu enxugaste')
+  })
+})

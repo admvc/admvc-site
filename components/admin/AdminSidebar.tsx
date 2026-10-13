@@ -37,7 +37,6 @@ function grupos(louvorHref: string | null, obreiros: boolean): Grupo[] {
             itens: [
                 { label: 'Eventos', href: '/admin/eventos', icon: CalendarDays },
                 { label: 'Escalas', href: '/admin/escalas', icon: CalendarCheck2, modulo: 'escalas' },
-                ...(louvorHref ? [{ label: 'Louvor', href: louvorHref, icon: Music2, modulo: 'louvor' }] : []),
                 { label: 'Pregações', href: '/admin/formacao/pregacao', icon: BookOpen, modulo: 'pregacao' },
                 { label: 'Mídia', href: '/admin/midia', icon: MonitorPlay, modulo: ['holyrics', 'mesa_som', 'lumikit'], adminOnly: true },
             ],
@@ -45,6 +44,7 @@ function grupos(louvorHref: string | null, obreiros: boolean): Grupo[] {
         {
             titulo: 'Equipas',
             itens: [
+                ...(louvorHref ? [{ label: 'Louvor', href: louvorHref, icon: Music2, modulo: 'louvor' }] : []),
                 { label: 'Acolhimento', href: '/departamentos/acolhimento/dashboard', icon: HeartHandshake, modulo: 'acolhimento' },
                 ...(obreiros ? [{ label: 'Obreiros', href: '/departamentos/obreiros/dashboard', icon: Users }] : []),
                 { label: 'Assistência social', href: '/assistencia', icon: HandHeart, modulo: 'assistencia' },
