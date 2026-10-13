@@ -1,7 +1,5 @@
 // lib/email-escalas.ts
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { enviarEmail, emailConfigurado } from '@/lib/email-transport'
 
 interface NotificacaoEscalaParams {
     membroNome: string
@@ -16,7 +14,7 @@ interface NotificacaoEscalaParams {
 }
 
 export async function enviarNotificacaoEscala(params: NotificacaoEscalaParams) {
-    if (!params.liderEmail || !process.env.RESEND_API_KEY) return
+    if (!params.liderEmail || !emailConfigurado()) return
 
     const isConfirmado = params.tipo === 'CONFIRMADO'
     const cor = isConfirmado ? '#22c55e' : '#ef4444'
@@ -24,7 +22,7 @@ export async function enviarNotificacaoEscala(params: NotificacaoEscalaParams) {
     const status = isConfirmado ? 'Confirmou' : 'Recusou'
 
     try {
-        await resend.emails.send({
+        await enviarEmail({
             from: 'Sistema ADMVC <escalas@igrejaadmvc.org>',
             to: params.liderEmail,
             subject: `${emoji} ${params.membroNome} ${status.toLowerCase()} escala — ${params.eventoNome}`,
@@ -66,7 +64,7 @@ export async function enviarNotificacaoEscala(params: NotificacaoEscalaParams) {
                         Notificacao automatica — Sistema ADMVC
                     </div>
                 </div>
-            `
+            `,
         })
     } catch (err) {
         console.error('Erro ao enviar email de escala:', err)

@@ -1,10 +1,7 @@
 // lib/mail.ts
-import { Resend } from 'resend';
+import { enviarEmail } from '@/lib/email-transport'
 
 export async function enviarEmailNotificacaoEquipa(dados: { nome: string, telefone: string, pedido: string }) {
-  const resend = new Resend(process.env.RESEND_API_KEY);
-
-  // 1. Lógica para identificar a origem e ajustar Subject e Cores
   const isContactoSite = dados.pedido?.includes('[CONTACTO SITE]') ?? false;
 
   const config = {
@@ -12,8 +9,8 @@ export async function enviarEmailNotificacaoEquipa(dados: { nome: string, telefo
       ? `✉️ Mensagem do Site: ${dados.nome}`
       : `🌱 Novo Visitante: ${dados.nome}`,
     headerColor: isContactoSite
-      ? '#1a202c' // Cor mais escura para Contactos Gerais
-      : '#3F6B4F', // Verde Figueira para Novos Visitantes
+      ? '#1a202c'
+      : '#3F6B4F',
     title: isContactoSite
       ? 'Contacto Geral'
       : 'Novo Acolhimento'
@@ -26,7 +23,7 @@ export async function enviarEmailNotificacaoEquipa(dados: { nome: string, telefo
   try {
     const destinatario = process.env.NOTIFICATION_EMAIL || 'admvcff@gmail.com';
 
-    const { data, error } = await resend.emails.send({
+    const r = await enviarEmail({
       from: 'Sistema ADMVC <acolhimento@igrejaadmvc.org>',
       to: destinatario,
       subject: config.subject,
@@ -88,11 +85,7 @@ export async function enviarEmailNotificacaoEquipa(dados: { nome: string, telefo
       `
     });
 
-    if (error) {
-      console.error(`[MAIL] Erro Resend [${config.title}]:`, error);
-      return { ok: false, error: error.message };
-    }
-
+    if (!r.ok) return r;
     console.log(`[MAIL] Notificação [${config.title}] enviada para ${destinatario}`);
     return { ok: true };
   } catch (err) {
@@ -105,12 +98,10 @@ export async function enviarEmailNotificacaoEquipa(dados: { nome: string, telefo
 // `linkDefinirSenha`: para contas criadas sem senha (importacao, visitante
 // consolidado). Nunca se envia uma senha por email.
 export async function enviarEmailBoasVindas(nome: string, email: string, linkDefinirSenha?: string) {
-  const resend = new Resend(process.env.RESEND_API_KEY);
-
   const linkDashboard = 'https://app.igrejaadmvc.org/membros/login';
 
   try {
-    const { data, error } = await resend.emails.send({
+    const r = await enviarEmail({
       from: 'Igreja ADMVC <acolhimento@igrejaadmvc.org>',
       to: email,
       subject: `Bem-vindo(a) a Igreja ADMVC, ${nome}!`,
@@ -161,11 +152,7 @@ export async function enviarEmailBoasVindas(nome: string, email: string, linkDef
       `
     });
 
-    if (error) {
-      console.error('[BOAS-VINDAS] Erro Resend:', error);
-      return { ok: false };
-    }
-
+    if (!r.ok) { console.error('[BOAS-VINDAS] Erro:', r.error); return { ok: false } }
     return { ok: true };
   } catch (err) {
     console.error('[BOAS-VINDAS] Erro ao enviar email:', err);
@@ -175,7 +162,6 @@ export async function enviarEmailBoasVindas(nome: string, email: string, linkDef
 
 // ── DEFINIR / RECUPERAR PALAVRA-PASSE ────────────────────────────────────────
 export async function enviarEmailNovaSenha(nome: string, email: string, link: string, motivo: 'pedido' | 'senha-conhecida' | 'convite') {
-  const resend = new Resend(process.env.RESEND_API_KEY);
   const intro = motivo === 'senha-conhecida'
     ? 'Por segurança, a sua palavra-passe atual deixou de ser aceite (era uma senha atribuída automaticamente). Defina uma nova no botão abaixo.'
     : motivo === 'convite'
@@ -183,7 +169,7 @@ export async function enviarEmailNovaSenha(nome: string, email: string, link: st
       : 'Recebemos um pedido para definir uma nova palavra-passe. Se não foi você, ignore este email: nada muda.';
 
   try {
-    const { error } = await resend.emails.send({
+    const r = await enviarEmail({
       from: 'Igreja ADMVC <acolhimento@igrejaadmvc.org>',
       to: email,
       subject: 'Definir a sua palavra-passe — Igreja ADMVC',
@@ -198,10 +184,7 @@ export async function enviarEmailNovaSenha(nome: string, email: string, link: st
         </div>
       `,
     });
-    if (error) {
-      console.error('[NOVA SENHA] Erro Resend:', error);
-      return { ok: false };
-    }
+    if (!r.ok) { console.error('[NOVA SENHA] Erro:', r.error); return { ok: false } }
     return { ok: true };
   } catch (err) {
     console.error('[NOVA SENHA] Erro ao enviar email:', err);

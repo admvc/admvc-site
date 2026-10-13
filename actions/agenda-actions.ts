@@ -2,12 +2,10 @@
 
 import { getDb } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
-import { Resend } from 'resend';
+import { enviarEmail } from '@/lib/email-transport'
 import { EmailConfirmacaoAgenda } from '@/components/emails/EmailConfirmacaoAgenda';
 import { requireAuth, requireRole } from '@/lib/auth-utils'
 import { sincronizarCompromissosGoogleCalendar } from '@/lib/google-calendar'
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 
 export async function criarAgendaAction(formData: FormData) {
@@ -214,17 +212,19 @@ export async function alterarStatusCompromisso(id: number, status: 'AGENDADO' | 
                 const horaStr = new Date(comp.data_inicio).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
                 const pastorNome = `${comp.agenda.dono.first_name} ${comp.agenda.dono.last_name}`;
 
-                await resend.emails.send({
-                    from: 'ADMVC Gabinete <agenda@teusite.com>', // MUDA AQUI PARA O TEU DOMÍNIO VERIFICADO NO RESEND
+                const { renderToStaticMarkup } = await import('react-dom/server')
+                const html = renderToStaticMarkup(EmailConfirmacaoAgenda({
+                    nome: nomesParaEmail.join(', '),
+                    titulo: comp.titulo,
+                    data: dataStr,
+                    hora: horaStr,
+                    pastor: pastorNome
+                }))
+                await enviarEmail({
+                    from: 'ADMVC Gabinete <agenda@igrejaadmvc.org>',
                     to: emailsParaEnviar,
                     subject: `✅ Confirmado: ${comp.titulo} com ${pastorNome}`,
-                    react: EmailConfirmacaoAgenda({
-                        nome: nomesParaEmail.join(', '),
-                        titulo: comp.titulo,
-                        data: dataStr,
-                        hora: horaStr,
-                        pastor: pastorNome
-                    })
+                    html,
                 });
             }
         }
