@@ -401,6 +401,7 @@ model Grupo {
   longitude       Float?
   regiao          String? // Ex: "Norte", "Centro", "Sul", "Online"
   publico         Boolean          @default(false) // aparece no site público?
+  area            Json? // zona que o grupo abrange: contorno [[lat, lng], ...]
   avisoMurals     AvisoMural[]
   encontros       EncontroGrupo[]
   congregacao     Congregacao?     @relation(fields: [congregacaoId], references: [id])

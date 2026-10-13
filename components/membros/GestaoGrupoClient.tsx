@@ -10,6 +10,13 @@ import {
 } from 'lucide-react'
 import { registrarEncontroAction, atualizarDadosGrupoAction } from '@/actions/grupo-actions'
 import Breadcrumb from '@/components/ui/Breadcrumb'
+import dynamic from 'next/dynamic'
+import type { PontoArea } from '@/lib/area-grupo'
+
+const EditorAreaGrupo = dynamic(() => import('@/components/grupos/EditorAreaGrupo'), {
+    ssr: false,
+    loading: () => <div className="h-[320px] animate-pulse rounded-[14px] bg-soft" />,
+})
 import { useToast } from '@/components/ui/ConfirmDialog'
 
 export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLider: boolean }) {
@@ -27,9 +34,12 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
         numero: grupo.numero || '',
         bairro: grupo.bairro || '',
         cidade: grupo.cidade || '',
-        distrito: grupo.distrito || '',
+        distrito: grupo.estado || '',
         pais: grupo.pais || 'Portugal'
     });
+
+    // Zona que o grupo abrange (desenhada no mapa)
+    const [area, setArea] = useState<PontoArea[] | null>(grupo.area ?? null);
 
     // Estados para o Registro de Encontro
     const [presentes, setPresentes] = useState<number[]>([]);
@@ -73,6 +83,7 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
         const formData = new FormData();
         formData.append('grupo_id', grupo.id.toString());
         Object.entries(dadosForm).forEach(([key, value]) => formData.append(key, value));
+        formData.append('area', area ? JSON.stringify(area) : '');
         
         const res = await atualizarDadosGrupoAction(formData);
         setLoading(false);
@@ -287,6 +298,15 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
                                         </select>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div className="pt-8 border-t border-soft space-y-3">
+                                <h5 className="text-[14px] font-bold uppercase text-muted tracking-wide flex items-center gap-2">
+                                    <MapPin size={16} className="text-blue-500" /> Zona que o grupo abrange
+                                </h5>
+                                {ehLider && <p className="text-[14px] text-muted">Desenhe a zona no mapa e depois toque em &quot;Guardar Dados&quot;.</p>}
+                                <EditorAreaGrupo latitude={grupo.latitude} longitude={grupo.longitude} valor={grupo.area}
+                                    onChange={ehLider ? setArea : undefined} />
                             </div>
                         </section>
                     </div>

@@ -78,7 +78,8 @@ const SECOES: Secao[] = [
         Icone: Users, titulo: 'O meu grupo',
         texto: [
             'Se participa num grupo, ele aparece no Início com o dia, a hora, a morada (toque para abrir o mapa) e os líderes.',
-            'Os líderes têm ainda "Gerir o grupo".',
+            'Se o grupo tem uma zona marcada, ela aparece pintada no mapa.',
+            'Os líderes têm ainda "Gerir o grupo", onde também podem desenhar a zona que o grupo abrange.',
         ],
     },
     {

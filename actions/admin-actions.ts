@@ -13,6 +13,8 @@ import { geocodificarComFallback } from '@/lib/geocode'
 import { invalidateDepartamentos, invalidateGrupos, invalidateTenant } from '@/lib/cache'
 import { requireAuth, requireRole } from '@/lib/auth-utils'
 import { getTenantIdFromHeaders } from '@/lib/db'
+import { Prisma } from '@prisma/client'
+import { lerArea } from '@/lib/area-grupo'
 
 async function getDb() {
     const tenantId = await getTenantIdFromHeaders()
@@ -270,6 +272,7 @@ export async function salvarGrupo(formData: FormData) {
             descricao: formData.get('descricao') as string || null,
             regiao,
             publico,
+            area: lerArea(formData.get('area')) ?? Prisma.DbNull,
             ...(latitude !== null && { latitude }),
             ...(longitude !== null && { longitude }),
         }

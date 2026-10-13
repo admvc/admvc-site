@@ -10,6 +10,13 @@ import {
     Building2, UserX, Plus, Info
 } from "lucide-react";
 import SeccaoColapsavel from '@/components/acolhimento/SeccaoColapsavel'
+import dynamic from 'next/dynamic'
+import type { PontoArea } from '@/lib/area-grupo'
+
+const EditorAreaGrupo = dynamic(() => import('@/components/grupos/EditorAreaGrupo'), {
+    ssr: false,
+    loading: () => <div className="h-[320px] animate-pulse rounded-[14px]" style={{ background: 'var(--a-borda)' }} />,
+})
 
 interface GerenciadorProps {
     grupos: any[];
@@ -31,11 +38,13 @@ export default function GerenciadorGrupos({ grupos, departamentos, membrosDispon
     const [buscaMembros, setBuscaMembros] = useState("");
     const [selecionadosMembros, setSelecionadosMembros] = useState<number[]>([]);
     const [selecionadosLideres, setSelecionadosLideres] = useState<number[]>([]);
+    const [area, setArea] = useState<PontoArea[] | null>(null);
 
     const abrirFormulario = (grupo: any = null) => {
         setGrupoAtual(grupo);
         setSelecionadosMembros(grupo?.membros?.map((m: any) => m.id) || []);
         setSelecionadosLideres(grupo?.lideres?.map((l: any) => l.id) || []);
+        setArea(grupo?.area ?? null);
         setBuscaMembros("");
         setModo('form');
     };
@@ -76,6 +85,7 @@ export default function GerenciadorGrupos({ grupos, departamentos, membrosDispon
         if (grupoAtual?.id) formData.append("id", grupoAtual.id.toString());
         selecionadosMembros.forEach(id => formData.append("membros_ids", id.toString()));
         selecionadosLideres.forEach(id => formData.append("lideres_ids", id.toString()));
+        formData.set("area", area ? JSON.stringify(area) : "");
 
         try {
             const res = await salvarGrupo(formData) as { sucesso: boolean; error?: string };
@@ -346,6 +356,12 @@ export default function GerenciadorGrupos({ grupos, departamentos, membrosDispon
                                     className="h-5 w-5" style={{ accentColor: 'var(--a-destaque)' }} />
                                 <span className="text-[15px] font-semibold">Mostrar no site público</span>
                             </label>
+                        </div>
+
+                        <div className="space-y-2 px-4 pb-4">
+                            <p className="text-[14px] font-semibold a-suave">Zona que o grupo abrange</p>
+                            <EditorAreaGrupo key={grupoAtual?.id ?? 'novo'} latitude={grupoAtual?.latitude} longitude={grupoAtual?.longitude}
+                                valor={grupoAtual?.area} onChange={setArea} />
                         </div>
                     </SeccaoColapsavel>
 

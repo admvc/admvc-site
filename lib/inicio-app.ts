@@ -4,6 +4,7 @@
 
 import { getTenantClient } from '@/lib/prisma'
 import type { SessionData } from '@/lib/auth-utils'
+import { lerArea, type PontoArea } from '@/lib/area-grupo'
 
 /** O membro tem de aceitar (ou renovar) os termos de protecao de dados. */
 export async function termosPorAssinar(sessao: SessionData): Promise<boolean> {
@@ -73,6 +74,9 @@ export interface MeuGrupo {
     mapa: string | null
     lideres: string[]
     souLider: boolean
+    latitude: number | null
+    longitude: number | null
+    area: PontoArea[] | null
 }
 
 /** Grupos em que participo ou que lidero, com quando e onde se juntam. */
@@ -83,7 +87,7 @@ export async function meusGrupos(sessao: SessionData): Promise<MeuGrupo[]> {
         where: { OR: [{ membros: eu }, { lideres: eu }] },
         select: {
             id: true, nome: true, dia_semana: true, horario: true, endereco: true, numero: true,
-            bairro: true, cidade: true, latitude: true, longitude: true,
+            bairro: true, cidade: true, latitude: true, longitude: true, area: true,
             lideres: { select: { id: true, first_name: true, last_name: true } },
         },
         orderBy: { nome: 'asc' },
@@ -100,6 +104,9 @@ export async function meusGrupos(sessao: SessionData): Promise<MeuGrupo[]> {
             mapa: destino ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destino)}` : null,
             lideres: g.lideres.map((l) => `${l.first_name} ${l.last_name}`.trim()),
             souLider: g.lideres.some((l) => l.id === sessao.membroId),
+            latitude: g.latitude,
+            longitude: g.longitude,
+            area: lerArea(g.area),
         }
     })
 }

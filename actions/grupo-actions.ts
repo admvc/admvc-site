@@ -7,6 +7,8 @@ import { getSessionData, requireAuth, isAdmin } from '@/lib/auth-utils'
 import { invalidateGrupos } from '@/lib/cache'
 import { audit } from '@/lib/audit'
 import { getTenantIdFromHeaders } from '@/lib/db'
+import { Prisma } from '@prisma/client'
+import { lerArea } from '@/lib/area-grupo'
 
 
 async function getDb() {
@@ -78,8 +80,10 @@ export async function atualizarDadosGrupoAction(formData: FormData) {
         const numero = formData.get('numero') as string;
         const bairro = formData.get('bairro') as string;
         const cidade = formData.get('cidade') as string;
-        const estado = formData.get('estado') as string;
+        // O formulario do lider chama-lhe "distrito"
+        const estado = (formData.get('estado') ?? formData.get('distrito') ?? '') as string;
         const pais = formData.get('pais') as string;
+        const area = lerArea(formData.get('area'));
 
         await (await getDb()).db.grupo.update({
             where: { id },
@@ -91,7 +95,8 @@ export async function atualizarDadosGrupoAction(formData: FormData) {
                 bairro,
                 cidade,
                 estado,
-                pais
+                pais,
+                ...(formData.has('area') && { area: area ?? Prisma.DbNull }),
             }
         });
 

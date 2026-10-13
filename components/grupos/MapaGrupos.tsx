@@ -3,7 +3,8 @@
 // Importado com dynamic({ ssr: false }) nas páginas que o usam
 
 import { useEffect, useRef } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Polygon, Tooltip, useMap } from 'react-leaflet'
+import { lerArea } from '@/lib/area-grupo'
 import type { Map as LeafletMap } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -84,6 +85,7 @@ interface Grupo {
     latitude?: number | null
     longitude?: number | null
     lideres?: { first_name: string; last_name: string }[]
+    area?: unknown
 }
 
 interface Props {
@@ -115,6 +117,18 @@ export default function MapaGrupos({ grupos, altura = '500px', mostrarLegenda = 
                 />
 
                 <FitBounds grupos={gruposComCoords} />
+
+                {/* Zonas que cada grupo abrange, na cor da regiao */}
+                {grupos.map(g => {
+                    const area = lerArea(g.area)
+                    if (!area) return null
+                    const cor = COR_REGIAO[g.regiao || ''] || '#6b7280'
+                    return (
+                        <Polygon key={`area-${g.id}`} positions={area} pathOptions={{ color: cor, weight: 2, fillOpacity: 0.15 }}>
+                            <Tooltip sticky>{g.nome}</Tooltip>
+                        </Polygon>
+                    )
+                })}
 
                 {gruposComCoords.map(g => {
                     const cor = COR_REGIAO[g.regiao || ''] || '#6b7280'
