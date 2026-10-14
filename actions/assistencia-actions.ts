@@ -18,7 +18,7 @@ export async function criarItemAssistencia(formData: FormData) {
         const stock_minimo = Number(formData.get('stock_minimo')) || 0
 
         if (!nome || !categoria) {
-            return { error: 'Nome e categoria sao obrigatorios.' }
+            return { error: 'Nome e categoria são obrigatórios.' }
         }
 
         await db.itemAssistenciaSocial.create({
@@ -55,16 +55,16 @@ export async function registarMovimentoAssistencia(formData: FormData) {
         const observacao = formData.get('observacao') as string || null
 
         if (!item_id || !tipo || !quantidade || quantidade <= 0) {
-            return { error: 'Campos obrigatorios em falta ou quantidade invalida.' }
+            return { error: 'Campos obrigatórios em falta ou quantidade inválida.' }
         }
 
         const tiposValidos = ['DOACAO_RECEBIDA', 'ENTREGA_FAMILIA', 'ENTREGA_ENTIDADE', 'REPASSE_CANTINA']
         if (!tiposValidos.includes(tipo)) {
-            return { error: 'Tipo de movimento invalido.' }
+            return { error: 'Tipo de movimento inválido.' }
         }
 
         const item = await db.itemAssistenciaSocial.findUnique({ where: { id: item_id } })
-        if (!item) return { error: 'Item nao encontrado.' }
+        if (!item) return { error: 'Item não encontrado.' }
 
         if (tipo === 'DOACAO_RECEBIDA') {
             // Incrementar stock
@@ -131,7 +131,7 @@ export async function criarTipoCesta(formData: FormData) {
         const nome = formData.get('nome') as string
         const descricao = formData.get('descricao') as string || null
 
-        if (!nome?.trim()) return { error: 'Nome da cesta e obrigatorio.' }
+        if (!nome?.trim()) return { error: 'Nome da cesta e obrigatório.' }
 
         const cesta = await db.tipoCesta.create({
             data: { tenant_id: tenantId, nome: nome.trim(), descricao }
@@ -201,15 +201,15 @@ export async function montarCesta(tipoCestaId: number, destinatario: string, obs
         const db = await getDb()
         const tenantId = await getTenantIdFromHeaders()
 
-        if (!destinatario?.trim()) return { error: 'Destinatario e obrigatorio.' }
+        if (!destinatario?.trim()) return { error: 'Destinatario e obrigatório.' }
 
         const tipoCesta = await db.tipoCesta.findUnique({
             where: { id: tipoCestaId },
             include: { itens: { include: { item: true } } }
         })
 
-        if (!tipoCesta) return { error: 'Tipo de cesta nao encontrado.' }
-        if (tipoCesta.itens.length === 0) return { error: 'Esta cesta nao tem itens definidos.' }
+        if (!tipoCesta) return { error: 'Tipo de cesta não encontrado.' }
+        if (tipoCesta.itens.length === 0) return { error: 'Esta cesta não tem itens definidos.' }
 
         // Verificar stock de todos os itens
         for (const ic of tipoCesta.itens) {

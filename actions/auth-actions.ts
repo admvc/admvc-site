@@ -245,7 +245,7 @@ export async function loginUnificado(formData: FormData) {
             descricao: `Tentativa de login em conta suspensa: ${email}`,
         })
 
-        return { error: 'Esta conta esta suspensa. Contacte a administracao.' }
+        return { error: 'Esta conta esta suspensa. Contacte a administração.' }
     }
 
     const senhaValida = await bcrypt.compare(password, usuario.password)
@@ -389,7 +389,7 @@ export async function logoutAdmin() {
                 categoria: 'ACESSO',
                 acao: 'LOGOUT',
                 actor_id: session.membroId,
-                descricao: 'Sessao terminada',
+                descricao: 'Sessão terminada',
             })
         }
     } catch {

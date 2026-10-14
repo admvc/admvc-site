@@ -26,8 +26,8 @@ export default function BotoesImpressao({ membros, igrejaName }: { membros: Memb
             <div className="flex items-center gap-1.5">
                 <button onClick={() => setTipo('cartao')}
                     className="flex items-center gap-1.5 bg-bg2 border border-soft text-muted px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:text-fg hover:border-figueira/30 transition-all"
-                    title="Imprimir cartoes">
-                    <CreditCard size={12} /> Cartoes
+                    title="Imprimir cartões">
+                    <CreditCard size={12} /> Cartões
                 </button>
                 <button onClick={() => setTipo('lista')}
                     className="flex items-center gap-1.5 bg-bg2 border border-soft text-muted px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:text-fg hover:border-figueira/30 transition-all"

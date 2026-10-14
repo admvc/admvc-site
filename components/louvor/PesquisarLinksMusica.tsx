@@ -187,7 +187,7 @@ export default function PesquisarLinksMusica({
                                         <ExternalLink size={11} />
                                     </a>
                                     <BtnUsar tipo="audio" url={track.url}
-                                        onSelect={onSelectAudio} label="Audio"
+                                        onSelect={onSelectAudio} label="Áudio"
                                         cor="bg-green-500/10 text-green-700 border border-green-500/20 hover:bg-green-500 hover:text-white" />
                                 </div>
                             ))}
@@ -217,7 +217,7 @@ export default function PesquisarLinksMusica({
                                         <ExternalLink size={11} />
                                     </a>
                                     <BtnUsar tipo="video" url={video.url}
-                                        onSelect={onSelectVideo} label="Video"
+                                        onSelect={onSelectVideo} label="Vídeo"
                                         cor="bg-red-500/10 text-red-700 border border-red-500/20 hover:bg-red-500 hover:text-white" />
                                 </div>
                             ))}

@@ -57,7 +57,7 @@ export default async function RelatorioFinanceiroPage({
                 </Link>
                 <div className="space-y-1">
                     <h1 className="text-3xl md:text-4xl font-bold text-fg">
-                        Relatorio Financeiro
+                        Relatório Financeiro
                     </h1>
                     <p className="text-xs text-muted">
                         Periodo: {de.split('-').reverse().join('/')} a {ate.split('-').reverse().join('/')}
@@ -71,7 +71,7 @@ export default async function RelatorioFinanceiroPage({
                     href={`/cantina/relatorio-financeiro?de=${mesAtualDe}&ate=${mesAtualAte}`}
                     className="px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-fg"
                 >
-                    Este Mes
+                    Este Mês
                 </Link>
                 <Link
                     href={`/cantina/relatorio-financeiro?de=${trimestreDe}&ate=${mesAtualAte}`}
@@ -169,7 +169,7 @@ export default async function RelatorioFinanceiroPage({
 
                 <div className="p-6 space-y-3">
                     {Object.keys(relatorio.receitaPorMetodo).length === 0 ? (
-                        <p className="text-sm text-muted text-center py-4">Sem dados no periodo.</p>
+                        <p className="text-sm text-muted text-center py-4">Sem dados no período.</p>
                     ) : (
                         (() => {
                             const labels: Record<string, string> = {
@@ -215,7 +215,7 @@ export default async function RelatorioFinanceiroPage({
 
                 <div className="p-6 space-y-3">
                     {Object.keys(relatorio.despesasPorCategoria).length === 0 ? (
-                        <p className="text-sm text-muted text-center py-4">Sem despesas pagas no periodo.</p>
+                        <p className="text-sm text-muted text-center py-4">Sem despesas pagas no período.</p>
                     ) : (
                         (() => {
                             const entries = Object.entries(relatorio.despesasPorCategoria).sort((a, b) => b[1] - a[1])

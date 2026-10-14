@@ -1,41 +1,28 @@
 'use client'
 
+// Marcar atendimento: quatro perguntas numa so pagina, sempre visiveis.
+// O botao esta sempre ativo e diz o que falta (um botao apagado nao explica nada).
+
 import { useState } from 'react'
-import {
-    Calendar, Clock, Coffee, BookOpen, Users, Utensils,
-    CalendarDays, Send, Loader2, CheckCircle2, User
-} from 'lucide-react'
+import { Calendar, Send, Loader2, CheckCircle2, User } from 'lucide-react'
 import Image from 'next/image'
 import { pedirAgendamentoAction } from '@/actions/agenda-actions'
 import { useToast } from '@/components/ui/ConfirmDialog'
 
 const CATEGORIAS = [
-    { id: 'CAFE', label: 'Cafe com Pastor', icon: Coffee, cor: 'amber' },
-    { id: 'PERMANECER', label: 'Permanecer', icon: BookOpen, cor: 'emerald' },
-    { id: 'DISCIPULADO', label: 'Discipulado', icon: Users, cor: 'blue' },
-    { id: 'MESA', label: 'A Mesa', icon: Utensils, cor: 'orange' },
-    { id: 'OUTRO', label: 'Outro', icon: CalendarDays, cor: 'gray' },
+    { id: 'CAFE', label: 'Café com o pastor' },
+    { id: 'PERMANECER', label: 'Permanecer' },
+    { id: 'DISCIPULADO', label: 'Discipulado' },
+    { id: 'MESA', label: 'A Mesa' },
+    { id: 'OUTRO', label: 'Outro' },
 ]
 
-const CORES: Record<string, string> = {
-    amber: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
-    emerald: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-    blue: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-    orange: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
-    gray: 'bg-soft text-muted border-soft',
-}
-
-const CORES_ACTIVE: Record<string, string> = {
-    amber: 'bg-amber-500 text-white border-amber-500',
-    emerald: 'bg-emerald-500 text-white border-emerald-500',
-    blue: 'bg-blue-500 text-white border-blue-500',
-    orange: 'bg-orange-500 text-white border-orange-500',
-    gray: 'bg-fg text-bg border-fg',
-}
+const CAMPO = 'a-foco min-h-[52px] w-full rounded-[14px] border px-4 text-[17px]'
+const ESTILO_CAMPO = { background: 'var(--a-card)', borderColor: 'var(--a-borda)', color: 'var(--a-texto)' }
 
 export default function AgendarClient({ agendas, membro }: { agendas: any[]; membro: any }) {
     const toast = useToast()
-    const [agendaSelecionada, setAgendaSelecionada] = useState<number | null>(null)
+    const [agendaSelecionada, setAgendaSelecionada] = useState<number | null>(agendas.length === 1 ? agendas[0].id : null)
     const [categoria, setCategoria] = useState('')
     const [data, setData] = useState('')
     const [horaInicio, setHoraInicio] = useState('10:00')
@@ -44,14 +31,21 @@ export default function AgendarClient({ agendas, membro }: { agendas: any[]; mem
     const [observacoes, setObservacoes] = useState('')
     const [enviando, setEnviando] = useState(false)
     const [enviado, setEnviado] = useState(false)
+    const [falta, setFalta] = useState<string | null>(null)
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
-        if (!agendaSelecionada || !categoria || !data || !titulo) return
+        const emFalta = !agendaSelecionada ? 'Escolha com quem quer falar.'
+            : !categoria ? 'Escolha o tipo de conversa.'
+            : !data ? 'Escolha o dia.'
+            : !titulo.trim() ? 'Escreva o assunto.'
+            : null
+        setFalta(emFalta)
+        if (emFalta) return
 
         setEnviando(true)
         const res = await pedirAgendamentoAction({
-            agenda_id: agendaSelecionada,
+            agenda_id: agendaSelecionada!,
             titulo,
             categoria,
             data,
@@ -62,22 +56,19 @@ export default function AgendarClient({ agendas, membro }: { agendas: any[]; mem
         })
         setEnviando(false)
 
-        if (res.ok) {
-            setEnviado(true)
-        } else {
-            toast(res.error || 'Erro ao enviar pedido.', 'erro')
-        }
+        if (res.ok) setEnviado(true)
+        else toast(res.error || 'Erro ao enviar o pedido.', 'erro')
     }
 
     if (enviado) {
         return (
-            <div className="text-center py-16 space-y-4 animate-in fade-in">
-                <CheckCircle2 size={48} className="mx-auto text-emerald-500" />
-                <h2 className="text-2xl font-bold text-fg">Pedido Enviado!</h2>
-                <p className="text-sm text-muted">O pastor sera notificado e confirmara o agendamento.</p>
-                <button onClick={() => { setEnviado(false); setCategoria(''); setTitulo(''); setData('') }}
-                    className="px-6 py-3 rounded-xl bg-fg text-bg text-[13px] font-bold uppercase tracking-wide hover:bg-figueira transition-all">
-                    Novo Pedido
+            <div className="space-y-4 py-10 text-center">
+                <CheckCircle2 size={56} className="mx-auto" style={{ color: 'var(--a-destaque)' }} aria-hidden />
+                <h1 className="text-[28px] font-bold leading-tight">Pedido enviado</h1>
+                <p className="text-[17px] a-suave">O pastor recebe o pedido e confirma o dia e a hora.</p>
+                <button type="button" onClick={() => { setEnviado(false); setCategoria(''); setTitulo(''); setData(''); setObservacoes('') }}
+                    className="a-botao a-botao-secundario w-full">
+                    Fazer outro pedido
                 </button>
             </div>
         )
@@ -88,119 +79,121 @@ export default function AgendarClient({ agendas, membro }: { agendas: any[]; mem
     amanha.setDate(amanha.getDate() + 1)
     const dataMin = amanha.toISOString().split('T')[0]
 
+    const limpar = () => setFalta(null)
+
     return (
         <>
-            <header className="space-y-1">
-                <h1 className="text-3xl font-bold text-fg">Agendar</h1>
-                <p className="text-xs text-muted">Pede uma reuniao com o pastor ou lider.</p>
-            </header>
+            <div className="space-y-1">
+                <h1 className="text-[28px] font-bold leading-tight">Marcar atendimento</h1>
+                <p className="text-[17px] a-suave">Peça uma conversa com o pastor ou com um líder.</p>
+            </div>
 
             {agendas.length === 0 ? (
-                <div className="bg-bg2 border border-soft rounded-2xl p-8 text-center space-y-3">
-                    <Calendar size={32} className="mx-auto text-muted/20" />
-                    <p className="text-sm font-bold text-muted">Nenhuma agenda disponivel</p>
-                    <p className="text-xs text-muted/60">Nao existem agendas publicas de momento.</p>
+                <div className="a-card space-y-2 p-6 text-center">
+                    <Calendar size={36} className="mx-auto a-suave" aria-hidden />
+                    <p className="text-[18px] font-semibold">Ainda não é possível marcar</p>
+                    <p className="text-[16px] a-suave">De momento não há agendas abertas. Fale com a secretaria.</p>
                 </div>
             ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-
-                    {/* PASSO 1: Escolher agenda/pastor */}
-                    <section className="space-y-3">
-                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center">1</span>
-                            Com quem?
-                        </p>
-                        <div className="grid sm:grid-cols-2 gap-3">
-                            {agendas.map((a: any) => (
-                                <button key={a.id} type="button" onClick={() => setAgendaSelecionada(a.id)}
-                                    className={`p-4 rounded-2xl border-2 text-left transition-all active:scale-95 ${agendaSelecionada === a.id ? 'border-figueira bg-figueira/5' : 'border-soft bg-bg2 hover:border-figueira/30'}`}>
-                                    <div className="flex items-center gap-3">
-                                        {a.dono?.avatar_file ? (
-                                            <Image src={a.dono.avatar_file} alt="" width={40} height={40} className="rounded-xl object-cover" />
-                                        ) : (
-                                            <div className="w-10 h-10 rounded-xl bg-soft flex items-center justify-center">
-                                                <User size={16} className="text-muted" />
-                                            </div>
-                                        )}
-                                        <div>
-                                            <p className="text-sm font-bold text-fg">{a.nome}</p>
-                                            <p className="text-[13px] font-bold text-muted uppercase tracking-wide">
-                                                {a.dono?.first_name} {a.dono?.last_name}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    </section>
-
-                    {/* PASSO 2: Tipo de reuniao */}
-                    <section className={`space-y-3 transition-all ${!agendaSelecionada ? 'opacity-30 pointer-events-none' : ''}`}>
-                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center">2</span>
-                            Que tipo de reuniao?
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                            {CATEGORIAS.map(c => {
-                                const Icon = c.icon
-                                const active = categoria === c.id
+                <form onSubmit={handleSubmit} noValidate className="space-y-6">
+                    <Passo n={1} titulo="Com quem?">
+                        <div role="radiogroup" className="space-y-2">
+                            {agendas.map((a: any) => {
+                                const ativo = agendaSelecionada === a.id
                                 return (
-                                    <button key={c.id} type="button" onClick={() => setCategoria(c.id)}
-                                        className={`px-4 py-2.5 rounded-xl border text-[13px] font-bold uppercase tracking-wide flex items-center gap-2 transition-all active:scale-95 ${active ? CORES_ACTIVE[c.cor] : CORES[c.cor]}`}>
-                                        <Icon size={13} /> {c.label}
+                                    <button key={a.id} type="button" role="radio" aria-checked={ativo} onClick={() => { setAgendaSelecionada(a.id); limpar() }}
+                                        className="a-card a-foco flex min-h-[64px] w-full items-center gap-3 px-4 py-2 text-left"
+                                        style={ativo ? { borderColor: 'var(--a-destaque)', background: 'var(--a-destaque-suave)' } : undefined}>
+                                        {a.dono?.avatar_file ? (
+                                            <Image src={a.dono.avatar_file} alt="" width={44} height={44} className="h-11 w-11 shrink-0 rounded-full object-cover" />
+                                        ) : (
+                                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full a-suave" style={{ background: 'var(--a-bg)' }}>
+                                                <User size={22} aria-hidden />
+                                            </span>
+                                        )}
+                                        <span className="min-w-0 flex-1">
+                                            <span className="block text-[17px] font-semibold">{a.nome}</span>
+                                            <span className="block text-[15px] a-suave">{a.dono?.first_name} {a.dono?.last_name}</span>
+                                        </span>
+                                        {ativo && <CheckCircle2 size={24} className="shrink-0" style={{ color: 'var(--a-destaque)' }} aria-hidden />}
                                     </button>
                                 )
                             })}
                         </div>
-                    </section>
+                    </Passo>
 
-                    {/* PASSO 3: Data e hora */}
-                    <section className={`space-y-3 transition-all ${!categoria ? 'opacity-30 pointer-events-none' : ''}`}>
-                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center">3</span>
-                            Quando?
-                        </p>
-                        <div className="grid grid-cols-3 gap-3">
-                            <div className="space-y-1.5">
-                                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Data</label>
-                                <input type="date" value={data} onChange={e => setData(e.target.value)} min={dataMin} required
-                                    className="w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-sm font-bold text-fg focus:border-figueira outline-none" />
+                    <Passo n={2} titulo="Que tipo de conversa?">
+                        <div role="radiogroup" className="flex flex-wrap gap-2">
+                            {CATEGORIAS.map(c => {
+                                const ativo = categoria === c.id
+                                return (
+                                    <button key={c.id} type="button" role="radio" aria-checked={ativo} onClick={() => { setCategoria(c.id); limpar() }}
+                                        className={`a-botao !min-h-[48px] ${ativo ? 'a-botao-principal' : 'a-botao-secundario'}`}>
+                                        {c.label}
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    </Passo>
+
+                    <Passo n={3} titulo="Quando?">
+                        <div className="space-y-2">
+                            <label htmlFor="ag-data" className="block text-[16px] font-semibold">Dia</label>
+                            <input id="ag-data" type="date" value={data} onChange={e => { setData(e.target.value); limpar() }} min={dataMin}
+                                className={CAMPO} style={ESTILO_CAMPO} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                                <label htmlFor="ag-inicio" className="block text-[16px] font-semibold">Das</label>
+                                <input id="ag-inicio" type="time" value={horaInicio} onChange={e => setHoraInicio(e.target.value)} className={CAMPO} style={ESTILO_CAMPO} />
                             </div>
-                            <div className="space-y-1.5">
-                                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Inicio</label>
-                                <input type="time" value={horaInicio} onChange={e => setHoraInicio(e.target.value)} required
-                                    className="w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-sm font-bold text-fg focus:border-figueira outline-none" />
-                            </div>
-                            <div className="space-y-1.5">
-                                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Fim</label>
-                                <input type="time" value={horaFim} onChange={e => setHoraFim(e.target.value)} required
-                                    className="w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-sm font-bold text-fg focus:border-figueira outline-none" />
+                            <div className="space-y-2">
+                                <label htmlFor="ag-fim" className="block text-[16px] font-semibold">Até às</label>
+                                <input id="ag-fim" type="time" value={horaFim} onChange={e => setHoraFim(e.target.value)} className={CAMPO} style={ESTILO_CAMPO} />
                             </div>
                         </div>
-                    </section>
+                    </Passo>
 
-                    {/* PASSO 4: Assunto */}
-                    <section className={`space-y-3 transition-all ${!data ? 'opacity-30 pointer-events-none' : ''}`}>
-                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center">4</span>
-                            Assunto
+                    <Passo n={4} titulo="Sobre o quê?">
+                        <div className="space-y-2">
+                            <label htmlFor="ag-titulo" className="block text-[16px] font-semibold">Assunto</label>
+                            <input id="ag-titulo" type="text" value={titulo} onChange={e => { setTitulo(e.target.value); limpar() }}
+                                className={CAMPO} style={ESTILO_CAMPO} />
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="ag-obs" className="block text-[16px] font-semibold">Mais alguma coisa? <span className="font-normal a-suave">(se quiser)</span></label>
+                            <textarea id="ag-obs" value={observacoes} onChange={e => setObservacoes(e.target.value)} rows={3}
+                                className={`${CAMPO} resize-none py-3`} style={ESTILO_CAMPO} />
+                        </div>
+                    </Passo>
+
+                    {falta && (
+                        <p role="alert" className="rounded-[14px] border px-4 py-3 text-[16px] font-semibold"
+                            style={{ borderColor: 'var(--a-erro)', color: 'var(--a-erro)', background: 'var(--a-erro-suave)' }}>
+                            {falta}
                         </p>
-                        <input type="text" value={titulo} onChange={e => setTitulo(e.target.value)} required
-                            placeholder="Breve descricao do motivo..."
-                            className="w-full bg-bg2 border border-soft rounded-xl px-4 py-3 text-sm font-bold text-fg focus:border-figueira outline-none placeholder:text-muted/30" />
-                        <textarea value={observacoes} onChange={e => setObservacoes(e.target.value)} rows={2}
-                            placeholder="Observacoes adicionais (opcional)"
-                            className="w-full bg-bg2 border border-soft rounded-xl px-4 py-3 text-sm font-bold text-fg focus:border-figueira outline-none resize-none placeholder:text-muted/30" />
-                    </section>
+                    )}
 
-                    {/* ENVIAR */}
-                    <button type="submit" disabled={enviando || !agendaSelecionada || !categoria || !data || !titulo}
-                        className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-fg text-bg text-[14px] font-bold uppercase tracking-wide hover:bg-figueira transition-all disabled:opacity-40 shadow-sm active:scale-95">
-                        {enviando ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-                        {enviando ? 'A enviar...' : 'Pedir Agendamento'}
+                    <button type="submit" disabled={enviando} className="a-botao a-botao-principal w-full !min-h-[56px]">
+                        {enviando ? <Loader2 size={20} className="animate-spin" aria-hidden /> : <Send size={20} aria-hidden />}
+                        {enviando ? 'A enviar…' : 'Pedir atendimento'}
                     </button>
+                    <p className="text-center text-[15px] a-suave">O pastor confirma o dia e a hora depois.</p>
                 </form>
             )}
         </>
+    )
+}
+
+function Passo({ n, titulo, children }: { n: number; titulo: string; children: React.ReactNode }) {
+    return (
+        <section className="space-y-3">
+            <h2 className="flex items-center gap-3 text-[19px] font-semibold">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[16px] font-bold"
+                    style={{ background: 'var(--a-destaque)', color: 'var(--a-sobre-destaque)' }}>{n}</span>
+                {titulo}
+            </h2>
+            {children}
+        </section>
     )
 }

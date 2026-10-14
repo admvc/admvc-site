@@ -2,9 +2,7 @@
 import { getDb } from '@/lib/db'
 import { getSessionData } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
-import { revalidatePath } from 'next/cache'
-import Link from 'next/link'
-import { ArrowLeft, MessageSquare } from 'lucide-react'
+import { MessageSquare } from 'lucide-react'
 import MuralClient from '@/components/membros/MuralClient'
 
 export default async function MuralPage() {
@@ -58,61 +56,21 @@ export default async function MuralPage() {
     });
 
     return (
-        <main className="max-w-6xl mx-auto py-4 md:py-10 px-4 sm:px-6 lg:px-8 space-y-4 md:space-y-8 animate-in fade-in duration-700 h-[calc(100dvh-60px)] md:h-[calc(100vh-80px)] flex flex-col">
-
-            <header className="shrink-0 space-y-4">
-                <div className="flex items-center gap-3 md:gap-4 border-b border-soft pb-4 md:pb-6">
-                    <div className="p-2.5 md:p-4 bg-figueira/10 text-figueira rounded-xl md:rounded-2xl">
-                        <MessageSquare size={18} className="md:hidden" />
-                        <MessageSquare size={24} className="hidden md:block" />
-                    </div>
-                    <div>
-                        <h1 className="text-xl md:text-3xl font-bold text-fg leading-none">
-                            Mural de <span className="text-muted/30">Avisos.</span>
-                        </h1>
-                        <p className="text-[13px] md:text-xs text-muted font-bold tracking-wide uppercase mt-1">
-                            Comunicação interna das tuas equipas.
-                        </p>
-                    </div>
-                </div>
-            </header>
-
-            <div className="flex-1 min-h-0">
-                {canaisUnicos.length > 0 ? (
-                    <MuralClient canais={canaisUnicos} avisos={avisos} membroAtualId={membro.id} />
-                ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-center p-10 bg-bg2 border border-dashed border-soft rounded-[3rem]">
-                        <MessageSquare size={48} className="text-soft mb-4" />
-                        <h3 className="text-lg font-bold text-fg">Sem Canais Disponíveis</h3>
-                        <p className="text-xs text-muted font-medium mt-2 max-w-sm">Ainda não estás associado a nenhum Grupo ou Departamento. Fala com a liderança para seres adicionado.</p>
-                    </div>
-                )}
+        <main className="app-novo mx-auto max-w-2xl space-y-4 px-4 pb-28 pt-20 md:pb-10 md:pt-8" style={{ background: 'transparent' }}>
+            <div className="space-y-1">
+                <h1 className="text-[28px] font-bold leading-tight">Avisos</h1>
+                <p className="text-[17px] a-suave">Mensagens dos seus ministérios e grupos.</p>
             </div>
+
+            {canaisUnicos.length > 0 ? (
+                <MuralClient canais={canaisUnicos} avisos={avisos} membroAtualId={membro.id} />
+            ) : (
+                <div className="a-card space-y-2 p-6 text-center">
+                    <MessageSquare size={36} className="mx-auto a-suave" aria-hidden />
+                    <p className="text-[18px] font-semibold">Ainda sem avisos</p>
+                    <p className="text-[16px] a-suave">Os avisos aparecem quando fizer parte de um ministério ou grupo. Fale com a liderança.</p>
+                </div>
+            )}
         </main>
     )
-}
-
-async function apagarAviso(id: string) {
-    try {
-        const db = await getDb()
-        const session = await getSessionData();
-        if (!session) return { error: 'Não autorizado' };
-
-        const aviso = await db.avisoMural.findUnique({ where: { id } });
-        if (!aviso) return { error: 'Aviso não encontrado.' };
-
-        // Verifica se é o autor da mensagem ou um Administrador
-        if (aviso.autor_id !== session.membroId && session.role !== 'ADMIN') {
-            return { error: 'Não tens permissão para apagar esta mensagem.' };
-        }
-
-        await db.avisoMural.delete({ where: { id } });
-
-        revalidatePath('/membros/mural');
-        revalidatePath('/membros/dashboard');
-        return { ok: true };
-    } catch (error) {
-        console.error(error);
-        return { error: 'Erro ao apagar aviso.' };
-    }
 }

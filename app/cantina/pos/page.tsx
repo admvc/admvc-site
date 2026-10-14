@@ -82,8 +82,8 @@ export default async function POSPage() {
                 </div>
                 <h1 className="text-2xl font-bold text-fg">Acesso Restrito</h1>
                 <p className="text-sm text-muted max-w-sm mx-auto">
-                    O ponto de venda so esta disponivel para membros da Cantina com funcao de caixa,
-                    lideres do departamento, ou administradores.
+                    O ponto de venda só esta disponível para membros da Cantina com função de caixa,
+                    líderes do departamento, ou administradores.
                 </p>
                 <Link href="/membros/dashboard" className="btn btn-ghost inline-flex">
                     Voltar ao Dashboard

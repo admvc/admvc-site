@@ -96,7 +96,7 @@ export default async function DespesasPage() {
                                     <p className="text-[14px] font-bold uppercase text-orange-700">
                                         {pendentes.length} despesa{pendentes.length !== 1 ? 's' : ''} pendente{pendentes.length !== 1 ? 's' : ''}
                                     </p>
-                                    <p className="text-[13px] text-orange-600/80 font-bold">A aguardar aprovacao</p>
+                                    <p className="text-[13px] text-orange-600/80 font-bold">A aguardar aprovação</p>
                                 </div>
                             </div>
                         </summary>
@@ -147,7 +147,7 @@ export default async function DespesasPage() {
             {/* History table */}
             <section className="space-y-3">
                 <h2 className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
-                    <Wallet size={14} /> Historico de Despesas
+                    <Wallet size={14} /> Histórico de Despesas
                 </h2>
 
                 {recentes.length === 0 ? (
@@ -162,13 +162,13 @@ export default async function DespesasPage() {
                                 <thead>
                                     <tr className="border-b border-soft">
                                         <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Data</th>
-                                        <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Descricao</th>
+                                        <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Descrição</th>
                                         <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Fundo</th>
                                         <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Categoria</th>
                                         <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Valor</th>
                                         <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Fornecedor</th>
                                         <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Status</th>
-                                        <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Acoes</th>
+                                        <th className="px-5 py-3.5 text-[13px] font-bold uppercase tracking-wide text-muted">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>

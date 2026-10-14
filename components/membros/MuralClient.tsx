@@ -1,8 +1,11 @@
 // components/membros/MuralClient.tsx
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { Send, Hash, MessageSquare, UserCircle, Loader2, Trash2 } from 'lucide-react'
+// Avisos como uma lista simples: escolhe-se o ministerio/grupo, escreve-se em
+// cima e as mensagens aparecem por baixo, a mais recente primeiro.
+
+import { useState, useRef } from 'react'
+import { Send, User, Loader2, Trash2 } from 'lucide-react'
 import { publicarAviso, apagarAviso } from '@/actions/mural-actions'
 import { useConfirm, useToast } from '@/components/ui/ConfirmDialog'
 import Image from 'next/image'
@@ -10,162 +13,105 @@ import Image from 'next/image'
 export default function MuralClient({ canais, avisos, membroAtualId }: { canais: any[], avisos: any[], membroAtualId: number }) {
     const confirmar = useConfirm()
     const toast = useToast()
-    const [canalAtivo, setCanalAtivo] = useState(canais[0]?.id);
-    const [loading, setLoading] = useState(false);
-    const [deletingId, setDeletingId] = useState<string | null>(null); // Para mostrar loading ao apagar
-    const formRef = useRef<HTMLFormElement>(null);
-    const feedRef = useRef<HTMLDivElement>(null);
+    const [canalAtivo, setCanalAtivo] = useState(canais[0]?.id)
+    const [loading, setLoading] = useState(false)
+    const [deletingId, setDeletingId] = useState<string | null>(null)
+    const formRef = useRef<HTMLFormElement>(null)
 
+    // Vem do servidor ja ordenado do mais recente para o mais antigo
     const mensagensDoCanal = avisos.filter(aviso => {
-        const idCanal = aviso.departamento_id ? `DEP_${aviso.departamento_id}` : `GRP_${aviso.grupo_id}`;
-        return idCanal === canalAtivo;
-    }).reverse();
-
-    useEffect(() => {
-        if (feedRef.current) {
-            feedRef.current.scrollTop = feedRef.current.scrollHeight;
-        }
-    }, [mensagensDoCanal]);
+        const idCanal = aviso.departamento_id ? `DEP_${aviso.departamento_id}` : `GRP_${aviso.grupo_id}`
+        return idCanal === canalAtivo
+    })
 
     async function handlePost(formData: FormData) {
-        setLoading(true);
-        const res = await publicarAviso(formData);
-        setLoading(false);
+        setLoading(true)
+        const res = await publicarAviso(formData)
+        setLoading(false)
         if (res.ok) {
-            formRef.current?.reset();
+            formRef.current?.reset()
+            toast('Aviso publicado.', 'sucesso')
         } else {
-            toast(res.error || "Erro ao publicar.", 'erro');
+            toast(res.error || 'Erro ao publicar.', 'erro')
         }
     }
 
-    // NOVA FUNÇÃO: APAGAR MENSAGEM
     async function handleDelete(id: string) {
-        const ok = await confirmar({ mensagem: 'Tens a certeza que queres apagar esta mensagem? Todos vão deixar de a ver.', tipo: 'perigo' })
-        if (!ok) return;
-        setDeletingId(id);
-        const res = await apagarAviso(id);
-        setDeletingId(null);
-        if (res.error) toast(res.error, 'erro');
+        const ok = await confirmar({ mensagem: 'Apagar esta mensagem? Todos deixam de a ver.', tipo: 'perigo' })
+        if (!ok) return
+        setDeletingId(id)
+        const res = await apagarAviso(id)
+        setDeletingId(null)
+        if (res.error) toast(res.error, 'erro')
     }
 
-    const formatDate = (dateString: string) => {
-        const data = new Date(dateString);
-        return new Intl.DateTimeFormat('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).format(data);
-    };
+    const formatDate = (dateString: string) =>
+        new Intl.DateTimeFormat('pt-PT', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }).format(new Date(dateString))
+
+    const nomeCanal = canais.find(c => c.id === canalAtivo)?.nome
 
     return (
-        <div className="h-full flex flex-col md:flex-row gap-3 md:gap-6">
-
-            {/* LISTA DE CANAIS — horizontal scroll no mobile, sidebar no desktop */}
-            <div className="md:w-64 shrink-0 flex flex-col gap-2 overflow-x-auto md:overflow-y-auto custom-scrollbar md:pr-2 -mx-4 px-4 md:mx-0 md:px-0">
-                <span className="text-[13px] font-bold uppercase tracking-wide text-muted mb-1 hidden md:block px-2">Meus Canais</span>
-                <div className="flex md:flex-col gap-2">
-                    {canais.map(canal => (
-                        <button
-                            key={canal.id}
-                            onClick={() => setCanalAtivo(canal.id)}
-                            className={`flex items-center gap-2 md:gap-3 px-3 py-2.5 md:p-4 rounded-xl md:rounded-2xl text-left transition-all shrink-0 md:shrink border ${canalAtivo === canal.id
-                                ? 'bg-figueira text-white border-figueira shadow-lg'
-                                : 'bg-bg2 text-muted border-soft hover:bg-soft'
-                                }`}
-                        >
-                            <Hash size={14} className={`md:w-4 md:h-4 ${canalAtivo === canal.id ? 'text-white' : 'text-figueira'}`} />
-                            <div className="overflow-hidden">
-                                <p className="text-[14px] font-bold uppercase tracking-wide truncate">{canal.nome}</p>
-                                <p className={`text-[13px] font-bold uppercase tracking-wide mt-0.5 hidden md:block ${canalAtivo === canal.id ? 'text-white/70' : 'text-muted/50'}`}>
-                                    {canal.tipo}
-                                </p>
-                            </div>
-                        </button>
-                    ))}
+        <div className="space-y-4">
+            {/* Ministerios e grupos: so aparece a escolha se houver mais de um */}
+            {canais.length > 1 && (
+                <div role="radiogroup" aria-label="Ministério ou grupo" className="flex flex-wrap gap-2">
+                    {canais.map(canal => {
+                        const ativo = canalAtivo === canal.id
+                        return (
+                            <button key={canal.id} type="button" role="radio" aria-checked={ativo} onClick={() => setCanalAtivo(canal.id)}
+                                className={`a-botao !min-h-[48px] ${ativo ? 'a-botao-principal' : 'a-botao-secundario'}`}>
+                                {canal.nome}
+                            </button>
+                        )
+                    })}
                 </div>
-            </div>
+            )}
 
-            {/* LADO DIREITO: FEED E INPUT */}
-            <div className="flex-1 flex flex-col bg-bg2 border border-soft rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-sm min-h-0">
+            <form ref={formRef} action={handlePost} className="a-card space-y-3 p-4">
+                <input type="hidden" name="destino" value={canalAtivo} />
+                <label htmlFor="mural-texto" className="block text-[16px] font-semibold">Escrever para {nomeCanal}</label>
+                <textarea id="mural-texto" name="texto" required rows={3} autoComplete="off"
+                    className="a-foco w-full resize-none rounded-[14px] border px-4 py-3 text-[17px]"
+                    style={{ background: 'var(--a-bg)', borderColor: 'var(--a-borda)', color: 'var(--a-texto)' }} />
+                <button disabled={loading} type="submit" className="a-botao a-botao-principal w-full">
+                    {loading ? <Loader2 size={20} className="animate-spin" aria-hidden /> : <Send size={20} aria-hidden />}
+                    {loading ? 'A publicar…' : 'Publicar'}
+                </button>
+            </form>
 
-                <div className="bg-bg border-b border-soft p-3 md:p-5 shrink-0">
-                    <h3 className="text-xs md:text-sm font-bold text-fg flex items-center gap-2">
-                        <Hash size={14} className="text-figueira" />
-                        {canais.find(c => c.id === canalAtivo)?.nome}
-                    </h3>
-                </div>
-
-                <div ref={feedRef} className="flex-1 overflow-y-auto p-3 md:p-6 space-y-4 md:space-y-6 custom-scrollbar bg-bg2/50">
-                    {mensagensDoCanal.length > 0 ? (
-                        mensagensDoCanal.map((msg: any) => {
-                            // Verifica se a mensagem é do membro atual
-                            const isMe = msg.autor.id === membroAtualId;
-
-                            return (
-                                <div key={msg.id} className={`flex gap-4 ${isMe ? 'flex-row-reverse' : 'flex-row'} ${deletingId === msg.id ? 'opacity-50' : ''}`}>
-                                    <div className="shrink-0">
-                                        {msg.autor.avatar_file ? (
-                                            <Image src={msg.autor.avatar_file} alt="Avatar" width={40} height={40} className="rounded-xl object-cover border-2 border-bg" />
-                                        ) : (
-                                            <div className="w-10 h-10 bg-soft text-muted rounded-xl flex items-center justify-center">
-                                                <UserCircle size={24} />
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className={`max-w-[80%] md:max-w-[70%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                                        <div className="flex items-baseline gap-2 mb-1 px-1">
-                                            <span className="text-[14px] font-bold uppercase tracking-wide text-fg">{msg.autor.first_name} {msg.autor.last_name}</span>
-                                            <span className="text-[13px] font-bold uppercase tracking-wide text-muted">{formatDate(msg.createdAt)}</span>
+            {mensagensDoCanal.length > 0 ? (
+                <ul className="space-y-3">
+                    {mensagensDoCanal.map((msg: any) => {
+                        const isMe = msg.autor.id === membroAtualId
+                        return (
+                            <li key={msg.id} className={`a-card space-y-3 p-4 ${deletingId === msg.id ? 'opacity-50' : ''}`}>
+                                <div className="flex items-center gap-3">
+                                    {msg.autor.avatar_file ? (
+                                        <Image src={msg.autor.avatar_file} alt="" width={44} height={44} className="h-11 w-11 shrink-0 rounded-full object-cover" />
+                                    ) : (
+                                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full a-suave" style={{ background: 'var(--a-bg)' }}>
+                                            <User size={22} aria-hidden />
                                         </div>
-
-                                        <div className={`p-4 rounded-2xl text-sm font-medium leading-relaxed shadow-sm ${isMe
-                                            ? 'bg-figueira text-white rounded-tr-none'
-                                            : 'bg-bg border border-soft text-fg rounded-tl-none'
-                                            }`}>
-                                            {msg.texto}
-                                        </div>
-
-                                        {/* BOTÃO DE APAGAR (Apenas visível se for o dono da mensagem) */}
-                                        {isMe && (
-                                            <button
-                                                onClick={() => handleDelete(msg.id)}
-                                                disabled={deletingId === msg.id}
-                                                className="flex items-center gap-1 text-[13px] font-bold uppercase tracking-wide text-muted hover:text-red-500 transition-colors mt-1 px-1"
-                                            >
-                                                {deletingId === msg.id ? <Loader2 size={10} className="animate-spin" /> : <Trash2 size={10} />}
-                                                Apagar
-                                            </button>
-                                        )}
+                                    )}
+                                    <div className="min-w-0 flex-1">
+                                        <p className="truncate text-[17px] font-semibold">{isMe ? 'Eu' : `${msg.autor.first_name} ${msg.autor.last_name}`}</p>
+                                        <p className="text-[15px] a-suave">{formatDate(msg.createdAt)}</p>
                                     </div>
+                                    {isMe && (
+                                        <button type="button" onClick={() => handleDelete(msg.id)} disabled={deletingId === msg.id}
+                                            className="a-botao shrink-0 !min-h-[44px] !px-3" aria-label="Apagar a mensagem" style={{ color: 'var(--a-erro)' }}>
+                                            {deletingId === msg.id ? <Loader2 size={20} className="animate-spin" aria-hidden /> : <Trash2 size={20} aria-hidden />}
+                                        </button>
+                                    )}
                                 </div>
-                            );
-                        })
-                    ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-muted opacity-50 space-y-3">
-                            <MessageSquare size={32} />
-                            <p className="text-[14px] font-bold uppercase tracking-wide">Ainda não há mensagens neste canal.</p>
-                        </div>
-                    )}
-                </div>
-
-                <div className="bg-bg border-t border-soft p-3 md:p-4 shrink-0">
-                    <form ref={formRef} action={handlePost} className="flex gap-2 md:gap-3">
-                        <input type="hidden" name="destino" value={canalAtivo} />
-                        <input
-                            name="texto"
-                            required
-                            autoComplete="off"
-                            placeholder="Escreve uma mensagem..."
-                            className="flex-1 bg-bg2 border border-soft rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 text-xs md:text-sm font-bold text-fg focus:border-figueira outline-none transition-colors"
-                        />
-                        <button
-                            disabled={loading}
-                            type="submit"
-                            className="bg-figueira text-white px-4 py-3 md:px-6 md:py-4 rounded-xl md:rounded-2xl hover:bg-figueira/90 transition-all shadow-lg active:scale-95 disabled:opacity-50 shrink-0 flex items-center justify-center"
-                        >
-                            {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                        </button>
-                    </form>
-                </div>
-
-            </div>
+                                <p className="whitespace-pre-wrap text-[17px] leading-relaxed">{msg.texto}</p>
+                            </li>
+                        )
+                    })}
+                </ul>
+            ) : (
+                <p className="a-card p-6 text-center text-[16px] a-suave">Ainda não há mensagens aqui.</p>
+            )}
         </div>
     )
 }

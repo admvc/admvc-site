@@ -119,8 +119,8 @@ export default function X32HolyricsClient({ holyricsUrl, holyricsToken, scenes }
         return (
             <div className="bg-bg2 border border-soft rounded-2xl p-8 text-center space-y-4">
                 <WifiOff size={32} className="mx-auto text-muted/30" />
-                <p className="text-sm font-bold text-muted">Holyrics nao configurado</p>
-                <p className="text-xs text-muted/60">Configure o Holyrics nas <Link href="/admin/midia" className="text-figueira underline">configuracoes de midia</Link>.</p>
+                <p className="text-sm font-bold text-muted">Holyrics não configurado</p>
+                <p className="text-xs text-muted/60">Configure o Holyrics nas <Link href="/admin/midia" className="text-figueira underline">configurações de mídia</Link>.</p>
             </div>
         )
     }

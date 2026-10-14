@@ -99,8 +99,8 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
 
             <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-bold text-fg">Gestao de Escalas</h1>
-                    <p className="text-xs text-muted">Atribuir voluntarios aos eventos agendados.</p>
+                    <h1 className="text-3xl font-bold text-fg">Gestão de Escalas</h1>
+                    <p className="text-xs text-muted">Atribuir voluntários aos eventos agendados.</p>
                 </div>
                 <Link
                     href="/admin/eventos"
@@ -113,9 +113,9 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
             {/* KPIs */}
             <div className="grid grid-cols-3 gap-3">
                 {[
-                    { label: 'Proximos Eventos', value: totalEventos, cor: 'text-fg' },
-                    { label: 'Voluntarios Escalados', value: totalVoluntarios, cor: 'text-blue-600' },
-                    { label: 'Pendentes Confirmacao', value: pendentesConfirmacao, cor: pendentesConfirmacao > 0 ? 'text-orange-600' : 'text-emerald-600' },
+                    { label: 'Próximos Eventos', value: totalEventos, cor: 'text-fg' },
+                    { label: 'Voluntários Escalados', value: totalVoluntarios, cor: 'text-blue-600' },
+                    { label: 'Pendentes Confirmação', value: pendentesConfirmacao, cor: pendentesConfirmacao > 0 ? 'text-orange-600' : 'text-emerald-600' },
                 ].map(k => (
                     <div key={k.label} className="bg-bg2 border border-soft rounded-2xl px-5 py-4">
                         <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">{k.label}</p>
@@ -128,7 +128,7 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
             <section className="bg-bg2 border border-soft rounded-2xl overflow-hidden shadow-sm">
                 <div className="flex items-center gap-3 px-6 py-4 border-b border-soft">
                     <Settings2 size={14} className="text-figueira" />
-                    <h2 className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-fg">Eventos Proximos</h2>
+                    <h2 className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-fg">Eventos Próximos</h2>
                 </div>
                 <div className="p-4 flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar">
                     {eventosFuturos.length === 0 && (
@@ -170,7 +170,7 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
                     <div>
                         <h2 className="text-sm font-bold text-fg leading-none">Atribuir Escala</h2>
                         <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted mt-1">
-                            Selecionar evento, departamento, membro e funcao
+                            Selecionar evento, departamento, membro e função
                         </p>
                     </div>
                 </div>

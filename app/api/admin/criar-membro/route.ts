@@ -31,14 +31,14 @@ export async function POST(request: NextRequest) {
         const password = formData.get('password') as string
 
         if (!email || !password) {
-            return NextResponse.json({ error: 'Email e password sao obrigatorios.' }, { status: 400 })
+            return NextResponse.json({ error: 'Email e password são obrigatórios.' }, { status: 400 })
         }
         const motivoSenha = validarSenhaNova(password, email)
         if (motivoSenha) return NextResponse.json({ error: motivoSenha }, { status: 400 })
 
         const existe = await prismaGlobal.membro.findUnique({ where: { email } })
         if (existe) {
-            return NextResponse.json({ error: 'Este e-mail ja esta registado.' }, { status: 409 })
+            return NextResponse.json({ error: 'Este e-mail já esta registado.' }, { status: 409 })
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
         console.error('[API CRIAR MEMBRO] ERRO:', error.message, error.code)
         if (error.code === 'P2002') {
-            return NextResponse.json({ error: 'E-mail ou ID Loyverse ja existem.' }, { status: 409 })
+            return NextResponse.json({ error: 'E-mail ou ID Loyverse já existem.' }, { status: 409 })
         }
         if (error.code === 'P2011' || error.code === 'P2012') {
             const campo = error.meta?.column || error.meta?.argument || 'desconhecido'

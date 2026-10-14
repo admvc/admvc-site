@@ -675,13 +675,13 @@ export async function confirmarImportacao(membrosValidos: any[]) {
 export async function submeterInteresseDepartamento(membroId: number, departamentoIds: number[], mensagem?: string) {
     try {
         const session = await getSessionData()
-        if (!session) return { ok: false, error: 'Sessao expirada.' }
+        if (!session) return { ok: false, error: 'Sessão expirada.' }
 
         // Segurança: só o próprio membro
-        if (session.membroId !== membroId) return { ok: false, error: 'Sem permissao.' }
+        if (session.membroId !== membroId) return { ok: false, error: 'Sem permissão.' }
 
         const tenantId = await getTenantIdFromHeaders()
-        if (!tenantId) return { ok: false, error: 'Tenant nao identificado.' }
+        if (!tenantId) return { ok: false, error: 'Tenant não identificado.' }
 
         const db = getTenantClient(tenantId)
 

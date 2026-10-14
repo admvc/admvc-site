@@ -102,9 +102,9 @@ export default async function TurnosPage() {
             <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div className="space-y-1">
                     <h1 className="text-3xl md:text-4xl font-bold text-fg">
-                        Gestao de Turnos
+                        Gestão de Turnos
                     </h1>
-                    <p className="text-xs text-muted">Abrir, fechar e consultar historico de turnos da cantina.</p>
+                    <p className="text-xs text-muted">Abrir, fechar e consultar histórico de turnos da cantina.</p>
                 </div>
                 <Link
                     href="/cantina/dashboard"
@@ -186,7 +186,7 @@ export default async function TurnosPage() {
                 <div className="flex items-center gap-4">
                     <Clock size={20} className="text-figueira" />
                     <h2 className="text-2xl font-bold text-fg">
-                        Historico de Turnos
+                        Histórico de Turnos
                     </h2>
                     <div className="h-[1px] flex-1 bg-soft" />
                 </div>
@@ -200,7 +200,7 @@ export default async function TurnosPage() {
                             <div className="hidden lg:grid grid-cols-[80px_1fr_80px_70px_100px_100px_80px] gap-4 px-6 py-3 border-b border-soft">
                                 <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Data</p>
                                 <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Operador</p>
-                                <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Duracao</p>
+                                <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Duração</p>
                                 <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-right">Vendas</p>
                                 <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-right">Total</p>
                                 <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-right">Diferenca</p>

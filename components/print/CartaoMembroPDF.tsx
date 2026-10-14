@@ -134,7 +134,7 @@ export default function CartaoMembroPDF({
                             </View>
                         </View>
                         <View style={styles.footer}>
-                            <Text style={styles.footerText}>Cartao de Membro</Text>
+                            <Text style={styles.footerText}>Cartão de Membro</Text>
                             <Text style={styles.footerText}>{m.email}</Text>
                         </View>
                     </View>

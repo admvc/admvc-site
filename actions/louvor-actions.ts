@@ -3,7 +3,7 @@
 import { getTenantClient } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { requireAuth, requireRole } from '@/lib/auth-utils'
-import { requireLouvorPermission } from '@/lib/louvor-permissoes'
+import { requireLouvorPermission, podeUsarHolyrics } from '@/lib/louvor-permissoes'
 import { getTenantIdFromHeaders } from '@/lib/db'
 
 async function getDb() {
@@ -51,6 +51,24 @@ export async function sincronizarAcervoLocal(musicasHolyrics: any[]) {
     } catch (error: any) {
         return { success: false, error: 'Erro ao sincronizar acervo: ' + error.message }
     }
+}
+
+// ── LIGAR MUSICAS AO HOLYRICS ────────────────────────────────────────────────
+// Ao enviar um culto, as musicas sem ligacao sao procuradas pelo titulo no
+// Holyrics; guarda-se o que se encontrou para a proxima vez ir direto.
+// So preenche ligacoes vazias (nunca troca uma que ja exista).
+export async function ligarMusicasAoHolyrics(pares: { musicaId: string; holyricsId: string }[]) {
+    const sessao = await requireAuth()
+    if (!(await podeUsarHolyrics(sessao))) return { ok: false }
+    const db = getTenantClient(sessao.tenantId)
+    for (const p of pares.slice(0, 100)) {
+        // Outra musica do repertorio ja pode ter esta ligacao (unica por igreja)
+        await db.musica.updateMany({
+            where: { id: String(p.musicaId), holyrics_id: null },
+            data: { holyrics_id: String(p.holyricsId) },
+        }).catch(() => {})
+    }
+    return { ok: true }
 }
 
 // ── GUARDAR CIFRA INTERNA ────────────────────────────────────────────────────

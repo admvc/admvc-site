@@ -17,11 +17,11 @@ export async function iniciarTracking(ofertaId: number, latitude: number, longit
         include: { reservas: { where: { status: 'CONFIRMADA' }, select: { passageiro_id: true } } },
     })
 
-    if (!oferta || oferta.status !== 'ATIVA') return { error: 'Oferta nao encontrada.' }
+    if (!oferta || oferta.status !== 'ATIVA') return { error: 'Oferta não encontrada.' }
 
     const isMotorista = oferta.motorista_id === session.membroId
     const isPassageiro = oferta.reservas.some(r => r.passageiro_id === session.membroId)
-    if (!isMotorista && !isPassageiro) return { error: 'Sem permissao para esta boleia.' }
+    if (!isMotorista && !isPassageiro) return { error: 'Sem permissão para esta boleia.' }
 
     const papel = isMotorista ? 'MOTORISTA' : 'PASSAGEIRO'
 
@@ -84,11 +84,11 @@ export async function criarOfertaBoleia(formData: FormData) {
     const recorrente = formData.get('recorrente') === 'true'
 
     if (!endereco_partida || !data_hora_saida) {
-        return { error: 'Preencha a morada de partida e o horario.' }
+        return { error: 'Preencha a morada de partida e o horário.' }
     }
 
     if (vagas_total < 1 || vagas_total > 8) {
-        return { error: 'O numero de vagas deve ser entre 1 e 8.' }
+        return { error: 'O número de vagas deve ser entre 1 e 8.' }
     }
 
     try {
@@ -127,7 +127,7 @@ export async function cancelarOfertaBoleia(ofertaId: number) {
         const oferta = await db.boleiaOferta.findUnique({ where: { id: ofertaId } })
 
         if (!oferta || oferta.motorista_id !== session.membroId) {
-            return { error: 'Oferta nao encontrada ou sem permissao.' }
+            return { error: 'Oferta não encontrada ou sem permissão.' }
         }
 
         await db.boleiaOferta.update({
@@ -160,21 +160,21 @@ export async function reservarBoleia(ofertaId: number, latitude?: number, longit
         })
 
         if (!oferta || oferta.status !== 'ATIVA') {
-            return { error: 'Esta oferta ja nao esta disponivel.' }
+            return { error: 'Esta oferta já não esta disponível.' }
         }
 
         if (oferta.motorista_id === session.membroId) {
-            return { error: 'Nao pode reservar a sua propria boleia.' }
+            return { error: 'Não pode reservar a sua propria boleia.' }
         }
 
         const vagasOcupadas = oferta.reservas.length
         if (vagasOcupadas >= oferta.vagas_total) {
-            return { error: 'Ja nao ha vagas disponiveis.' }
+            return { error: 'Já não há vagas disponíveis.' }
         }
 
         const jaReservou = oferta.reservas.some(r => r.passageiro_id === session.membroId)
         if (jaReservou) {
-            return { error: 'Ja tem uma reserva nesta boleia.' }
+            return { error: 'Já tem uma reserva nesta boleia.' }
         }
 
         const tenantId = await getTenantIdFromHeaders()
@@ -230,7 +230,7 @@ export async function cancelarReservaBoleia(reservaId: number) {
         })
 
         if (!reserva || reserva.passageiro_id !== session.membroId) {
-            return { error: 'Reserva nao encontrada ou sem permissao.' }
+            return { error: 'Reserva não encontrada ou sem permissão.' }
         }
 
         await db.boleiaReserva.update({
@@ -267,7 +267,7 @@ export async function agradecerBoleia(reservaId: number) {
         const reserva = await db.boleiaReserva.findUnique({ where: { id: reservaId } })
 
         if (!reserva || reserva.passageiro_id !== session.membroId) {
-            return { error: 'Reserva nao encontrada ou sem permissao.' }
+            return { error: 'Reserva não encontrada ou sem permissão.' }
         }
 
         await db.boleiaReserva.update({

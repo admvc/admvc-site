@@ -24,7 +24,7 @@ export default function BotaoEliminarSA({ saId, nome }: { saId: number; nome: st
                 </button>
                 <button onClick={() => setConfirming(false)}
                     className="px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-all">
-                    Nao
+                    Não
                 </button>
             </div>
         )

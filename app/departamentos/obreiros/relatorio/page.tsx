@@ -67,7 +67,7 @@ export default async function ObreirosRelatorio({
                         <ArrowLeft size={16} />
                     </Link>
                     <div>
-                        <h1 className="text-base font-bold text-fg">Relatorio</h1>
+                        <h1 className="text-base font-bold text-fg">Relatório</h1>
                         <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">Obreiros · {periodo} {periodo === 1 ? 'mes' : 'meses'}</p>
                     </div>
                 </div>
@@ -84,7 +84,7 @@ export default async function ObreirosRelatorio({
                     <div className="bg-bg2 border border-soft rounded-2xl p-4 flex flex-col items-center gap-1">
                         <Calendar size={18} className="text-blue-400" />
                         <span className="text-2xl font-bold text-fg">{stats.totalServicos}</span>
-                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Total Servicos</span>
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Total Serviços</span>
                     </div>
                     <div className="bg-bg2 border border-soft rounded-2xl p-4 flex flex-col items-center gap-1">
                         <Users size={18} className="text-figueira" />
@@ -101,7 +101,7 @@ export default async function ObreirosRelatorio({
                     <div className="bg-bg2 border border-soft rounded-2xl p-4 flex flex-col items-center gap-1">
                         <TrendingUp size={18} className="text-emerald-500" />
                         <span className="text-2xl font-bold text-fg">{stats.taxaConfirmacao}%</span>
-                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Confirmacao</span>
+                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Confirmação</span>
                     </div>
                 </div>
 
@@ -143,7 +143,7 @@ export default async function ObreirosRelatorio({
                             )
                         })}
                         {stats.ranking.length === 0 && (
-                            <p className="text-center text-xs font-bold text-muted py-4">Sem dados neste periodo</p>
+                            <p className="text-center text-xs font-bold text-muted py-4">Sem dados neste período</p>
                         )}
                     </div>
                 </SeccaoColapsavel>
@@ -173,7 +173,7 @@ export default async function ObreirosRelatorio({
                             )
                         })}
                         {stats.funcaoDistribuicao.length === 0 && (
-                            <p className="text-center text-xs font-bold text-muted py-4">Sem dados neste periodo</p>
+                            <p className="text-center text-xs font-bold text-muted py-4">Sem dados neste período</p>
                         )}
                     </div>
                 </SeccaoColapsavel>
@@ -204,7 +204,7 @@ export default async function ObreirosRelatorio({
                                 })}
                             </div>
                         ) : (
-                            <p className="text-center text-xs font-bold text-muted py-4">Sem dados neste periodo</p>
+                            <p className="text-center text-xs font-bold text-muted py-4">Sem dados neste período</p>
                         )}
                     </div>
                 </SeccaoColapsavel>

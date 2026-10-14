@@ -51,7 +51,7 @@ export default function FormCarregarSaldo() {
                 <p className="text-sm text-muted">
                     O seu pedido de recarga de <span className="text-figueira font-bold">{valorFinal.toFixed(2)}€</span> foi registado.
                 </p>
-                <p className="text-[14px] text-muted uppercase tracking-wide">Aguarde a aprovacao por parte da administracao.</p>
+                <p className="text-[14px] text-muted uppercase tracking-wide">Aguarde a aprovação por parte da administração.</p>
                 <button
                     onClick={() => setResultado(null)}
                     className="mt-4 px-6 py-2 bg-bg2 border border-soft rounded-2xl text-xs font-bold text-muted hover:text-fg transition-colors"

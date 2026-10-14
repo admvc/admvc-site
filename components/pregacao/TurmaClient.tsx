@@ -290,7 +290,7 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
     }
 
     async function handleCalcularAprovacao() {
-        if (!await confirmar({ mensagem: 'Calcular aprovacao para todos os alunos desta turma?', tipo: 'info' })) return
+        if (!await confirmar({ mensagem: 'Calcular aprovação para todos os alunos desta turma?', tipo: 'info' })) return
         setLoading(true)
         const res = await calcularAprovacao(turma.id)
         setLoading(false)
@@ -324,7 +324,7 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                             </button>
                         )
                     })}
-                    {membrosFiltrados.length === 0 && <p className="text-center text-[14px] text-muted py-4">Nenhum membro disponivel.</p>}
+                    {membrosFiltrados.length === 0 && <p className="text-center text-[14px] text-muted py-4">Nenhum membro disponível.</p>}
                 </div>
                 <div className="px-6 py-4 border-t border-soft flex-shrink-0">
                     <button onClick={handleMatricular} disabled={loading || matSelecionados.length === 0} className="w-full py-3 bg-figueira text-white text-[14px] font-bold uppercase tracking-wide rounded-[2.5rem] hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2">
@@ -347,7 +347,7 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                 <form onSubmit={handleCriarAula} className="p-6 space-y-4">
                     <input type="hidden" name="turma_id" value={turma.id} />
                     <div>
-                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Titulo *</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Título *</label>
                         <input name="titulo" required className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
@@ -371,8 +371,8 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                         <input name="link_aula" className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors" placeholder="https://..." />
                     </div>
                     <div>
-                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Conteudo da Aula</label>
-                        <textarea name="conteudo" rows={4} className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors resize-y" placeholder="Conteudo detalhado da aula..." />
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Conteúdo da Aula</label>
+                        <textarea name="conteudo" rows={4} className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors resize-y" placeholder="Conteúdo detalhado da aula..." />
                     </div>
                     <div>
                         <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Perguntas de Discussao (uma por linha)</label>
@@ -397,8 +397,8 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                 </div>
                 <form onSubmit={handleCriarAtividade} className="p-6 space-y-4">
                     <div>
-                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Titulo *</label>
-                        <input name="titulo" required defaultValue={editandoAtividade?.titulo || ''} className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors" placeholder="Ex: Exercicio Licao 3" />
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Título *</label>
+                        <input name="titulo" required defaultValue={editandoAtividade?.titulo || ''} className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors" placeholder="Ex: Exercicio Lição 3" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -426,7 +426,7 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                         </div>
                     </div>
                     <div>
-                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Descricao</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Descrição</label>
                         <textarea name="descricao" rows={2} defaultValue={editandoAtividade?.descricao || ''} className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors resize-y" />
                     </div>
 
@@ -547,7 +547,7 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="relative w-full max-w-lg bg-bg2 border border-soft rounded-2xl shadow-2xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl flex-shrink-0">
-                    <h2 className="text-sm font-bold text-fg">Marcar Presencas</h2>
+                    <h2 className="text-sm font-bold text-fg">Marcar Presenças</h2>
                     <button onClick={() => { setPresencaAulaId(null); setPresentes([]) }} className="text-muted hover:text-fg transition-colors"><X size={18} /></button>
                 </div>
                 <div className="px-6 pt-3 flex-shrink-0">
@@ -717,7 +717,7 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                                     </summary>
                                     <div className="px-4 pb-4 pt-2 border-t border-soft space-y-3">
                                         {aulaAny.tema && <div><p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-0.5">Tema</p><p className="text-[14px] text-fg/80">{aulaAny.tema}</p></div>}
-                                        {aulaAny.conteudo && <div><p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-0.5">Conteudo</p><p className="text-[14px] text-fg/80 whitespace-pre-wrap">{aulaAny.conteudo}</p></div>}
+                                        {aulaAny.conteudo && <div><p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-0.5">Conteúdo</p><p className="text-[14px] text-fg/80 whitespace-pre-wrap">{aulaAny.conteudo}</p></div>}
                                         {aulaAny.material_apoio && <div><p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-0.5">Material de Apoio</p><p className="text-[14px] text-fg/80 whitespace-pre-wrap">{aulaAny.material_apoio}</p></div>}
                                         {aulaAny.perguntas_discussao && Array.isArray(aulaAny.perguntas_discussao) && aulaAny.perguntas_discussao.length > 0 && (
                                             <div><p className="text-[13px] font-bold uppercase tracking-wide text-muted mb-0.5">Perguntas de Discussao</p>
@@ -731,7 +731,7 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                                         )}
                                         {podeGerir && (
                                             <div className="flex items-center gap-2 pt-2 border-t border-soft/50">
-                                                <button onClick={() => abrirPresencas(a)} className="text-[13px] font-bold uppercase text-figueira hover:underline flex items-center gap-1"><Users size={10} /> Presencas</button>
+                                                <button onClick={() => abrirPresencas(a)} className="text-[13px] font-bold uppercase text-figueira hover:underline flex items-center gap-1"><Users size={10} /> Presenças</button>
                                                 <button onClick={async () => { const ok = await confirmar({ mensagem: 'Remover aula?', tipo: 'perigo' }); if (ok) { const r = await removerEBD(a.id); if (r.ok) router.refresh() } }} className="text-red-400 hover:text-red-300 p-1 ml-auto"><Trash2 size={12} /></button>
                                             </div>
                                         )}
@@ -868,7 +868,7 @@ export default function TurmaClient({ turma, membros, sermoes, podeGerir = false
                             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
                                 {jaRespondeu && (
                                     <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 text-[14px] font-bold text-emerald-400">
-                                        <Check size={12} className="inline mr-1" /> Ja respondeu esta atividade. Pode alterar as respostas.
+                                        <Check size={12} className="inline mr-1" /> Já respondeu esta atividade. Pode alterar as respostas.
                                     </div>
                                 )}
 

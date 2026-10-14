@@ -241,8 +241,8 @@ export async function aprovarSaldoCantinaAction(pedidoId: number, _loyverseId: s
 
         // Buscar pedido para obter membro_id e forma_pagamento
         const pedido = await (await getDb()).pedidoSaldoCantina.findUnique({ where: { id: pedidoId } })
-        if (!pedido) return { ok: false, error: 'Pedido nao encontrado.' }
-        if (pedido.status === 'APROVADO') return { ok: false, error: 'Este pedido ja foi aprovado.' }
+        if (!pedido) return { ok: false, error: 'Pedido não encontrado.' }
+        if (pedido.status === 'APROVADO') return { ok: false, error: 'Este pedido já foi aprovado.' }
 
         // Recarregar saldo usando o sistema local (sem Loyverse)
         const result = await recarregarSaldo(pedido.membro_id, pedido.valor, `Recarga aprovada via tesouraria (${pedido.forma_pagamento})`)
@@ -289,7 +289,7 @@ export async function getHistoricoComprasLoyverse(loyverseId: string) {
     }
     const tenantId = await getTenantId();
     const token = await getLoyverseTokenForTenant(tenantId);
-    if (!token) return { error: "Loyverse nao configurado para este tenant." };
+    if (!token) return { error: "Loyverse não configurado para este tenant." };
 
     try {
         const res = await fetch(`https://api.loyverse.com/v1.0/receipts?limit=250`, {
@@ -606,7 +606,7 @@ export async function atribuirNumeroRifaAction(
 
     } catch (error: any) {
         console.error('[ATRIBUIR NUMERO RIFA] Erro:', error.message)
-        return { ok: false, error: 'Erro ao atribuir numero.' }
+        return { ok: false, error: 'Erro ao atribuir número.' }
     }
 }
 
@@ -625,7 +625,7 @@ export async function confirmarPagamentoRifaAction(rifaNumeroId: number) {
             }
         })
 
-        if (!rifaNumero) return { ok: false, error: 'Numero nao encontrado.' }
+        if (!rifaNumero) return { ok: false, error: 'Número não encontrado.' }
 
         await db.rifaNumero.update({
             where: { id: rifaNumeroId },
@@ -700,7 +700,7 @@ export async function confirmarMBWayCarneAction(lancamentoId: number) {
             }
         })
 
-        if (!lancamento) return { ok: false, error: 'Lancamento nao encontrado.' }
+        if (!lancamento) return { ok: false, error: 'Lancamento não encontrado.' }
 
         await db.lancamentoFinanceiro.update({
             where: { id: lancamentoId },
@@ -737,7 +737,7 @@ export async function lancarPagamentoCarneAction(carneId: number, qtd: number) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
         const session = await getSessionData()
-        if (!session) return { ok: false, error: 'Sessao expirada.' }
+        if (!session) return { ok: false, error: 'Sessão expirada.' }
 
         const tenant_id = await getTenantId()
 
@@ -748,7 +748,7 @@ export async function lancarPagamentoCarneAction(carneId: number, qtd: number) {
             }
         })
 
-        if (!carne) return { ok: false, error: 'Carne nao encontrado.' }
+        if (!carne) return { ok: false, error: 'Carne não encontrado.' }
 
         const valorTotal = carne.valor_mensal * qtd
 
@@ -805,7 +805,7 @@ export async function lancarContribuicaoAction(formData: FormData) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
         const session = await getSessionData()
-        if (!session) return { ok: false, error: 'Sessao expirada.' }
+        if (!session) return { ok: false, error: 'Sessão expirada.' }
 
         const tenant_id = await getTenantId()
 
@@ -820,7 +820,7 @@ export async function lancarContribuicaoAction(formData: FormData) {
             select: { first_name: true, last_name: true, tenant_id: true }
         })
 
-        if (!membro) return { ok: false, error: 'Membro nao encontrado.' }
+        if (!membro) return { ok: false, error: 'Membro não encontrado.' }
 
         const novaContribuicao = await (await getDb()).contribuicao.create({
             data: {
@@ -865,7 +865,7 @@ export async function criarRifaAction(formData: FormData) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
         const session = await getSessionData()
-        if (!session) return { ok: false, error: 'Sessao expirada.' }
+        if (!session) return { ok: false, error: 'Sessão expirada.' }
 
         const tenant_id = await getTenantId()
 
@@ -873,7 +873,7 @@ export async function criarRifaAction(formData: FormData) {
             where: { id: session.membroId },
             select: { tenant_id: true }
         })
-        if (!membroLogado) return { ok: false, error: 'Utilizador nao encontrado.' }
+        if (!membroLogado) return { ok: false, error: 'Utilizador não encontrado.' }
 
         const nome = formData.get('nome') as string
         const premio = formData.get('premio') as string
@@ -933,14 +933,14 @@ export async function venderNumeroRifaAction(formData: FormData) {
             where: { rifa_id_numero: { rifa_id, numero } }
         })
 
-        if (jaVendido) return { ok: false, error: 'Este numero ja foi vendido.' }
+        if (jaVendido) return { ok: false, error: 'Este número já foi vendido.' }
 
         const rifa = await (await getDb()).rifa.findUnique({
             where: { id: rifa_id },
             select: { tenant_id: true, nome: true, valor_numero: true }
         })
 
-        if (!rifa) return { ok: false, error: 'Rifa nao encontrada.' }
+        if (!rifa) return { ok: false, error: 'Rifa não encontrada.' }
 
         let membroNome = nome_externo || 'Externo'
         if (membro_id) {

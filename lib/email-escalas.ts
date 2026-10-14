@@ -35,7 +35,7 @@ export async function enviarNotificacaoEscala(params: NotificacaoEscalaParams) {
                     </div>
                     <div style="padding: 24px;">
                         <p style="font-size: 14px; color: #ccc; margin: 0 0 20px;">
-                            Ola, <strong style="color: #fff;">${params.liderNome || 'Lider'}</strong>!
+                            Olá, <strong style="color: #fff;">${params.liderNome || 'Lider'}</strong>!
                         </p>
                         <div style="background: #111; border: 1px solid #333; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
                             <p style="margin: 0 0 8px; font-size: 12px;">
@@ -47,7 +47,7 @@ export async function enviarNotificacaoEscala(params: NotificacaoEscalaParams) {
                                 ${params.eventoNome} — ${params.eventoData}
                             </p>
                             <p style="margin: 0 0 ${params.motivo ? '8px' : '0'}; font-size: 12px;">
-                                <span style="color: #666; font-weight: 800; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;">Funcao</span><br/>
+                                <span style="color: #666; font-weight: 800; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;">Função</span><br/>
                                 ${params.funcao} (${params.departamentoNome})
                             </p>
                             ${params.motivo ? `
@@ -61,7 +61,7 @@ export async function enviarNotificacaoEscala(params: NotificacaoEscalaParams) {
                         </a>
                     </div>
                     <div style="background: #111; padding: 12px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #222;">
-                        Notificacao automatica — Sistema ADMVC
+                        Notificação automática — Sistema ADMVC
                     </div>
                 </div>
             `,

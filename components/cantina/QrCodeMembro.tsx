@@ -21,7 +21,7 @@ export default function QrCodeMembro({ membroId, qrCode: initial }: Props) {
         <div className="bg-bg2 border border-soft rounded-2xl p-6 text-center space-y-3">
             <div className="flex items-center justify-center gap-2">
                 <QrCode size={16} className="text-figueira" />
-                <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Cartao Cantina</span>
+                <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Cartão Cantina</span>
             </div>
             {qrCode ? (
                 <div className="space-y-2">
@@ -32,7 +32,7 @@ export default function QrCodeMembro({ membroId, qrCode: initial }: Props) {
                 </div>
             ) : (
                 <div className="space-y-3">
-                    <p className="text-[14px] text-muted">Ainda nao tem cartao. Gere um para identificacao rapida no POS.</p>
+                    <p className="text-[14px] text-muted">Ainda não tem cartão. Gere um para identificacao rápida no POS.</p>
                     <button onClick={gerar} disabled={loading} className="inline-flex items-center gap-2 bg-figueira text-white px-4 py-2 rounded-xl text-[13px] font-bold uppercase tracking-wide disabled:opacity-50">
                         {loading ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
                         Gerar Cartao

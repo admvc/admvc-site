@@ -9,9 +9,9 @@ import { gereDepartamento } from '@/lib/escalas-permissoes'
 type Sessao = Pick<SessionData, 'membroId' | 'role' | 'tenantId'>
 
 /**
- * Gere o repertorio e as musicas dos cultos quem gere as escalas de um
- * ministerio de louvor: admin, o lider, ou alguem nomeado pelo lider
- * ("pode gerir escalas" ou uma funcao de Lider). A mesma regra das escalas.
+ * Gere o repertorio e as músicas dos cultos quem gere as escalas de um
+ * ministério de louvor: admin, o líder, ou alguem nomeado pelo líder
+ * ("pode gerir escalas" ou uma função de Líder). A mesma regra das escalas.
  */
 export async function podeGerirRepertorio(session: Sessao): Promise<boolean> {
     if (isAdmin(session.role)) return true
@@ -39,4 +39,17 @@ export async function requireLouvorPermission() {
         throw new Error('Apenas o líder do louvor ou alguém nomeado por ele pode mudar as músicas.')
     }
     return session
+}
+
+/** Envia as musicas de um culto para o Holyrics: quem ve o repertorio ou e da midia. */
+export async function podeUsarHolyrics(session: Sessao): Promise<boolean> {
+    if (await podeVerRepertorio(session)) return true
+    const db = getTenantClient(session.tenantId)
+    const n = await db.departamento.count({
+        where: {
+            OR: ['mídia', 'midia', 'multimédia', 'multimedia'].map((t) => ({ nome: { contains: t, mode: 'insensitive' as const } })),
+            AND: [{ OR: [{ lider_id: session.membroId }, { integrantes: { some: { membro_id: session.membroId } } }] }],
+        },
+    })
+    return n > 0
 }

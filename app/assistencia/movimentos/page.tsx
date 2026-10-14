@@ -77,7 +77,7 @@ export default async function MovimentosPage() {
                 <h1 className="text-3xl md:text-4xl font-bold text-fg">
                     Movimentos
                 </h1>
-                <p className="text-xs text-muted">Registar doacoes, entregas e repasses.</p>
+                <p className="text-xs text-muted">Registar doações, entregas e repasses.</p>
             </header>
 
             {/* Form to register movement */}
@@ -92,7 +92,7 @@ export default async function MovimentosPage() {
                             <p className="text-[14px] text-muted">
                                 Adicione itens em{' '}
                                 <Link href="/assistencia/stock" className="text-figueira underline">
-                                    Gestao de Stock
+                                    Gestão de Stock
                                 </Link>{' '}
                                 primeiro.
                             </p>
@@ -106,7 +106,7 @@ export default async function MovimentosPage() {
             {/* Recent movements */}
             <section className="space-y-4">
                 <h2 className="text-sm font-bold text-fg flex items-center gap-2">
-                    <ArrowUp size={14} className="text-figueira" /> Historico Recente
+                    <ArrowUp size={14} className="text-figueira" /> Histórico Recente
                 </h2>
 
                 {movimentos.length === 0 ? (

@@ -45,8 +45,8 @@ export default async function MidiaConfigPage() {
             <Breadcrumbs items={[{ label: 'Mídia' }]} />
 
             <header className="space-y-1">
-                <h1 className="text-3xl font-bold text-fg">Midia</h1>
-                <p className="text-xs text-muted">Equipamentos de som, iluminacao e projeccao.</p>
+                <h1 className="text-3xl font-bold text-fg">Mídia</h1>
+                <p className="text-xs text-muted">Equipamentos de som, iluminação e projeccao.</p>
             </header>
 
             {/* ACESSO RAPIDO — Links para os modulos */}
@@ -108,7 +108,7 @@ export default async function MidiaConfigPage() {
                     <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between px-5 py-4 hover:bg-soft/10 transition-colors">
                         <div className="flex items-center gap-2">
                             <Lightbulb size={14} className="text-amber-500" />
-                            <h2 className="text-sm font-bold text-fg">Botoes Iluminacao</h2>
+                            <h2 className="text-sm font-bold text-fg">Botões Iluminação</h2>
                             <span className="text-[13px] bg-soft/50 px-2 py-0.5 rounded text-muted font-bold">{lumikitCenas.scenes.length}</span>
                         </div>
                         <ChevronDown size={14} className="text-muted group-open:rotate-180 transition-transform" />
@@ -143,7 +143,7 @@ export default async function MidiaConfigPage() {
                         <div className="flex items-center gap-2">
                             <Terminal size={14} className="text-figueira" />
                             <h2 className="text-sm font-bold text-fg">Proxy Local (X32)</h2>
-                            <span className="text-[13px] bg-soft/50 px-2 py-0.5 rounded text-muted font-bold">Avancado</span>
+                            <span className="text-[13px] bg-soft/50 px-2 py-0.5 rounded text-muted font-bold">Avançado</span>
                         </div>
                         <ChevronDown size={14} className="text-muted group-open:rotate-180 transition-transform" />
                     </summary>
@@ -158,7 +158,7 @@ export default async function MidiaConfigPage() {
                                 <p>npm install ws</p>
                                 <p>node x32-proxy.js</p>
                             </div>
-                            <p className="text-[13px] text-muted">Apos iniciar, conecte com <code className="bg-soft px-1.5 rounded text-[14px]">ws://localhost:8080</code></p>
+                            <p className="text-[13px] text-muted">Após iniciar, conecte com <code className="bg-soft px-1.5 rounded text-[14px]">ws://localhost:8080</code></p>
                         </div>
 
                         <div className="space-y-2">

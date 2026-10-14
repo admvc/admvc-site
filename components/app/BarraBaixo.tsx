@@ -12,6 +12,7 @@ import {
     HelpCircle, ShieldCheck, LogOut, HeartHandshake, MonitorPlay, Shield,
     Store, Wallet, HandHeart, BookOpen, Church, GraduationCap, Car, Briefcase, CalendarClock, Package,
     SlidersVertical, Lightbulb,
+    MonitorUp,
 } from 'lucide-react'
 import ModalAjuda from '@/components/membros/ModalAjuda'
 import { logoutMembro } from '@/actions/auth-actions'
@@ -19,7 +20,7 @@ import { logoutMembro } from '@/actions/auth-actions'
 export type ItemMais = {
     chave: 'agenda' | 'avisos' | 'louvor' | 'grupo' | 'acolhimento' | 'midia' | 'perfil' | 'admin' | 'privacidade'
         | 'cantina' | 'tesouraria' | 'social' | 'pregacao' | 'obreiros' | 'cursos' | 'boleias'
-        | 'gabinete' | 'atendimento' | 'inventario' | 'mesa' | 'luz'
+        | 'gabinete' | 'atendimento' | 'inventario' | 'mesa' | 'luz' | 'culto-holyrics'
     texto: string
     href: string
     detalhe?: string
@@ -30,7 +31,7 @@ export const ICONES: Record<ItemMais['chave'], typeof Users> = {
     midia: MonitorPlay, perfil: UserRound, admin: ShieldCheck, privacidade: Shield,
     cantina: Store, tesouraria: Wallet, social: HandHeart, pregacao: BookOpen, obreiros: Church,
     cursos: GraduationCap, boleias: Car, gabinete: Briefcase, atendimento: CalendarClock, inventario: Package,
-    mesa: SlidersVertical, luz: Lightbulb,
+    mesa: SlidersVertical, luz: Lightbulb, 'culto-holyrics': MonitorUp,
 }
 
 export default function BarraBaixo({ itensMais, repertorio = false }: { itensMais: ItemMais[]; repertorio?: boolean }) {

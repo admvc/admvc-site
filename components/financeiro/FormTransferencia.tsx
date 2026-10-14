@@ -26,7 +26,7 @@ export default function FormTransferencia({ fundos }: { fundos: FundoResumido[] 
         setLoading(true)
         const result = await transferirEntreeFundosAction(formData)
         if (result.ok) {
-            toast('Transferencia realizada com sucesso!', 'sucesso')
+            toast('Transferência realizada com sucesso!', 'sucesso')
             setOrigemId('')
             setDestinoId('')
         } else {
@@ -108,7 +108,7 @@ export default function FormTransferencia({ fundos }: { fundos: FundoResumido[] 
                         type="text"
                         name="motivo"
                         required
-                        placeholder="Razao da transferencia..."
+                        placeholder="Razao da transferência..."
                         className="w-full bg-bg border border-soft rounded-xl px-4 py-3 text-sm text-fg placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-figueira/30"
                     />
                 </div>

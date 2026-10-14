@@ -69,7 +69,7 @@ export default async function PledgesPage() {
                         Promessas de Contribuicao
                     </h1>
                     <p className="text-xs text-muted">
-                        Gestao de pledges e acompanhamento de cumprimento.
+                        Gestão de pledges e acompanhamento de cumprimento.
                     </p>
                 </div>
                 <BotaoAtualizarPledges />
@@ -158,7 +158,7 @@ export default async function PledgesPage() {
                                     <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Membro</th>
                                     <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Fundo</th>
                                     <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Valor/Mes</th>
-                                    <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Duracao</th>
+                                    <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Duração</th>
                                     <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Cumprido</th>
                                     <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Progresso</th>
                                     <th className="px-6 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Status</th>

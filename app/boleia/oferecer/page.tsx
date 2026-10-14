@@ -2,8 +2,6 @@
 import { getDb } from '@/lib/db'
 import { getSessionData } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import { ArrowLeft, Car } from 'lucide-react'
 import FormOferecer from '@/components/boleia/FormOferecer'
 
 export const dynamic = 'force-dynamic'
@@ -31,33 +29,12 @@ export default async function OferecerBoleiaPage() {
     }))
 
     return (
-        <main className="max-w-lg mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-8 pb-24 animate-in fade-in duration-700">
-
-            {/* HEADER */}
-            <div className="space-y-4">
-                <Link href="/boleia" className="inline-flex items-center gap-2 text-[14px] font-bold uppercase tracking-wide text-muted hover:text-fg transition-colors">
-                    <ArrowLeft size={14} /> Voltar
-                </Link>
-
-                <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-figueira text-white rounded-2xl flex items-center justify-center shadow-lg shadow-figueira/30">
-                        <Car size={24} />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-bold text-fg leading-none">
-                            Oferecer Boleia
-                        </h1>
-                        <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-1">
-                            Partilhe lugar no seu carro
-                        </p>
-                    </div>
-                </div>
+        <div className="app-novo mx-auto max-w-2xl space-y-4 px-4 pb-28 pt-20 md:pb-10 md:pt-8" style={{ background: 'transparent' }}>
+            <div className="space-y-1">
+                <h1 className="text-[28px] font-bold leading-tight">Oferecer lugar</h1>
+                <p className="text-[17px] a-suave">Diga quando sai e quantos lugares tem.</p>
             </div>
-
-            {/* FORM */}
-            <div className="bg-bg2 border border-soft rounded-[2.5rem] p-8 shadow-sm">
-                <FormOferecer eventos={eventosSerializados} />
-            </div>
-        </main>
+            <FormOferecer eventos={eventosSerializados} />
+        </div>
     )
 }

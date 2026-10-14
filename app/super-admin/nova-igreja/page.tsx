@@ -57,7 +57,7 @@ export default function NovaIgrejaPage() {
                         <Building size={24} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black italic uppercase tracking-tighter text-white">Nova Organizacao</h1>
+                        <h1 className="text-2xl font-black italic uppercase tracking-tighter text-white">Nova Organização</h1>
                         <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Registar nova Igreja e Admin</p>
                     </div>
                 </div>
@@ -115,7 +115,7 @@ export default function NovaIgrejaPage() {
                             <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">2. Conta do Administrador</h2>
 
                             <div className="space-y-1.5">
-                                <label className={labelClass}>Nome do Responsavel</label>
+                                <label className={labelClass}>Nome do Responsável</label>
                                 <input name="adminNome" required className={inputClass} placeholder="Nome do Pastor/Lider" />
                             </div>
 
@@ -126,7 +126,7 @@ export default function NovaIgrejaPage() {
 
                             <div className="space-y-1.5">
                                 <label className={labelClass}>Palavra-passe Provisoria</label>
-                                <input name="adminPassword" type="password" required className={inputClass} placeholder="Minimo 6 caracteres" />
+                                <input name="adminPassword" type="password" required className={inputClass} placeholder="Mínimo 6 caracteres" />
                             </div>
                         </div>
                     </div>

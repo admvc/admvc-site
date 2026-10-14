@@ -273,7 +273,7 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                     { label: 'Total', value: kpis.total, cor: 'text-fg' },
                     { label: 'Activos', value: kpis.ativos, cor: 'text-emerald-600' },
                     { label: 'Pendentes', value: kpis.pendentes, cor: kpis.pendentes > 0 ? 'text-orange-600' : 'text-emerald-600' },
-                    { label: 'Sem Familia', value: kpis.semFamilia, cor: kpis.semFamilia > 0 ? 'text-orange-600' : 'text-fg' },
+                    { label: 'Sem Família', value: kpis.semFamilia, cor: kpis.semFamilia > 0 ? 'text-orange-600' : 'text-fg' },
                 ].map(k => (
                     <div key={k.label} className="bg-bg2 border border-soft rounded-2xl px-5 py-4">
                         <p className="text-[13px] font-bold uppercase tracking-wide text-muted">{k.label}</p>
@@ -620,7 +620,7 @@ export default function MembrosListClient({ membros, kpis }: Props) {
                                 <AlertTriangle size={24} />
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-fg">Confirmar Exclusao</h3>
+                                <h3 className="text-lg font-bold text-fg">Confirmar Exclusão</h3>
                                 <p className="text-[14px] text-muted font-bold uppercase tracking-wide mt-2 leading-relaxed">
                                     Remover permanentemente:<br />
                                     <span className="text-red-500 text-[14px]">{membroParaExcluir.first_name} {membroParaExcluir.last_name}</span>

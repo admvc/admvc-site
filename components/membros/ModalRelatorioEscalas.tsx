@@ -50,12 +50,12 @@ export default function ModalRelatorioEscalas({ membroId, isMenuItem }: { membro
             {isMenuItem ? (
                 <button onClick={() => setIsOpen(true)}
                     className="text-[14px] font-bold uppercase tracking-wide text-fg hover:bg-soft px-3 py-2.5 rounded-lg transition-all flex items-center gap-3 w-full text-left">
-                    <CalendarSearch size={13} className="text-blue-500" /> Relatorio Escalas
+                    <CalendarSearch size={13} className="text-blue-500" /> Relatório Escalas
                 </button>
             ) : (
                 <button onClick={() => setIsOpen(true)}
                     className="bg-bg text-muted border border-soft hover:border-figueira hover:text-figueira transition-all text-[13px] font-bold uppercase tracking-wide px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-2 shrink-0">
-                    <CalendarSearch size={14} /> Ver Relatorio
+                    <CalendarSearch size={14} /> Ver Relatório
                 </button>
             )}
 
@@ -77,10 +77,10 @@ export default function ModalRelatorioEscalas({ membroId, isMenuItem }: { membro
                                 </div>
                                 <div>
                                     <h2 className="text-sm font-bold text-fg leading-none">
-                                        Relatorio de Escalas
+                                        Relatório de Escalas
                                     </h2>
                                     <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-0.5">
-                                        Historico e programacao
+                                        Histórico e programacao
                                     </p>
                                 </div>
                             </div>
@@ -92,7 +92,7 @@ export default function ModalRelatorioEscalas({ membroId, isMenuItem }: { membro
                         {/* FILTROS */}
                         <div className="flex gap-3 p-4 border-b border-soft shrink-0">
                             <div className="flex-1 space-y-1">
-                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide">Mes</label>
+                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide">Mês</label>
                                 <select value={mes} onChange={(e) => setMes(Number(e.target.value))}
                                     className="w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-xs font-bold text-fg focus:border-figueira outline-none">
                                     {mesesNome.map((m, index) => (
@@ -159,7 +159,7 @@ export default function ModalRelatorioEscalas({ membroId, isMenuItem }: { membro
                             ) : (
                                 <div className="text-center py-12">
                                     <CalendarSearch size={28} className="mx-auto text-muted/30 mb-3" />
-                                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Nenhuma escala neste periodo.</p>
+                                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Nenhuma escala neste período.</p>
                                 </div>
                             )}
                         </div>

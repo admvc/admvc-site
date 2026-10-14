@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 
 const NAV_PLATAFORMA = [
-    { label: 'Visao Geral', href: '/super-admin/dashboard', icon: Server },
+    { label: 'Visão Geral', href: '/super-admin/dashboard', icon: Server },
     { label: 'Igrejas', href: '/super-admin/igrejas', icon: Building },
     { label: 'Facturacao', href: '/super-admin/billing', icon: CreditCard },
     { label: 'Planos', href: '/super-admin/planos', icon: Layers },
@@ -51,7 +51,7 @@ export default function SANav({ onboardingPendente, mobile }: Props) {
                 </Link>
             ))}
 
-            <p className="px-4 pt-5 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-3">Gestao</p>
+            <p className="px-4 pt-5 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-3">Gestão</p>
             {NAV_GESTAO.map(item => (
                 <Link key={item.href} href={item.href} onClick={onNavigate} className={linkClass(item.href)}>
                     <item.icon size={15} /> {item.label}

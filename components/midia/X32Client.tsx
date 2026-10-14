@@ -127,8 +127,8 @@ export default function X32Client({ ip, port }: Props) {
         return (
             <div className="bg-bg2 border border-soft rounded-2xl p-8 text-center space-y-4">
                 <WifiOff size={32} className="mx-auto text-muted/30" />
-                <p className="text-sm font-bold text-muted">Mesa nao configurada</p>
-                <p className="text-xs text-muted/60">Configure o IP nas <Link href="/admin/midia" className="text-figueira underline">configuracoes de midia</Link>.</p>
+                <p className="text-sm font-bold text-muted">Mesa não configurada</p>
+                <p className="text-xs text-muted/60">Configure o IP nas <Link href="/admin/midia" className="text-figueira underline">configurações de mídia</Link>.</p>
             </div>
         )
     }
@@ -250,7 +250,7 @@ export default function X32Client({ ip, port }: Props) {
             <div className="bg-bg2 border border-soft rounded-2xl p-4 text-[13px] text-muted/60 space-y-1">
                 <p className="font-bold uppercase tracking-wide text-muted text-[13px]">Como conectar:</p>
                 <p>1. Descarregue e execute o proxy no PC da igreja (mesma rede que o X32)</p>
-                <p>2. Clique "Conectar" com o endereco do proxy (default: ws://localhost:8080)</p>
+                <p>2. Clique "Conectar" com o endereço do proxy (default: ws://localhost:8080)</p>
                 <p>3. Os nomes dos canais, faders e mutes sincronizam automaticamente</p>
             </div>
         </div>

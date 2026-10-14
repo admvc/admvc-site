@@ -210,7 +210,7 @@ export default async function RelatoriosFinanceiros() {
             {/* Header */}
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-bold text-fg">Relatorio Financeiro</h1>
+                    <h1 className="text-3xl font-bold text-fg">Relatório Financeiro</h1>
                     <p className="text-xs text-muted">Ano {anoAtual} &mdash; Dados atualizados em tempo real</p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -246,7 +246,7 @@ export default async function RelatoriosFinanceiros() {
                             <div className="w-8 h-8 rounded-xl bg-red-500/10 flex items-center justify-center">
                                 <TrendingDown size={16} className="text-red-500" />
                             </div>
-                            <span className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted">Total Saidas</span>
+                            <span className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted">Total Saídas</span>
                         </div>
                         <p className="text-2xl font-bold text-red-500">{euro(totalSaidas)}</p>
                         <p className="text-[14px] md:text-xs text-muted">Despesas pagas</p>
@@ -260,7 +260,7 @@ export default async function RelatoriosFinanceiros() {
                             <span className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted">Resultado</span>
                         </div>
                         <p className={`text-2xl font-bold ${resultado >= 0 ? 'text-green-500' : 'text-red-500'}`}>{euro(resultado)}</p>
-                        <p className="text-[14px] md:text-xs text-muted">Entradas - Saidas</p>
+                        <p className="text-[14px] md:text-xs text-muted">Entradas - Saídas</p>
                     </div>
                 </div>
             </section>
@@ -279,7 +279,7 @@ export default async function RelatoriosFinanceiros() {
                                     <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted">Fundo</th>
                                     <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Saldo Atual</th>
                                     <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Entradas</th>
-                                    <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Saidas</th>
+                                    <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Saídas</th>
                                     <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Saldo Final</th>
                                 </tr>
                             </thead>
@@ -336,11 +336,11 @@ export default async function RelatoriosFinanceiros() {
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="border-b border-soft">
-                                    <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted">Mes</th>
+                                    <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted">Mês</th>
                                     <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Entradas</th>
-                                    <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Saidas</th>
+                                    <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Saídas</th>
                                     <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Saldo</th>
-                                    <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted print:hidden w-48">Grafico</th>
+                                    <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted print:hidden w-48">Gráfico</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -385,8 +385,8 @@ export default async function RelatoriosFinanceiros() {
                             <thead>
                                 <tr className="border-b border-soft">
                                     <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted">Categoria</th>
-                                    <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Este Mes</th>
-                                    <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Mes Anterior</th>
+                                    <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Este Mês</th>
+                                    <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Mês Anterior</th>
                                     <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Var. Mensal</th>
                                     <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">{MESES[mesAtual]} {anoAtual - 1}</th>
                                     <th className="px-6 py-4 text-[14px] md:text-xs font-bold uppercase tracking-wide text-muted text-right">Var. Anual</th>
@@ -425,7 +425,7 @@ export default async function RelatoriosFinanceiros() {
                         <Users size={14} />
                         Top 10 Contribuintes &mdash; {anoAtual}
                     </h2>
-                    <p className="text-[14px] md:text-xs text-muted mb-3">Visivel apenas para o pastor / administrador principal.</p>
+                    <p className="text-[14px] md:text-xs text-muted mb-3">Visível apenas para o pastor / administrador principal.</p>
                     <div className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">

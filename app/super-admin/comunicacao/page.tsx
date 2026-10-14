@@ -31,10 +31,10 @@ export default async function ComunicacaoPage() {
             {/* Header */}
             <div className="border-b border-[#222] pb-6">
                 <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-white flex items-center gap-3">
-                    <Megaphone size={32} className="text-blue-500" /> Comunicacao
+                    <Megaphone size={32} className="text-blue-500" /> Comunicação
                 </h1>
                 <p className="text-sm text-gray-500 mt-2">
-                    Enviar avisos para todas as igrejas ou para uma igreja especifica.
+                    Enviar avisos para todas as igrejas ou para uma igreja específica.
                 </p>
             </div>
 
@@ -44,13 +44,13 @@ export default async function ComunicacaoPage() {
             {/* History */}
             <div className="bg-[#111] border border-[#222] rounded-2xl overflow-hidden">
                 <div className="px-6 py-4 border-b border-[#222]">
-                    <h2 className="text-sm font-black uppercase tracking-widest text-gray-300">Historico de Avisos</h2>
+                    <h2 className="text-sm font-black uppercase tracking-widest text-gray-300">Histórico de Avisos</h2>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-[#222]">
-                                <th className="text-left px-6 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500">Titulo</th>
+                                <th className="text-left px-6 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500">Título</th>
                                 <th className="text-left px-6 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500">Tipo</th>
                                 <th className="text-left px-6 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500">Destinatario</th>
                                 <th className="text-left px-6 py-3 text-[10px] font-black uppercase tracking-widest text-gray-500">Data</th>

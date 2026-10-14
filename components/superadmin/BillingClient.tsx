@@ -92,7 +92,7 @@ export default function BillingClient({ tenants, historico }: Props) {
                         <p className="text-[9px] font-black uppercase tracking-widest text-gray-500">Total Mensal</p>
                     </div>
                     <p className="text-2xl font-black text-green-400">{totalMensal.toFixed(2)}</p>
-                    <p className="text-[10px] text-gray-500">EUR / mes</p>
+                    <p className="text-[10px] text-gray-500">EUR / mês</p>
                 </div>
 
                 {[
@@ -129,10 +129,10 @@ export default function BillingClient({ tenants, historico }: Props) {
                                 <th className="px-6 py-3 text-[9px] font-black uppercase tracking-widest text-gray-500">Igreja</th>
                                 <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-gray-500">Plano</th>
                                 <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-gray-500">Valor/Mes</th>
-                                <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-gray-500">Inicio</th>
+                                <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-gray-500">Início</th>
                                 <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-gray-500">Fim</th>
                                 <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-gray-500">Status</th>
-                                <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-gray-500">Acoes</th>
+                                <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-gray-500">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -187,7 +187,7 @@ export default function BillingClient({ tenants, historico }: Props) {
                 <div className="bg-[#111] border border-[#222] rounded-2xl overflow-hidden">
                     <div className="px-6 py-4 border-b border-[#222] flex items-center gap-3">
                         <History size={18} className="text-amber-400" />
-                        <h2 className="text-sm font-black uppercase tracking-widest text-white">Historico de Alteracoes</h2>
+                        <h2 className="text-sm font-black uppercase tracking-widest text-white">Histórico de Alterações</h2>
                     </div>
                     <div className="divide-y divide-[#1A1A1A]">
                         {historico.map(h => (

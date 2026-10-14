@@ -84,7 +84,7 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
                         {DIAS_SEMANA.map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
                 </div>
-                <Campo label="Horario" name="horario" type="time" defaultValue={grupo?.horario} />
+                <Campo label="Horário" name="horario" type="time" defaultValue={grupo?.horario} />
             </div>
 
             {/* CATEGORIA + PERFIL */}
@@ -108,7 +108,7 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
                 <div className="space-y-4">
                     <div className="grid grid-cols-3 gap-4">
                         <Campo label="Morada / Rua" name="endereco" defaultValue={grupo?.endereco} className="col-span-2" />
-                        <Campo label="Numero" name="numero" defaultValue={grupo?.numero} />
+                        <Campo label="Número" name="numero" defaultValue={grupo?.numero} />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <Campo label="Bairro / Freguesia" name="bairro" defaultValue={grupo?.bairro} />
@@ -116,7 +116,7 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <Campo label="Distrito" name="estado" defaultValue={grupo?.estado} />
-                        <Campo label="Pais" name="pais" defaultValue={grupo?.pais || 'Portugal'} />
+                        <Campo label="País" name="pais" defaultValue={grupo?.pais || 'Portugal'} />
                     </div>
                 </div>
             </div>
@@ -124,7 +124,7 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
             {/* REGIÃO */}
             <div className="space-y-2">
                 <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">
-                    Regiao (para filtrar no mapa)
+                    Região (para filtrar no mapa)
                 </label>
                 <div className="flex flex-wrap gap-2">
                     {REGIOES.map(r => (
@@ -143,10 +143,10 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
             {/* LIDER */}
             {membros.length > 0 && (
                 <div className="space-y-1.5">
-                    <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">Lider do Grupo</label>
+                    <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">Líder do Grupo</label>
                     <select name="lider_id" defaultValue={grupo?.lideres?.[0]?.id || ''}
                         className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
-                        <option value="">Sem lider definido</option>
+                        <option value="">Sem líder definido</option>
                         {membros.map(m => (
                             <option key={m.id} value={m.id}>{m.first_name} {m.last_name}</option>
                         ))}
@@ -156,9 +156,9 @@ export default function FormGrupo({ grupo, membros = [], onSucesso }: Props) {
 
             {/* DESCRICAO */}
             <div className="space-y-1.5">
-                <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">Descricao</label>
+                <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">Descrição</label>
                 <textarea name="descricao" rows={3} defaultValue={grupo?.descricao || ''}
-                    placeholder="Breve descricao do grupo, tema, dinamica..."
+                    placeholder="Breve descrição do grupo, tema, dinamica..."
                     className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none resize-none" />
             </div>
 

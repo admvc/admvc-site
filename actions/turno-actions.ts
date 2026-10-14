@@ -14,7 +14,7 @@ export async function abrirTurno(valorInicial: number) {
     const db = await getDb()
     const tenantId = await getTenantIdFromHeaders()
 
-    if (valorInicial < 0) return { error: 'O valor inicial nao pode ser negativo.' }
+    if (valorInicial < 0) return { error: 'O valor inicial não pode ser negativo.' }
 
     try {
         // Verificar se ja existe um turno aberto para este operador
@@ -26,7 +26,7 @@ export async function abrirTurno(valorInicial: number) {
         })
 
         if (turnoExistente) {
-            return { error: 'Ja existe um turno aberto para este operador.' }
+            return { error: 'Já existe um turno aberto para este operador.' }
         }
 
         const turno = await (db as any).turnoCantina.create({
@@ -57,9 +57,9 @@ export async function fecharTurno(turnoId: number, valorFinalReal: number, obser
     try {
         const turno = await db.turnoCantina.findUnique({ where: { id: turnoId } })
 
-        if (!turno) return { error: 'Turno nao encontrado.' }
-        if (turno.operador_id !== session.membroId) return { error: 'Este turno nao pertence a este operador.' }
-        if (turno.status !== 'ABERTO') return { error: 'Este turno ja esta fechado.' }
+        if (!turno) return { error: 'Turno não encontrado.' }
+        if (turno.operador_id !== session.membroId) return { error: 'Este turno não pertence a este operador.' }
+        if (turno.status !== 'ABERTO') return { error: 'Este turno já esta fechado.' }
 
         // Buscar todas as transacoes deste turno
         const transacoes = await db.transacaoCantina.findMany({

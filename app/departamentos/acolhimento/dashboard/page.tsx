@@ -178,7 +178,7 @@ export default async function AcolhimentoDashboard() {
                     {podeVerRelatorio(acolhimentoRole) && (
                         <Link href="/departamentos/acolhimento/relatorio"
                             className="flex items-center gap-2 bg-bg2 border border-soft text-muted px-3 py-2 rounded-xl text-[13px] md:text-[14px] font-bold uppercase tracking-wide hover:text-fg hover:border-figueira/30 transition-all">
-                            <BarChart3 size={13} /> <span className="hidden sm:inline">Relatorio</span>
+                            <BarChart3 size={13} /> <span className="hidden sm:inline">Relatório</span>
                         </Link>
                     )}
                     <Link href="/boasvindas" target="_blank"
@@ -339,7 +339,7 @@ export default async function AcolhimentoDashboard() {
                 <section className="bg-blue-500/5 border border-blue-500/20 rounded-2xl overflow-hidden">
                     <div className="flex items-center gap-2 px-5 py-4 border-b border-blue-500/10">
                         <Users size={14} className="text-blue-500" />
-                        <h2 className="text-sm font-bold text-fg">Reuniao com Pastor</h2>
+                        <h2 className="text-sm font-bold text-fg">Reunião com Pastor</h2>
                         <span className="text-[13px] md:text-[14px] font-bold bg-blue-500/10 text-blue-600 px-2 py-0.5 rounded">{reuniaoPastorRaw.length}</span>
                     </div>
                     <div className="divide-y divide-blue-500/10">
@@ -453,7 +453,7 @@ export default async function AcolhimentoDashboard() {
                             <div className="flex items-center gap-2 px-5 py-4 border-b border-figueira/10">
                                 <Shield size={14} className="text-figueira" />
                                 <h2 className="text-sm font-bold text-fg">Equipa de Acolhimento</h2>
-                                <span className="text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira px-2 py-0.5 rounded">So Lider</span>
+                                <span className="text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira px-2 py-0.5 rounded">Só Líder</span>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left">
@@ -461,7 +461,7 @@ export default async function AcolhimentoDashboard() {
                                         <tr className="border-b border-soft">
                                             <th className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted px-5 py-3">Membro</th>
                                             <th className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted px-3 py-3 text-center">Follow-ups</th>
-                                            <th className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted px-3 py-3 text-right hidden sm:table-cell">Ultimo Contacto</th>
+                                            <th className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted px-3 py-3 text-right hidden sm:table-cell">Último Contacto</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-soft">
@@ -494,7 +494,7 @@ export default async function AcolhimentoDashboard() {
                             <div className="flex items-center gap-2 px-5 py-4 border-b border-figueira/10">
                                 <Activity size={14} className="text-figueira" />
                                 <h2 className="text-sm font-bold text-fg">Actividade Recente</h2>
-                                <span className="text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira px-2 py-0.5 rounded">So Lider</span>
+                                <span className="text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira px-2 py-0.5 rounded">Só Líder</span>
                             </div>
                             <div className="divide-y divide-soft max-h-80 overflow-y-auto">
                                 {actividadeRecente.map((a: any) => (

@@ -6,10 +6,10 @@ import { getDb } from '@/lib/db'
 // Retorna posicoes ativas de todos os participantes da boleia
 export async function GET(request: NextRequest) {
     const session = await getSessionData()
-    if (!session) return NextResponse.json({ error: 'Nao autenticado.' }, { status: 401 })
+    if (!session) return NextResponse.json({ error: 'Não autenticado.' }, { status: 401 })
 
     const ofertaId = Number(request.nextUrl.searchParams.get('ofertaId'))
-    if (!ofertaId) return NextResponse.json({ error: 'ofertaId obrigatorio.' }, { status: 400 })
+    if (!ofertaId) return NextResponse.json({ error: 'ofertaId obrigatório.' }, { status: 400 })
 
     const db = await getDb()
 
@@ -19,12 +19,12 @@ export async function GET(request: NextRequest) {
         include: { reservas: { where: { status: 'CONFIRMADA' }, select: { passageiro_id: true } } },
     })
 
-    if (!oferta) return NextResponse.json({ error: 'Oferta nao encontrada.' }, { status: 404 })
+    if (!oferta) return NextResponse.json({ error: 'Oferta não encontrada.' }, { status: 404 })
 
     const isMotorista = oferta.motorista_id === session.membroId
     const isPassageiro = oferta.reservas.some(r => r.passageiro_id === session.membroId)
     if (!isMotorista && !isPassageiro) {
-        return NextResponse.json({ error: 'Sem permissao.' }, { status: 403 })
+        return NextResponse.json({ error: 'Sem permissão.' }, { status: 403 })
     }
 
     // Buscar posicoes ativas
@@ -51,13 +51,13 @@ export async function GET(request: NextRequest) {
 // Atualiza a posicao do utilizador
 export async function POST(request: NextRequest) {
     const session = await getSessionData()
-    if (!session) return NextResponse.json({ error: 'Nao autenticado.' }, { status: 401 })
+    if (!session) return NextResponse.json({ error: 'Não autenticado.' }, { status: 401 })
 
     const body = await request.json()
     const { ofertaId, latitude, longitude } = body
 
     if (!ofertaId || latitude == null || longitude == null) {
-        return NextResponse.json({ error: 'ofertaId, latitude e longitude obrigatorios.' }, { status: 400 })
+        return NextResponse.json({ error: 'ofertaId, latitude e longitude obrigatórios.' }, { status: 400 })
     }
 
     const db = await getDb()
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (updated.count === 0) {
-        return NextResponse.json({ error: 'Tracking nao ativo. Inicie primeiro.' }, { status: 400 })
+        return NextResponse.json({ error: 'Tracking não ativo. Inicie primeiro.' }, { status: 400 })
     }
 
     return NextResponse.json({ success: true })

@@ -70,7 +70,7 @@ export default async function DonativosDashboard() {
                 <div className="bg-bg2 border border-soft rounded-2xl p-5">
                     <div className="flex items-center gap-2 mb-2">
                         <TrendingUp size={14} className="text-green-400" />
-                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Este Mes</p>
+                        <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Este Mês</p>
                     </div>
                     <p className="text-2xl font-bold text-green-400">{euro(totalMes)}</p>
                 </div>

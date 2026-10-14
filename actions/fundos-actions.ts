@@ -28,7 +28,7 @@ export async function criarFundoAction(formData: FormData) {
         const tipo = (formData.get('tipo') as string) || 'CUSTOM'
         const restrito = formData.get('restrito') === 'true'
 
-        if (!nome) return { ok: false, error: 'Nome do fundo e obrigatorio.' }
+        if (!nome) return { ok: false, error: 'Nome do fundo e obrigatório.' }
 
         await db.fundoFinanceiro.create({
             data: {
@@ -45,7 +45,7 @@ export async function criarFundoAction(formData: FormData) {
         revalidatePath('/financeiro/fundos')
         return { ok: true }
     } catch (err: any) {
-        if (err.code === 'P2002') return { ok: false, error: 'Ja existe um fundo com este nome.' }
+        if (err.code === 'P2002') return { ok: false, error: 'Já existe um fundo com este nome.' }
         return { ok: false, error: err.message || 'Erro ao criar fundo.' }
     }
 }
@@ -64,10 +64,10 @@ export async function transferirEntreeFundosAction(formData: FormData) {
         if (!fundoOrigemId || !fundoDestinoId) return { ok: false, error: 'Selecione ambos os fundos.' }
         if (fundoOrigemId === fundoDestinoId) return { ok: false, error: 'Os fundos de origem e destino devem ser diferentes.' }
         if (!valor || valor <= 0) return { ok: false, error: 'Valor deve ser maior que zero.' }
-        if (!motivo) return { ok: false, error: 'Motivo e obrigatorio.' }
+        if (!motivo) return { ok: false, error: 'Motivo e obrigatório.' }
 
         const origem = await db.fundoFinanceiro.findUnique({ where: { id: fundoOrigemId } })
-        if (!origem) return { ok: false, error: 'Fundo de origem nao encontrado.' }
+        if (!origem) return { ok: false, error: 'Fundo de origem não encontrado.' }
         if (origem.saldo_atual < valor) return { ok: false, error: 'Saldo insuficiente no fundo de origem.' }
 
         // Execute transfer in transaction
@@ -116,7 +116,7 @@ export async function submeterDespesaAction(formData: FormData) {
         const dataStr = formData.get('data') as string
 
         if (!fundo_id) return { ok: false, error: 'Selecione um fundo.' }
-        if (!descricao) return { ok: false, error: 'Descricao e obrigatoria.' }
+        if (!descricao) return { ok: false, error: 'Descrição e obrigatória.' }
         if (!valor || valor <= 0) return { ok: false, error: 'Valor deve ser maior que zero.' }
 
         await db.despesaFinanceira.create({
@@ -146,8 +146,8 @@ export async function aprovarDespesaAction(despesaId: number) {
         const db = await getDb()
 
         const despesa = await db.despesaFinanceira.findUnique({ where: { id: despesaId } })
-        if (!despesa) return { ok: false, error: 'Despesa nao encontrada.' }
-        if (despesa.status !== 'PENDENTE') return { ok: false, error: 'Despesa ja foi processada.' }
+        if (!despesa) return { ok: false, error: 'Despesa não encontrada.' }
+        if (despesa.status !== 'PENDENTE') return { ok: false, error: 'Despesa já foi processada.' }
 
         await db.despesaFinanceira.update({
             where: { id: despesaId },
@@ -170,8 +170,8 @@ export async function rejeitarDespesaAction(despesaId: number, motivo?: string) 
         const db = await getDb()
 
         const despesa = await db.despesaFinanceira.findUnique({ where: { id: despesaId } })
-        if (!despesa) return { ok: false, error: 'Despesa nao encontrada.' }
-        if (despesa.status !== 'PENDENTE') return { ok: false, error: 'Despesa ja foi processada.' }
+        if (!despesa) return { ok: false, error: 'Despesa não encontrada.' }
+        if (despesa.status !== 'PENDENTE') return { ok: false, error: 'Despesa já foi processada.' }
 
         await db.despesaFinanceira.update({
             where: { id: despesaId },
@@ -195,7 +195,7 @@ export async function pagarDespesaAction(despesaId: number) {
         const db = await getDb()
 
         const despesa = await db.despesaFinanceira.findUnique({ where: { id: despesaId } })
-        if (!despesa) return { ok: false, error: 'Despesa nao encontrada.' }
+        if (!despesa) return { ok: false, error: 'Despesa não encontrada.' }
         if (despesa.status !== 'APROVADA') return { ok: false, error: 'Despesa precisa estar aprovada antes de ser paga.' }
 
         // Debit the fund and mark as paid in a transaction

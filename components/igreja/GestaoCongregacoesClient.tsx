@@ -49,7 +49,7 @@ export default function GestaoCongregacoesClient({
     }
 
     async function handleDelete() {
-        if (!await confirmar({ mensagem: 'Tem a certeza que deseja apagar esta congregacao?', tipo: 'perigo' })) return
+        if (!await confirmar({ mensagem: 'Tem a certeza que deseja apagar esta congregação?', tipo: 'perigo' })) return
         setLoading(true)
         const res = await excluirCongregacao(selecionada.id)
         if (res?.error) {
@@ -77,7 +77,7 @@ export default function GestaoCongregacoesClient({
     }
 
     async function handleRemoverMembro(membroId: number) {
-        if (!await confirmar({ mensagem: 'Remover este membro da congregacao?', tipo: 'perigo' })) return
+        if (!await confirmar({ mensagem: 'Remover este membro da congregação?', tipo: 'perigo' })) return
         setLoading(true)
         const res = await removerMembroDeCongregacao(membroId)
         if (res.ok) {
@@ -114,7 +114,7 @@ export default function GestaoCongregacoesClient({
                 <div>
                     <h1 className="text-3xl font-bold text-fg flex items-center gap-3">
                         <Building2 size={28} className="text-figueira" />
-                        Congregacoes
+                        Congregações
                     </h1>
                     <p className="text-[14px] font-bold text-muted uppercase tracking-wide mt-1">
                         Gerir unidades e associar membros
@@ -123,7 +123,7 @@ export default function GestaoCongregacoesClient({
 
                 {modo === 'lista' ? (
                     <button onClick={() => setModo('criar')} className="bg-fg text-bg px-5 py-3 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all flex items-center gap-2">
-                        <PlusCircle size={14} /> Nova Congregacao
+                        <PlusCircle size={14} /> Nova Congregação
                     </button>
                 ) : (
                     <button onClick={voltarLista} className="bg-bg2 border border-soft text-fg px-5 py-3 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:border-figueira transition-all flex items-center gap-2">
@@ -143,7 +143,7 @@ export default function GestaoCongregacoesClient({
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {congregacoes.length === 0 ? (
                         <div className="col-span-full p-10 border-2 border-dashed border-soft rounded-2xl text-center bg-bg2/50">
-                            <p className="text-xs font-bold text-muted">Nenhuma congregacao registada.</p>
+                            <p className="text-xs font-bold text-muted">Nenhuma congregação registada.</p>
                         </div>
                     ) : congregacoes.map((c) => (
                         <div key={c.id} className="bg-bg2 border border-soft p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all flex flex-col justify-between group">
@@ -186,7 +186,7 @@ export default function GestaoCongregacoesClient({
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Endereco</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Endereço</label>
                                     <input name="endereco" defaultValue={selecionada?.endereco} required className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Rua, No..." />
                                 </div>
                                 <div className="space-y-2">
@@ -194,7 +194,7 @@ export default function GestaoCongregacoesClient({
                                     <input name="cidade" defaultValue={selecionada?.cidade} required className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Ex: Figueira da Foz" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Codigo Postal</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Código Postal</label>
                                     <input name="codigo_postal" defaultValue={selecionada?.codigo_postal} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Ex: 3080-001" />
                                 </div>
                                 <div className="space-y-2">
@@ -206,7 +206,7 @@ export default function GestaoCongregacoesClient({
                             <p className="text-[13px] font-bold uppercase tracking-wide text-muted mt-4 mb-2 ml-4">Lideranca</p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Pastor Responsavel</label>
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Pastor Responsável</label>
                                     <input name="pastor" defaultValue={selecionada?.pastor} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Nome completo" />
                                 </div>
                                 <div className="space-y-2">
@@ -274,7 +274,7 @@ export default function GestaoCongregacoesClient({
                                             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
                                             <input
                                                 type="text"
-                                                placeholder="Pesquisar membros sem congregacao..."
+                                                placeholder="Pesquisar membros sem congregação..."
                                                 value={busca}
                                                 onChange={e => setBusca(e.target.value)}
                                                 className="w-full bg-bg border border-soft rounded-xl pl-9 pr-4 py-2.5 text-xs font-bold text-fg outline-none focus:border-figueira"
@@ -340,7 +340,7 @@ export default function GestaoCongregacoesClient({
                                         <button
                                             onClick={() => handleRemoverMembro(m.id)}
                                             className="p-1.5 rounded-lg text-muted hover:text-red-500 hover:bg-red-500/10 transition-all"
-                                            title="Remover da congregacao"
+                                            title="Remover da congregação"
                                         >
                                             <X size={14} />
                                         </button>

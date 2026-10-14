@@ -38,7 +38,7 @@ export default function FormCriarDepartamento({ congregacoes }: Props) {
             {congregacoes.length > 0 && (
                 <div className="space-y-1.5">
                     <label className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
-                        <Church size={10} /> Congregacao (opcional)
+                        <Church size={10} /> Congregação (opcional)
                     </label>
                     <select
                         name="congregacaoId"

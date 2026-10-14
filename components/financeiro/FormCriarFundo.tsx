@@ -72,7 +72,7 @@ export default function FormCriarFundo() {
                 <textarea
                     name="descricao"
                     rows={2}
-                    placeholder="Descricao do fundo..."
+                    placeholder="Descrição do fundo..."
                     className="w-full bg-bg border border-soft rounded-xl px-4 py-3 text-sm text-fg placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-figueira/30 resize-none"
                 />
             </div>
@@ -86,7 +86,7 @@ export default function FormCriarFundo() {
                 />
                 <div>
                     <span className="text-[14px] font-bold uppercase tracking-wide text-fg">Fundo Restrito</span>
-                    <p className="text-[13px] text-muted">O saldo deste fundo so pode ser usado para o seu fim especifico.</p>
+                    <p className="text-[13px] text-muted">O saldo deste fundo só pode ser usado para o seu fim específico.</p>
                 </div>
             </label>
 

@@ -50,7 +50,7 @@ export default async function BillingPage() {
                 <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-white flex items-center gap-3 mt-2">
                     <CreditCard size={32} className="text-blue-400" /> Facturacao
                 </h1>
-                <p className="text-xs text-gray-500 mt-2">Gestao de planos, valores e estado de facturacao de todas as igrejas.</p>
+                <p className="text-xs text-gray-500 mt-2">Gestão de planos, valores e estado de facturacao de todas as igrejas.</p>
             </div>
 
             <BillingClient tenants={tenantsForClient} historico={historicoEnriched} />

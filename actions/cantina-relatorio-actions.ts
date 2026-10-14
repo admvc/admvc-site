@@ -246,6 +246,6 @@ export async function transferirCantinaParaFundo(formData: FormData) {
         return { success: true }
     } catch (error) {
         console.error('Erro ao transferir para fundo:', error)
-        return { error: 'Erro ao realizar transferencia.' }
+        return { error: 'Erro ao realizar transferência.' }
     }
 }

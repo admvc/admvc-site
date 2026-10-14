@@ -27,7 +27,7 @@ export default function FormTransferirParaFundo({ fundos, saldoDisponivel, recei
         setLoading(true)
         const result = await transferirCantinaParaFundo(formData)
         if ((result as any).success) {
-            toast('Transferencia realizada com sucesso!', 'sucesso')
+            toast('Transferência realizada com sucesso!', 'sucesso')
         } else {
             toast((result as any).error || 'Erro ao transferir.', 'erro')
         }
@@ -49,7 +49,7 @@ export default function FormTransferirParaFundo({ fundos, saldoDisponivel, recei
                 <div className="bg-bg border border-soft rounded-2xl p-4 space-y-1">
                     <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                         <CheckCircle size={10} className="text-green-500" />
-                        Ja Transferido
+                        Já Transferido
                     </p>
                     <p className="text-xl font-bold text-fg">{fmt(jaTransferido)} EUR</p>
                 </div>
@@ -57,7 +57,7 @@ export default function FormTransferirParaFundo({ fundos, saldoDisponivel, recei
                 <div className="bg-bg border border-soft rounded-2xl p-4 space-y-1">
                     <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                         <ArrowRightLeft size={10} className="text-blue-500" />
-                        Disponivel
+                        Disponível
                     </p>
                     <p className={`text-xl font-bold ${saldoDisponivel > 0 ? 'text-green-500' : 'text-muted'}`}>
                         {fmt(saldoDisponivel)} EUR
@@ -113,7 +113,7 @@ export default function FormTransferirParaFundo({ fundos, saldoDisponivel, recei
                             <input
                                 type="text"
                                 name="motivo"
-                                placeholder="Transferencia de receita da cantina"
+                                placeholder="Transferência de receita da cantina"
                                 className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none placeholder:text-muted2"
                             />
                         </div>
@@ -130,7 +130,7 @@ export default function FormTransferirParaFundo({ fundos, saldoDisponivel, recei
                 </form>
             ) : (
                 <p className="text-sm text-muted text-center py-4">
-                    Nao ha saldo disponivel para transferencia.
+                    Não há saldo disponível para transferência.
                 </p>
             )}
         </div>

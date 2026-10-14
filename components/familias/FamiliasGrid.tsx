@@ -28,7 +28,7 @@ export default function FamiliasGrid({ familias }: { familias: any[] }) {
                     type="text"
                     value={busca}
                     onChange={e => setBusca(e.target.value)}
-                    placeholder="Pesquisar familia ou membro..."
+                    placeholder="Pesquisar família ou membro..."
                     className="w-full bg-bg2 border border-soft rounded-xl pl-9 pr-9 py-2.5 text-xs font-bold text-fg outline-none focus:border-figueira transition-colors placeholder:text-muted/50"
                 />
                 {busca && (

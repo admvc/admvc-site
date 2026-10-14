@@ -63,7 +63,7 @@ export default async function MenuLocalPage() {
                 <details className="group bg-bg2 border border-soft rounded-2xl overflow-hidden">
                     <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden p-5 flex items-center justify-between hover:bg-soft/20 transition-all">
                         <span className="text-sm font-bold text-figueira flex items-center gap-2">
-                            <ShoppingCart size={14} /> Encomendar para o Proximo Evento
+                            <ShoppingCart size={14} /> Encomendar para o Próximo Evento
                         </span>
                         <span className="text-[13px] font-bold text-muted bg-soft px-2 py-0.5 rounded-lg flex items-center gap-1">
                             {proximosEventos.length} evento{proximosEventos.length !== 1 ? 's' : ''}
@@ -84,7 +84,7 @@ export default async function MenuLocalPage() {
                                         <p className="text-[14px] text-muted">{dia} · {hora}</p>
                                         {temCardapio && (
                                             <span className="inline-block text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira border border-figueira/20 px-2 py-0.5 rounded-lg">
-                                                Cardapio disponivel
+                                                Cardapio disponível
                                             </span>
                                         )}
                                         <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">Encomendar →</p>
@@ -139,7 +139,7 @@ export default async function MenuLocalPage() {
             {produtos.length === 0 && (
                 <div className="py-20 text-center">
                     <Coffee size={32} className="mx-auto text-muted/20 mb-4" />
-                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum produto disponivel de momento</p>
+                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum produto disponível de momento</p>
                 </div>
             )}
         </main>

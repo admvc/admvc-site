@@ -30,7 +30,7 @@ export default function FormDespesaCantina() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Descricao */}
                 <div className="sm:col-span-2">
-                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted block mb-1.5">Descricao *</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted block mb-1.5">Descrição *</label>
                     <input
                         name="descricao"
                         type="text"
@@ -96,7 +96,7 @@ export default function FormDespesaCantina() {
 
                 {/* Observacao */}
                 <div className="sm:col-span-2">
-                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted block mb-1.5">Observacao</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted block mb-1.5">Observação</label>
                     <textarea
                         name="observacao"
                         rows={2}

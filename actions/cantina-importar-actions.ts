@@ -17,7 +17,7 @@ export async function importarDoLoyverse() {
 
     const token = await getLoyverseTokenForTenant(tenantId)
     if (!token) {
-        return { error: 'Token Loyverse nao configurado para esta igreja.' }
+        return { error: 'Token Loyverse não configurado para esta igreja.' }
     }
 
     try {

@@ -164,7 +164,7 @@ export default function FormCardapio({ eventos, produtos }: Props) {
             {eventos.length === 0 && (
                 <div className="py-20 text-center">
                     <Calendar size={32} className="mx-auto text-muted/20 mb-4" />
-                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum evento nos proximos 30 dias</p>
+                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum evento nos próximos 30 dias</p>
                 </div>
             )}
 
@@ -217,7 +217,7 @@ export default function FormCardapio({ eventos, produtos }: Props) {
                                                 <input
                                                     type="number"
                                                     min="1"
-                                                    placeholder="Qtd. disponivel (sem limite)"
+                                                    placeholder="Qtd. disponível (sem limite)"
                                                     value={quantidades[p.id] ?? ''}
                                                     onChange={(e) => setQuantidade(p.id, e.target.value)}
                                                     onClick={(e) => e.stopPropagation()}

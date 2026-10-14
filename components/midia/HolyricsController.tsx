@@ -242,7 +242,7 @@ export default function HolyricsController({ holyricsUrl, holyricsToken }: Props
         switch (tipo) {
             case 'video': return <Film size={14} />
             case 'image': return <ImageIcon size={14} />
-            case 'audio': return <Music size={14} />
+            case 'áudio': return <Music size={14} />
             case 'song': return <Music size={14} className="text-figueira" />
             case 'presentation': return <FileText size={14} />
             case 'plain_text': return <Type size={14} />

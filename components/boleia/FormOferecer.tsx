@@ -3,7 +3,10 @@
 import { useState } from 'react'
 import { criarOfertaBoleia } from '@/actions/boleia-actions'
 import { useRouter } from 'next/navigation'
-import { Loader2, Send, Car } from 'lucide-react'
+import { Loader2, Car } from 'lucide-react'
+
+const CAMPO = 'a-foco min-h-[52px] w-full rounded-[14px] border px-4 text-[17px]'
+const ESTILO_CAMPO = { background: 'var(--a-card)', borderColor: 'var(--a-borda)', color: 'var(--a-texto)' }
 
 interface Evento {
     id: number
@@ -36,22 +39,23 @@ export default function FormOferecer({ eventos }: { eventos: Evento[] }) {
         <form onSubmit={handleSubmit} className="space-y-6">
 
             {error && (
-                <div className="rounded-2xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-xs font-bold text-red-400">
+                <p role="alert" className="rounded-[14px] border px-4 py-3 text-[16px] font-semibold"
+                    style={{ borderColor: 'var(--a-erro)', color: 'var(--a-erro)', background: 'var(--a-erro-suave)' }}>
                     {error}
-                </div>
+                </p>
             )}
 
             {/* Evento */}
-            <div className="space-y-1.5">
-                <label htmlFor="evento_id" className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">
-                    Para qual evento? (opcional)
+            <div className="space-y-2">
+                <label htmlFor="evento_id" className="block text-[16px] font-semibold">
+                    Para que culto ou evento? <span className="font-normal a-suave">(se quiser)</span>
                 </label>
                 <select
                     id="evento_id"
                     name="evento_id"
-                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none shadow-sm transition-all"
+                    className={CAMPO} style={ESTILO_CAMPO}
                 >
-                    <option value="">Sem evento especifico</option>
+                    <option value="">Sem evento específico</option>
                     {eventos.map(ev => {
                         const data = new Date(ev.data).toLocaleDateString('pt-PT', { weekday: 'short', day: 'numeric', month: 'short' })
                         return (
@@ -62,23 +66,23 @@ export default function FormOferecer({ eventos }: { eventos: Evento[] }) {
             </div>
 
             {/* Data e Hora */}
-            <div className="space-y-1.5">
-                <label htmlFor="data_hora_saida" className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">
-                    Data e hora de saida
+            <div className="space-y-2">
+                <label htmlFor="data_hora_saida" className="block text-[16px] font-semibold">
+                    Quando sai?
                 </label>
                 <input
                     id="data_hora_saida"
                     name="data_hora_saida"
                     type="datetime-local"
                     required
-                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none shadow-sm transition-all"
+                    className={CAMPO} style={ESTILO_CAMPO}
                 />
             </div>
 
             {/* Morada */}
-            <div className="space-y-1.5">
-                <label htmlFor="endereco_partida" className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">
-                    Morada de partida (so visivel para quem reservar)
+            <div className="space-y-2">
+                <label htmlFor="endereco_partida" className="block text-[16px] font-semibold">
+                    De onde sai? <span className="block text-[15px] font-normal a-suave">A morada só aparece a quem pedir lugar.</span>
                 </label>
                 <input
                     id="endereco_partida"
@@ -86,33 +90,33 @@ export default function FormOferecer({ eventos }: { eventos: Evento[] }) {
                     type="text"
                     required
                     placeholder="Ex: Rua da Liberdade 45, Buarcos"
-                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none shadow-sm transition-all"
+                    className={CAMPO} style={ESTILO_CAMPO}
                 />
             </div>
 
             {/* Zona */}
-            <div className="space-y-1.5">
-                <label htmlFor="zona_partida" className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">
-                    Zona/Bairro (visivel para todos)
+            <div className="space-y-2">
+                <label htmlFor="zona_partida" className="block text-[16px] font-semibold">
+                    Zona <span className="block text-[15px] font-normal a-suave">Todos veem a zona.</span>
                 </label>
                 <input
                     id="zona_partida"
                     name="zona_partida"
                     type="text"
                     placeholder="Ex: Buarcos, Figueira da Foz"
-                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none shadow-sm transition-all"
+                    className={CAMPO} style={ESTILO_CAMPO}
                 />
             </div>
 
             {/* Vagas */}
-            <div className="space-y-1.5">
-                <label htmlFor="vagas_total" className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">
+            <div className="space-y-2">
+                <label htmlFor="vagas_total" className="block text-[16px] font-semibold">
                     Quantos lugares oferece?
                 </label>
                 <select
                     id="vagas_total"
                     name="vagas_total"
-                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none shadow-sm transition-all"
+                    className={CAMPO} style={ESTILO_CAMPO}
                 >
                     {[1, 2, 3, 4, 5, 6, 7, 8].map(n => (
                         <option key={n} value={n}>{n} {n === 1 ? 'lugar' : 'lugares'}</option>
@@ -121,26 +125,26 @@ export default function FormOferecer({ eventos }: { eventos: Evento[] }) {
             </div>
 
             {/* Nota */}
-            <div className="space-y-1.5">
-                <label htmlFor="nota" className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">
-                    Nota adicional (opcional)
+            <div className="space-y-2">
+                <label htmlFor="nota" className="block text-[16px] font-semibold">
+                    Alguma nota? <span className="font-normal a-suave">(se quiser)</span>
                 </label>
                 <textarea
                     id="nota"
                     name="nota"
                     rows={2}
-                    placeholder="Ex: Passo por Buarcos as 9:30, ligar antes..."
-                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none shadow-sm transition-all resize-none"
+                    placeholder="Ex: Passo por Buarcos às 9:30, ligar antes..."
+                    className={`${CAMPO} resize-none py-3`} style={ESTILO_CAMPO}
                 />
             </div>
 
             <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-figueira text-white py-5 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:brightness-110 transition-all shadow-xl shadow-figueira/20 active:scale-95 disabled:opacity-50"
+                className="a-botao a-botao-principal w-full !min-h-[56px]"
             >
-                {loading ? <Loader2 size={16} className="animate-spin" /> : <Car size={16} />}
-                {loading ? 'A criar...' : 'Publicar Boleia'}
+                {loading ? <Loader2 size={20} className="animate-spin" aria-hidden /> : <Car size={20} aria-hidden />}
+                {loading ? 'A publicar…' : 'Publicar a boleia'}
             </button>
         </form>
     )

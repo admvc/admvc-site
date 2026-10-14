@@ -75,7 +75,7 @@ export default function ModalEditarEvento({ evento, congregacoes = [] }: { event
                             {congregacoes.length > 0 && (
                                 <div className="space-y-1.5">
                                     <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1.5">
-                                        <Church size={10} /> Congregacao
+                                        <Church size={10} /> Congregação
                                     </label>
                                     <select name="congregacao_id" defaultValue={evento.congregacao_id || ''}
                                         className="w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-sm font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer">
@@ -89,7 +89,7 @@ export default function ModalEditarEvento({ evento, congregacoes = [] }: { event
 
                             <div className="space-y-1.5">
                                 <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1.5">
-                                    <AlignLeft size={10} /> Descricao (opcional)
+                                    <AlignLeft size={10} /> Descrição (opcional)
                                 </label>
                                 <textarea name="descricao" defaultValue={evento.descricao || ''} rows={2}
                                     className="w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-sm font-bold text-fg focus:border-figueira outline-none resize-none" placeholder="Tema do culto..." />

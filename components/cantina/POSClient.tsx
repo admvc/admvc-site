@@ -528,7 +528,7 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
             <div className="fixed inset-0 bg-[#0a0a0a] z-50 flex items-center justify-center p-6">
                 <div className="text-center space-y-4 max-w-sm">
                     <Clock size={48} className="mx-auto text-amber-500" />
-                    <h2 className="text-xl font-bold text-white">Turno Nao Aberto</h2>
+                    <h2 className="text-xl font-bold text-white">Turno Não Aberto</h2>
                     <p className="text-sm text-white/60">Precisa abrir um turno antes de registar vendas.</p>
                     <a href="/cantina/turnos" className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-black rounded-xl font-bold text-xs hover:bg-amber-400 transition-all">
                         <Clock size={14} /> Abrir Turno
@@ -647,7 +647,7 @@ export default function POSClient({ produtos, categorias, membros, turnoId = nul
                             )
                         })}
                         {produtosFiltrados.length === 0 && (
-                            <div className="col-span-full py-12 text-center text-muted text-xs">Nenhum produto disponivel nesta categoria.</div>
+                            <div className="col-span-full py-12 text-center text-muted text-xs">Nenhum produto disponível nesta categoria.</div>
                         )}
                     </div>
                 </div>

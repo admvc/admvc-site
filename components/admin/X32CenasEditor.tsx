@@ -108,7 +108,7 @@ export default function X32CenasEditor({ initialConfig }: Props) {
                                     <div className="flex-1 space-y-1">
                                         <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Nome do preset</label>
                                         <input type="text" value={scene.nome} onChange={e => update(scene.id, 'nome', e.target.value)}
-                                            placeholder="Ex: Preset Louvor, Mute Banda, Pregacao..."
+                                            placeholder="Ex: Preset Louvor, Mute Banda, Pregação..."
                                             className="w-full bg-bg2 border border-soft rounded-lg px-3 py-2 text-sm font-bold text-fg focus:border-figueira outline-none placeholder:text-muted/30" />
                                     </div>
                                     <div className="w-32 space-y-1">
@@ -215,7 +215,7 @@ export default function X32CenasEditor({ initialConfig }: Props) {
                 <p><strong>Push:</strong> Executa o preset uma vez (ex: "Preset Louvor" que ajusta todos os faders).</p>
                 <p><strong>Toggle:</strong> Liga/desliga — usa 2 scripts (ex: "Mute Banda" / "Unmute Banda").</p>
                 <p><strong>Script ID:</strong> No Holyrics, va a Ferramentas &gt; Favoritos ou Scripts e copie o ID.</p>
-                <p>Os comandos sao enviados via API do Holyrics que controla a mesa X32 por OSC.</p>
+                <p>Os comandos são enviados via API do Holyrics que controla a mesa X32 por OSC.</p>
             </div>
 
             <div className="flex justify-end">

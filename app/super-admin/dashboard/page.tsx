@@ -128,7 +128,7 @@ export default async function SuperAdminDashboardPage() {
                             <Server size={32} className="text-blue-500" /> Controle Global
                         </h1>
                         <p className="text-[10px] md:text-xs font-bold text-zinc-500 uppercase tracking-widest mt-1">
-                            Visao analitica de todos os Tenants e infraestrutura
+                            Visão analitica de todos os Tenants e infraestrutura
                         </p>
                     </div>
                     <Link
@@ -179,7 +179,7 @@ export default async function SuperAdminDashboardPage() {
                             <UserPlus size={20} />
                         </div>
                         <h3 className="text-3xl font-black text-white tracking-tighter leading-none">{novosMembrosEsteMes}</h3>
-                        <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mt-2">Novos Este Mes</p>
+                        <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mt-2">Novos Este Mês</p>
                     </div>
 
                     {/* 5. Planos Pagos */}
@@ -220,7 +220,7 @@ export default async function SuperAdminDashboardPage() {
                                     </div>
                                     <div>
                                         <p className="text-xs font-black text-red-400 uppercase tracking-tight">{t.nome}</p>
-                                        <p className="text-[10px] text-red-400/70 mt-0.5">Status SUSPENSO - requer atencao imediata</p>
+                                        <p className="text-[10px] text-red-400/70 mt-0.5">Status SUSPENSO - requer atenção imediata</p>
                                     </div>
                                 </div>
                             ))}
@@ -286,7 +286,7 @@ export default async function SuperAdminDashboardPage() {
                                     <th className="p-4 pl-6">Igreja</th>
                                     <th className="p-4">Plano</th>
                                     <th className="p-4">Membros</th>
-                                    <th className="p-4">Congregacoes</th>
+                                    <th className="p-4">Congregações</th>
                                     <th className="p-4">Departamentos</th>
                                     <th className="p-4 pr-6">Status</th>
                                 </tr>
@@ -331,7 +331,7 @@ export default async function SuperAdminDashboardPage() {
                 <div className="bg-[#111] border border-zinc-800 rounded-2xl overflow-hidden">
                     <div className="p-6 border-b border-zinc-800">
                         <h2 className="text-sm font-black uppercase tracking-tighter text-white italic flex items-center gap-2">
-                            <Shield size={16} className="text-violet-500" /> Ultimas Acoes Super Admin
+                            <Shield size={16} className="text-violet-500" /> Últimas Ações Super Admin
                         </h2>
                     </div>
                     <div className="divide-y divide-zinc-800/50">
@@ -379,16 +379,16 @@ export default async function SuperAdminDashboardPage() {
                         <table className="w-full text-left border-collapse min-w-[1000px]">
                             <thead>
                                 <tr className="bg-[#0A0A0A] border-b border-zinc-800 text-[9px] font-black uppercase tracking-widest text-zinc-500">
-                                    <th className="p-4 pl-6">Organizacao</th>
+                                    <th className="p-4 pl-6">Organização</th>
                                     <th className="p-4">Status</th>
                                     <th className="p-4">Plano</th>
                                     <th className="p-4 text-center">Membros</th>
-                                    <th className="p-4 text-center">Congregacoes</th>
+                                    <th className="p-4 text-center">Congregações</th>
                                     <th className="p-4 text-center">Deptos</th>
                                     <th className="p-4 text-center">Eventos</th>
-                                    <th className="p-4">Ultimo Acesso</th>
-                                    <th className="p-4">Criacao</th>
-                                    <th className="p-4 pr-6 text-right">Acoes</th>
+                                    <th className="p-4">Último Acesso</th>
+                                    <th className="p-4">Criação</th>
+                                    <th className="p-4 pr-6 text-right">Ações</th>
                                 </tr>
                             </thead>
                             <tbody>

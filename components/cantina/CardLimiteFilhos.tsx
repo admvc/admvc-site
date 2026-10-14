@@ -54,7 +54,7 @@ export default function CardLimiteFilhos() {
         <div className="bg-bg2 border border-soft rounded-2xl p-6 space-y-4">
             <div className="flex items-center gap-2">
                 <Shield size={16} className="text-figueira" />
-                <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Limites Cantina (Familia)</span>
+                <span className="text-[13px] font-bold uppercase tracking-wide text-muted">Limites Cantina (Família)</span>
             </div>
 
             <div className="space-y-2">

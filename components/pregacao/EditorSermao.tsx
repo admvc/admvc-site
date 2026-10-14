@@ -196,7 +196,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                         value={titulo}
                         onChange={(e) => setTitulo(e.target.value)}
                         className="w-full bg-transparent text-2xl sm:text-3xl font-bold text-fg border-b border-soft pb-3 focus:outline-none focus:border-figueira transition-colors placeholder:text-muted/30"
-                        placeholder="Titulo do sermao"
+                        placeholder="Título do sermao"
                     />
 
                     {/* Meta row */}
@@ -237,7 +237,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                             value={tagsStr}
                             onChange={(e) => setTagsStr(e.target.value)}
                             className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors"
-                            placeholder="fe, oracao, amor..."
+                            placeholder="fe, oração, amor..."
                         />
                         {tagsArr.length > 0 && (
                             <div className="flex flex-wrap gap-1.5 mt-2">
@@ -252,7 +252,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
 
                     {/* References */}
                     <div>
-                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Referencias Biblicas</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Referencias Bíblicas</label>
                         <div className="flex gap-2">
                             <input
                                 value={refInput}
@@ -302,7 +302,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                             onChange={(e) => setNotasPrivadas(e.target.value)}
                             rows={4}
                             className="w-full bg-bg border border-soft rounded-2xl px-5 py-3 text-xs text-fg/70 leading-relaxed placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors resize-y"
-                            placeholder="Notas pessoais (nao serao partilhadas)..."
+                            placeholder="Notas pessoais (não serao partilhadas)..."
                         />
                     </div>
 
@@ -344,7 +344,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
                         >
                             <span className="flex items-center gap-2">
                                 <BookOpen size={12} className="text-figueira" />
-                                Biblia
+                                Bíblia
                             </span>
                             {biblePanelOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                         </button>

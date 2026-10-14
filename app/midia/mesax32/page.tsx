@@ -57,7 +57,7 @@ export default async function X32Page() {
                     <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                         <div className="flex items-center gap-2 px-4 py-3 bg-bg2 border border-soft rounded-2xl text-[13px] font-bold uppercase tracking-wide text-muted hover:text-fg transition-colors">
                             <span className="group-open:rotate-90 transition-transform">&#9654;</span>
-                            Modo Avancado (Faders — requer proxy local)
+                            Modo Avançado (Faders — requer proxy local)
                         </div>
                     </summary>
                     <div className="mt-3">

@@ -131,9 +131,9 @@ export default async function RelatorioAcolhimentoPage() {
                     <ArrowLeft size={12} /> Acolhimento
                 </Link>
                 <div className="flex items-center gap-3">
-                    <h1 className="text-3xl font-bold text-fg">Relatorio de Acolhimento</h1>
+                    <h1 className="text-3xl font-bold text-fg">Relatório de Acolhimento</h1>
                     <span className="text-[13px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira px-2 py-1 rounded-lg border border-figueira/20 flex items-center gap-1">
-                        <Shield size={9} /> Lider
+                        <Shield size={9} /> Líder
                     </span>
                 </div>
                 <p className="text-xs text-muted">Metricas de visitantes, acompanhamentos e consolidacao.</p>
@@ -142,7 +142,7 @@ export default async function RelatorioAcolhimentoPage() {
             {/* KPIs */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <Kpi label="Total Visitantes" value={totalVisitantes} icon={<Users size={13} />} />
-                <Kpi label="Novos este Mes" value={novosEsteMes} icon={<UserPlus size={13} />}
+                <Kpi label="Novos este Mês" value={novosEsteMes} icon={<UserPlus size={13} />}
                     cor={novosEsteMes > 0 ? 'emerald' : undefined} />
                 <Kpi label="Em Contacto" value={emContacto} icon={<Clock size={13} />}
                     cor={emContacto > 0 ? 'orange' : 'emerald'} />
@@ -152,10 +152,10 @@ export default async function RelatorioAcolhimentoPage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <Kpi label="Taxa Consolidacao" value={`${taxaConsolidacao}%`} icon={<TrendingUp size={13} />}
                     cor={taxaConsolidacao >= 50 ? 'emerald' : taxaConsolidacao >= 25 ? 'orange' : 'red'} />
-                <Kpi label="Crescimento vs Mes Ant." value={`${crescimento > 0 ? '+' : ''}${crescimento}%`}
+                <Kpi label="Crescimento vs Mês Ant." value={`${crescimento > 0 ? '+' : ''}${crescimento}%`}
                     icon={<TrendingUp size={13} />} cor={crescimento >= 0 ? 'emerald' : 'red'} />
                 <Kpi label="Total Follow-ups" value={totalAcompanhamentos} icon={<HeartHandshake size={13} />} />
-                <Kpi label="Taxa de Saida" value={`${taxaSaida}%`} icon={<UserX size={13} />}
+                <Kpi label="Taxa de Saída" value={`${taxaSaida}%`} icon={<UserX size={13} />}
                     cor={taxaSaida > 30 ? 'red' : taxaSaida > 15 ? 'orange' : 'emerald'} />
             </div>
 
@@ -199,7 +199,7 @@ export default async function RelatorioAcolhimentoPage() {
             <section className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                 <div className="flex items-center gap-2 px-5 py-4 border-b border-soft">
                     <TrendingUp size={14} className="text-figueira" />
-                    <h2 className="text-sm font-bold text-fg">Visitantes por Mes</h2>
+                    <h2 className="text-sm font-bold text-fg">Visitantes por Mês</h2>
                 </div>
                 <div className="p-5">
                     <div className="flex items-end gap-2 h-32">
@@ -225,7 +225,7 @@ export default async function RelatorioAcolhimentoPage() {
                 <section className="bg-bg2 border border-figueira/20 rounded-2xl overflow-hidden">
                     <div className="flex items-center gap-2 px-5 py-4 border-b border-figueira/10">
                         <HeartHandshake size={14} className="text-figueira" />
-                        <h2 className="text-sm font-bold text-fg">Follow-ups por Membro (este mes)</h2>
+                        <h2 className="text-sm font-bold text-fg">Follow-ups por Membro (este mês)</h2>
                     </div>
                     <div className="divide-y divide-soft">
                         {followUpsComNome.map((f, i) => (
@@ -247,7 +247,7 @@ export default async function RelatorioAcolhimentoPage() {
             <section className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                 <div className="flex items-center gap-2 px-5 py-4 border-b border-soft">
                     <UserCheck size={14} className="text-emerald-500" />
-                    <h2 className="text-sm font-bold text-fg">Ultimos Consolidados</h2>
+                    <h2 className="text-sm font-bold text-fg">Últimos Consolidados</h2>
                 </div>
                 {ultimosConsolidados.length === 0 ? (
                     <div className="py-10 text-center">

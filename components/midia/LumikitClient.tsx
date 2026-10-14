@@ -144,8 +144,8 @@ export default function LumikitClient({ holyricsUrl, holyricsToken, scenes }: Pr
         return (
             <div className="bg-bg2 border border-soft rounded-2xl p-8 text-center space-y-4">
                 <WifiOff size={32} className="mx-auto text-muted/30" />
-                <p className="text-sm font-bold text-muted">Holyrics nao configurado</p>
-                <p className="text-xs text-muted/60">Configure o Holyrics nas <Link href="/admin/midia" className="text-figueira underline">configuracoes de midia</Link>.</p>
+                <p className="text-sm font-bold text-muted">Holyrics não configurado</p>
+                <p className="text-xs text-muted/60">Configure o Holyrics nas <Link href="/admin/midia" className="text-figueira underline">configurações de mídia</Link>.</p>
             </div>
         )
     }
@@ -159,7 +159,7 @@ export default function LumikitClient({ holyricsUrl, holyricsToken, scenes }: Pr
                         {status === 'testing' ? <Loader2 size={18} className="animate-spin" /> : <Lightbulb size={18} />}
                     </div>
                     <div>
-                        <p className="text-sm font-bold text-fg">Iluminacao</p>
+                        <p className="text-sm font-bold text-fg">Iluminação</p>
                         <p className="text-[13px] font-bold text-muted uppercase tracking-wide">
                             {status === 'connected' ? 'Conectado via Holyrics' : status === 'testing' ? 'A conectar...' : 'Desconectado'}
                         </p>
@@ -202,8 +202,8 @@ export default function LumikitClient({ holyricsUrl, holyricsToken, scenes }: Pr
             ) : (
                 <div className="bg-bg2 border border-soft rounded-2xl p-6 text-center space-y-2">
                     <Lightbulb size={24} className="mx-auto text-muted/30" />
-                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum botao configurado</p>
-                    <p className="text-[13px] text-muted/60">Configure os botoes em <Link href="/admin/midia" className="text-figueira underline">Admin &gt; Midia</Link>.</p>
+                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum botão configurado</p>
+                    <p className="text-[13px] text-muted/60">Configure os botões em <Link href="/admin/midia" className="text-figueira underline">Admin &gt; Midia</Link>.</p>
                 </div>
             )}
 

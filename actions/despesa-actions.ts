@@ -23,11 +23,11 @@ export async function submeterDespesa(formData: FormData) {
     const observacao = (formData.get('observacao') as string)?.trim() || null
 
     if (!fundo_id || isNaN(fundo_id)) {
-        return { ok: false, error: 'Fundo e obrigatorio.' }
+        return { ok: false, error: 'Fundo e obrigatório.' }
     }
 
     if (!descricao) {
-        return { ok: false, error: 'Descricao e obrigatoria.' }
+        return { ok: false, error: 'Descrição e obrigatória.' }
     }
 
     if (!valor || isNaN(valor) || valor <= 0) {
@@ -41,12 +41,12 @@ export async function submeterDespesa(formData: FormData) {
         })
 
         if (!fundo) {
-            return { ok: false, error: 'Fundo nao encontrado ou inativo.' }
+            return { ok: false, error: 'Fundo não encontrado ou inativo.' }
         }
 
         // Se o fundo e restrito, validar que a despesa tem categoria adequada
         if (fundo.restrito && !categoria_id) {
-            return { ok: false, error: 'Fundos restritos exigem uma categoria de orcamento.' }
+            return { ok: false, error: 'Fundos restritos exigem uma categoria de orçamento.' }
         }
 
         // Se categoria informada, verificar se pertence ao fundo
@@ -56,7 +56,7 @@ export async function submeterDespesa(formData: FormData) {
             })
 
             if (!categoria) {
-                return { ok: false, error: 'Categoria nao pertence a este fundo.' }
+                return { ok: false, error: 'Categoria não pertence a este fundo.' }
             }
         }
 
@@ -99,7 +99,7 @@ export async function aprovarDespesa(despesaId: number) {
         })
 
         if (!despesa) {
-            return { ok: false, error: 'Despesa nao encontrada.' }
+            return { ok: false, error: 'Despesa não encontrada.' }
         }
 
         if (despesa.status !== 'PENDENTE') {
@@ -136,7 +136,7 @@ export async function rejeitarDespesa(despesaId: number, motivo?: string) {
         })
 
         if (!despesa) {
-            return { ok: false, error: 'Despesa nao encontrada.' }
+            return { ok: false, error: 'Despesa não encontrada.' }
         }
 
         if (despesa.status !== 'PENDENTE') {
@@ -174,7 +174,7 @@ export async function pagarDespesa(despesaId: number) {
         })
 
         if (!despesa) {
-            return { ok: false, error: 'Despesa nao encontrada.' }
+            return { ok: false, error: 'Despesa não encontrada.' }
         }
 
         if (despesa.status !== 'APROVADA') {

@@ -100,7 +100,7 @@ export default function CifraEditor({ musicaId, titulo, cifraAtual, onClose, onS
                         Importar do CifraClub
                     </p>
                     <p className="text-[13px] text-orange-200/60">
-                        Abre a musica no CifraClub, seleciona o texto da cifra e cola aqui abaixo. O sistema converte automaticamente.
+                        Abre a música no CifraClub, seleciona o texto da cifra e cola aqui abaixo. O sistema converte automaticamente.
                     </p>
                     <textarea
                         value={importTexto}

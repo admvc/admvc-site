@@ -67,9 +67,9 @@ export default async function StockPage() {
                     <HeartHandshake size={14} /> Assistencia Social
                 </Link>
                 <h1 className="text-3xl md:text-4xl font-bold text-fg">
-                    Gestao de Stock
+                    Gestão de Stock
                 </h1>
-                <p className="text-xs text-muted">Adicionar, editar e remover itens do inventario social.</p>
+                <p className="text-xs text-muted">Adicionar, editar e remover itens do inventário social.</p>
             </header>
 
             {/* Form to add new item — apenas líder/admin */}
@@ -103,7 +103,7 @@ export default async function StockPage() {
                             <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Categoria</p>
                             <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Unidade</p>
                             <p className="text-[13px] font-bold uppercase tracking-wide text-muted text-right">Stock</p>
-                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted text-right">Acoes</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted text-right">Ações</p>
                         </div>
 
                         {itens.map((item, idx) => {

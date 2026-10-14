@@ -1,6 +1,11 @@
 'use client'
 
+// Aviso "Instalar ADMVC": so dentro da app (nunca nas paginas publicas, onde
+// tapava o botao das boas-vindas) e so a partir da 3.a visita. Fechado, volta
+// passados 30 dias.
+
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { Download, X } from 'lucide-react'
 
 interface BeforeInstallPromptEvent extends Event {
@@ -8,25 +13,53 @@ interface BeforeInstallPromptEvent extends Event {
     userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
 }
 
+const PUBLICAS = ['/boasvindas', '/membros/login', '/membros/recuperar', '/membros/nova-senha', '/doar', '/privacidade', '/super-admin']
+const VISITAS_MINIMAS = 3
+const PAUSA_MS = 30 * 24 * 60 * 60 * 1000
+
+function guardado(chave: string) {
+    try { return localStorage.getItem(chave) } catch { return null }
+}
+function guardar(chave: string, valor: string) {
+    try { localStorage.setItem(chave, valor) } catch { /* sem armazenamento */ }
+}
+
+/** Conta uma visita por sessao do browser e devolve o total. */
+function contarVisita() {
+    let n = Number(guardado('pwa-visitas')) || 0
+    try {
+        if (!sessionStorage.getItem('pwa-contada')) {
+            sessionStorage.setItem('pwa-contada', '1')
+            n += 1
+            guardar('pwa-visitas', String(n))
+        }
+    } catch { /* sem armazenamento */ }
+    return n
+}
+
 export default function PWAInstallPrompt() {
+    const pathname = usePathname()
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
     const [dismissed, setDismissed] = useState(false)
+    const publica = pathname === '/' || PUBLICAS.some((p) => pathname?.startsWith(p))
 
     useEffect(() => {
-        // Não mostrar se já foi instalado ou se já descartou nesta sessão
-        if (window.matchMedia('(display-mode: standalone)').matches) return
-        if (sessionStorage.getItem('pwa-dismissed')) return
-
         const handler = (e: Event) => {
             e.preventDefault()
             setDeferredPrompt(e as BeforeInstallPromptEvent)
         }
-
         window.addEventListener('beforeinstallprompt', handler)
         return () => window.removeEventListener('beforeinstallprompt', handler)
     }, [])
 
-    if (!deferredPrompt || dismissed) return null
+    useEffect(() => {
+        if (publica) return
+        if (window.matchMedia('(display-mode: standalone)').matches) { setDismissed(true); return }
+        const fechadoEm = Number(guardado('pwa-fechado-em')) || 0
+        if (contarVisita() < VISITAS_MINIMAS || Date.now() - fechadoEm < PAUSA_MS) setDismissed(true)
+    }, [publica])
+
+    if (publica || !deferredPrompt || dismissed) return null
 
     const handleInstall = async () => {
         await deferredPrompt.prompt()
@@ -37,30 +70,20 @@ export default function PWAInstallPrompt() {
 
     const handleDismiss = () => {
         setDismissed(true)
-        sessionStorage.setItem('pwa-dismissed', '1')
+        guardar('pwa-fechado-em', String(Date.now()))
     }
 
     return (
-        <div className="fixed bottom-4 left-4 right-4 z-50 animate-in slide-in-from-bottom-4 duration-500">
-            <div className="max-w-md mx-auto bg-bg2 border border-soft rounded-2xl p-4 shadow-2xl flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-figueira/20 flex items-center justify-center shrink-0">
-                    <Download size={18} className="text-figueira" />
+        <div className="app-novo fixed inset-x-4 z-40 bottom-[calc(76px+env(safe-area-inset-bottom))] md:bottom-4" style={{ background: 'transparent' }}>
+            <div className="a-card mx-auto flex max-w-md items-center gap-3 p-3 shadow-lg">
+                <Download size={24} className="shrink-0" style={{ color: 'var(--a-destaque)' }} aria-hidden />
+                <div className="min-w-0 flex-1">
+                    <p className="text-[16px] font-semibold">Instalar a app</p>
+                    <p className="text-[15px] a-suave">Abre mais depressa, a partir do ecrã principal.</p>
                 </div>
-                <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-fg">Instalar ADMVC</p>
-                    <p className="text-[13px] text-muted">Acesso rapido a partir do ecra inicial.</p>
-                </div>
-                <button
-                    onClick={handleInstall}
-                    className="shrink-0 px-4 py-2 bg-figueira text-white rounded-xl text-[13px] font-bold uppercase tracking-wide hover:brightness-110 transition-all"
-                >
-                    Instalar
-                </button>
-                <button
-                    onClick={handleDismiss}
-                    className="shrink-0 p-1.5 text-muted hover:text-fg transition-colors"
-                >
-                    <X size={14} />
+                <button onClick={handleInstall} className="a-botao a-botao-principal shrink-0 !min-h-[44px]">Instalar</button>
+                <button onClick={handleDismiss} className="a-botao shrink-0 !min-h-[44px] !px-2" aria-label="Fechar">
+                    <X size={20} aria-hidden />
                 </button>
             </div>
         </div>

@@ -159,7 +159,7 @@ export default async function ReconciliacaoPage({
                                 <thead>
                                     <tr className="border-b border-soft">
                                         <th className="px-4 py-3 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Data</th>
-                                        <th className="px-4 py-3 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Descricao</th>
+                                        <th className="px-4 py-3 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Descrição</th>
                                         <th className="px-4 py-3 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-right">Valor</th>
                                         <th className="px-4 py-3 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-right">Saldo</th>
                                         <th className="px-4 py-3 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Estado</th>

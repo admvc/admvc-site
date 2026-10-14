@@ -17,7 +17,7 @@ export default function FormAbrirTurno() {
 
         const valor = parseFloat(valorInicial) || 0
         if (valor < 0) {
-            setErro('O valor inicial nao pode ser negativo.')
+            setErro('O valor inicial não pode ser negativo.')
             return
         }
 

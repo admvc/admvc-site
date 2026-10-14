@@ -168,7 +168,7 @@ export default function RelatoriosClient({ membros }: { membros: any[] }) {
 
             {/* HEADER */}
             <header className="space-y-1">
-                <h1 className="text-3xl font-bold text-fg">Relatorios</h1>
+                <h1 className="text-3xl font-bold text-fg">Relatórios</h1>
                 <p className="text-xs text-muted">{membros.length} membros activos. Selecione um relatorio.</p>
             </header>
 

@@ -38,7 +38,7 @@ export async function atualizarBranding(formData: FormData) {
         // Upload do logo se fornecido
         if (logoFile && logoFile.size > 0 && logoFile.name !== 'undefined') {
             if (logoFile.size > 2 * 1024 * 1024) {
-                return { ok: false, error: 'Logo deve ter no maximo 2MB.' }
+                return { ok: false, error: 'Logo deve ter no máximo 2MB.' }
             }
 
             const blob = await put(`branding/tenant_${tenantId}_logo.png`, logoFile, {

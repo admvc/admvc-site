@@ -79,8 +79,8 @@ export default async function FundosDashboard() {
             {/* Header */}
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-bold text-fg">Gestao de Fundos</h1>
-                    <p className="text-xs text-muted">Controlo de saldos, entradas e saidas por fundo.</p>
+                    <h1 className="text-3xl font-bold text-fg">Gestão de Fundos</h1>
+                    <p className="text-xs text-muted">Controlo de saldos, entradas e saídas por fundo.</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <Link
@@ -167,12 +167,12 @@ export default async function FundosDashboard() {
                                     <div className="flex items-center gap-1.5">
                                         <TrendingUp size={12} className="text-green-500" />
                                         <span className="text-[13px] md:text-[14px] font-bold text-green-500">{euro(entradas)}</span>
-                                        <span className="text-[13px] text-muted font-bold uppercase tracking-wide">este mes</span>
+                                        <span className="text-[13px] text-muted font-bold uppercase tracking-wide">este mês</span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         <TrendingDown size={12} className="text-red-500" />
                                         <span className="text-[13px] md:text-[14px] font-bold text-red-500">{euro(saidas)}</span>
-                                        <span className="text-[13px] text-muted font-bold uppercase tracking-wide">este mes</span>
+                                        <span className="text-[13px] text-muted font-bold uppercase tracking-wide">este mês</span>
                                     </div>
                                 </div>
                             </div>
@@ -191,7 +191,7 @@ export default async function FundosDashboard() {
             {/* Transfer Between Funds */}
             <section className="space-y-3">
                 <h2 className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
-                    <ArrowRightLeft size={14} /> Transferencia entre Fundos
+                    <ArrowRightLeft size={14} /> Transferência entre Fundos
                 </h2>
                 <FormTransferencia fundos={fundos.map(f => ({ id: f.id, nome: f.nome, saldo_atual: f.saldo_atual }))} />
             </section>

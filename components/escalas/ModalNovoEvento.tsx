@@ -143,7 +143,7 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
                                         <option value="CULTO_ESPECIAL">Culto Especial</option>
                                         <option value="CULTO_RUA">Culto de Rua</option>
                                         <option value="CONVIVIO">Convivio</option>
-                                        <option value="REUNIAO">Reuniao</option>
+                                        <option value="REUNIAO">Reunião</option>
                                         <option value="FORMACAO">Formacao</option>
                                         <option value="MISSAO">Missao</option>
                                         <option value="OUTRO">Outro</option>
@@ -154,13 +154,13 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
                                 {congregacoes.length > 0 && (
                                     <div className="space-y-2">
                                         <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-2 flex items-center gap-2">
-                                            <CalendarDays size={12} className="text-figueira" /> Congregacao
+                                            <CalendarDays size={12} className="text-figueira" /> Congregação
                                         </label>
                                         <select
                                             name="congregacao_id"
                                             className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-sm font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer shadow-sm transition-all"
                                         >
-                                            <option value="">Toda a Igreja (sem congregacao)</option>
+                                            <option value="">Toda a Igreja (sem congregação)</option>
                                             {congregacoes.map(c => (
                                                 <option key={c.id} value={c.id}>{c.nome} — {c.cidade}</option>
                                             ))}

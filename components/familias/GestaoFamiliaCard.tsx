@@ -13,7 +13,7 @@ export function GestaoFamiliaCard({ familia }: any) {
     const [removingId, setRemovingId] = useState<number | null>(null)
 
     async function handleRemover(membroId: number) {
-        if (await confirmar({ mensagem: 'Remover este membro da familia?', tipo: 'perigo' })) {
+        if (await confirmar({ mensagem: 'Remover este membro da família?', tipo: 'perigo' })) {
             setRemovingId(membroId)
             await removerMembroDaFamilia(membroId)
             setRemovingId(null)

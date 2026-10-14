@@ -20,7 +20,7 @@ export async function submeterDonativo(tenantSlug: string, formData: FormData) {
 
     // Find tenant by slug
     const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
-    if (!tenant) return { error: 'Igreja nao encontrada.' }
+    if (!tenant) return { error: 'Igreja não encontrada.' }
 
     const db = getTenantClient(tenant.id)
 
@@ -34,17 +34,17 @@ export async function submeterDonativo(tenantSlug: string, formData: FormData) {
     const mensagem = (formData.get('mensagem') as string)?.trim() || null
     const recorrente = formData.get('recorrente') === 'true'
 
-    if (!nome_doador) return { error: 'O nome e obrigatorio.' }
+    if (!nome_doador) return { error: 'O nome e obrigatório.' }
 
     const valor = parseFloat(valorStr)
-    if (!valor || valor <= 0) return { error: 'Valor invalido.' }
+    if (!valor || valor <= 0) return { error: 'Valor inválido.' }
     if (valor > 100000) return { error: 'Valor excede o limite permitido.' }
 
     const formasValidas = ['MBWAY', 'TRANSFERENCIA']
-    if (!formasValidas.includes(forma_pagamento)) return { error: 'Forma de pagamento invalida.' }
+    if (!formasValidas.includes(forma_pagamento)) return { error: 'Forma de pagamento inválida.' }
 
     const fundo_id = fundo_id_str ? parseInt(fundo_id_str) : null
-    if (fundo_id && isNaN(fundo_id)) return { error: 'Fundo invalido.' }
+    if (fundo_id && isNaN(fundo_id)) return { error: 'Fundo inválido.' }
 
     // Generate unique reference
     const random4 = Math.floor(1000 + Math.random() * 9000)
@@ -88,7 +88,7 @@ export async function confirmarDonativo(donativoId: number) {
             where: { id: donativoId, status: 'PENDENTE' }
         })
 
-        if (!donativo) return { ok: false, error: 'Donativo nao encontrado ou ja confirmado.' }
+        if (!donativo) return { ok: false, error: 'Donativo não encontrado ou já confirmado.' }
 
         // Update status
         await db.donativoOnline.update({

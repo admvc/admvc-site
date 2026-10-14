@@ -70,7 +70,7 @@ export default function ModalHistorico({ visitante, acionador, viewerRole }: Mod
                                 <History size={12} /> Linha do Tempo
                             </span>
                             <h2 className="text-xl md:text-2xl font-bold text-fg leading-none">
-                                Historico de <span className="opacity-50">{visitante.nome}</span>
+                                Histórico de <span className="opacity-50">{visitante.nome}</span>
                             </h2>
                             {visitante.proximo_contacto && (
                                 <p className="text-[13px] font-bold text-blue-600 mt-2 flex items-center gap-1">

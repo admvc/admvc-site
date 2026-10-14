@@ -145,7 +145,7 @@ export default function ImportExportPage() {
     async function handleConfirm() {
         if (!analise) return
         const validos = analise.filter(i => i.status === 'PRONTO')
-        if (validos.length === 0) { toast('Nao ha membros validos para importar.', 'aviso'); return }
+        if (validos.length === 0) { toast('Não há membros válidos para importar.', 'aviso'); return }
 
         setLoadingImport(true)
         try {
@@ -181,7 +181,7 @@ export default function ImportExportPage() {
             {/* HEADER */}
             <header className="flex flex-col gap-2 pb-6 border-b border-soft">
                 <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center gap-2">
-                    <FileSpreadsheet size={14} /> Gestao de Dados em Massa
+                    <FileSpreadsheet size={14} /> Gestão de Dados em Massa
                 </span>
                 <h1 className="text-4xl md:text-5xl font-bold text-fg leading-none">
                     Importar <span className="text-muted/30">/ Exportar.</span>
@@ -199,7 +199,7 @@ export default function ImportExportPage() {
                             <CheckCircle2 size={22} />
                         </div>
                         <div>
-                            <p className="text-sm font-bold text-emerald-700">Importacao concluida!</p>
+                            <p className="text-sm font-bold text-emerald-700">Importação concluída!</p>
                             <p className="text-[13px] font-bold uppercase tracking-wide text-emerald-600/80 mt-0.5">
                                 {sucesso.count} membro{sucesso.count !== 1 ? 's' : ''} adicionado{sucesso.count !== 1 ? 's' : ''} ao sistema
                             </p>
@@ -353,7 +353,7 @@ export default function ImportExportPage() {
                             ))}
                         </div>
                         <p className="text-[13px] font-bold text-figueira uppercase tracking-wide mt-4 flex items-center gap-1">
-                            <AlertTriangle size={9} /> Campos marcados com * sao obrigatorios
+                            <AlertTriangle size={9} /> Campos marcados com * são obrigatórios
                         </p>
                     </div>
                 )}
@@ -366,7 +366,7 @@ export default function ImportExportPage() {
                     {/* CABECALHO */}
                     <div className="p-6 border-b border-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                            <h3 className="text-sm font-bold text-fg">Relatorio de Analise</h3>
+                            <h3 className="text-sm font-bold text-fg">Relatório de Análise</h3>
                             <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-1">
                                 {analise.length} linha{analise.length !== 1 ? 's' : ''} processada{analise.length !== 1 ? 's' : ''}
                             </p>
@@ -424,7 +424,7 @@ export default function ImportExportPage() {
                                     <th className="px-5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted w-28">Estado</th>
                                     <th className="px-5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted">Nome</th>
                                     <th className="px-5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted">E-mail</th>
-                                    <th className="px-5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted">Telemovel</th>
+                                    <th className="px-5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted">Telemóvel</th>
                                     <th className="px-5 py-3 text-[13px] font-bold uppercase tracking-wide text-muted">Detalhe</th>
                                 </tr>
                             </thead>

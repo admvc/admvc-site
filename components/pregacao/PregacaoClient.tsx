@@ -192,12 +192,12 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                 <form onSubmit={handleCriar} className="p-6 space-y-4">
                     {/* Titulo */}
                     <div>
-                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Titulo *</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Título *</label>
                         <input
                             name="titulo"
                             required
                             className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors"
-                            placeholder="Titulo do sermao"
+                            placeholder="Título do sermao"
                         />
                     </div>
 
@@ -251,7 +251,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
                         <input
                             name="tags"
                             className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors"
-                            placeholder="fe, oracao, amor..."
+                            placeholder="fe, oração, amor..."
                         />
                     </div>
 
@@ -268,7 +268,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
 
                     {/* Referencias Biblicas */}
                     <div>
-                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Referencias Biblicas</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Referencias Bíblicas</label>
                         <div className="flex gap-2">
                             <input
                                 value={refInput}
@@ -326,7 +326,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
             <header className="space-y-4">
                 <div className="flex items-center gap-2 text-figueira">
                     <BookOpen size={16} />
-                    <span className="font-bold text-[14px] uppercase tracking-wide">Pregacao</span>
+                    <span className="font-bold text-[14px] uppercase tracking-wide">Pregação</span>
                 </div>
                 <h1 className="text-4xl sm:text-5xl font-bold text-fg leading-none">
                     Sermoes<span className="text-muted/20">.</span>
@@ -367,7 +367,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
             {sermoes.length === 0 ? (
                 <div className="py-20 text-center border-2 border-dashed border-soft rounded-[2.5rem]">
                     <BookOpen size={32} className="mx-auto text-muted/30 mb-4" />
-                    <p className="text-xs font-bold text-muted">Nenhum sermao neste mes.</p>
+                    <p className="text-xs font-bold text-muted">Nenhum sermao neste mês.</p>
                 </div>
             ) : (
                 <div className="space-y-3">

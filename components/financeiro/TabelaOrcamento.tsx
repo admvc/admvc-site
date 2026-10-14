@@ -122,7 +122,7 @@ export default function TabelaOrcamento({
 
         const valor = parseFloat(rawValue.replace(',', '.'))
         if (isNaN(valor) || valor < 0) {
-            setMensagem('Valor invalido.')
+            setMensagem('Valor inválido.')
             return
         }
 
@@ -152,7 +152,7 @@ export default function TabelaOrcamento({
             {/* Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <h1 className="text-xl font-bold text-fg">
-                    Orcamento Anual
+                    Orçamento Anual
                 </h1>
                 <div className="flex items-center gap-2">
                     <button

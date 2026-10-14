@@ -25,10 +25,12 @@ export default function BotaoCancelarOferta({ ofertaId }: { ofertaId: number }) 
         <button
             onClick={handleCancelar}
             disabled={loading}
-            className="inline-flex items-center gap-2 text-[13px] font-bold uppercase tracking-wide text-red-400 hover:text-red-300 transition-colors disabled:opacity-50"
+            type="button"
+            className="a-botao a-botao-secundario w-full"
+            style={{ color: 'var(--a-erro)' }}
         >
-            {loading ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
-            {loading ? 'A cancelar...' : 'Cancelar'}
+            {loading ? <Loader2 size={20} className="animate-spin" aria-hidden /> : <Trash2 size={20} aria-hidden />}
+            {loading ? 'A cancelar…' : 'Cancelar a boleia'}
         </button>
     )
 }

@@ -56,10 +56,10 @@ export default async function PlanosPage() {
             {/* HEADER */}
             <header className="space-y-2">
                 <h1 className="text-3xl font-black italic uppercase tracking-tighter text-white leading-none">
-                    Configuracao de Planos
+                    Configuração de Planos
                 </h1>
                 <p className="text-sm text-zinc-400">
-                    Visao geral dos planos disponíveis, módulos incluídos e limites por tier.
+                    Visão geral dos planos disponíveis, módulos incluídos e limites por tier.
                 </p>
             </header>
 
@@ -97,7 +97,7 @@ export default async function PlanosPage() {
                                 <h3 className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Limites</h3>
                                 <div className="grid grid-cols-2 gap-2">
                                     <LimitItem icon={<Users size={12} />} label="Membros" value={lim.max_membros === 0 ? 'Ilimitado' : String(lim.max_membros)} />
-                                    <LimitItem icon={<Building size={12} />} label="Congregacoes" value={lim.max_congregacoes === 0 ? 'Ilimitado' : String(lim.max_congregacoes)} />
+                                    <LimitItem icon={<Building size={12} />} label="Congregações" value={lim.max_congregacoes === 0 ? 'Ilimitado' : String(lim.max_congregacoes)} />
                                     <LimitItem icon={<Layers size={12} />} label="Departamentos" value={lim.max_departamentos === 0 ? 'Ilimitado' : String(lim.max_departamentos)} />
                                     <LimitItem icon={<Clock size={12} />} label="Auditoria" value={lim.dias_auditoria === 0 ? 'Ilimitado' : `${lim.dias_auditoria}d`} />
                                 </div>

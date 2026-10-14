@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
         const token = await getLoyverseTokenForTenant(tenantId)
         if (!token) {
-            return NextResponse.json({ error: 'Loyverse nao configurado para este tenant.' }, { status: 400 })
+            return NextResponse.json({ error: 'Loyverse não configurado para este tenant.' }, { status: 400 })
         }
 
         const body = await request.json()

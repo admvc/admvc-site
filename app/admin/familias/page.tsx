@@ -34,7 +34,7 @@ export default async function AdminFamiliasPage() {
 
             <header className="flex items-center justify-between">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-bold text-fg">Familias</h1>
+                    <h1 className="text-3xl font-bold text-fg">Famílias</h1>
                     <p className="text-xs text-muted">
                         {familias.length} familias · {totalMembrosFamilia} membros vinculados
                         {qtdMembrosSemVinculo > 0 && ` · ${qtdMembrosSemVinculo} sem vinculo`}

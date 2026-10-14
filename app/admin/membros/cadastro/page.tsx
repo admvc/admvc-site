@@ -42,7 +42,7 @@ const ABAS = [
     { id: 1, label: 'Dados Pessoais', icon: <User size={14} /> },
     { id: 2, label: 'Morada', icon: <MapPin size={14} /> },
     { id: 3, label: 'Eclesiastico', icon: <ShieldCheck size={14} /> },
-    { id: 4, label: 'Familia e Legal', icon: <Scale size={14} /> },
+    { id: 4, label: 'Família e Legal', icon: <Scale size={14} /> },
 ]
 
 export default function AdminCadastroMembroPage() {
@@ -282,10 +282,10 @@ export default function AdminCadastroMembroPage() {
                             <Campo label="Primeiro Nome *" name="first_name" value={formValues.first_name} onChange={handleInputChange} />
                             <Campo label="Sobrenome *" name="last_name" value={formValues.last_name} onChange={handleInputChange} />
                             <Campo label="E-mail *" name="email" type="email" value={formValues.email} onChange={handleInputChange} />
-                            <Campo label="Senha *" name="password" type="password" value={formValues.password} onChange={handleInputChange} placeholder="Minimo 6 caracteres" />
-                            <Campo label="Telemovel" name="phone_1" value={formValues.phone_1} onChange={handleInputChange} />
+                            <Campo label="Senha *" name="password" type="password" value={formValues.password} onChange={handleInputChange} placeholder="Mínimo 6 caracteres" />
+                            <Campo label="Telemóvel" name="phone_1" value={formValues.phone_1} onChange={handleInputChange} />
                             <Campo label="Data de Nascimento" name="birthdate" type="date" value={formValues.birthdate} onChange={handleInputChange} />
-                            <SelecionarOpcoes label="Genero" name="gender" value={formValues.gender} onChange={handleInputChange} opcoes={['Masculino', 'Feminino']} />
+                            <SelecionarOpcoes label="Género" name="gender" value={formValues.gender} onChange={handleInputChange} opcoes={['Masculino', 'Feminino']} />
                             <SelecionarOpcoes label="Estado Civil" name="marital_status" value={formValues.marital_status} onChange={handleInputChange} opcoes={['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viuvo(a)', 'Uniao de Facto']} />
                             <Campo label="NIF / Contribuinte" name="tax_id" value={formValues.tax_id} onChange={handleInputChange} />
                             <Campo label="Profissao" name="profession" value={formValues.profession} onChange={handleInputChange} />
@@ -295,7 +295,7 @@ export default function AdminCadastroMembroPage() {
                                 <select name="escolaridade_id" value={formValues.escolaridade_id} onChange={handleInputChange}
                                     className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none">
                                     <option value="">Selecione...</option>
-                                    <option value="1">Ensino Basico</option>
+                                    <option value="1">Ensino Básico</option>
                                     <option value="2">Ensino Secundario</option>
                                     <option value="3">Licenciatura</option>
                                     <option value="4">Mestrado / Doutoramento</option>
@@ -313,13 +313,13 @@ export default function AdminCadastroMembroPage() {
                         </p>
                         <div className="grid md:grid-cols-4 gap-5">
                             <div className="relative">
-                                <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide block mb-1.5">Codigo Postal (PT)</label>
+                                <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide block mb-1.5">Código Postal (PT)</label>
                                 <input name="postal_code" value={formValues.postal_code} onChange={handleCodigoPostalChange}
                                     placeholder="0000-000" maxLength={8}
                                     className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none" />
                                 {buscandoCP && <Loader2 size={13} className="animate-spin text-figueira absolute right-4 top-9" />}
                             </div>
-                            <Campo label="Pais" name="country" value={formValues.country} onChange={handleInputChange} className="md:col-span-3" />
+                            <Campo label="País" name="country" value={formValues.country} onChange={handleInputChange} className="md:col-span-3" />
                             <Campo label="Morada / Rua" name="address_1" value={formValues.address_1} onChange={handleInputChange} className="md:col-span-2" />
                             <Campo label="No / Porta" name="address_number" value={formValues.address_number} onChange={handleInputChange} />
                             <Campo label="Lote / Apt." name="address_2" value={formValues.address_2} onChange={handleInputChange} />
@@ -335,7 +335,7 @@ export default function AdminCadastroMembroPage() {
                     <div className="space-y-6 animate-in fade-in duration-200">
                         <div className="bg-figueira/5 border border-figueira/15 rounded-2xl p-5 space-y-3">
                             <p className="text-[13px] font-bold uppercase tracking-wide text-figueira flex items-center gap-2">
-                                <Lock size={11} /> Nivel de Acesso
+                                <Lock size={11} /> Nível de Acesso
                             </p>
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                 {['USER', 'LEADER', 'FINANCE', 'ADMIN'].map(r => (
@@ -360,7 +360,7 @@ export default function AdminCadastroMembroPage() {
                                 <label className="text-[13px] font-bold uppercase text-muted ml-1 tracking-wide">Notas Pastorais</label>
                                 <textarea name="notes" rows={4} value={formValues.notes} onChange={handleInputChange}
                                     className="w-full bg-bg border border-soft rounded-2xl px-4 py-3 text-[14px] font-bold text-fg focus:border-figueira outline-none resize-none"
-                                    placeholder="Testemunho, contexto pastoral, observacoes..." />
+                                    placeholder="Testemunho, contexto pastoral, observações..." />
                             </div>
                         </div>
                     </div>
@@ -371,8 +371,8 @@ export default function AdminCadastroMembroPage() {
                     <div className="space-y-6 animate-in fade-in duration-200">
                         <div className="grid md:grid-cols-2 gap-5">
                             <Campo label="Nome do Pai" name="father_name" value={formValues.father_name} onChange={handleInputChange} />
-                            <Campo label="Nome da Mae" name="mother_name" value={formValues.mother_name} onChange={handleInputChange} />
-                            <Campo label="Nome do Conjuge" name="spouse_name" value={formValues.spouse_name} onChange={handleInputChange} />
+                            <Campo label="Nome da Mãe" name="mother_name" value={formValues.mother_name} onChange={handleInputChange} />
+                            <Campo label="Nome do Cônjuge" name="spouse_name" value={formValues.spouse_name} onChange={handleInputChange} />
                             <div className="grid grid-cols-2 gap-4">
                                 <SelecionarOpcoes label="Tem Filhos?" name="has_children" value={temFilhos}
                                     onChange={(e: any) => setTemFilhos(e.target.value)}
@@ -401,7 +401,7 @@ export default function AdminCadastroMembroPage() {
                                         className="mt-1 w-5 h-5 accent-figueira cursor-pointer shrink-0" />
                                     <div>
                                         <p className="text-[14px] font-bold uppercase text-fg group-hover:text-figueira transition-colors">Termo Permanecer</p>
-                                        <p className="text-[13px] text-muted font-medium mt-0.5">Concordo com a visao e regras de conduta da ADMVC.</p>
+                                        <p className="text-[13px] text-muted font-medium mt-0.5">Concordo com a visão e regras de conduta da ADMVC.</p>
                                     </div>
                                 </label>
                             </div>
@@ -450,7 +450,7 @@ export default function AdminCadastroMembroPage() {
                 {abaAtiva < 4 ? (
                     <button type="button" onClick={avancar}
                         className="px-6 py-3 bg-fg text-bg rounded-2xl font-bold text-[13px] uppercase tracking-wide shadow-lg hover:bg-figueira transition-all flex items-center gap-2 active:scale-95">
-                        Proximo <ChevronRight size={14} />
+                        Próximo <ChevronRight size={14} />
                     </button>
                 ) : (
                     <button type="button" onClick={handleSubmit} disabled={isSubmitting}

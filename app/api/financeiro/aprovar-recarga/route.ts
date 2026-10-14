@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
         const loyverseToken = await getLoyverseTokenForTenant(tenantId);
         if (!loyverseToken) {
-            return NextResponse.json({ error: 'Loyverse nao configurado para este tenant.' }, { status: 400 })
+            return NextResponse.json({ error: 'Loyverse não configurado para este tenant.' }, { status: 400 })
         }
 
         // 1. ATUALIZAR NOSSO BANCO PRIMEIRO (Para evitar cliques duplos)

@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
     const tipo = searchParams.get('tipo') || 'todos' // 'spotify' | 'youtube' | 'todos'
 
     if (!titulo) {
-        return NextResponse.json({ erro: 'Titulo obrigatorio' }, { status: 400 })
+        return NextResponse.json({ erro: 'Título obrigatório' }, { status: 400 })
     }
 
     console.log(`[MUSICA API] Pesquisar: "${titulo}" - "${artista}" - tipo: ${tipo}`)

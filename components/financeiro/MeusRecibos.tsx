@@ -85,9 +85,9 @@ export default function MeusRecibos() {
             {recibos.length === 0 ? (
                 <div className="text-center py-8">
                     <FileText className="w-10 h-10 text-muted/30 mx-auto mb-2" />
-                    <p className="text-xs text-muted">Nenhum recibo disponivel.</p>
+                    <p className="text-xs text-muted">Nenhum recibo disponível.</p>
                     <p className="text-[14px] text-muted/60 mt-1">
-                        Os recibos sao emitidos pela tesouraria apos o encerramento do ano fiscal.
+                        Os recibos são emitidos pela tesouraria após o encerramento do ano fiscal.
                     </p>
                 </div>
             ) : (

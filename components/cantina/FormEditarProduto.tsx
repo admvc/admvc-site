@@ -192,7 +192,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
                         {/* Stock Minimo */}
                         <div className="space-y-1.5">
                             <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
-                                Stock Minimo (Alerta)
+                                Stock Mínimo (Alerta)
                             </label>
                             <input
                                 type="number"
@@ -246,7 +246,7 @@ export default function FormEditarProduto({ produto, categorias }: Props) {
                         {/* Disponivel */}
                         <div className="space-y-1.5">
                             <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
-                                Disponivel
+                                Disponível
                             </label>
                             <div
                                 onClick={() => setDisponivel(!disponivel)}

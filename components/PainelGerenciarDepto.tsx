@@ -185,7 +185,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                             {/* Lista de integrantes */}
                             <div className="space-y-3">
                                 <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
-                                    <Users size={12} /> Voluntarios <span className="bg-soft px-1.5 py-0.5 rounded text-[13px]">{listaIntegrantesAgrupados.length}</span>
+                                    <Users size={12} /> Voluntários <span className="bg-soft px-1.5 py-0.5 rounded text-[13px]">{listaIntegrantesAgrupados.length}</span>
                                 </p>
                                 {listaIntegrantesAgrupados.map((grupo: any) => (
                                     <div key={grupo.membro.id} className={`flex items-center justify-between gap-3 p-3 rounded-xl border transition-all ${grupo.membro.id === depto.lider_id ? 'border-figueira/30 bg-figueira/5' : 'bg-bg2 border-soft'}`}>
@@ -196,7 +196,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                             <div className="min-w-0">
                                                 <p className="text-[14px] font-bold uppercase text-fg truncate flex items-center gap-2">
                                                     {grupo.membro.first_name} {grupo.membro.last_name}
-                                                    {grupo.membro.id === depto.lider_id && <span className="text-[13px] bg-figueira text-white px-1.5 py-0.5 rounded">Lider</span>}
+                                                    {grupo.membro.id === depto.lider_id && <span className="text-[13px] bg-figueira text-white px-1.5 py-0.5 rounded">Líder</span>}
                                                 </p>
                                                 <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                                     {grupo.membro.id !== depto.lider_id && (
@@ -253,7 +253,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                         <span className="text-[14px] font-bold uppercase text-fg tracking-wide flex items-center gap-2">
                                             <span className="w-1.5 h-1.5 rounded-full bg-figueira" /> {f.nome}
                                         </span>
-                                        <button onClick={async () => { const ok = await confirmar({ mensagem: 'Excluir esta funcao?', tipo: 'perigo' }); if (ok) removerFuncaoDoDepto(f.id) }} className="w-7 h-7 flex items-center justify-center rounded-lg bg-bg border border-soft hover:bg-red-50 hover:border-red-200 text-muted hover:text-red-500 transition-all">
+                                        <button onClick={async () => { const ok = await confirmar({ mensagem: 'Excluir esta função?', tipo: 'perigo' }); if (ok) removerFuncaoDoDepto(f.id) }} className="w-7 h-7 flex items-center justify-center rounded-lg bg-bg border border-soft hover:bg-red-50 hover:border-red-200 text-muted hover:text-red-500 transition-all">
                                             <Trash2 size={12} />
                                         </button>
                                     </div>
@@ -283,7 +283,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                 {congregacoes.length > 0 && (
                                     <div className="space-y-1.5">
                                         <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1">
-                                            <Church size={10} /> Congregacao
+                                            <Church size={10} /> Congregação
                                         </label>
                                         <select name="congregacaoId" defaultValue={depto.congregacaoId || ''}
                                             className="w-full bg-bg border border-soft px-3 py-2.5 rounded-xl text-sm font-bold focus:border-figueira outline-none appearance-none">
@@ -297,7 +297,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                             </div>
 
                             <div className="space-y-1.5 relative">
-                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide">Lider</label>
+                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide">Líder</label>
                                 <input type="hidden" name="lider_id" value={liderSelecionado?.id || ""} />
                                 {liderSelecionado ? (
                                     <div className="flex items-center justify-between bg-bg border border-figueira/50 px-3 py-2.5 rounded-xl">
@@ -309,7 +309,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                 ) : (
                                     <div className="relative">
                                         <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-                                        <input type="text" placeholder="Pesquisar lider..." value={buscaLider} onChange={(e) => setBuscaLider(e.target.value)} className="w-full bg-bg border border-soft pl-9 pr-3 py-2.5 rounded-xl text-[14px] font-bold focus:border-figueira outline-none" />
+                                        <input type="text" placeholder="Pesquisar líder..." value={buscaLider} onChange={(e) => setBuscaLider(e.target.value)} className="w-full bg-bg border border-soft pl-9 pr-3 py-2.5 rounded-xl text-[14px] font-bold focus:border-figueira outline-none" />
                                         {membrosLiderFiltrados.length > 0 && (
                                             <div className="absolute top-full left-0 right-0 mt-1 bg-bg border border-soft rounded-xl shadow-2xl overflow-hidden z-[100]">
                                                 {membrosLiderFiltrados.map((m: any) => (
@@ -472,7 +472,7 @@ function InteressadosTab({ deptoId, interesses, funcoes }: { deptoId: number; in
 
                     {processados.length > 0 && (
                         <div className="space-y-2">
-                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Historico</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Histórico</p>
                             {processados.map((i: any) => (
                                 <div key={i.id} className="flex items-center justify-between gap-3 bg-bg border border-soft rounded-xl px-4 py-2.5 opacity-60">
                                     <p className="text-[14px] font-bold text-fg truncate">

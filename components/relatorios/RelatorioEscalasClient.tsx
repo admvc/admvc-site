@@ -75,10 +75,10 @@ function RelatorioContent({ dados, departamentos, mes, ano, deptoFiltro, totalEs
             <header className="flex items-center justify-between">
                 <div className="space-y-1">
                     <Link href="/admin/relatorios" className="flex items-center gap-2 text-[14px] font-bold uppercase text-muted hover:text-figueira transition-all mb-2">
-                        <ArrowLeft size={12} /> Relatorios
+                        <ArrowLeft size={12} /> Relatórios
                     </Link>
                     <h1 className="text-3xl font-bold text-fg">Escalas por Membro</h1>
-                    <p className="text-xs text-muted">Participacao, funcoes e disponibilidade de cada voluntario.</p>
+                    <p className="text-xs text-muted">Participacao, funções e disponibilidade de cada voluntário.</p>
                 </div>
             </header>
 
@@ -120,7 +120,7 @@ function RelatorioContent({ dados, departamentos, mes, ano, deptoFiltro, totalEs
 
             {/* KPIs */}
             <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
-                <Kpi label="Voluntarios" value={dados.length} icon={<Users size={13} />} />
+                <Kpi label="Voluntários" value={dados.length} icon={<Users size={13} />} />
                 <Kpi label="Total Escalas" value={totalEscalas} icon={<Calendar size={13} />} />
                 <Kpi label="Confirmadas" value={totalConfirmadas} icon={<CheckCircle2 size={13} />} cor="emerald" />
                 <Kpi label="Indisponiveis" value={totalIndisponiveis} icon={<XCircle size={13} />} cor={totalIndisponiveis > 0 ? 'red' : 'emerald'} />
@@ -131,7 +131,7 @@ function RelatorioContent({ dados, departamentos, mes, ano, deptoFiltro, totalEs
             {/* LISTA DE MEMBROS */}
             {dados.length === 0 ? (
                 <div className="py-16 text-center bg-bg2 border border-soft rounded-2xl">
-                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Nenhuma escala encontrada neste periodo.</p>
+                    <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Nenhuma escala encontrada neste período.</p>
                 </div>
             ) : (
                 <div className="space-y-2">
@@ -202,7 +202,7 @@ function RelatorioContent({ dados, departamentos, mes, ano, deptoFiltro, totalEs
                                     {/* FUNÇÕES DETALHADAS */}
                                     {funcoesList.length > 0 && (
                                         <div className="space-y-1">
-                                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Funcoes desempenhadas</p>
+                                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Funções desempenhadas</p>
                                             <div className="flex flex-wrap gap-1.5">
                                                 {funcoesList.map(([funcao, count]) => (
                                                     <span key={funcao} className="text-[13px] font-bold bg-bg border border-soft px-2 py-1 rounded-lg text-fg">

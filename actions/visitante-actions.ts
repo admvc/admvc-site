@@ -281,13 +281,13 @@ export async function atribuirResponsavel(visitanteId: number, responsavelId: nu
         const session = await exigirAcolhimento('LIDER', visitanteId);
 
         const membro = await prisma.membro.findUnique({ where: { id: session.membroId } });
-        if (!membro) return { error: "Membro nao encontrado." };
+        if (!membro) return { error: "Membro não encontrado." };
 
         const responsavel = await prisma.membro.findUnique({
             where: { id: responsavelId },
             select: { first_name: true, last_name: true, tenant_id: true }
         });
-        if (!responsavel || responsavel.tenant_id !== session.tenantId) return { error: "Responsavel nao encontrado." };
+        if (!responsavel || responsavel.tenant_id !== session.tenantId) return { error: "Responsável não encontrado." };
 
         await prisma.visitante.update({
             where: { id: visitanteId },
@@ -319,7 +319,7 @@ export async function atribuirResponsavel(visitanteId: number, responsavelId: nu
         return { ok: true };
     } catch (error) {
         console.error("Erro ao atribuir responsavel:", error);
-        return { error: "Falha ao atribuir responsavel." };
+        return { error: "Falha ao atribuir responsável." };
     }
 }
 
@@ -328,7 +328,7 @@ export async function guardarNotaLider(visitanteId: number, nota: string) {
         const session = await exigirAcolhimento('LIDER', visitanteId);
 
         const membro = await prisma.membro.findUnique({ where: { id: session.membroId } });
-        if (!membro) return { error: "Membro nao encontrado." };
+        if (!membro) return { error: "Membro não encontrado." };
 
         await prisma.visitante.update({
             where: { id: visitanteId },

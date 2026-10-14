@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     console.log(`[API CODIGO POSTAL] Pedido recebido para CP: "${cp}"`)
 
     if (!cp || cp.length < 7) {
-        return NextResponse.json({ erro: 'CP invalido' }, { status: 400 })
+        return NextResponse.json({ erro: 'CP inválido' }, { status: 400 })
     }
 
     try {

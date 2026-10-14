@@ -20,7 +20,7 @@ export default async function ExportarPage() {
                 </div>
                 <div>
                     <h1 className="text-xl font-bold text-fg">
-                        Exportacao Fiscal
+                        Exportação Fiscal
                     </h1>
                     <p className="text-xs text-muted">
                         Exporte dados financeiros em formato CSV para o TOC ou arquivo
@@ -30,7 +30,7 @@ export default async function ExportarPage() {
 
             {/* Descricao */}
             <div className="bg-bg2 border border-soft rounded-2xl p-5 space-y-3">
-                <h2 className="text-sm font-bold text-fg">Ficheiros disponiveis</h2>
+                <h2 className="text-sm font-bold text-fg">Ficheiros disponíveis</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-muted">
                     <div className="space-y-1">
                         <p className="font-bold text-fg">Contribuicoes</p>
@@ -38,7 +38,7 @@ export default async function ExportarPage() {
                     </div>
                     <div className="space-y-1">
                         <p className="font-bold text-fg">Despesas</p>
-                        <p>Data, descricao, fornecedor, valor, categoria, fundo e forma de pagamento</p>
+                        <p>Data, descrição, fornecedor, valor, categoria, fundo e forma de pagamento</p>
                     </div>
                     <div className="space-y-1">
                         <p className="font-bold text-fg">Donativos</p>

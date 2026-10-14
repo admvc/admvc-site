@@ -30,7 +30,7 @@ export default async function AdminsPage() {
             {/* Header */}
             <div className="border-b border-[#222] pb-6">
                 <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-white flex items-center gap-3">
-                    <ShieldCheck size={32} className="text-blue-500" /> Gestao de Administradores
+                    <ShieldCheck size={32} className="text-blue-500" /> Gestão de Administradores
                 </h1>
                 <p className="text-sm text-gray-500 mt-2">
                     Gerir contas de Super Admin da plataforma.
@@ -48,7 +48,7 @@ export default async function AdminsPage() {
                                 <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-500">Role</th>
                                 <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-500">Estado</th>
                                 <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-500">Actividade</th>
-                                <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-500">Acoes</th>
+                                <th className="text-left px-6 py-4 text-[10px] font-black uppercase tracking-widest text-gray-500">Ações</th>
                             </tr>
                         </thead>
                         <tbody>

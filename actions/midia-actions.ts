@@ -10,7 +10,7 @@ export async function salvarConfigMidia(formData: FormData) {
     try {
         await requireRole(['ADMIN'])
         const tenantId = await getTenantIdFromHeaders()
-        if (!tenantId) return { ok: false, error: 'Tenant nao identificado.' }
+        if (!tenantId) return { ok: false, error: 'Tenant não identificado.' }
 
         await prisma.tenant.update({
             where: { id: tenantId },
@@ -28,7 +28,7 @@ export async function salvarConfigMidia(formData: FormData) {
         revalidatePath('/admin/midia')
         return { ok: true }
     } catch (error: any) {
-        return { ok: false, error: 'Erro ao guardar configuracoes.' }
+        return { ok: false, error: 'Erro ao guardar configurações.' }
     }
 }
 
@@ -93,7 +93,7 @@ export async function salvarX32Cenas(config: X32CenasConfig) {
     try {
         await requireRole(['ADMIN'])
         const tenantId = await getTenantIdFromHeaders()
-        if (!tenantId) return { ok: false, error: 'Tenant nao identificado.' }
+        if (!tenantId) return { ok: false, error: 'Tenant não identificado.' }
 
         await prisma.tenant.update({
             where: { id: tenantId },
@@ -131,7 +131,7 @@ export async function salvarLumikitCenas(config: LumikitConfig) {
     try {
         await requireRole(['ADMIN'])
         const tenantId = await getTenantIdFromHeaders()
-        if (!tenantId) return { ok: false, error: 'Tenant nao identificado.' }
+        if (!tenantId) return { ok: false, error: 'Tenant não identificado.' }
 
         await prisma.tenant.update({
             where: { id: tenantId },

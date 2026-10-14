@@ -71,7 +71,7 @@ export default async function DespesasCantinaPage() {
                         <Receipt size={16} className="text-blue-500" />
                     </div>
                     <p className="text-lg sm:text-xl font-bold text-fg">{totalEsteMes.toFixed(2)}&euro;</p>
-                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Este Mes</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Este Mês</p>
                 </div>
             </div>
 
@@ -83,7 +83,7 @@ export default async function DespesasCantinaPage() {
                             <Clock size={16} />
                         </div>
                         <div>
-                            <h2 className="text-sm font-bold text-fg">Aguardam Aprovacao</h2>
+                            <h2 className="text-sm font-bold text-fg">Aguardam Aprovação</h2>
                             <p className="text-[13px] font-bold text-orange-600 uppercase tracking-wide">
                                 {pendentes.length} despesa{pendentes.length !== 1 ? 's' : ''} pendente{pendentes.length !== 1 ? 's' : ''}
                             </p>
@@ -150,12 +150,12 @@ export default async function DespesasCantinaPage() {
                             <thead>
                                 <tr className="border-b border-soft">
                                     <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-5 py-3">Data</th>
-                                    <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-3 py-3">Descricao</th>
+                                    <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-3 py-3">Descrição</th>
                                     <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-3 py-3 hidden sm:table-cell">Categoria</th>
                                     <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-3 py-3 text-right">Valor</th>
                                     <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-3 py-3 text-center">Status</th>
                                     {isAdmin && (
-                                        <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-3 py-3 text-right">Acoes</th>
+                                        <th className="text-[13px] font-bold uppercase tracking-wide text-muted px-3 py-3 text-right">Ações</th>
                                     )}
                                 </tr>
                             </thead>

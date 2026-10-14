@@ -182,7 +182,7 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                     <div className={`space-y-2 transition-all duration-300 ${!eventoId ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
                         <div className="flex items-center gap-2">
                             <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center shadow-sm">{departamentos ? '3' : '2'}</span>
-                            <label className="text-[14px] font-bold uppercase text-muted tracking-wide">Funcao</label>
+                            <label className="text-[14px] font-bold uppercase text-muted tracking-wide">Função</label>
                         </div>
                         <div className="relative">
                             <ShieldCheck size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-figueira" />
@@ -277,7 +277,7 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                     <div className={`space-y-2 transition-all duration-300 ${!membroId ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
                         <div className="flex items-center gap-2">
                             <span className="w-5 h-5 rounded-full bg-figueira text-white text-[13px] font-bold flex items-center justify-center shadow-sm">{departamentos ? '5' : '4'}</span>
-                            <label className="text-[14px] font-bold uppercase text-muted tracking-wide">Horario</label>
+                            <label className="text-[14px] font-bold uppercase text-muted tracking-wide">Horário</label>
                         </div>
                         <div className="flex items-center justify-between bg-figueira/5 border border-figueira/20 px-4 md:px-5 py-3 md:py-4 rounded-xl md:rounded-2xl">
                             <label className="text-[14px] font-bold uppercase text-figueira tracking-wide flex items-center gap-2">

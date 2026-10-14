@@ -83,7 +83,7 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
             {/* HEADER */}
             <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-bold text-fg">Gestao de Eventos</h1>
+                    <h1 className="text-3xl font-bold text-fg">Gestão de Eventos</h1>
                     <p className="text-xs text-muted">Criar, visualizar e gerir todos os eventos da igreja.</p>
                 </div>
                 <ModalNovoEvento congregacoes={congregacoes} />
@@ -124,7 +124,7 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
             {/* STATS */}
             <div className="flex flex-wrap gap-3">
                 <div className="bg-bg2 border border-soft rounded-2xl px-5 py-4">
-                    <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Este Mes</p>
+                    <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Este Mês</p>
                     <p className="text-2xl font-bold text-fg">{eventosEsteMes.length}</p>
                 </div>
                 {LISTA_TIPOS.filter(t => (contagemPorTipo[t.value] || 0) > 0).map(t => (
@@ -139,7 +139,7 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
             <section className="bg-bg2 border border-soft rounded-[2.5rem] overflow-hidden shadow-sm">
                 <div className="flex items-center gap-3 px-6 py-5 border-b border-soft">
                     <CalendarDays size={16} className="text-figueira" />
-                    <h2 className="text-sm font-bold text-fg">Visao Calendario</h2>
+                    <h2 className="text-sm font-bold text-fg">Visão Calendário</h2>
                 </div>
                 <div className="p-6">
                     <CalendarioAgenda eventos={eventos} congregacoes={congregacoes} />
@@ -150,7 +150,7 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
             <section className="space-y-4">
                 <div className="flex items-center gap-3 px-1">
                     <CalendarDays size={15} className="text-figueira" />
-                    <h2 className="text-sm font-bold text-fg">Proximos Eventos</h2>
+                    <h2 className="text-sm font-bold text-fg">Próximos Eventos</h2>
                     <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide bg-soft border border-soft px-2 py-1 rounded-lg text-muted">
                         {eventosFuturos.length} evento{eventosFuturos.length !== 1 ? 's' : ''}
                     </span>

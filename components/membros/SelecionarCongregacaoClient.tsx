@@ -39,10 +39,10 @@ export default function SelecionarCongregacaoClient({
                             {igrejaName}
                         </p>
                         <h1 className="text-2xl font-bold text-fg mt-1">
-                            Selecionar Congregacao
+                            Selecionar Congregação
                         </h1>
                         <p className="text-xs text-muted mt-2">
-                            Em qual congregacao deseja trabalhar nesta sessao?
+                            Em qual congregação deseja trabalhar nesta sessão?
                         </p>
                     </div>
                 </div>

@@ -51,7 +51,7 @@ export default async function SuperAdminLayout({
 
                     <form action={logoutSuperAdmin}>
                         <button type="submit" className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20">
-                            <LogOut size={14} /> Terminar Sessao
+                            <LogOut size={14} /> Terminar Sessão
                         </button>
                     </form>
                 </div>

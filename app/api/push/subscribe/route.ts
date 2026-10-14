@@ -6,13 +6,13 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getSessionData()
     if (!session) {
-      return NextResponse.json({ error: 'Nao autenticado.' }, { status: 401 })
+      return NextResponse.json({ error: 'Não autenticado.' }, { status: 401 })
     }
 
     const subscription = await request.json()
 
     if (!subscription || !subscription.endpoint) {
-      return NextResponse.json({ error: 'Subscription invalida.' }, { status: 400 })
+      return NextResponse.json({ error: 'Subscription inválida.' }, { status: 400 })
     }
 
     await saveSubscription(session.membroId, subscription)

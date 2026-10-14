@@ -123,7 +123,7 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
                         <form onSubmit={handleCriarCesta} className="bg-bg2 border border-soft rounded-2xl p-4 space-y-3">
                             <input value={novoNome} onChange={e => setNovoNome(e.target.value)} placeholder="Nome da cesta (ex: Cesta Basica Padrao)"
                                 className="w-full bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs font-bold text-fg focus:border-figueira outline-none" required />
-                            <input value={novaDesc} onChange={e => setNovaDesc(e.target.value)} placeholder="Descricao (opcional)"
+                            <input value={novaDesc} onChange={e => setNovaDesc(e.target.value)} placeholder="Descrição (opcional)"
                                 className="w-full bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs font-bold text-fg focus:border-figueira outline-none" />
                             <div className="flex gap-2">
                                 <button type="button" onClick={() => setCriarAberto(false)}
@@ -228,10 +228,10 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
                                         <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
                                             <p className="text-[13px] font-bold uppercase tracking-wide text-emerald-600">Entregar Cesta</p>
                                             <input value={destinatario} onChange={e => setDestinatario(e.target.value)}
-                                                placeholder="Nome da familia / destinatario *"
+                                                placeholder="Nome da família / destinatario *"
                                                 className="w-full bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs font-bold text-fg focus:border-emerald-500 outline-none" />
                                             <input value={obsEntrega} onChange={e => setObsEntrega(e.target.value)}
-                                                placeholder="Observacao (opcional)"
+                                                placeholder="Observação (opcional)"
                                                 className="w-full bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs font-bold text-fg focus:border-emerald-500 outline-none" />
                                             <div className="flex gap-2">
                                                 <button onClick={() => setMontarId(null)}
@@ -256,7 +256,7 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
                     <summary className="flex items-center justify-between p-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden select-none">
                         <div className="flex items-center gap-2">
                             <History size={14} className="text-figueira" />
-                            <span className="text-[14px] font-bold uppercase tracking-wide text-fg">Ultimas Entregas</span>
+                            <span className="text-[14px] font-bold uppercase tracking-wide text-fg">Últimas Entregas</span>
                             <span className="text-[13px] font-bold text-muted bg-soft px-2 py-0.5 rounded-lg">{entregas.length}</span>
                         </div>
                         <ChevronDown size={14} className="text-muted" />

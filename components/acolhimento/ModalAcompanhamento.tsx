@@ -106,9 +106,9 @@ export default function ModalAcompanhamento({ visitante }: { visitante: Visitant
                                         className="w-full bg-bg border border-soft rounded-2xl p-4 text-xs font-bold text-fg outline-none focus:border-figueira"
                                     >
                                         <option value="EM_CONTACTO">Em Acompanhamento</option>
-                                        <option value="REUNIAO_PASTOR">Reuniao com Pastor</option>
+                                        <option value="REUNIAO_PASTOR">Reunião com Pastor</option>
                                         <option value="CONSOLIDADO">Consolidado (Novo Membro)</option>
-                                        <option value="NAO_RETORNOU">Nao Retornou</option>
+                                        <option value="NAO_RETORNOU">Não Retornou</option>
                                         <option value="OUTRA_IGREJA">Foi para Outra Igreja</option>
                                         <option value="DESISTIU">Desistiu</option>
                                     </select>

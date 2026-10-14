@@ -33,7 +33,7 @@ export default async function AgendarPage() {
     })
 
     return (
-        <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6 animate-in fade-in duration-700 pb-20">
+        <div className="app-novo mx-auto max-w-2xl space-y-5 px-4 pb-28 pt-20 md:pb-10 md:pt-8" style={{ background: 'transparent' }}>
             <AgendarClient agendas={agendas} membro={membro} />
         </div>
     )

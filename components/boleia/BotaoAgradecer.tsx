@@ -27,15 +27,13 @@ export default function BotaoAgradecer({ reservaId, jaAgradeceu }: BotaoAgradece
         <button
             onClick={handleClick}
             disabled={agradecido || isPending}
-            className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 ${
-                agradecido
-                    ? 'text-red-500 cursor-default'
-                    : 'text-muted hover:text-red-500'
-            }`}
+            type="button"
+            className="a-botao a-botao-secundario w-full"
+            style={agradecido ? { color: 'var(--a-destaque)' } : undefined}
             title={agradecido ? 'Agradecido!' : 'Agradecer ao motorista'}
         >
-            <Heart size={14} fill={agradecido ? 'currentColor' : 'none'} />
-            {agradecido ? 'Obrigado!' : 'Agradecer'}
+            <Heart size={20} aria-hidden fill={agradecido ? 'currentColor' : 'none'} />
+            {agradecido ? 'Agradeceu' : 'Agradecer ao motorista'}
         </button>
     )
 }

@@ -47,7 +47,7 @@ export default function QrCodeModal({ membroId, qrCode: initial, membroNome }: P
                 >
                     <div className="text-center space-y-6" onClick={e => e.stopPropagation()}>
                         <div className="space-y-1">
-                            <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">Cartao Cantina</p>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-figueira">Cartão Cantina</p>
                             <h2 className="text-xl font-bold text-fg">{membroNome}</h2>
                         </div>
 
@@ -64,7 +64,7 @@ export default function QrCodeModal({ membroId, qrCode: initial, membroNome }: P
                                 <div className="bg-soft rounded-3xl p-10 mx-auto w-fit">
                                     <QrCode size={60} className="text-muted" />
                                 </div>
-                                <p className="text-[14px] text-muted">Ainda nao tem cartao. Gere um para identificacao rapida.</p>
+                                <p className="text-[14px] text-muted">Ainda não tem cartão. Gere um para identificacao rápida.</p>
                                 <button onClick={gerar} disabled={loading}
                                     className="inline-flex items-center gap-2 bg-figueira text-white px-5 py-3 rounded-xl text-[13px] font-bold uppercase tracking-wide disabled:opacity-50">
                                     {loading ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}

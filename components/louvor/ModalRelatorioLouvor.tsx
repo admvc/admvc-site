@@ -71,8 +71,8 @@ export default function ModalRelatorioLouvor() {
                             <Music size={18} />
                         </div>
                         <div>
-                            <h2 className="text-sm font-bold text-fg leading-none">Relatorio Louvor</h2>
-                            <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-0.5">Musicas, equipa e tons</p>
+                            <h2 className="text-sm font-bold text-fg leading-none">Relatório Louvor</h2>
+                            <p className="text-[13px] font-bold text-muted uppercase tracking-wide mt-0.5">Músicas, equipa e tons</p>
                         </div>
                     </div>
                     <button onClick={() => setAberto(false)} className="w-8 h-8 flex items-center justify-center bg-bg border border-soft text-muted hover:bg-soft rounded-xl transition-all shrink-0">
@@ -168,7 +168,7 @@ export default function ModalRelatorioLouvor() {
                     ) : (
                         <div className="text-center py-12">
                             <Music size={28} className="mx-auto text-muted/30 mb-3" />
-                            <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Nenhum repertorio neste periodo.</p>
+                            <p className="text-[14px] font-bold text-muted uppercase tracking-wide">Nenhum repertorio neste período.</p>
                         </div>
                     )}
                 </div>
@@ -180,7 +180,7 @@ export default function ModalRelatorioLouvor() {
         <>
             <button onClick={() => setAberto(true)}
                 className="text-[14px] font-bold uppercase tracking-wide text-fg hover:bg-soft px-3 py-2.5 rounded-lg transition-all flex items-center gap-3 w-full text-left">
-                <MicVocal size={13} className="text-figueira" /> Relatorio Louvor
+                <MicVocal size={13} className="text-figueira" /> Relatório Louvor
             </button>
             {mounted && aberto && createPortal(modal, document.body)}
         </>

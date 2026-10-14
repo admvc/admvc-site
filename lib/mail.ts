@@ -113,17 +113,17 @@ export async function enviarEmailBoasVindas(nome: string, email: string, linkDef
               Bem-vindo(a)!
             </h1>
             <p style="color: #d4edda; margin: 10px 0 0 0; font-size: 14px;">
-              Igreja Assembleia de Deus Ministerio Vida Crista
+              Igreja Assembleia de Deus Ministério Vida Crista
             </p>
           </div>
 
           <div style="padding: 30px; color: #1a202c;">
             <p style="font-size: 16px; line-height: 1.8;">
-              Ola <strong>${nome}</strong>,
+              Olá <strong>${nome}</strong>,
             </p>
             <p style="font-size: 16px; line-height: 1.8;">
               O seu acesso ao sistema da igreja foi criado com sucesso.
-              A partir de agora pode acompanhar escalas, eventos, grupos e muito mais pela sua area de membro.
+              A partir de agora pode acompanhar escalas, eventos, grupos e muito mais pela sua área de membro.
             </p>
 
             ${linkDefinirSenha ? `
@@ -135,7 +135,7 @@ export async function enviarEmailBoasVindas(nome: string, email: string, linkDef
 
             <div style="text-align: center; margin: 30px 0;">
               <a href="${linkDashboard}" target="_blank" style="display: inline-block; background-color: #3F6B4F; color: #ffffff; padding: 15px 40px; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">
-                Aceder a minha area
+                Aceder a minha área
               </a>
             </div>
 
@@ -145,7 +145,7 @@ export async function enviarEmailBoasVindas(nome: string, email: string, linkDef
           </div>
 
           <div style="background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 11px; color: #64748b;">
-            <p style="margin: 0;">Este e um email automatico do Sistema ADMVC.</p>
+            <p style="margin: 0;">Este e um email automático do Sistema ADMVC.</p>
             <p style="margin: 5px 0 0 0; font-weight: bold;">"Se muito bem-vindo, fica para sempre!"</p>
           </div>
         </div>

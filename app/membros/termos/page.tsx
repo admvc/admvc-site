@@ -48,7 +48,7 @@ export default async function TermosPage() {
                     Aceite <span className="text-muted">&</span> Compromisso
                 </h1>
                 <p className="text-xs font-bold text-muted max-w-lg mx-auto">
-                    Analise e assine os documentos pendentes para regularizar o seu registo na igreja.
+                    Análise e assine os documentos pendentes para regularizar o seu registo na igreja.
                 </p>
             </header>
 

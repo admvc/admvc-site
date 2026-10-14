@@ -106,7 +106,7 @@ export default function FormFecharTurno({ turnoId, valorInicial, totalDinheiro, 
             {/* Observacao */}
             <div className="space-y-2">
                 <label className="text-[13px] font-bold uppercase tracking-wide text-muted block">
-                    Observacao (opcional)
+                    Observação (opcional)
                 </label>
                 <textarea
                     rows={2}

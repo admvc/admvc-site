@@ -26,7 +26,7 @@ export default function EstruturaSubMenu({ cargos: cargosIniciais, regioesInicia
                 </button>
                 <button onClick={() => setModalRegioes(true)}
                     className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-orange-500/50 transition-all text-[13px] font-bold uppercase tracking-wide text-fg">
-                    <MapPin size={14} className="text-orange-500" /> Regioes
+                    <MapPin size={14} className="text-orange-500" /> Regiões
                 </button>
             </div>
 
@@ -156,7 +156,7 @@ function ModalRegioes({ regioesIniciais, onClose }: { regioesIniciais: string[];
                 <div className="bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl flex-shrink-0">
                     <div className="flex items-center gap-2">
                         <MapPin size={14} className="text-orange-500" />
-                        <h2 className="text-sm font-bold text-fg">Regioes</h2>
+                        <h2 className="text-sm font-bold text-fg">Regiões</h2>
                         <span className="text-[13px] bg-soft/50 px-1.5 py-0.5 rounded text-muted font-bold">{regioes.length}</span>
                     </div>
                     <button onClick={onClose} className="text-muted hover:text-fg transition-colors"><X size={18} /></button>
@@ -166,7 +166,7 @@ function ModalRegioes({ regioesIniciais, onClose }: { regioesIniciais: string[];
                 <div className="px-6 pt-4 flex gap-2 flex-shrink-0">
                     <input value={nova} onChange={e => setNova(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), adicionar())}
-                        placeholder="Nova regiao..."
+                        placeholder="Nova região..."
                         className="flex-1 bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-orange-500 transition-colors" />
                     <button onClick={adicionar} disabled={!nova.trim()}
                         className="px-4 py-2.5 bg-orange-500 text-white rounded-xl text-[13px] font-bold uppercase tracking-wide disabled:opacity-30 hover:bg-orange-600 transition-all">
@@ -188,7 +188,7 @@ function ModalRegioes({ regioesIniciais, onClose }: { regioesIniciais: string[];
                         ))}
                     </div>
                     {regioes.length === 0 && (
-                        <p className="text-center text-[14px] text-muted font-bold uppercase tracking-wide py-8">Nenhuma regiao definida.</p>
+                        <p className="text-center text-[14px] text-muted font-bold uppercase tracking-wide py-8">Nenhuma região definida.</p>
                     )}
                 </div>
 

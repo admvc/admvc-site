@@ -48,7 +48,7 @@ export default async function EditarMeuPerfilPage({
     if (!membro) redirect('/membros/dashboard')
 
     return (
-        <div className="bg-bg min-h-screen pt-10">
+        <div className="app-novo min-h-screen">
             <MeuPerfilClient
                 membro={membro}
                 escolaridades={escolaridades}

@@ -49,7 +49,7 @@ export default async function GestaoCantinaPage() {
         { href: '/cantina/turnos', label: 'Turnos', desc: 'Abrir e fechar caixa', icon: Clock, cor: 'text-purple-500' },
         { href: '/cantina/encomendas', label: 'Encomendas', desc: `${encomendaHoje} para hoje`, icon: ShoppingCart, cor: 'text-emerald-500' },
         { href: '/cantina/fiados', label: 'Fiados', desc: 'Dividas pendentes', icon: HandCoins, cor: 'text-red-400' },
-        { href: '/cantina/menu-local', label: 'Menu Publico', desc: 'Ver como o membro ve', icon: Coffee, cor: 'text-amber-500' },
+        { href: '/cantina/menu-local', label: 'Menu Público', desc: 'Ver como o membro ve', icon: Coffee, cor: 'text-amber-500' },
     ]
 
     return (
@@ -58,7 +58,7 @@ export default async function GestaoCantinaPage() {
             {/* HEADER */}
             <header className="space-y-4">
                 <span className="text-figueira font-bold text-[14px] md:text-xs uppercase tracking-wide flex items-center gap-2">
-                    <Store size={14} /> Gestao Cantina
+                    <Store size={14} /> Gestão Cantina
                 </span>
                 <h1 className="text-4xl md:text-5xl font-bold text-fg leading-none">
                     Cantina <span className="text-muted/20">ADMVC.</span>

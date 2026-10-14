@@ -78,7 +78,7 @@ export default function FormBilling({ igreja, onClose }: Props) {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-1">Inicio do Plano</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 ml-1">Início do Plano</label>
                             <input
                                 type="date"
                                 value={planoInicio}

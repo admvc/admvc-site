@@ -373,7 +373,7 @@ export async function uploadFotoDepartamento(departamentoId: number, formData: F
 
         const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp']
         if (!tiposPermitidos.includes(file.type)) {
-            return { ok: false, error: 'Tipo nao permitido. Use JPG, PNG ou WEBP.' }
+            return { ok: false, error: 'Tipo não permitido. Use JPG, PNG ou WEBP.' }
         }
         if (file.size > 5 * 1024 * 1024) {
             return { ok: false, error: 'Ficheiro demasiado grande (max 5MB).' }
@@ -1310,7 +1310,7 @@ export async function criarNovoMembroAction(formData: FormData) {
 
     if (!email || !password) {
         console.error('[CRIAR MEMBRO] ERRO: Email ou password em falta')
-        return { error: 'Email e password sao obrigatorios.' }
+        return { error: 'Email e password são obrigatórios.' }
     }
     const motivoSenha = validarSenhaNova(password, email)
     if (motivoSenha) return { error: motivoSenha }
@@ -1320,7 +1320,7 @@ export async function criarNovoMembroAction(formData: FormData) {
     const existe = await prismaGlobal.membro.findUnique({ where: { email } })
     if (existe) {
         console.warn(`[CRIAR MEMBRO] BLOQUEADO: Email ja existe (id=${existe.id})`)
-        return { error: 'Este e-mail ja esta registado em outro membro.' }
+        return { error: 'Este e-mail já esta registado em outro membro.' }
     }
 
     console.log('[CRIAR MEMBRO] Email disponivel, a continuar...')
@@ -1450,9 +1450,9 @@ export async function criarNovoMembroAction(formData: FormData) {
         console.log('========================================\n')
 
         if (error.code === 'P2002') {
-            return { error: 'Conflito: E-mail ou ID Loyverse ja existem.' }
+            return { error: 'Conflito: E-mail ou ID Loyverse já existem.' }
         }
-        return { error: 'Nao foi possivel gravar o membro na base de dados.' }
+        return { error: 'Não foi possível gravar o membro na base de dados.' }
     }
 }
 
@@ -1485,7 +1485,7 @@ export async function atualizarMembroAdmin(membroId: number, formData: FormData)
             }
         })
 
-        if (!membroAntes) return { ok: false, error: 'Membro nao encontrado.' }
+        if (!membroAntes) return { ok: false, error: 'Membro não encontrado.' }
 
         // Upload de foto se existir
         let avatarUrl: string | undefined = undefined
@@ -1662,7 +1662,7 @@ export async function apagarMembroAction(membroId: number) {
             }
         })
 
-        if (!membro) return { ok: false, error: 'Membro nao encontrado.' }
+        if (!membro) return { ok: false, error: 'Membro não encontrado.' }
 
         // Regista ANTES de apagar (pode nao ser possivel depois)
         await audit({
@@ -1689,7 +1689,7 @@ export async function apagarMembroAction(membroId: number) {
 
     } catch (error: any) {
         console.error('[APAGAR MEMBRO] Erro:', error.message)
-        return { ok: false, error: 'Nao foi possivel remover o membro.' }
+        return { ok: false, error: 'Não foi possível remover o membro.' }
     }
 }
 
@@ -1871,7 +1871,7 @@ export async function salvarRegioesAction(regioes: string[]) {
     try {
         await requireRole(['ADMIN'])
         const tenantId = await getTenantIdFromHeaders()
-        if (!tenantId) return { ok: false, error: 'Tenant nao identificado.' }
+        if (!tenantId) return { ok: false, error: 'Tenant não identificado.' }
 
         await prismaGlobal.tenant.update({
             where: { id: tenantId },
@@ -1882,7 +1882,7 @@ export async function salvarRegioesAction(regioes: string[]) {
         invalidateTenant(tenantId).catch(() => {})
         return { ok: true }
     } catch (error: any) {
-        return { ok: false, error: 'Erro ao guardar regioes.' }
+        return { ok: false, error: 'Erro ao guardar regiões.' }
     }
 }
 
@@ -1914,7 +1914,7 @@ export async function aprovarInteresseDepartamento(interesseId: number) {
             where: { id: interesseId },
             include: { membro: { select: { id: true, first_name: true, last_name: true } }, departamento: { select: { id: true, nome: true } } }
         })
-        if (!interesse) return { ok: false, error: 'Interesse nao encontrado.' }
+        if (!interesse) return { ok: false, error: 'Interesse não encontrado.' }
 
         // Aprovar o interesse
         await db.interesseDepartamento.update({
@@ -1990,7 +1990,7 @@ export async function criarCursoPermanecer() {
         const existente = await db.cursoEBD.findFirst({
             where: { categoria: 'DISCIPULADO', titulo: { contains: 'Permanecer' } }
         })
-        if (existente) return { ok: false, error: 'Curso Permanecer ja existe.', cursoId: existente.id }
+        if (existente) return { ok: false, error: 'Curso Permanecer já existe.', cursoId: existente.id }
 
         const agora = new Date()
         const fimAno = new Date(agora.getFullYear(), 11, 31)
@@ -1999,7 +1999,7 @@ export async function criarCursoPermanecer() {
         const curso = await db.cursoEBD.create({
             data: {
                 titulo: 'Permanecer — Integracao a Membresia',
-                descricao: 'Processo essencial para integrar novos membros, promovendo compreensao e alinhamento com a visao, missao e valores da igreja.',
+                descricao: 'Processo essencial para integrar novos membros, promovendo compreensao e alinhamento com a visão, missao e valores da igreja.',
                 categoria: 'DISCIPULADO',
                 ano: agora.getFullYear(),
                 data_inicio: agora,
@@ -2027,7 +2027,7 @@ export async function criarCursoPermanecer() {
             data: {
                 titulo: 'Questionario Permanecer',
                 tipo: 'PROVA',
-                descricao: 'Questionario sobre a visao, missao, valores e regra de fe da igreja. Nota minima: 7.0',
+                descricao: 'Questionario sobre a visão, missao, valores e regra de fe da igreja. Nota minima: 7.0',
                 nota_maxima: 10,
                 peso: 1.0,
                 turma_id: turma.id,
@@ -2035,7 +2035,7 @@ export async function criarCursoPermanecer() {
                 perguntas: [
                     {
                         id: 1,
-                        texto: 'Qual e o versiculo base do processo Permanecer?',
+                        texto: 'Qual e o versículo base do processo Permanecer?',
                         tipo: 'MULTIPLA',
                         opcoes: ['Mateus 28:19-20', 'Joao 17:21', 'Salmo 2:8', 'Efesios 4:3-6'],
                         correta: 'Joao 17:21'
@@ -2068,7 +2068,7 @@ export async function criarCursoPermanecer() {
                     },
                     {
                         id: 5,
-                        texto: 'Quais sao os valores da igreja?',
+                        texto: 'Quais são os valores da igreja?',
                         tipo: 'MULTIPLA',
                         opcoes: [
                             'Amor, Fe, Servico, Unidade e Santidade',
@@ -2086,7 +2086,7 @@ export async function criarCursoPermanecer() {
                     },
                     {
                         id: 7,
-                        texto: 'O batismo no Espirito Santo e a mesma experiencia que o batismo nas aguas.',
+                        texto: 'O batismo no Espirito Santo e a mesma experiência que o batismo nas aguas.',
                         tipo: 'VERDADEIRO_FALSO',
                         correta: 'Falso'
                     },
@@ -2143,7 +2143,7 @@ export async function rejeitarInteresseDepartamento(interesseId: number) {
             where: { id: interesseId },
             include: { membro: { select: { first_name: true, last_name: true } }, departamento: { select: { nome: true } } }
         })
-        if (!interesse) return { ok: false, error: 'Interesse nao encontrado.' }
+        if (!interesse) return { ok: false, error: 'Interesse não encontrado.' }
 
         await db.interesseDepartamento.update({
             where: { id: interesseId },

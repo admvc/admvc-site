@@ -27,9 +27,9 @@ export default async function ImpersonarPage() {
             <div className="bg-orange-500/10 border border-orange-500/30 rounded-2xl p-5 flex items-start gap-4">
                 <AlertTriangle size={24} className="text-orange-500 shrink-0 mt-0.5" />
                 <div>
-                    <p className="text-sm font-bold text-orange-400">Atencao: Todas as acoes serao registadas no log</p>
+                    <p className="text-sm font-bold text-orange-400">Atenção: Todas as ações serao registadas no log</p>
                     <p className="text-xs text-orange-400/70 mt-1">
-                        A impersonacao cria uma sessao de 2 horas. Todas as atividades ficam registadas no historico de auditoria.
+                        A impersonacao cria uma sessão de 2 horas. Todas as atividades ficam registadas no histórico de auditoria.
                     </p>
                 </div>
             </div>

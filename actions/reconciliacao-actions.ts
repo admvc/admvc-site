@@ -13,7 +13,7 @@ export async function criarContaBancaria(formData: FormData) {
     const iban = (formData.get('iban') as string)?.trim() || null
     const banco = (formData.get('banco') as string)?.trim() || null
 
-    if (!nome) return { ok: false, error: 'Nome da conta e obrigatorio.' }
+    if (!nome) return { ok: false, error: 'Nome da conta e obrigatório.' }
 
     try {
         await prisma.contaBancaria.create({
@@ -27,7 +27,7 @@ export async function criarContaBancaria(formData: FormData) {
         revalidatePath('/financeiro/reconciliacao')
         return { ok: true }
     } catch (e: any) {
-        if (e?.code === 'P2002') return { ok: false, error: 'Ja existe uma conta com este nome.' }
+        if (e?.code === 'P2002') return { ok: false, error: 'Já existe uma conta com este nome.' }
         return { ok: false, error: 'Erro ao criar conta bancaria.' }
     }
 }
@@ -124,7 +124,7 @@ export async function reconciliarMovimento(movimentoId: number, referencia: stri
     const prisma = await getDb()
 
     if (!referencia || referencia.trim() === '') {
-        return { ok: false, error: 'Referencia e obrigatoria.' }
+        return { ok: false, error: 'Referência e obrigatória.' }
     }
 
     await prisma.movimentoBancario.update({

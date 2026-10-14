@@ -69,7 +69,7 @@ export default async function AdminGruposPage({ searchParams }: { searchParams: 
             <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-soft">
                 <div className="space-y-2">
                     <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center gap-2">
-                        <Users size={14} /> Gestao de Celulas
+                        <Users size={14} /> Gestão de Células
                     </span>
                     <h1 className="text-4xl md:text-5xl font-bold text-fg leading-none">
                         Pequenos <span className="text-muted/30">Grupos.</span>
@@ -82,7 +82,7 @@ export default async function AdminGruposPage({ searchParams }: { searchParams: 
                     </Link>
                     <Link href="/grupos" target="_blank"
                         className="flex items-center gap-2 bg-bg2 border border-soft text-muted px-4 py-3 rounded-xl font-bold text-[13px] uppercase tracking-wide hover:text-fg hover:border-figueira/30 transition-all">
-                        <Globe size={13} /> Ver Site Publico
+                        <Globe size={13} /> Ver Site Público
                     </Link>
                 </div>
             </header>
@@ -137,7 +137,7 @@ export default async function AdminGruposPage({ searchParams }: { searchParams: 
             {/* GRUPOS POR REGIÃO */}
             <section className="space-y-6">
                 <h2 className="text-sm font-bold text-fg flex items-center gap-3">
-                    <Users size={15} className="text-figueira" /> Grupos por Regiao
+                    <Users size={15} className="text-figueira" /> Grupos por Região
                 </h2>
 
                 {[...REGIOES.map(r => ({ regiao: r, lista: porRegiao[r] || [] })),
@@ -169,7 +169,7 @@ export default async function AdminGruposPage({ searchParams }: { searchParams: 
                                             <p className="text-[14px] font-bold uppercase text-fg leading-none">{grupo.nome}</p>
                                             {grupo.publico && (
                                                 <span className="text-[13px] font-bold uppercase tracking-wide bg-blue-500/10 text-blue-600 border border-blue-500/20 px-1.5 py-0.5 rounded">
-                                                    Publico
+                                                    Público
                                                 </span>
                                             )}
                                             {grupo.categoria && (

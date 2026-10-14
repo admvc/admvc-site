@@ -29,12 +29,12 @@ export default function FormEnviarAviso({ igrejas }: { igrejas: { id: number; no
 
             <form action={handleSubmit} className="space-y-4">
                 <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Titulo</label>
+                    <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Título</label>
                     <input
                         name="titulo"
                         required
                         className="w-full bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-600 transition"
-                        placeholder="Titulo do aviso"
+                        placeholder="Título do aviso"
                     />
                 </div>
 
@@ -45,7 +45,7 @@ export default function FormEnviarAviso({ igrejas }: { igrejas: { id: number; no
                         required
                         rows={4}
                         className="w-full bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-600 transition resize-none"
-                        placeholder="Conteudo da mensagem..."
+                        placeholder="Conteúdo da mensagem..."
                     />
                 </div>
 
@@ -71,7 +71,7 @@ export default function FormEnviarAviso({ igrejas }: { igrejas: { id: number; no
                             className="w-full bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-600 transition"
                         >
                             <option value="todas">Todas as Igrejas</option>
-                            <option value="especifica">Igreja Especifica</option>
+                            <option value="especifica">Igreja Específica</option>
                         </select>
                     </div>
                 </div>

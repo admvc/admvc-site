@@ -226,7 +226,7 @@ export default function VisualizarMembroClient({ membro }: any) {
                         <InfoGroup label="Tem Filhos?" value={membro.has_children ? 'Sim' : membro.has_children === false ? 'Não' : '---'} />
                         <InfoGroup label="Nº de Filhos" value={membro.children_number?.toString() || '0'} />
 
-                        <InfoGroup label="Parentesco na Familia" value={membro.parentesco} />
+                        <InfoGroup label="Parentesco na Família" value={membro.parentesco} />
 
                         <div className="md:col-span-2 lg:col-span-3 pt-6 border-t border-soft grid md:grid-cols-2 gap-10">
                             <InfoGroup label="NIF / Identificação Fiscal" value={membro.tax_id} />

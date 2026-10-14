@@ -62,7 +62,7 @@ export default function FormDonativo({ tenantSlug, fundos }: { tenantSlug: strin
                 <p className="text-gray-600 mb-6">Obrigado pela sua generosidade.</p>
 
                 <div className="bg-gray-50 rounded-xl p-6 max-w-sm mx-auto mb-8">
-                    <p className="text-xs font-semibold text-gray-500 mb-2">Referencia</p>
+                    <p className="text-xs font-semibold text-gray-500 mb-2">Referência</p>
                     <p className="text-lg font-mono font-bold text-gray-900 break-all">{referencia}</p>
                 </div>
 
@@ -70,8 +70,8 @@ export default function FormDonativo({ tenantSlug, fundos }: { tenantSlug: strin
                     <div className="bg-blue-50 rounded-xl p-6 max-w-sm mx-auto mb-8 text-left">
                         <p className="text-sm font-semibold text-blue-900 mb-2">Instrucoes de pagamento:</p>
                         <p className="text-sm text-blue-800">
-                            Faca a transferencia bancaria e indique a referencia <strong>{referencia}</strong> no descritivo.
-                            O donativo sera confirmado apos verificacao.
+                            Faca a transferência bancaria e indique a referência <strong>{referencia}</strong> no descritivo.
+                            O donativo sera confirmado após verificacao.
                         </p>
                     </div>
                 )}
@@ -81,7 +81,7 @@ export default function FormDonativo({ tenantSlug, fundos }: { tenantSlug: strin
                         <p className="text-sm font-semibold text-blue-900 mb-2">Pagamento MBWay:</p>
                         <p className="text-sm text-blue-800">
                             Sera contactado para confirmar o pagamento via MBWay.
-                            Use a referencia <strong>{referencia}</strong> para identificacao.
+                            Use a referência <strong>{referencia}</strong> para identificacao.
                         </p>
                     </div>
                 )}
@@ -211,7 +211,7 @@ export default function FormDonativo({ tenantSlug, fundos }: { tenantSlug: strin
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                     >
-                        Transferencia
+                        Transferência
                     </button>
                 </div>
             </div>

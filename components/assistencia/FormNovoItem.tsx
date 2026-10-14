@@ -94,7 +94,7 @@ export default function FormNovoItem() {
                 {/* Stock Minimo */}
                 <div className="space-y-1.5">
                     <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
-                        Stock Minimo (Alerta)
+                        Stock Mínimo (Alerta)
                     </label>
                     <input
                         type="number"

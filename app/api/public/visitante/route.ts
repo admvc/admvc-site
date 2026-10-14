@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
         if (!nome || !telefone) {
             return NextResponse.json(
-                { error: 'Nome e telefone sao obrigatorios.' },
+                { error: 'Nome e telefone são obrigatórios.' },
                 { status: 400 }
             )
         }
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
         const telefoneLimpo = telefone.replace(/[\s\-()\.+]/g, '')
         if (!/^\d{9,15}$/.test(telefoneLimpo)) {
             return NextResponse.json(
-                { error: 'Formato de telefone invalido.' },
+                { error: 'Formato de telefone inválido.' },
                 { status: 400 }
             )
         }
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
 
         if (!tenant) {
             return NextResponse.json(
-                { error: 'Configuracao nao encontrada.' },
+                { error: 'Configuração não encontrada.' },
                 { status: 500 }
             )
         }

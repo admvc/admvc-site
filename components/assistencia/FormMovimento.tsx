@@ -72,8 +72,8 @@ export default function FormMovimento({ itens }: { itens: Item[] }) {
                         className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none"
                     >
                         <option value="">Selecionar...</option>
-                        <option value="DOACAO_RECEBIDA">Doacao Recebida</option>
-                        <option value="ENTREGA_FAMILIA">Entrega a Familia</option>
+                        <option value="DOACAO_RECEBIDA">Doação Recebida</option>
+                        <option value="ENTREGA_FAMILIA">Entrega a Família</option>
                         <option value="ENTREGA_ENTIDADE">Entrega a Entidade</option>
                         <option value="REPASSE_CANTINA">Repasse para Cantina</option>
                     </select>
@@ -112,7 +112,7 @@ export default function FormMovimento({ itens }: { itens: Item[] }) {
                 {/* Observacao */}
                 <div className="space-y-1.5 sm:col-span-2">
                     <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
-                        Observacao
+                        Observação
                     </label>
                     <input
                         type="text"

@@ -39,10 +39,11 @@ export default function BotaoReservar({ ofertaId }: { ofertaId: number }) {
         <button
             onClick={handleReservar}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-figueira text-white py-3 rounded-xl font-bold text-[13px] uppercase tracking-wide hover:bg-figueira/90 transition-all active:scale-95 disabled:opacity-50"
+            type="button"
+            className="a-botao a-botao-principal w-full"
         >
-            {loading ? <Loader2 size={12} className="animate-spin" /> : null}
-            {loading ? 'A reservar...' : 'Reservar Lugar'}
+            {loading ? <Loader2 size={20} className="animate-spin" aria-hidden /> : null}
+            {loading ? 'A reservar…' : 'Quero um lugar'}
         </button>
     )
 }

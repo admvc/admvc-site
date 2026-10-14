@@ -21,10 +21,10 @@ export async function submeterDespesaCantina(formData: FormData) {
     const fornecedor = (formData.get('fornecedor') as string)?.trim() || null
     const observacao = (formData.get('observacao') as string)?.trim() || null
 
-    if (!descricao) return { error: 'Descricao e obrigatoria.' }
-    if (!valor || isNaN(valor) || valor <= 0) return { error: 'Valor invalido.' }
-    if (!data) return { error: 'Data e obrigatoria.' }
-    if (!categoria) return { error: 'Categoria e obrigatoria.' }
+    if (!descricao) return { error: 'Descrição e obrigatória.' }
+    if (!valor || isNaN(valor) || valor <= 0) return { error: 'Valor inválido.' }
+    if (!data) return { error: 'Data e obrigatória.' }
+    if (!categoria) return { error: 'Categoria e obrigatória.' }
 
     try {
         await (db as any).despesaCantina.create({
@@ -105,7 +105,7 @@ export async function pagarDespesaCantina(despesaId: number) {
         const despesa = await (db as any).despesaCantina.findUnique({
             where: { id: despesaId },
         })
-        if (!despesa) return { error: 'Despesa nao encontrada.' }
+        if (!despesa) return { error: 'Despesa não encontrada.' }
         if (despesa.status !== 'APROVADA') return { error: 'Apenas despesas aprovadas podem ser pagas.' }
 
         await (db as any).despesaCantina.update({

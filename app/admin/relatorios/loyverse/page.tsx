@@ -18,8 +18,8 @@ export default async function DiagnosticoLoyversePage() {
             <main className="max-w-7xl mx-auto py-10 px-6 space-y-10 animate-in fade-in duration-700">
                 <div className="bg-orange-50 border border-orange-200 p-8 rounded-3xl text-center space-y-2">
                     <AlertTriangle className="mx-auto text-orange-500" size={32} />
-                    <h2 className="text-lg font-bold text-orange-700">Loyverse nao configurado</h2>
-                    <p className="text-sm text-orange-600">Configure o token Loyverse nas definicoes do tenant para utilizar esta funcionalidade.</p>
+                    <h2 className="text-lg font-bold text-orange-700">Loyverse não configurado</h2>
+                    <p className="text-sm text-orange-600">Configure o token Loyverse nas definições do tenant para utilizar esta funcionalidade.</p>
                 </div>
             </main>
         );

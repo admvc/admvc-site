@@ -133,7 +133,7 @@ export default function FormEncomendar({ eventoId, eventoNome, eventoData, produ
             <div className="bg-bg2 border border-soft rounded-2xl p-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Wallet2 size={16} className="text-figueira" />
-                    <span className="text-[14px] font-bold uppercase tracking-wide text-muted">Saldo Disponivel</span>
+                    <span className="text-[14px] font-bold uppercase tracking-wide text-muted">Saldo Disponível</span>
                 </div>
                 <span className="text-lg font-bold text-figueira">{saldo.toFixed(2)}€</span>
             </div>
@@ -225,7 +225,7 @@ export default function FormEncomendar({ eventoId, eventoNome, eventoData, produ
                             <span className="text-xl font-bold text-figueira">{total.toFixed(2)}€</span>
                         </div>
                         <div className="flex justify-between items-center">
-                            <span className="text-[14px] font-bold uppercase tracking-wide text-muted">Saldo apos encomenda</span>
+                            <span className="text-[14px] font-bold uppercase tracking-wide text-muted">Saldo após encomenda</span>
                             <span className={`text-sm font-bold ${saldoRestante >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                                 {saldoRestante.toFixed(2)}€
                             </span>
@@ -256,7 +256,7 @@ export default function FormEncomendar({ eventoId, eventoNome, eventoData, produ
             {produtos.length === 0 && (
                 <div className="py-20 text-center">
                     <ShoppingCart size={32} className="mx-auto text-muted/20 mb-4" />
-                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum produto disponivel de momento</p>
+                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted">Nenhum produto disponível de momento</p>
                 </div>
             )}
         </div>

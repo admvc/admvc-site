@@ -32,7 +32,7 @@ export async function criarCategoria(formData: FormData) {
     const tenantId = await getTenantIdFromHeaders()
 
     const nome = (formData.get('nome') as string)?.trim()
-    if (!nome) return { error: 'Nome da categoria e obrigatorio.' }
+    if (!nome) return { error: 'Nome da categoria e obrigatório.' }
 
     try {
         await (db as any).categoriaCantina.create({
@@ -41,7 +41,7 @@ export async function criarCategoria(formData: FormData) {
         revalidatePath('/cantina')
         return { success: true }
     } catch (error: any) {
-        if (error?.code === 'P2002') return { error: 'Ja existe uma categoria com este nome.' }
+        if (error?.code === 'P2002') return { error: 'Já existe uma categoria com este nome.' }
         return { error: 'Erro ao criar categoria.' }
     }
 }
@@ -55,7 +55,7 @@ export async function eliminarCategoria(categoriaId: number) {
         revalidatePath('/cantina')
         return { success: true }
     } catch {
-        return { error: 'Erro ao eliminar categoria. Verifique se nao tem produtos associados.' }
+        return { error: 'Erro ao eliminar categoria. Verifique se não tem produtos associados.' }
     }
 }
 
@@ -80,8 +80,8 @@ export async function criarProduto(formData: FormData) {
     const promocoesRaw = formData.get('promocoes') as string | null
     const promocoes = promocoesRaw ? JSON.parse(promocoesRaw) : null
 
-    if (!nome) return { error: 'Nome do produto e obrigatorio.' }
-    if (preco < 0) return { error: 'Preco nao pode ser negativo.' }
+    if (!nome) return { error: 'Nome do produto e obrigatório.' }
+    if (preco < 0) return { error: 'Preco não pode ser negativo.' }
 
     try {
         await (db as any).produtoCantina.create({
@@ -123,7 +123,7 @@ export async function atualizarProduto(produtoId: number, formData: FormData) {
     const promocoesRaw = formData.get('promocoes') as string | null
     const promocoes = promocoesRaw ? JSON.parse(promocoesRaw) : null
 
-    if (!nome) return { error: 'Nome do produto e obrigatorio.' }
+    if (!nome) return { error: 'Nome do produto e obrigatório.' }
 
     try {
         await db.produtoCantina.update({
@@ -145,7 +145,7 @@ export async function eliminarProduto(produtoId: number) {
         revalidatePath('/cantina')
         return { success: true }
     } catch {
-        return { error: 'Erro ao eliminar produto. Pode ter transacoes associadas.' }
+        return { error: 'Erro ao eliminar produto. Pode ter transações associadas.' }
     }
 }
 
@@ -155,7 +155,7 @@ export async function toggleDisponibilidadeProduto(produtoId: number) {
 
     try {
         const produto = await db.produtoCantina.findUnique({ where: { id: produtoId } })
-        if (!produto) return { error: 'Produto nao encontrado.' }
+        if (!produto) return { error: 'Produto não encontrado.' }
 
         await db.produtoCantina.update({
             where: { id: produtoId },
@@ -279,7 +279,7 @@ export async function registarVenda(
         })
 
         if (produtos.length !== produtoIds.length) {
-            return { error: 'Um ou mais produtos nao estao disponiveis.' }
+            return { error: 'Um ou mais produtos não estao disponíveis.' }
         }
 
         let total = 0
@@ -424,7 +424,7 @@ export async function estornarTransacao(transacaoId: number) {
         })
 
         if (!transacao || transacao.tipo !== 'CONSUMO') {
-            return { error: 'Transacao nao encontrada ou nao e estornavel.' }
+            return { error: 'Transação não encontrada ou não e estornavel.' }
         }
 
         const valorEstorno = Math.abs(transacao.valor)
@@ -462,7 +462,7 @@ export async function estornarTransacao(transacaoId: number) {
         return { success: true }
     } catch (error) {
         console.error('Erro ao estornar:', error)
-        return { error: 'Erro ao estornar transacao.' }
+        return { error: 'Erro ao estornar transação.' }
     }
 }
 
@@ -631,7 +631,7 @@ export async function definirLimiteCantina(
         })
 
         if (!membroLogado?.familia_id || membroLogado.familia_id !== membroAlvo?.familia_id) {
-            return { error: 'So pode definir limites para membros da sua familia.' }
+            return { error: 'Só pode definir limites para membros da sua família.' }
         }
     }
 
@@ -750,7 +750,7 @@ export async function aprovarRecarga(pedidoId: number) {
     }
 
     const pedido = await db.pedidoSaldoCantina.findUnique({ where: { id: pedidoId } })
-    if (!pedido || pedido.status !== 'PENDENTE') return { error: 'Pedido nao encontrado ou ja processado.' }
+    if (!pedido || pedido.status !== 'PENDENTE') return { error: 'Pedido não encontrado ou já processado.' }
 
     // Credit saldo
     const result = await recarregarSaldo(pedido.membro_id, pedido.valor, `Recarga aprovada (${pedido.forma_pagamento})`)

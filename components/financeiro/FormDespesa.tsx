@@ -37,7 +37,7 @@ export default function FormDespesa({ fundos, categorias }: Props) {
                 </div>
                 <div>
                     <h3 className="text-sm font-bold text-fg leading-none">Nova Despesa</h3>
-                    <p className="text-[13px] text-muted mt-1">Submete uma despesa para aprovacao.</p>
+                    <p className="text-[13px] text-muted mt-1">Submete uma despesa para aprovação.</p>
                 </div>
             </div>
 
@@ -73,7 +73,7 @@ export default function FormDespesa({ fundos, categorias }: Props) {
             </div>
 
             <div className="space-y-1.5">
-                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Descricao</label>
+                <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Descrição</label>
                 <input
                     type="text"
                     name="descricao"

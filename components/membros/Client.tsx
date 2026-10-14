@@ -217,13 +217,13 @@ export default function EditarMembroClient({
                                             Familia {familiaActual.surname}
                                         </h3>
                                         <p className="text-[13px] text-figueira font-bold uppercase tracking-wide mt-1 bg-figueira/10 px-2 py-0.5 rounded border border-figueira/20 inline-block">
-                                            Vinculado a Familia
+                                            Vinculado a Família
                                         </p>
                                     </>
                                 ) : (
                                     <>
                                         <h3 className="text-xl font-bold text-fg leading-none">
-                                            FAMILIA ADMVC
+                                            FAMÍLIA ADMVC
                                         </h3>
                                         <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-1">
                                             Nenhum vinculo registado
@@ -300,14 +300,14 @@ export default function EditarMembroClient({
                             <Input label="Primeiro Nome" name="first_name" defaultValue={membro.first_name} required />
                             <Input label="Sobrenome" name="last_name" defaultValue={membro.last_name} required />
                             <Input label="E-mail" name="email" type="email" defaultValue={membro.email} required />
-                            <Input label="Telemovel" name="phone_1" defaultValue={membro.phone_1} />
+                            <Input label="Telemóvel" name="phone_1" defaultValue={membro.phone_1} />
                             <Input label="Nascimento" name="birthdate" type="date" defaultValue={formatDate(membro.birthdate)} />
-                            <Select label="Genero" name="gender" defaultValue={membro.gender} options={['Masculino', 'Feminino']} />
+                            <Select label="Género" name="gender" defaultValue={membro.gender} options={['Masculino', 'Feminino']} />
                             <Input label="Profissao" name="profession" defaultValue={membro.profession} />
                             <Input label="Nome do Pai" name="father_name" defaultValue={membro.father_name} />
-                            <Input label="Nome da Mae" name="mother_name" defaultValue={membro.mother_name} />
+                            <Input label="Nome da Mãe" name="mother_name" defaultValue={membro.mother_name} />
                             <div className="space-y-1.5 lg:col-span-3">
-                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">Nivel de Escolaridade</label>
+                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">Nível de Escolaridade</label>
                                 <select name="escolaridade_id" defaultValue={membro?.escolaridade_id || ""}
                                     className="w-full bg-bg border border-soft rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none shadow-sm appearance-none cursor-pointer">
                                     <option value="">Selecione...</option>
@@ -336,19 +336,19 @@ export default function EditarMembroClient({
                     {/* ABA MORADA */}
                     <div className={abaAtiva === 'endereco' ? 'block animate-in fade-in slide-in-from-bottom-4' : 'hidden'}>
                         <h4 className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-8 pb-4 border-b border-soft">
-                            <MapPin size={14} className="text-figueira" /> Endereco Residencial
+                            <MapPin size={14} className="text-figueira" /> Endereço Residencial
                         </h4>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <div className="space-y-2 relative md:col-span-1">
-                                <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Codigo Postal</label>
+                                <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Código Postal</label>
                                 <input name="postal_code" value={endereco.postal_code} onChange={handleCodigoPostalChange} maxLength={8} placeholder="Ex: 4000-123"
                                     className={`w-full bg-bg border ${buscandoCP ? 'border-figueira/50 bg-figueira/5' : 'border-soft'} rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm`} />
                                 {buscandoCP && <Loader2 size={14} className="animate-spin text-figueira absolute right-4 top-[38px]" />}
                             </div>
-                            <Input label="Pais" name="country" value={endereco.country} onChange={(e: any) => setEndereco({ ...endereco, country: e.target.value })} className="md:col-span-1 lg:col-span-2" />
+                            <Input label="País" name="country" value={endereco.country} onChange={(e: any) => setEndereco({ ...endereco, country: e.target.value })} className="md:col-span-1 lg:col-span-2" />
                             <Input label="Morada 1 (Rua/Avenida)" name="address_1" value={endereco.address_1} onChange={(e: any) => setEndereco({ ...endereco, address_1: e.target.value })} className="md:col-span-2 lg:col-span-3" />
                             <Input label="Morada 2 (Complemento)" name="address_2" defaultValue={membro.address_2} />
-                            <Input label="Numero / Lote" name="address_number" defaultValue={membro.address_number} />
+                            <Input label="Número / Lote" name="address_number" defaultValue={membro.address_number} />
                             <Input label="Freguesia / Bairro" name="neighborhood" value={endereco.neighborhood} onChange={(e: any) => setEndereco({ ...endereco, neighborhood: e.target.value })} />
                             <Input label="Cidade / Municipio" name="id_city" value={endereco.city} onChange={(e: any) => setEndereco({ ...endereco, city: e.target.value })} />
                             <Input label="Distrito / Estado" name="state" value={endereco.state} onChange={(e: any) => setEndereco({ ...endereco, state: e.target.value })} />
@@ -364,14 +364,14 @@ export default function EditarMembroClient({
                             <Select label="Estado Civil" name="marital_status" defaultValue={membro.marital_status} options={['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viuvo(a)', 'Uniao de Facto']} />
                             <Input label="Nacionalidade" name="nationality" defaultValue={membro.nationality} />
                             <Input label="NIF / CPF" name="tax_id" defaultValue={membro.tax_id} />
-                            <Input label="Cartao de Cidadao / RG" name="id_card_number" defaultValue={membro.id_card_number} />
+                            <Input label="Cartão de Cidadao / RG" name="id_card_number" defaultValue={membro.id_card_number} />
                             <Input label="Idioma Preferencial" name="lang" defaultValue={membro.lang} />
-                            <Input label="Nome do Conjuge" name="spouse_name" defaultValue={membro.spouse_name} />
-                            <Select label="Conjuge e Cristao?" name="spouse_christian" defaultValue={membro.spouse_christian ? "true" : "false"} options={[{ label: 'Sim', value: 'true' }, { label: 'Nao', value: 'false' }]} />
+                            <Input label="Nome do Cônjuge" name="spouse_name" defaultValue={membro.spouse_name} />
+                            <Select label="Cônjuge e Cristao?" name="spouse_christian" defaultValue={membro.spouse_christian ? "true" : "false"} options={[{ label: 'Sim', value: 'true' }, { label: 'Nao', value: 'false' }]} />
                             <Input label="Data de Casamento" name="wedding_date" type="date" defaultValue={formatDate(membro.wedding_date)} />
                             <Select label="Tem Filhos?" name="has_children" defaultValue={temFilhos} onChange={(e: any) => setTemFilhos(e.target.value)} options={[{ label: 'Sim', value: 'true' }, { label: 'Nao', value: 'false' }]} />
                             {temFilhos === 'true'
-                                ? <Input label="Numero de Filhos" name="children_number" type="number" min="1" defaultValue={membro.children_number || 1} />
+                                ? <Input label="Número de Filhos" name="children_number" type="number" min="1" defaultValue={membro.children_number || 1} />
                                 : <input type="hidden" name="children_number" value="0" />
                             }
                         </div>
@@ -385,13 +385,13 @@ export default function EditarMembroClient({
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {/* Congregação */}
                             <div className="space-y-2">
-                                <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Congregacao</label>
+                                <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Congregação</label>
                                 <select
                                     name="congregacao_id"
                                     defaultValue={membro.congregacao_id || ''}
                                     className="w-full bg-bg border border-soft rounded-3xl px-5 py-4 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm appearance-none"
                                 >
-                                    <option value="">Sem congregacao</option>
+                                    <option value="">Sem congregação</option>
                                     {congregacoes.map((c: any) => (
                                         <option key={c.id} value={c.id}>
                                             {c.nome}{c.cidade ? ` - ${c.cidade}` : ''}
@@ -410,12 +410,12 @@ export default function EditarMembroClient({
                         </div>
                         <div className="mt-10 pt-8 border-t border-soft">
                             <h4 className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-6">
-                                <ArrowLeft size={14} className="text-figueira" /> Historico Previo
+                                <ArrowLeft size={14} className="text-figueira" /> Histórico Previo
                             </h4>
                             <div className="grid md:grid-cols-3 gap-6">
                                 <Input label="Igreja Anterior" name="previous_church" defaultValue={membro.previous_church} />
                                 <Input label="Cargo que exercia" name="church_role" defaultValue={membro.church_role} placeholder="Ex: Membro, Diacono..." />
-                                <Input label="Ministerio de atuacao" name="ministry" defaultValue={membro.ministry} placeholder="Ex: Louvor, Jovens..." />
+                                <Input label="Ministério de atuacao" name="ministry" defaultValue={membro.ministry} placeholder="Ex: Louvor, Jovens..." />
                             </div>
                         </div>
                     </div>
@@ -428,7 +428,7 @@ export default function EditarMembroClient({
                                     <h4 className="text-sm font-bold text-figueira flex items-center gap-2">
                                         <ShieldAlert size={18} /> Controlo de Acessos
                                     </h4>
-                                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted mt-1">Altere permissoes, cargos e integracoes.</p>
+                                    <p className="text-[14px] font-bold uppercase tracking-wide text-muted mt-1">Altere permissões, cargos e integracoes.</p>
                                 </div>
                                 <label className="flex items-center gap-3 cursor-pointer group bg-white/60 px-5 py-3 rounded-xl border border-figueira/20 hover:bg-white transition-all shadow-sm">
                                     <input type="checkbox" name="is_active" defaultChecked={membro.is_active} className="w-5 h-5 accent-figueira cursor-pointer" />
@@ -438,7 +438,7 @@ export default function EditarMembroClient({
                                 </label>
                             </div>
                             <div className="grid md:grid-cols-3 gap-6">
-                                <Select label="Nivel de Permissao (Role)" name="role" defaultValue={membro.role} options={roles.length > 0 ? roles : ['USER', 'ADMIN', 'FINANCE']} />
+                                <Select label="Nível de Permissão (Role)" name="role" defaultValue={membro.role} options={roles.length > 0 ? roles : ['USER', 'ADMIN', 'FINANCE']} />
                                 <Select label="Status de Cadastro" name="status" defaultValue={membro.status} options={[
                                     { label: 'Ativo', value: 'ATIVO' }, { label: 'Inativo', value: 'INATIVO' },
                                     { label: 'Visitante', value: 'VISITANTE' }, { label: 'Pendente', value: 'PENDENTE' },
@@ -460,7 +460,7 @@ export default function EditarMembroClient({
                                         <Home className="text-figueira" size={20} /> Agregado Familiar
                                     </h3>
                                     <p className="text-[13px] font-bold uppercase tracking-wide text-muted mt-1">
-                                        Vincule este membro a uma familia existente.
+                                        Vincule este membro a uma família existente.
                                     </p>
                                 </div>
                                 <button type="button" onClick={() => setModalFamiliaAberto(false)}
@@ -471,10 +471,10 @@ export default function EditarMembroClient({
 
                             <div className="p-6 md:p-8 space-y-6">
                                 <div className="space-y-2">
-                                    <label className="text-[14px] font-bold uppercase tracking-wide text-muted ml-2">Selecione a Familia</label>
+                                    <label className="text-[14px] font-bold uppercase tracking-wide text-muted ml-2">Selecione a Família</label>
                                     <select value={familiaSelecionada} onChange={e => setFamiliaSelecionada(e.target.value)}
                                         className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none shadow-sm appearance-none cursor-pointer">
-                                        <option value="">Nenhuma Familia (Remover Vinculo)</option>
+                                        <option value="">Nenhuma Família (Remover Vinculo)</option>
                                         {familias.map((f: any) => (
                                             <option key={f.id} value={f.id}>Familia {f.surname}</option>
                                         ))}
@@ -483,15 +483,15 @@ export default function EditarMembroClient({
 
                                 {familiaSelecionada && (
                                     <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                                        <label className="text-[14px] font-bold uppercase tracking-wide text-muted ml-2">Papel na Familia (Parentesco)</label>
+                                        <label className="text-[14px] font-bold uppercase tracking-wide text-muted ml-2">Papel na Família (Parentesco)</label>
                                         <select value={parentescoSelecionado} onChange={e => setParentescoSelecionado(e.target.value)}
                                             className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none shadow-sm appearance-none cursor-pointer">
                                             <option value="">Selecione o grau de parentesco...</option>
                                             <option value="Pai">Pai / Marido</option>
-                                            <option value="Mae">Mae / Esposa</option>
+                                            <option value="Mae">Mãe / Esposa</option>
                                             <option value="Filho(a)">Filho(a)</option>
                                             <option value="Avo/Avo">Avo / Avo</option>
-                                            <option value="Irmao/Irma">Irmao / Irma</option>
+                                            <option value="Irmao/Irma">Irmão / Irmã</option>
                                             <option value="Outro">Outro</option>
                                         </select>
                                     </div>

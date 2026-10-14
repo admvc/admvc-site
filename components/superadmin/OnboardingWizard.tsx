@@ -207,7 +207,7 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <input value={nome} onChange={e => setNome(e.target.value)} placeholder="Nome" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-blue-500" />
                         <input value={cidade} onChange={e => setCidade(e.target.value)} placeholder="Cidade" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-blue-500" />
-                        <input value={endereco} onChange={e => setEndereco(e.target.value)} placeholder="Endereco" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-blue-500" />
+                        <input value={endereco} onChange={e => setEndereco(e.target.value)} placeholder="Endereço" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-blue-500" />
                     </div>
                     <div className="flex flex-wrap gap-2">
                         <button onClick={handleAdd} disabled={loading || !nome || !cidade || !endereco} className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 flex items-center gap-2">
@@ -271,13 +271,13 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
                     <p className="text-[10px] font-black uppercase tracking-widest text-purple-400">Adicionar Departamento</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input value={nome} onChange={e => setNome(e.target.value)} placeholder="Nome do Departamento" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-purple-500" />
-                        <input value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Descricao (opcional)" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-purple-500" />
+                        <input value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Descrição (opcional)" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-purple-500" />
                     </div>
                     <div className="flex items-center gap-3">
                         <button type="button" onClick={() => setIsGlobal(!isGlobal)} className="text-gray-400 hover:text-white transition-colors">
                             {isGlobal ? <ToggleRight size={24} className="text-amber-400" /> : <ToggleLeft size={24} />}
                         </button>
-                        <span className="text-xs text-gray-400">Global (visivel em todas as congregacoes)</span>
+                        <span className="text-xs text-gray-400">Global (visível em todas as congregações)</span>
                     </div>
                     <button onClick={handleAdd} disabled={loading || !nome} className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 flex items-center gap-2">
                         {loading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
@@ -313,7 +313,7 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
                     <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4 flex items-center gap-3">
                         <CheckCircle2 size={20} className="text-green-400 shrink-0" />
                         <div>
-                            <p className="text-sm font-bold text-green-300">Admin ja criado</p>
+                            <p className="text-sm font-bold text-green-300">Admin já criado</p>
                             <p className="text-xs text-green-400/70">{admin.first_name} {admin.last_name} ({admin.email})</p>
                         </div>
                     </div>
@@ -391,7 +391,7 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
                 {igreja.onboarding_completo ? (
                     <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-5 text-center space-y-3">
                         <CheckCircle2 size={32} className="text-green-400 mx-auto" />
-                        <p className="text-lg font-black text-green-300 uppercase tracking-tight">Onboarding Concluido</p>
+                        <p className="text-lg font-black text-green-300 uppercase tracking-tight">Onboarding Concluído</p>
                         <button onClick={handleImpersonar} className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 mx-auto">
                             <ExternalLink size={14} /> Entrar na Igreja
                         </button>

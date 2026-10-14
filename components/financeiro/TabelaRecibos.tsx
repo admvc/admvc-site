@@ -35,7 +35,7 @@ export default function TabelaRecibos({ recibos }: { recibos: ReciboRow[] }) {
                         <th className="text-right px-4 py-3 font-medium">Valor Total</th>
                         <th className="text-left px-4 py-3 font-medium hidden md:table-cell">N.{'\u00BA'} Recibo</th>
                         <th className="text-left px-4 py-3 font-medium hidden lg:table-cell">Emitido em</th>
-                        <th className="text-center px-4 py-3 font-medium">Acao</th>
+                        <th className="text-center px-4 py-3 font-medium">Ação</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-soft">

@@ -250,7 +250,7 @@ export default function CantinaTV({ produtos, categorias }: Props) {
                         <div className="flex items-center justify-center h-full">
                             <div className="text-center space-y-4">
                                 <Coffee size={64} className="mx-auto text-white/10" />
-                                <p className="text-lg font-bold text-white/20">Nenhum produto disponivel</p>
+                                <p className="text-lg font-bold text-white/20">Nenhum produto disponível</p>
                             </div>
                         </div>
                     )}

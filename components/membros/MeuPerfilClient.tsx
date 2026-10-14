@@ -1,11 +1,14 @@
 "use client"
 
+// O meu perfil, no telemovel: uma so pagina com secoes que abrem e fecham (sem
+// separadores), letra grande e "Guardar" sempre a vista. Todos os campos vao no
+// formulario (a action grava todos), mesmo os das secoes fechadas.
+
 import { useState, useEffect, useRef } from 'react'
 import { atualizarDadosMembro, submeterInteresseDepartamento } from '@/actions/membro-actions'
 import {
-    User, MapPin, Users2, Save, Church, FileSignature, AlertCircle,
-    Check, ChevronRight, ArrowLeft, Camera, Loader2, Lock, Home,
-    CheckCircle2, XCircle, HeartHandshake, Send
+    User, MapPin, Users2, Save, Church, Check, ChevronDown, Camera, Loader2, Lock, Home,
+    CheckCircle2, HeartHandshake, Send, Download, FileSignature,
 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -16,22 +19,15 @@ interface Props {
     escolaridades?: any[]
     departamentos?: { id: number; nome: string }[]
     interessesExistentes?: { departamento_id: number; status: string }[]
-    onSucesso?: () => void   // ✅ callback para o drawer refrescar a dashboard
-    isDrawer?: boolean       // ✅ esconde o breadcrumb quando está em drawer
 }
 
-export default function MeuPerfilClient({
-    membro,
-    escolaridades = [],
-    departamentos = [],
-    interessesExistentes = [],
-    onSucesso,
-    isDrawer = false
-}: Props) {
+const CAMPO = 'a-foco min-h-[52px] w-full rounded-[14px] border px-4 text-[17px]'
+const ESTILO_CAMPO = { background: 'var(--a-bg)', borderColor: 'var(--a-borda)', color: 'var(--a-texto)' }
+
+export default function MeuPerfilClient({ membro, escolaridades = [], departamentos = [], interessesExistentes = [] }: Props) {
     const toast = useToast()
     const [isPending, setIsPending] = useState(false)
     const [mostrarSucesso, setMostrarSucesso] = useState(false)
-    const [abaAtiva, setAbaAtiva] = useState('pessoal')
 
     const [previewFoto, setPreviewFoto] = useState(membro.avatar_file || null)
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -54,7 +50,6 @@ export default function MeuPerfilClient({
         if (valor.length === 8) {
             setBuscandoCP(true)
             try {
-                // const res = await fetch(`https://json.geoapi.pt/cp/${valor}`)
                 const res = await fetch(`/api/codigo-postal?cp=${valor}`)
                 if (res.ok) {
                     const data = await res.json()
@@ -99,330 +94,214 @@ export default function MeuPerfilClient({
 
     async function handleAction(formData: FormData) {
         setIsPending(true)
-        const res = await atualizarDadosMembro(membro.id, formData)
+        const res: any = await atualizarDadosMembro(membro.id, formData)
         setIsPending(false)
 
         if (res.sucesso) {
             setMostrarSucesso(true)
-            // ✅ Se estiver em drawer, chama o callback em vez de scroll
-            if (isDrawer && onSucesso) {
-                onSucesso()
-            } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' })
-            }
+            toast('Dados guardados.', 'sucesso')
         } else {
-            toast(res.erro || 'Erro ao atualizar.', 'erro')
+            // A senha recusada vem em `error`; o resto em `erro`
+            toast(res.erro || res.error || 'Erro ao atualizar.', 'erro')
         }
     }
 
-    const StatusDoc = ({ nome, aceite, validade }: any) => {
-        const expirado = validade && new Date(validade) < new Date()
-        const ok = aceite && !expirado
-        return (
-            <div className={`flex items-center gap-3 p-3 pr-5 rounded-2xl border ${ok ? 'bg-green-500/10 border-green-500/20' : 'bg-red-500/10 border-red-500/20'}`}>
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${ok ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
-                    {ok ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
-                </div>
-                <div className="flex flex-col">
-                    <span className={`text-[14px] font-bold uppercase tracking-wide leading-none ${ok ? 'text-green-700' : 'text-red-600'}`}>
-                        {nome}
-                    </span>
-                    <span className={`text-[13px] font-bold uppercase tracking-wide mt-0.5 ${ok ? 'text-green-600/70' : 'text-red-500/70'}`}>
-                        {ok && validade
-                            ? `Válido até ${new Date(validade).toLocaleDateString('pt-PT')}`
-                            : ok ? 'Assinado' : 'Pendente / Expirado'}
-                    </span>
-                </div>
-            </div>
-        )
-    }
+    const termoOk = (aceite: boolean, validade: any) => aceite && !(validade && new Date(validade) < new Date())
+    const permanecerOk = termoOk(membro.permanecer_aceite, membro.permanecer_validade)
+    const gdprOk = termoOk(membro.gdpr_aceite, membro.gdpr_validade)
 
     return (
-        <div className={isDrawer ? 'p-6 space-y-6' : 'max-w-6xl mx-auto p-4 sm:p-6 pb-20 animate-in fade-in duration-700'}>
-            <form action={handleAction} className="space-y-6">
+        <div className="app-novo mx-auto max-w-2xl space-y-5 px-4 pb-40 pt-4 md:pb-24" style={{ background: 'transparent' }}>
+            <form action={handleAction} className="space-y-4">
+                <h1 className="text-[28px] font-bold leading-tight">O meu perfil</h1>
 
-                {/* BREADCRUMB — só fora do drawer */}
-                {!isDrawer && (
-                    <nav className="flex items-center gap-4 text-[14px] font-bold uppercase tracking-wide text-muted">
-                        <Link href="/membros/dashboard" className="hover:text-figueira transition-colors flex items-center gap-2">
-                            <ArrowLeft size={12} strokeWidth={3} /> Voltar à Dashboard
-                        </Link>
-                        <ChevronRight size={10} className="opacity-30" />
-                        <span className="text-fg">O Meu Perfil</span>
-                    </nav>
-                )}
-
-                {/* HEADER */}
-                <header className={`flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-soft pb-6 ${isDrawer ? '' : 'mb-2'}`}>
-                    <div className="space-y-1">
-                        {!isDrawer && (
-                            <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center gap-2">
-                                <User size={14} /> Área Pessoal
-                            </span>
+                {/* FOTO E NOME */}
+                <div className="a-card flex items-center gap-4 p-4">
+                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full" style={{ background: 'var(--a-bg)' }}>
+                        {previewFoto ? (
+                            <Image src={previewFoto} alt="A sua foto" fill sizes="80px" className="object-cover" />
+                        ) : (
+                            <div className="flex h-full w-full items-center justify-center a-suave"><User size={36} aria-hidden /></div>
                         )}
-                        <h1 className={`font-bold text-fg leading-none ${isDrawer ? 'text-2xl' : 'text-4xl md:text-5xl'}`}>
-                            {isDrawer ? 'Editar Dados' : <>O Meu <span className="text-muted/20">Perfil.</span></>}
-                        </h1>
                     </div>
-
-                    <div className="flex flex-col items-end gap-3 shrink-0">
-                        {mostrarSucesso && (
-                            <div className="flex items-center gap-3 text-green-500 bg-green-500/10 px-5 py-3 rounded-2xl border border-green-500/20 animate-in fade-in duration-300">
-                                <Check size={16} strokeWidth={3} />
-                                <span className="text-[14px] font-bold uppercase tracking-wide">Atualizado!</span>
-                            </div>
-                        )}
-                        <button
-                            type="submit"
-                            disabled={isPending}
-                            className="w-full md:w-auto flex items-center justify-center gap-3 bg-fg text-bg px-8 py-4 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:bg-figueira transition-all shadow-xl active:scale-95 disabled:opacity-50"
-                        >
-                            {isPending ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-                            {isPending ? 'A guardar...' : 'Guardar Alterações'}
+                    <div className="min-w-0 flex-1 space-y-2">
+                        <p className="truncate text-[19px] font-semibold">{membro.first_name} {membro.last_name}</p>
+                        <button type="button" onClick={() => fileInputRef.current?.click()} className="a-botao a-botao-secundario !min-h-[44px]">
+                            <Camera size={20} aria-hidden /> Mudar a foto
                         </button>
-                    </div>
-                </header>
-
-                {/* BANNER FAMÍLIA E COMPLIANCE */}
-                <div className="bg-bg2 border border-soft p-5 rounded-2xl flex flex-col lg:flex-row gap-5 justify-between items-start lg:items-center">
-                    <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${membro.familia ? 'bg-figueira text-white shadow-md' : 'bg-soft text-muted'}`}>
-                            <Home size={20} />
-                        </div>
-                        <div>
-                            {membro.familia ? (
-                                <>
-                                    <h3 className="text-base font-bold text-fg leading-none">Família {membro.familia.surname}</h3>
-                                    <p className="text-[13px] text-figueira font-bold uppercase tracking-wide mt-1 bg-figueira/10 px-2 py-0.5 rounded border border-figueira/20 inline-block">Grupo Familiar Vinculado</p>
-                                </>
-                            ) : (
-                                <>
-                                    <h3 className="text-base font-bold text-fg leading-none">Sem Família Vinculada</h3>
-                                    <p className="text-[13px] text-muted font-bold uppercase tracking-wide mt-1">Contacta a secretaria para vincular</p>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                    <div className="hidden lg:block w-[1px] h-10 bg-soft" />
-                    <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                        <StatusDoc nome="Acordo GDPR" aceite={membro.gdpr_aceite} validade={membro.gdpr_validade} />
-                        <StatusDoc nome="Termo Permanecer" aceite={membro.permanecer_aceite} validade={membro.permanecer_validade} />
+                        <input type="file" name="avatar" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
                     </div>
                 </div>
 
-                {/* TABS */}
-                <nav className={`flex flex-wrap gap-2 border-b border-soft pb-4 ${isDrawer ? 'sticky top-0 bg-bg/95 backdrop-blur-md z-30 pt-2' : 'sticky top-0 bg-bg/90 backdrop-blur-md z-30 pt-4'}`}>
-                    {[
-                        { id: 'pessoal', label: 'Pessoal', icon: <User size={13} /> },
-                        { id: 'endereco', label: 'Morada', icon: <MapPin size={13} /> },
-                        { id: 'familia', label: 'Relações', icon: <Users2 size={13} /> },
-                        { id: 'eclesiastico', label: 'Eclesiástico', icon: <Church size={13} /> },
-                        { id: 'servir', label: 'Servir', icon: <HeartHandshake size={13} /> },
-                        { id: 'administrativo', label: 'Admin', icon: <Lock size={13} /> },
-                    ].map(tab => (
-                        <button
-                            key={tab.id}
-                            type="button"
-                            onClick={() => setAbaAtiva(tab.id)}
-                            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-[13px] uppercase tracking-wide transition-all ${abaAtiva === tab.id ? 'bg-fg text-bg shadow-md' : 'bg-bg2 text-muted border border-soft hover:bg-soft hover:text-fg'}`}
-                        >
-                            {tab.icon} {tab.label}
-                        </button>
-                    ))}
-                </nav>
+                {/* TERMOS E FAMILIA (so leitura) */}
+                <div className="a-card a-divide">
+                    <Linha Icone={Home} titulo={membro.familia ? `Família ${membro.familia.surname}` : 'Sem família associada'}
+                        texto={membro.familia ? undefined : 'Para associar, fale com a secretaria.'} />
+                    <Linha Icone={FileSignature} titulo="Termo Permanecer"
+                        texto={permanecerOk
+                            ? (membro.permanecer_validade ? `Aceite, válido até ${new Date(membro.permanecer_validade).toLocaleDateString('pt-PT')}` : 'Aceite')
+                            : 'Por aceitar'}
+                        ok={permanecerOk} href={permanecerOk ? undefined : '/membros/termos'} />
+                    <Linha Icone={Lock} titulo="Proteção de dados (RGPD)"
+                        texto={gdprOk ? 'Aceite' : 'Por aceitar'} ok={gdprOk} href={gdprOk ? undefined : '/membros/termos'} />
+                </div>
 
-                {/* CONTAINER DOS DADOS */}
-                <div className="bg-bg2 border border-soft rounded-[2.5rem] p-6 md:p-8 min-h-[400px]">
+                <Secao Icone={User} titulo="Dados pessoais" aberta>
+                    <Campo label="Primeiro nome" name="first_name" defaultValue={membro.first_name} required autoComplete="given-name" />
+                    <Campo label="Apelido" name="last_name" defaultValue={membro.last_name} required autoComplete="family-name" />
+                    <Campo label="Email" name="email" type="email" defaultValue={membro.email} readOnly
+                        ajuda="Para mudar o email, fale com a secretaria." />
+                    <Campo label="Telemóvel" name="phone_1" type="tel" defaultValue={membro.phone_1} autoComplete="tel" />
+                    <Campo label="Data de nascimento" name="birthdate" type="date" defaultValue={formatDate(membro.birthdate)} />
+                    <Escolha label="Género" name="gender" defaultValue={membro.gender} options={['Masculino', 'Feminino']} />
+                    <Campo label="Profissão" name="profession" defaultValue={membro.profession} />
+                    <Escolha label="Escolaridade" name="escolaridade_id" defaultValue={membro?.escolaridade_id || ''}
+                        options={escolaridades.map((e: any) => ({ label: e.nome, value: e.id }))} />
+                    <Campo label="Nome do pai" name="father_name" defaultValue={membro.father_name} />
+                    <Campo label="Nome da mãe" name="mother_name" defaultValue={membro.mother_name} />
+                </Secao>
 
-                    {/* ABA: PESSOAL */}
-                    <div className={abaAtiva === 'pessoal' ? 'block space-y-6 animate-in fade-in slide-in-from-bottom-4' : 'hidden'}>
-                        <div className="flex flex-col md:flex-row items-center gap-6 pb-6 border-b border-soft/50">
-                            <div className="relative group shrink-0">
-                                <div className="w-28 h-28 rounded-2xl overflow-hidden border-4 border-white shadow-xl bg-soft relative">
-                                    {previewFoto ? (
-                                        <Image src={previewFoto} alt="Perfil" fill sizes="128px" className="object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-muted bg-bg">
-                                            <User size={36} />
-                                        </div>
-                                    )}
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="absolute -bottom-1 -right-1 bg-fg text-bg p-2.5 rounded-xl shadow-xl hover:bg-figueira transition-all"
-                                >
-                                    <Camera size={14} strokeWidth={3} />
-                                </button>
-                                <input type="file" name="avatar" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
-                            </div>
-                            <div>
-                                <h4 className="text-lg font-bold text-fg">Foto de Perfil</h4>
-                                <p className="text-[14px] text-muted font-bold uppercase tracking-wide mt-1">Clica na câmara para alterar.</p>
-                            </div>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            <Input label="Primeiro Nome" name="first_name" defaultValue={membro.first_name} required />
-                            <Input label="Sobrenome" name="last_name" defaultValue={membro.last_name} required />
-                            <Input label="E-mail (Bloqueado)" name="email" type="email" defaultValue={membro.email} readOnly
-                                className="bg-soft/30 text-muted cursor-not-allowed border-dashed"
-                                title="Para alterar o e-mail, contacte a secretaria." />
-                            <Input label="Telemóvel" name="phone_1" defaultValue={membro.phone_1} />
-                            <Input label="Nascimento" name="birthdate" type="date" defaultValue={formatDate(membro.birthdate)} />
-                            <Select label="Gênero" name="gender" defaultValue={membro.gender} options={['Masculino', 'Feminino']} />
-                            <Input label="Profissão" name="profession" defaultValue={membro.profession} />
-                            <Input label="Nome do Pai" name="father_name" defaultValue={membro.father_name} />
-                            <Input label="Nome da Mãe" name="mother_name" defaultValue={membro.mother_name} />
-                            <div className="space-y-1.5 lg:col-span-3">
-                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-4">Escolaridade</label>
-                                <select name="escolaridade_id" defaultValue={membro?.escolaridade_id || ''}
-                                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none shadow-sm appearance-none cursor-pointer">
-                                    <option value="">Selecione...</option>
-                                    {escolaridades.map((esc: any) => (
-                                        <option key={esc.id} value={esc.id}>{esc.nome}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="pt-6 border-t border-soft">
-                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-5">
-                                <Lock size={12} className="text-figueira" /> Segurança
-                            </p>
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                                <Input label="Nova Senha (Opcional)" name="nova_senha" type="password"
-                                    autoComplete="new-password" placeholder="Deixe em branco para manter" />
-                            </div>
-                            <p className="mt-2 text-xs text-muted">Mínimo 10 caracteres. Uma frase curta é fácil de lembrar e difícil de adivinhar.</p>
-                        </div>
-
-                        <div className="pt-6 border-t border-soft">
-                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted mb-3">Os meus dados</p>
-                            <p className="text-xs text-muted mb-4">
-                                Pode descarregar tudo o que o portal guarda sobre si. Para apagar os seus dados, fale com a administração.{' '}
-                                <a href="/privacidade" className="underline">Política de privacidade</a>
-                            </p>
-                            <a href="/api/membros/meus-dados" className="inline-flex items-center gap-2 rounded-xl border border-soft px-4 py-2.5 text-xs font-bold text-fg hover:border-figueira">
-                                Descarregar os meus dados
-                            </a>
-                        </div>
+                <Secao Icone={MapPin} titulo="Morada">
+                    <div className="relative">
+                        <Campo label="Código postal" name="postal_code" value={endereco.postal_code} onChange={handleCodigoPostalChange}
+                            maxLength={8} inputMode="numeric" ajuda="Ao escrever o código postal, a rua e a cidade preenchem-se sozinhas." />
+                        {buscandoCP && <Loader2 size={20} className="absolute right-4 top-[46px] animate-spin" style={{ color: 'var(--a-destaque)' }} aria-hidden />}
                     </div>
+                    <Campo label="Rua" name="address_1" value={endereco.address_1} onChange={(e: any) => setEndereco({ ...endereco, address_1: e.target.value })} />
+                    <Campo label="Número" name="address_number" defaultValue={membro.address_number} />
+                    <Campo label="Andar, porta…" name="address_2" defaultValue={membro.address_2} />
+                    <Campo label="Freguesia / bairro" name="neighborhood" value={endereco.neighborhood} onChange={(e: any) => setEndereco({ ...endereco, neighborhood: e.target.value })} />
+                    <Campo label="Cidade" name="id_city" value={endereco.city} onChange={(e: any) => setEndereco({ ...endereco, city: e.target.value })} />
+                    <Campo label="Distrito" name="state" value={endereco.state} onChange={(e: any) => setEndereco({ ...endereco, state: e.target.value })} />
+                    <Campo label="País" name="country" value={endereco.country} onChange={(e: any) => setEndereco({ ...endereco, country: e.target.value })} />
+                </Secao>
 
-                    {/* ABA: MORADA */}
-                    <div className={abaAtiva === 'endereco' ? 'block animate-in fade-in slide-in-from-bottom-4' : 'hidden'}>
-                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-6 pb-4 border-b border-soft">
-                            <MapPin size={12} className="text-figueira" /> Endereço Residencial
-                        </p>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            <Input label="Morada (Rua/Avenida)" name="address_1" value={endereco.address_1}
-                                onChange={(e: any) => setEndereco({ ...endereco, address_1: e.target.value })} className="md:col-span-2 lg:col-span-3" />
-                            <Input label="Complemento" name="address_2" defaultValue={membro.address_2} className="md:col-span-2" />
-                            <Input label="Número" name="address_number" defaultValue={membro.address_number} />
-                            <div className="space-y-2 relative">
-                                <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Código Postal</label>
-                                <input name="postal_code" value={endereco.postal_code} onChange={handleCodigoPostalChange} maxLength={8} placeholder="Ex: 4000-123"
-                                    className={`w-full bg-bg border ${buscandoCP ? 'border-figueira/50 bg-figueira/5' : 'border-soft'} rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm`} />
-                                {buscandoCP && <Loader2 size={14} className="animate-spin text-figueira absolute right-4 top-[38px]" />}
-                            </div>
-                            <Input label="Cidade" name="id_city" value={endereco.city} onChange={(e: any) => setEndereco({ ...endereco, city: e.target.value })} />
-                            <Input label="Distrito / Estado" name="state" value={endereco.state} onChange={(e: any) => setEndereco({ ...endereco, state: e.target.value })} />
-                            <Input label="País" name="country" value={endereco.country} onChange={(e: any) => setEndereco({ ...endereco, country: e.target.value })} />
-                            <Input label="Freguesia / Bairro" name="neighborhood" value={endereco.neighborhood}
-                                onChange={(e: any) => setEndereco({ ...endereco, neighborhood: e.target.value })} className="md:col-span-2" />
-                        </div>
+                <Secao Icone={Users2} titulo="Família e documentos">
+                    <Escolha label="Estado civil" name="marital_status" defaultValue={membro.marital_status}
+                        options={['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viúvo(a)', 'União de Facto']} />
+                    <Campo label="Nome do cônjuge" name="spouse_name" defaultValue={membro.spouse_name} />
+                    <Escolha label="O cônjuge é cristão?" name="spouse_christian" defaultValue={membro.spouse_christian ? 'true' : 'false'}
+                        options={[{ label: 'Sim', value: 'true' }, { label: 'Não', value: 'false' }]} />
+                    <Campo label="Data de casamento" name="wedding_date" type="date" defaultValue={formatDate(membro.wedding_date)} />
+                    <Escolha label="Tem filhos?" name="has_children" defaultValue={membro.has_children ? 'true' : 'false'}
+                        options={[{ label: 'Sim', value: 'true' }, { label: 'Não', value: 'false' }]} />
+                    <Campo label="Número de filhos" name="children_number" type="number" min="0" inputMode="numeric" defaultValue={membro.children_number || 0} />
+                    <Campo label="Nacionalidade" name="nationality" defaultValue={membro.nationality} />
+                    <Campo label="NIF / CPF" name="tax_id" defaultValue={membro.tax_id} inputMode="numeric" />
+                    <Campo label="Cartão de Cidadão / RG" name="id_card_number" defaultValue={membro.id_card_number} />
+                    <input type="hidden" name="lang" value={membro.lang || 'pt'} />
+                </Secao>
+
+                <Secao Icone={Church} titulo="Vida na igreja">
+                    <Campo label="Entrada na igreja" name="entry_date" type="date" defaultValue={formatDate(membro.entry_date)} />
+                    <Campo label="Data de batismo" name="baptism_date" type="date" defaultValue={formatDate(membro.baptism_date)} />
+                    <Campo label="Data de conversão" name="conversion_date" type="date" defaultValue={formatDate(membro.conversion_date)} />
+                    <div className="space-y-2">
+                        <label htmlFor="perfil-notes" className="block text-[16px] font-semibold">Testemunho</label>
+                        <textarea id="perfil-notes" name="notes" rows={4} defaultValue={membro.notes}
+                            className={`${CAMPO} resize-none py-3`} style={ESTILO_CAMPO} />
                     </div>
+                    <Campo label="Igreja anterior" name="previous_church" defaultValue={membro.previous_church} />
+                    <Campo label="Cargo que tinha" name="church_role" defaultValue={membro.church_role} />
+                    <Campo label="Ministério onde servia" name="ministry" defaultValue={membro.ministry} />
+                </Secao>
 
-                    {/* ABA: FAMÍLIA */}
-                    <div className={abaAtiva === 'familia' ? 'block animate-in fade-in slide-in-from-bottom-4' : 'hidden'}>
-                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-6 pb-4 border-b border-soft">
-                            <Users2 size={12} className="text-figueira" /> Documentação e Relações
-                        </p>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            <Select label="Estado Civil" name="marital_status" defaultValue={membro.marital_status}
-                                options={['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viúvo(a)', 'União de Facto']} />
-                            <Input label="Nacionalidade" name="nationality" defaultValue={membro.nationality} />
-                            <Input label="NIF / CPF" name="tax_id" defaultValue={membro.tax_id} />
-                            <Input label="Cartão de Cidadão / RG" name="id_card_number" defaultValue={membro.id_card_number} />
-                            <Input label="Idioma" name="lang" defaultValue={membro.lang || 'pt'} />
-                            <Input label="Nome do Cônjuge" name="spouse_name" defaultValue={membro.spouse_name} />
-                            <Select label="Cônjuge é Cristão?" name="spouse_christian" defaultValue={membro.spouse_christian ? 'true' : 'false'}
-                                options={[{ label: 'Sim', value: 'true' }, { label: 'Não', value: 'false' }]} />
-                            <Input label="Data de Casamento" name="wedding_date" type="date" defaultValue={formatDate(membro.wedding_date)} />
-                            <Select label="Tem Filhos?" name="has_children" defaultValue={membro.has_children ? 'true' : 'false'}
-                                options={[{ label: 'Sim', value: 'true' }, { label: 'Não', value: 'false' }]} />
-                            <Input label="Número de Filhos" name="children_number" type="number" min="0" defaultValue={membro.children_number || 0} />
-                        </div>
-                    </div>
+                <Secao Icone={Lock} titulo="Palavra-passe">
+                    <Campo label="Nova palavra-passe" name="nova_senha" type="password" autoComplete="new-password"
+                        ajuda="Deixe em branco para manter a atual. Mínimo 10 caracteres: uma frase curta é fácil de lembrar e difícil de adivinhar." />
+                </Secao>
 
-                    {/* ABA: ECLESIÁSTICO */}
-                    <div className={abaAtiva === 'eclesiastico' ? 'block animate-in fade-in slide-in-from-bottom-4' : 'hidden'}>
-                        <p className="text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-2 mb-6 pb-4 border-b border-soft">
-                            <Church size={12} className="text-figueira" /> Jornada Espiritual
-                        </p>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            <Input label="Entrada na Igreja" name="entry_date" type="date" defaultValue={formatDate(membro.entry_date)} />
-                            <Input label="Data de Batismo" name="baptism_date" type="date" defaultValue={formatDate(membro.baptism_date)} />
-                            <Input label="Data de Conversão" name="conversion_date" type="date" defaultValue={formatDate(membro.conversion_date)} />
-                            <div className="md:col-span-2 lg:col-span-3 space-y-2 mt-2">
-                                <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Testemunho / Notas</label>
-                                <textarea name="notes" rows={4} defaultValue={membro.notes}
-                                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm resize-none" />
-                            </div>
-                        </div>
-                        <div className="mt-8 pt-6 border-t border-soft">
-                            <p className="text-[14px] font-bold uppercase tracking-wide text-muted mb-5">Histórico Prévio</p>
-                            <div className="grid md:grid-cols-3 gap-5">
-                                <Input label="Igreja Anterior" name="previous_church" defaultValue={membro.previous_church} />
-                                <Input label="Cargo que exercia" name="church_role" defaultValue={membro.church_role} />
-                                <Input label="Ministério" name="ministry" defaultValue={membro.ministry} />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* ABA: QUERO SERVIR */}
-                    <div className={abaAtiva === 'servir' ? 'block animate-in fade-in slide-in-from-bottom-4' : 'hidden'}>
-                        <ServirSection
-                            membroId={membro.id}
-                            departamentos={departamentos}
-                            interessesExistentes={interessesExistentes}
-                            ministeriosAtuais={membro.ministerios?.map((m: any) => m.departamento?.id).filter(Boolean) || []}
-                        />
-                    </div>
-
-                    {/* ABA: ADMINISTRATIVO */}
-                    <div className={abaAtiva === 'administrativo' ? 'block animate-in fade-in slide-in-from-bottom-4' : 'hidden'}>
-                        <div className="bg-orange-500/5 border border-orange-500/20 rounded-2xl p-5 mb-6 flex items-start gap-4">
-                            <AlertCircle size={18} className="text-orange-500 shrink-0 mt-0.5" />
-                            <div>
-                                <h4 className="text-sm font-bold text-orange-700">Acesso Restrito</h4>
-                                <p className="text-[14px] text-orange-600/80 font-bold uppercase tracking-wide mt-1">
-                                    Estes dados são geridos pela administração. Apenas para consulta.
-                                </p>
-                            </div>
-                        </div>
-                        <div className="grid md:grid-cols-3 gap-5 opacity-70 pointer-events-none">
-                            <Input label="Conta Ativa?" value={membro.is_active ? 'Sim (Ativa)' : 'Não (Bloqueada)'} readOnly className="bg-soft/50 border-dashed" />
-                            <Input label="Nível de Permissão" value={membro.role || 'USER'} readOnly className="bg-soft/50 border-dashed font-bold text-figueira" />
-                            <Input label="ID Loyverse (Cantina)" value={membro.loyverse_id || 'Não Integrado'} readOnly className="bg-soft/50 border-dashed" />
-                        </div>
-                    </div>
-
+                {/* GUARDAR: sempre a vista, por cima da barra de baixo */}
+                <div className="fixed inset-x-0 z-40 px-4 bottom-[calc(72px+env(safe-area-inset-bottom))] md:bottom-4 md:left-auto md:right-6 md:w-80 md:px-0">
+                    <button type="submit" disabled={isPending} className="a-botao a-botao-principal w-full !min-h-[56px] shadow-lg">
+                        {isPending ? <Loader2 className="animate-spin" size={20} aria-hidden /> : mostrarSucesso ? <Check size={20} aria-hidden /> : <Save size={20} aria-hidden />}
+                        {isPending ? 'A guardar…' : mostrarSucesso ? 'Guardado' : 'Guardar alterações'}
+                    </button>
                 </div>
             </form>
+
+            {/* Fora do formulario: tem o seu proprio botao */}
+            <Secao Icone={HeartHandshake} titulo="Quero servir">
+                <ServirSection
+                    membroId={membro.id}
+                    departamentos={departamentos}
+                    interessesExistentes={interessesExistentes}
+                    ministeriosAtuais={membro.ministerios?.map((m: any) => m.departamento?.id).filter(Boolean) || []}
+                />
+            </Secao>
+
+            <Secao Icone={Download} titulo="Os meus dados">
+                <p className="text-[16px] a-suave">
+                    Pode descarregar tudo o que a app guarda sobre si. Para corrigir ou apagar os seus dados, veja a{' '}
+                    <Link href="/privacidade" className="underline" style={{ color: 'var(--a-texto)' }}>Política de privacidade</Link>.
+                </p>
+                <a href="/api/membros/meus-dados" className="a-botao a-botao-secundario w-full">
+                    <Download size={20} aria-hidden /> Descarregar os meus dados
+                </a>
+            </Secao>
         </div>
     )
 }
 
 /* ── COMPONENTES DE SUPORTE ─────────────────────────────────────────────────── */
-function Input({ label, className, value, onChange, readOnly, title, ...props }: any) {
+
+function Secao({ Icone, titulo, aberta, children }: { Icone: typeof User; titulo: string; aberta?: boolean; children: React.ReactNode }) {
     return (
-        <div className="space-y-1.5" title={title}>
-            <label className="text-[13px] font-bold uppercase text-muted ml-4 tracking-wide flex items-center gap-1.5">
-                {label} {readOnly && <Lock size={8} className="text-figueira opacity-50" />}
+        <details className="a-card group" open={aberta}>
+            <summary className="a-foco flex min-h-[60px] cursor-pointer list-none items-center gap-3 px-4 py-3">
+                <Icone size={22} className="shrink-0" style={{ color: 'var(--a-destaque)' }} aria-hidden />
+                <span className="flex-1 text-[18px] font-semibold">{titulo}</span>
+                <ChevronDown size={22} className="shrink-0 a-suave transition-transform group-open:rotate-180" aria-hidden />
+            </summary>
+            <div className="space-y-4 border-t px-4 py-4" style={{ borderColor: 'var(--a-borda)' }}>{children}</div>
+        </details>
+    )
+}
+
+function Linha({ Icone, titulo, texto, ok, href }: { Icone: typeof User; titulo: string; texto?: string; ok?: boolean; href?: string }) {
+    const corpo = (
+        <>
+            <Icone size={22} className="shrink-0" style={{ color: ok === false ? 'var(--a-erro)' : 'var(--a-destaque)' }} aria-hidden />
+            <span className="min-w-0 flex-1">
+                <span className="block text-[17px] font-semibold">{titulo}</span>
+                {texto && <span className="block text-[15px] a-suave">{texto}</span>}
+            </span>
+            {ok && <CheckCircle2 size={22} className="shrink-0" style={{ color: 'var(--a-destaque)' }} aria-label="Em dia" />}
+            {href && <span className="shrink-0 text-[16px] font-semibold" style={{ color: 'var(--a-destaque)' }}>Ver</span>}
+        </>
+    )
+    return href
+        ? <Link href={href} className="a-foco flex min-h-[60px] items-center gap-3 px-4 py-3">{corpo}</Link>
+        : <div className="flex min-h-[60px] items-center gap-3 px-4 py-3">{corpo}</div>
+}
+
+function Campo({ label, name, ajuda, readOnly, ...props }: any) {
+    const id = `perfil-${name}`
+    return (
+        <div className="space-y-2">
+            <label htmlFor={id} className="flex items-center gap-1.5 text-[16px] font-semibold">
+                {label} {readOnly && <Lock size={14} className="a-suave" aria-label="Não editável" />}
             </label>
-            <input value={value} onChange={onChange} readOnly={readOnly} {...props}
-                className={`w-full bg-bg border border-soft rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none transition-all shadow-sm ${readOnly ? 'focus:border-soft' : ''} ${className || ''}`} />
+            <input id={id} name={name} readOnly={readOnly} {...props}
+                className={`${CAMPO} ${readOnly ? 'a-suave' : ''}`} style={ESTILO_CAMPO} />
+            {ajuda && <p className="text-[15px] a-suave">{ajuda}</p>}
+        </div>
+    )
+}
+
+function Escolha({ label, name, options, defaultValue }: { label: string; name: string; options: any[]; defaultValue?: any }) {
+    const id = `perfil-${name}`
+    return (
+        <div className="space-y-2">
+            <label htmlFor={id} className="block text-[16px] font-semibold">{label}</label>
+            <select id={id} name={name} defaultValue={defaultValue ?? ''} className={`${CAMPO} cursor-pointer`} style={ESTILO_CAMPO}>
+                <option value="">Escolher…</option>
+                {options.map((opt: any) => {
+                    const val = typeof opt === 'string' ? opt : opt.value
+                    const lbl = typeof opt === 'string' ? opt : opt.label
+                    return <option key={val} value={val}>{lbl}</option>
+                })}
+            </select>
         </div>
     )
 }
@@ -433,14 +312,14 @@ function ServirSection({ membroId, departamentos, interessesExistentes, minister
     interessesExistentes: { departamento_id: number; status: string }[]
     ministeriosAtuais: number[]
 }) {
+    const toast = useToast()
     const [selecionados, setSelecionados] = useState<number[]>([])
     const [mensagem, setMensagem] = useState('')
     const [loading, setLoading] = useState(false)
-    const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; msg: string } | null>(null)
 
-    // Departamentos onde o membro JA serve ou JA indicou interesse
+    // Departamentos onde o membro JA serve ficam de fora; os ja pedidos mostram o estado
     const interesseMap = new Map(interessesExistentes.map(i => [i.departamento_id, i.status]))
-    const disponíveis = departamentos.filter(d => !ministeriosAtuais.includes(d.id))
+    const disponiveis = departamentos.filter(d => !ministeriosAtuais.includes(d.id))
 
     const toggle = (id: number) => {
         setSelecionados(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
@@ -449,114 +328,59 @@ function ServirSection({ membroId, departamentos, interessesExistentes, minister
     const handleSubmit = async () => {
         if (selecionados.length === 0) return
         setLoading(true)
-        setFeedback(null)
         const res = await submeterInteresseDepartamento(membroId, selecionados, mensagem)
         setLoading(false)
         if (res.ok) {
-            setFeedback({ type: 'success', msg: 'Interesse enviado! A lideranca sera notificada.' })
+            toast('Pedido enviado! A liderança vai receber o seu interesse.', 'sucesso')
             setSelecionados([])
             setMensagem('')
         } else {
-            setFeedback({ type: 'error', msg: res.error || 'Erro ao enviar.' })
+            toast(res.error || 'Erro ao enviar.', 'erro')
         }
     }
 
+    const ESTADO: Record<string, string> = { APROVADO: 'Aprovado', REJEITADO: 'Não aprovado' }
+
     return (
-        <div className="space-y-6">
-            <div className="bg-figueira/5 border border-figueira/20 rounded-2xl p-5 flex items-start gap-4">
-                <HeartHandshake size={18} className="text-figueira shrink-0 mt-0.5" />
-                <div>
-                    <h4 className="text-sm font-bold text-fg">Quero Servir</h4>
-                    <p className="text-[14px] text-muted font-bold uppercase tracking-wide mt-1">
-                        Indica os departamentos onde gostarias de servir. A lideranca recebe o teu pedido.
-                    </p>
-                </div>
-            </div>
+        <div className="space-y-4">
+            <p className="text-[16px] a-suave">Escolha onde gostaria de servir. A liderança recebe o seu pedido.</p>
 
-            {feedback && (
-                <div className={`flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-bold ${feedback.type === 'success' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
-                    {feedback.type === 'success' ? <CheckCircle2 size={14} /> : <XCircle size={14} />} {feedback.msg}
-                </div>
-            )}
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {disponíveis.map(d => {
+            <ul className="space-y-2">
+                {disponiveis.map(d => {
                     const interesse = interesseMap.get(d.id)
-                    const jaPediu = !!interesse
-                    const isSelected = selecionados.includes(d.id)
-
+                    const marcado = selecionados.includes(d.id)
                     return (
-                        <button
-                            key={d.id}
-                            type="button"
-                            disabled={jaPediu}
-                            onClick={() => toggle(d.id)}
-                            className={`p-3 rounded-xl border text-left transition-all text-[10px] font-black uppercase tracking-widest ${
-                                jaPediu
-                                    ? interesse === 'APROVADO'
-                                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 cursor-default'
-                                        : interesse === 'REJEITADO'
-                                        ? 'bg-red-500/10 border-red-500/20 text-red-400 cursor-default line-through'
-                                        : 'bg-orange-500/10 border-orange-500/20 text-orange-600 cursor-default'
-                                    : isSelected
-                                    ? 'bg-figueira/10 border-figueira text-figueira'
-                                    : 'bg-bg border-soft text-muted hover:border-figueira/30'
-                            }`}
-                        >
-                            {d.nome}
-                            {jaPediu && (
-                                <span className="block text-[13px] mt-0.5 normal-case tracking-normal font-bold">
-                                    {interesse === 'APROVADO' ? 'Aprovado' : interesse === 'REJEITADO' ? 'Rejeitado' : 'Pendente'}
-                                </span>
-                            )}
-                        </button>
+                        <li key={d.id}>
+                            <label className={`a-card flex min-h-[56px] items-center gap-3 px-4 py-2 ${interesse ? '' : 'cursor-pointer'}`}
+                                style={marcado ? { borderColor: 'var(--a-destaque)', background: 'var(--a-destaque-suave)' } : undefined}>
+                                <input type="checkbox" checked={marcado} disabled={!!interesse} onChange={() => toggle(d.id)}
+                                    className="h-6 w-6 shrink-0" style={{ accentColor: 'var(--a-destaque)' }} />
+                                <span className="flex-1 text-[17px]">{d.nome}</span>
+                                {interesse && <span className="text-[15px] a-suave">{ESTADO[interesse] || 'Pedido enviado'}</span>}
+                            </label>
+                        </li>
                     )
                 })}
-            </div>
+            </ul>
 
             {ministeriosAtuais.length > 0 && (
-                <p className="text-[13px] text-muted font-bold uppercase tracking-wide">
-                    Ja serves em {ministeriosAtuais.length} departamento{ministeriosAtuais.length !== 1 ? 's' : ''} (nao listados acima).
+                <p className="text-[15px] a-suave">
+                    Já serve em {ministeriosAtuais.length} ministério{ministeriosAtuais.length !== 1 ? 's' : ''} (não aparece{ministeriosAtuais.length !== 1 ? 'm' : ''} acima).
                 </p>
             )}
 
             {selecionados.length > 0 && (
                 <div className="space-y-3">
-                    <textarea
-                        value={mensagem}
-                        onChange={e => setMensagem(e.target.value)}
-                        placeholder="Mensagem opcional (ex: tenho experiencia em som, gosto de cozinhar...)"
-                        rows={2}
-                        className="w-full bg-bg border border-soft rounded-2xl p-4 text-xs font-medium text-fg outline-none focus:border-figueira resize-none"
-                    />
-                    <button
-                        type="button"
-                        onClick={handleSubmit}
-                        disabled={loading}
-                        className="w-full flex items-center justify-center gap-2 bg-figueira text-white py-4 rounded-2xl font-bold text-[14px] uppercase tracking-wide hover:brightness-110 transition-all shadow-lg shadow-figueira/20 disabled:opacity-50"
-                    >
-                        {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-                        Enviar Interesse ({selecionados.length} departamento{selecionados.length !== 1 ? 's' : ''})
+                    <label htmlFor="servir-msg" className="block text-[16px] font-semibold">Mensagem <span className="font-normal a-suave">(se quiser)</span></label>
+                    <textarea id="servir-msg" value={mensagem} onChange={e => setMensagem(e.target.value)} rows={2}
+                        placeholder="Ex.: tenho experiência em som"
+                        className={`${CAMPO} resize-none py-3`} style={ESTILO_CAMPO} />
+                    <button type="button" onClick={handleSubmit} disabled={loading} className="a-botao a-botao-principal w-full">
+                        {loading ? <Loader2 size={20} className="animate-spin" aria-hidden /> : <Send size={20} aria-hidden />}
+                        Enviar pedido
                     </button>
                 </div>
             )}
-        </div>
-    )
-}
-
-function Select({ label, options, defaultValue, ...props }: any) {
-    return (
-        <div className="space-y-1.5">
-            <label className="text-[13px] font-bold uppercase text-muted ml-4 tracking-wide">{label}</label>
-            <select {...props} defaultValue={defaultValue}
-                className="w-full bg-bg border border-soft rounded-2xl p-4 text-[14px] font-bold text-fg focus:border-figueira outline-none appearance-none cursor-pointer shadow-sm">
-                <option value="">Selecione...</option>
-                {options.map((opt: any) => {
-                    const val = typeof opt === 'string' ? opt : opt.value
-                    const lbl = typeof opt === 'string' ? opt : opt.label
-                    return <option key={val} value={val}>{lbl}</option>
-                })}
-            </select>
         </div>
     )
 }

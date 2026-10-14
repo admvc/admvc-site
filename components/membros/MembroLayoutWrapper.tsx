@@ -73,6 +73,7 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
         else if (permissoes.isAdmin) itensMais.push({ chave: 'grupo', texto: 'Grupos', href: '/grupos/admin', detalhe: 'Pequenos grupos e células' })
     }
     if (temModulo(MODULOS.ACOLHIMENTO) && (permissoes.isAcolhimento || permissoes.isAdmin)) itensMais.push({ chave: 'acolhimento', texto: 'Acolhimento', href: '/departamentos/acolhimento/dashboard' })
+    if (temModulo(MODULOS.HOLYRICS) && (permissoes.isMidia || permissoes.isLouvor || permissoes.isAdmin)) itensMais.push({ chave: 'culto-holyrics', texto: 'Culto no Holyrics', href: '/midia/culto', detalhe: 'Enviar as músicas do culto de hoje' })
     if (temModulo(MODULOS.HOLYRICS) && (permissoes.isMidia || permissoes.isAdmin)) itensMais.push({ chave: 'midia', texto: 'Mídia', href: '/midia/holyrics', detalhe: 'Holyrics' })
     if (temModulo(MODULOS.MESA_SOM) && (permissoes.isMidia || permissoes.isLouvor || permissoes.isAdmin)) itensMais.push({ chave: 'mesa', texto: 'Mesa de som', href: '/midia/mesax32' })
     if (temModulo(MODULOS.LUMIKIT) && (permissoes.isMidia || permissoes.isAdmin)) itensMais.push({ chave: 'luz', texto: 'Iluminação', href: '/midia/lumikit' })

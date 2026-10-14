@@ -413,7 +413,7 @@ export default function SetlistPalco({ evento }: Props) {
                                 <BotaoRecurso
                                     href={musica.link_audio}
                                     icon={<Headphones size={22} />}
-                                    label="Audio"
+                                    label="Áudio"
                                     sublabel="spotify"
                                     cor="bg-green-500/20 text-green-300 border border-green-500/30"
                                 />
@@ -422,7 +422,7 @@ export default function SetlistPalco({ evento }: Props) {
                                 <BotaoRecurso
                                     href={musica.link_video}
                                     icon={<Youtube size={22} />}
-                                    label="Video"
+                                    label="Vídeo"
                                     sublabel="youtube"
                                     cor="bg-red-500/20 text-red-300 border border-red-500/30"
                                 />

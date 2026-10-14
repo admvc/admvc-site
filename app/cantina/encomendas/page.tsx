@@ -70,7 +70,7 @@ export default async function EncomendasPage() {
         <main className="max-w-6xl mx-auto pt-16 md:pt-10 px-4 sm:px-6 lg:px-8 space-y-10 pb-28 animate-in fade-in duration-700">
             <header className="text-center space-y-4 pb-8 border-b border-soft">
                 <span className="text-figueira font-bold text-[14px] md:text-xs uppercase tracking-wide flex items-center justify-center gap-2">
-                    <ClipboardList size={14} /> Gestao de Encomendas
+                    <ClipboardList size={14} /> Gestão de Encomendas
                 </span>
                 <h1 className="text-4xl md:text-6xl font-bold text-fg leading-none">
                     Encomendas <span className="text-muted/20">do dia.</span>

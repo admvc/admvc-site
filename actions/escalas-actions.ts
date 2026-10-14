@@ -492,7 +492,7 @@ export async function salvarMensagemEventoAction(formData: FormData) {
         const tema = (formData.get('tema') as string)?.trim() || null
         const notas = (formData.get('notas') as string)?.trim() || null
 
-        if (!evento_id) return { sucesso: false, error: 'Evento invalido.' }
+        if (!evento_id) return { sucesso: false, error: 'Evento inválido.' }
 
         const { db } = await getDb()
 
@@ -500,10 +500,10 @@ export async function salvarMensagemEventoAction(formData: FormData) {
             where: { id: evento_id },
             select: { tenant_id: true }
         })
-        if (!evento) return { sucesso: false, error: 'Evento nao encontrado.' }
+        if (!evento) return { sucesso: false, error: 'Evento não encontrado.' }
         // O pregador tem de ser desta igreja
         if (pregador_id && !(await db.membro.count({ where: { id: pregador_id } }))) {
-            return { sucesso: false, error: 'Pregador nao encontrado.' }
+            return { sucesso: false, error: 'Pregador não encontrado.' }
         }
 
         await db.mensagemEvento.upsert({

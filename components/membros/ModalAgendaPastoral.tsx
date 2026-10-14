@@ -51,7 +51,7 @@ export default function ModalAgendaPastoral({ aberto, onClose }: Props) {
                         </div>
                         <div>
                             <h3 className="text-sm font-bold text-fg">Agenda Pastoral</h3>
-                            <p className="text-[13px] font-bold text-muted uppercase tracking-wide">Marcar reuniao</p>
+                            <p className="text-[13px] font-bold text-muted uppercase tracking-wide">Marcar reunião</p>
                         </div>
                     </div>
                     <button

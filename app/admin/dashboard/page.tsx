@@ -113,7 +113,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                 <h1 className="text-3xl font-bold text-fg leading-none">
                     {saudacao}, {adminLogado?.first_name || 'Admin'}.
                 </h1>
-                <p className="text-[14px] md:text-xs text-muted">Visao geral da sua igreja.</p>
+                <p className="text-[14px] md:text-xs text-muted">Visão geral da sua igreja.</p>
             </header>
 
             {/* ALERTA COMPLIANCE */}
@@ -132,10 +132,10 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
             {/* KPIs */}
             <section className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                 <Kpi label="Membros" value={totalMembros} icon={<Users size={14} />} />
-                <Kpi label="Familias" value={totalFamilias} icon={<Home size={14} />} />
+                <Kpi label="Famílias" value={totalFamilias} icon={<Home size={14} />} />
                 <Kpi label="Batizados" value={`${taxaBatismo}%`} icon={<CheckCircle2 size={14} />} cor="emerald" />
                 {temEscalas && <Kpi label="Escalas Pendentes" value={escalasPendentesConfirmacao} icon={<Clock size={14} />} cor={escalasPendentesConfirmacao > 0 ? 'orange' : 'emerald'} />}
-                <Kpi label="Aprovacao" value={pendentesCount} icon={<AlertTriangle size={14} />} cor={pendentesCount > 0 ? 'red' : 'emerald'} />
+                <Kpi label="Aprovação" value={pendentesCount} icon={<AlertTriangle size={14} />} cor={pendentesCount > 0 ? 'red' : 'emerald'} />
             </section>
 
             {/* GRID */}
@@ -146,7 +146,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                     <div className="flex items-center justify-between px-5 py-4 border-b border-soft">
                         <div className="flex items-center gap-2">
                             <Calendar size={14} className="text-figueira" />
-                            <h2 className="text-xs md:text-sm font-bold text-fg">Proximos Eventos</h2>
+                            <h2 className="text-xs md:text-sm font-bold text-fg">Próximos Eventos</h2>
                         </div>
                         <Link href={temEscalas ? "/admin/escalas" : "/admin/eventos"} className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors flex items-center gap-1">
                             Ver todos <ArrowUpRight size={11} />
@@ -215,7 +215,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                     <div className="divide-y divide-soft">
                         {aniversariantesDoMes.length === 0 ? (
                             <div className="py-10 text-center">
-                                <p className="text-[14px] md:text-xs font-bold text-muted uppercase tracking-wide">Nenhum este mes</p>
+                                <p className="text-[14px] md:text-xs font-bold text-muted uppercase tracking-wide">Nenhum este mês</p>
                             </div>
                         ) : aniversariantesDoMes.map((m, i) => {
                             const dia = new Date(m.birthdate!).getDate()

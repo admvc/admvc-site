@@ -156,10 +156,10 @@ export default async function AuditoriaPage(
                             <thead>
                                 <tr className="border-b border-soft bg-bg2">
                                     <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted w-40">Data / Hora</th>
-                                    <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted w-32">Acao</th>
+                                    <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted w-32">Ação</th>
                                     <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted w-28">Categoria</th>
                                     <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted w-36">Executado por</th>
-                                    <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Descricao</th>
+                                    <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Descrição</th>
                                     <th className="px-5 py-4 text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted w-28">IP</th>
                                 </tr>
                             </thead>

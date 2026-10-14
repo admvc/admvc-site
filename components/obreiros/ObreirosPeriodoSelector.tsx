@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 
 const PERIODOS = [
-    { label: '1 Mes', value: '1' },
+    { label: '1 Mês', value: '1' },
     { label: '3 Meses', value: '3' },
     { label: '6 Meses', value: '6' },
 ]

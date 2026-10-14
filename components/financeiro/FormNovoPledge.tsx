@@ -142,7 +142,7 @@ export default function FormNovoPledge({
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Observacao</label>
+                    <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Observação</label>
                     <input
                         name="observacao"
                         type="text"

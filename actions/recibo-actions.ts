@@ -96,7 +96,7 @@ export async function gerarReciboAnual(membroId: number, ano: number) {
         })
 
         if (!membro) {
-            return { success: false, error: 'Membro nao encontrado.' }
+            return { success: false, error: 'Membro não encontrado.' }
         }
 
         // 4. Gerar numero do recibo sequencial

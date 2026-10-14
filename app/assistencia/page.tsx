@@ -96,7 +96,7 @@ export default async function AssistenciaDashboardPage() {
                 <div className="w-px h-6 md:h-8 bg-soft" />
                 <div className="text-center">
                     <p className="text-xl md:text-2xl font-bold text-fg">{movimentosMes}</p>
-                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Mov. Mes</p>
+                    <p className="text-[13px] font-bold uppercase tracking-wide text-muted">Mov. Mês</p>
                 </div>
             </div>
 

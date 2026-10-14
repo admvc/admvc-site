@@ -7,13 +7,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { MonitorUp, RefreshCw } from 'lucide-react'
-import { sincronizarAcervoLocal } from '@/actions/louvor-actions'
+import { sincronizarAcervoLocal, ligarMusicasAoHolyrics } from '@/actions/louvor-actions'
+import { enviarParaHolyrics, SemLigacaoHolyrics, MENSAGEM_SEM_LIGACAO, type MusicaParaHolyrics } from '@/lib/holyrics-cliente'
 
-export default function BotoesHolyrics({ url, token, ids, semLigacao, podeSincronizar }: {
+export default function BotoesHolyrics({ url, token, musicas, podeSincronizar }: {
     url: string
     token: string
-    ids: string[]            // holyrics_id das musicas do culto, pela ordem
-    semLigacao: number       // musicas do culto que nao vieram do Holyrics
+    musicas: MusicaParaHolyrics[]   // as musicas do culto, pela ordem
     podeSincronizar: boolean
 }) {
     const router = useRouter()
@@ -33,10 +33,16 @@ export default function BotoesHolyrics({ url, token, ids, semLigacao, podeSincro
     async function enviar() {
         setAviso(null); setOcupado(true)
         try {
-            await pedir('AddSongsToPlaylist', { ids })
-            setAviso({ ok: true, texto: `Enviadas ${ids.length} música${ids.length === 1 ? '' : 's'} para o Holyrics.` })
-        } catch {
-            setAviso({ ok: false, texto: 'Sem ligação ao Holyrics. Está no computador da mídia, na rede da igreja?' })
+            const r = await enviarParaHolyrics(url, token, musicas, ligarMusicasAoHolyrics)
+            const enviadas = r.filter((m) => m.estado === 'enviada').length
+            const fora = r.filter((m) => m.estado === 'nao-encontrada').map((m) => m.titulo)
+            setAviso({
+                ok: fora.length === 0,
+                texto: (enviadas ? `Enviadas ${enviadas} música${enviadas === 1 ? '' : 's'} para o Holyrics.` : 'As músicas já estavam na lista do Holyrics.')
+                    + (fora.length ? ` Não estão no Holyrics: ${fora.join(', ')}.` : ''),
+            })
+        } catch (e) {
+            setAviso({ ok: false, texto: e instanceof SemLigacaoHolyrics ? MENSAGEM_SEM_LIGACAO : (e instanceof Error ? e.message : 'Erro ao enviar.') })
         } finally { setOcupado(false) }
     }
 
@@ -69,12 +75,9 @@ export default function BotoesHolyrics({ url, token, ids, semLigacao, podeSincro
         <section className="a-card p-4 space-y-3" aria-labelledby="holyrics">
             <h2 id="holyrics" className="text-[19px] font-bold">Holyrics</h2>
             <p className="text-[15px] a-suave">Funciona no computador da mídia (na rede da igreja).</p>
-            <button type="button" className="a-botao a-botao-secundario w-full" disabled={ocupado || ids.length === 0} onClick={enviar}>
+            <button type="button" className="a-botao a-botao-secundario w-full" disabled={ocupado || musicas.length === 0} onClick={enviar}>
                 <MonitorUp size={18} aria-hidden /> Enviar a setlist para o Holyrics
             </button>
-            {semLigacao > 0 && (
-                <p className="text-[14px] a-suave">{semLigacao} música{semLigacao === 1 ? ' não veio' : 's não vieram'} do Holyrics e não {semLigacao === 1 ? 'vai' : 'vão'}.</p>
-            )}
             {podeSincronizar && (
                 <button type="button" className="a-botao a-botao-secundario w-full" disabled={ocupado} onClick={sincronizar}>
                     <RefreshCw size={18} aria-hidden className={ocupado ? 'animate-spin' : ''} /> Trazer músicas do Holyrics

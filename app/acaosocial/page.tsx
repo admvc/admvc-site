@@ -58,7 +58,7 @@ export default async function AdminDespensaPage() {
         <main className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-10 animate-in fade-in duration-700 pb-32">
             <header className="space-y-2">
                 <span className="text-figueira font-bold text-[14px] md:text-xs uppercase tracking-wide flex items-center gap-2">
-                    <HeartHandshake size={14} /> Acao Social
+                    <HeartHandshake size={14} /> Ação Social
                 </span>
                 <h1 className="text-3xl md:text-4xl font-bold text-fg">Despensa</h1>
                 <p className="text-xs text-muted">Controlo de donativos e insumos.</p>

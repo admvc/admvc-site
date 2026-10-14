@@ -25,7 +25,7 @@ export async function criarPreEncomenda(eventoId: number, itens: ItemEncomenda[]
         // Verificar evento existe e e futuro
         const evento = await db.evento.findUnique({ where: { id: eventoId } })
         if (!evento || evento.data < new Date()) {
-            return { error: 'Evento nao encontrado ou ja passou.' }
+            return { error: 'Evento não encontrado ou já passou.' }
         }
 
         // Verificar se ja tem encomenda para este evento
@@ -33,7 +33,7 @@ export async function criarPreEncomenda(eventoId: number, itens: ItemEncomenda[]
             where: { membro_id: session.membroId, evento_id: eventoId, status: { in: ['PENDENTE', 'CONFIRMADA'] } },
         })
         if (existente) {
-            return { error: 'Ja tem uma encomenda para este evento. Cancele a anterior para fazer uma nova.' }
+            return { error: 'Já tem uma encomenda para este evento. Cancele a anterior para fazer uma nova.' }
         }
 
         // Buscar produtos e calcular total
@@ -43,7 +43,7 @@ export async function criarPreEncomenda(eventoId: number, itens: ItemEncomenda[]
         })
 
         if (produtos.length !== produtoIds.length) {
-            return { error: 'Um ou mais produtos nao estao disponiveis.' }
+            return { error: 'Um ou mais produtos não estao disponíveis.' }
         }
 
         let total = 0
@@ -118,19 +118,19 @@ export async function cancelarPreEncomenda(encomendaId: number) {
     try {
         const encomenda = await db.preEncomendaCantina.findUnique({ where: { id: encomendaId } })
 
-        if (!encomenda) return { error: 'Encomenda nao encontrada.' }
+        if (!encomenda) return { error: 'Encomenda não encontrada.' }
 
         const isAdmin = session.role === 'ADMIN' || session.role === 'CONGREGATION_ADMIN'
         if (encomenda.membro_id !== session.membroId && !isAdmin) {
-            return { error: 'Sem permissao para cancelar esta encomenda.' }
+            return { error: 'Sem permissão para cancelar esta encomenda.' }
         }
 
         if (encomenda.status === 'ENTREGUE') {
-            return { error: 'Encomenda ja foi entregue.' }
+            return { error: 'Encomenda já foi entregue.' }
         }
 
         if (encomenda.status === 'CANCELADA') {
-            return { error: 'Encomenda ja esta cancelada.' }
+            return { error: 'Encomenda já esta cancelada.' }
         }
 
         // Devolver saldo se foi pago com creditos
@@ -181,7 +181,7 @@ export async function marcarEntregue(encomendaId: number) {
     try {
         const encomenda = await db.preEncomendaCantina.findUnique({ where: { id: encomendaId } })
         if (!encomenda || encomenda.status !== 'CONFIRMADA') {
-            return { error: 'Encomenda nao encontrada ou nao esta confirmada.' }
+            return { error: 'Encomenda não encontrada ou não esta confirmada.' }
         }
 
         await db.preEncomendaCantina.update({

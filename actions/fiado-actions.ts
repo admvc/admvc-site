@@ -48,8 +48,8 @@ export async function liquidarFiado(fiadoId: number) {
     try {
         const fiado = await db.fiadoCantina.findUnique({ where: { id: fiadoId } })
 
-        if (!fiado) return { error: 'Fiado nao encontrado.' }
-        if (fiado.status !== 'PENDENTE') return { error: 'Este fiado ja foi liquidado.' }
+        if (!fiado) return { error: 'Fiado não encontrado.' }
+        if (fiado.status !== 'PENDENTE') return { error: 'Este fiado já foi liquidado.' }
 
         // Tentar debitar do saldo do membro se houver saldo suficiente
         const saldo = await db.saldoCantina.findUnique({ where: { membro_id: fiado.membro_id } })

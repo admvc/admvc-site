@@ -64,7 +64,7 @@ export default async function ProdutosPage() {
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                     <div className="space-y-1">
                         <h1 className="text-4xl md:text-5xl font-bold text-fg">
-                            Gestao de Produtos
+                            Gestão de Produtos
                         </h1>
                         <p className="text-xs text-muted">
                             Gerir categorias, produtos e stock da cantina.
@@ -185,7 +185,7 @@ export default async function ProdutosPage() {
                                 Promos
                             </p>
                             <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted text-center">
-                                Acoes
+                                Ações
                             </p>
                             <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted" />
                         </div>

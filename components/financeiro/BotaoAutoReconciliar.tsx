@@ -12,7 +12,7 @@ export default function BotaoAutoReconciliar({ contaId }: { contaId: number }) {
     const confirmar = useConfirm()
 
     async function handleClick() {
-        if (!await confirmar({ mensagem: 'Executar reconciliacao automatica? Isto ira tentar associar movimentos bancarios a contribuicoes, despesas e donativos.', tipo: 'aviso' })) return
+        if (!await confirmar({ mensagem: 'Executar reconciliacao automática? Isto ira tentar associar movimentos bancarios a contribuicoes, despesas e donativos.', tipo: 'aviso' })) return
         setLoading(true)
         setResultado(null)
         try {
@@ -21,7 +21,7 @@ export default function BotaoAutoReconciliar({ contaId }: { contaId: number }) {
                 setResultado({ reconciled: res.reconciled, total: res.total })
             }
         } catch {
-            toast('Erro ao executar reconciliacao automatica.', 'erro')
+            toast('Erro ao executar reconciliacao automática.', 'erro')
         } finally {
             setLoading(false)
         }

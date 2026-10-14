@@ -46,7 +46,7 @@ export default function RegioesEditor({ regioesIniciais }: { regioesIniciais: st
             <div className="flex gap-2">
                 <input type="text" value={nova} onChange={e => setNova(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), adicionar())}
-                    placeholder="Nova regiao..."
+                    placeholder="Nova região..."
                     className="flex-1 bg-bg border border-soft rounded-xl px-3 py-2 text-sm font-bold text-fg outline-none focus:border-figueira placeholder:text-muted/30" />
                 <button onClick={adicionar} disabled={!nova.trim()}
                     className="px-3 py-2 rounded-xl bg-figueira text-white text-[13px] font-bold uppercase tracking-wide disabled:opacity-30 hover:bg-figueira/90 transition-all">

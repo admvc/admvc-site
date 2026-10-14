@@ -200,12 +200,12 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                 <form onSubmit={handleCriar} className="p-6 space-y-4">
                     {/* Titulo */}
                     <div>
-                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Titulo *</label>
+                        <label className="block text-[13px] font-bold uppercase tracking-wide text-muted mb-1">Título *</label>
                         <input
                             name="titulo"
                             required
                             className="w-full bg-bg border border-soft rounded-2xl px-4 py-2.5 text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:border-figueira transition-colors"
-                            placeholder="Titulo da aula"
+                            placeholder="Título da aula"
                         />
                     </div>
 
@@ -309,7 +309,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
             >
                 <div className="bg-bg2 border-b border-soft px-6 py-4 flex items-center justify-between rounded-t-2xl flex-shrink-0">
                     <h2 className="text-sm font-bold text-fg">
-                        Marcar Presencas
+                        Marcar Presenças
                     </h2>
                     <button onClick={() => { setPresencaAulaId(null); setPresentes([]) }} className="text-muted hover:text-fg transition-colors">
                         <X size={18} />
@@ -375,7 +375,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
             <header className="space-y-4">
                 <div className="flex items-center gap-2 text-figueira">
                     <GraduationCap size={16} />
-                    <span className="font-bold text-[14px] uppercase tracking-wide">Escola Biblica</span>
+                    <span className="font-bold text-[14px] uppercase tracking-wide">Escola Bíblica</span>
                 </div>
                 <h1 className="text-4xl sm:text-5xl font-bold text-fg leading-none">
                     EBD<span className="text-muted/20">.</span>
@@ -414,7 +414,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
             {aulas.length === 0 ? (
                 <div className="py-20 text-center border-2 border-dashed border-soft rounded-[2.5rem]">
                     <GraduationCap size={32} className="mx-auto text-muted/30 mb-4" />
-                    <p className="text-xs font-bold text-muted">Nenhuma aula neste mes.</p>
+                    <p className="text-xs font-bold text-muted">Nenhuma aula neste mês.</p>
                 </div>
             ) : (
                 <div className="space-y-3">
@@ -509,7 +509,7 @@ export default function EBDClient({ aulas, membros, sermoes, mes, ano, sermaoIdI
                                             className="flex items-center gap-1.5 px-4 py-2 bg-figueira/10 border border-figueira/20 rounded-2xl text-[13px] font-bold uppercase tracking-wide text-figueira hover:bg-figueira/20 transition-colors"
                                         >
                                             <Users size={10} />
-                                            Marcar Presencas
+                                            Marcar Presenças
                                         </button>
                                         <button
                                             onClick={() => handleRemover(a.id)}

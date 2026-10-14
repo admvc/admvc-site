@@ -852,7 +852,7 @@ export async function editarAtividade(formData: FormData) {
         const nota_maxima = Number(formData.get('nota_maxima') || 10)
 
         if (!atividadeId || !titulo || !tipo) {
-            return { ok: false, error: 'Preencha todos os campos obrigatorios.' }
+            return { ok: false, error: 'Preencha todos os campos obrigatórios.' }
         }
 
         await db.atividadeEBD.update({

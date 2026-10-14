@@ -1,8 +1,42 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { ArrowLeft, Plus, Minus, Play, Pause, Hash, X, AlignLeft, AlignCenter, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Plus, Minus, Play, Pause, Hash, ChevronLeft, ChevronRight } from 'lucide-react'
 import { parseCifra, transporCifra, calcularSemitons, notaRaiz, importarCifraClub, TONS_DISPONIVEIS } from '@/lib/cifra'
+
+type Modo = 'separado' | 'junto' | 'letra'
+
+const MODOS: { valor: Modo; texto: string }[] = [
+    { valor: 'separado', texto: 'Cifra por cima' },
+    { valor: 'junto', texto: 'Cifra junta' },
+    { valor: 'letra', texto: 'Só letra' },
+]
+
+// O que vem entre [ ] e e acorde (G, F#m7, C/E, Bb7(9)…); o resto ([Refrão]) e nome de parte
+const E_ACORDE = /^[A-G][#b]?(?:m|maj|min|dim|aug|sus|add|M|º|°|\+|-|\d|\(|\)|#|b|\/[A-G]?[#b]?)*$/
+// Linhas que so fazem sentido com acordes: "Intro:", "Solo:", tablaturas
+const SO_MUSICA = /^\s*(?:intro|introdução|solo|final|ponte|interlúdio|interludio|riff|base|dedilhado)?\s*:?\s*[\d x()|.-]*$/i
+const TABLATURA = /^\s*[A-Ga-g]?\|[-\d|hpbrx\/\~ ]+$/
+
+/** A letra sem acordes, com os nomes das partes; linhas so de musica saem e brancos seguidos ficam um. */
+function soLetra(linhas: { tipo: 'texto' | 'acorde'; valor: string }[][]) {
+    const out: { parte?: string; texto?: string }[] = []
+    for (const segs of linhas) {
+        const partes = segs.filter(s => s.tipo === 'acorde' && !E_ACORDE.test(s.valor.trim()))
+        const temAcordes = segs.some(s => s.tipo === 'acorde' && E_ACORDE.test(s.valor.trim()))
+        const texto = segs.filter(s => s.tipo === 'texto').map(s => s.valor).join('').replace(/\s{2,}/g, ' ').trim()
+        if (partes.length) { out.push({ parte: partes.map(p => p.valor.trim()).join(' ') }); if (!texto) continue }
+        if (TABLATURA.test(texto) || (temAcordes && SO_MUSICA.test(texto))) continue
+        if (!texto) { if (out.length && out[out.length - 1].texto !== undefined) out.push({}); continue }
+        out.push({ texto })
+    }
+    // Partes sem letra (Intro, Solo…) saem
+    return out.filter((l, i) => {
+        if (l.parte === undefined) return true
+        const seguinte = out.slice(i + 1).find(x => x.parte !== undefined || x.texto !== undefined)
+        return seguinte?.texto !== undefined
+    })
+}
 
 interface Props {
     cifra: string
@@ -32,12 +66,14 @@ export default function CifraViewer({ cifra, titulo, artista, tomOriginal, tomTo
         }
         return 14
     })
-    const [modoSeparado, setModoSeparado] = useState(() => {
+    const [modo, setModo] = useState<Modo>(() => {
         if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('cifra_modo_separado')
-            return saved !== null ? saved === 'true' : true // separado por padrao
+            const saved = localStorage.getItem('cifra_modo')
+            if (saved === 'separado' || saved === 'junto' || saved === 'letra') return saved
+            // escolha antiga (so dois modos)
+            if (localStorage.getItem('cifra_modo_separado') === 'false') return 'junto'
         }
-        return true
+        return 'separado'
     })
     const scrollRef = useRef<HTMLDivElement>(null)
     const rafRef = useRef<number | null>(null)
@@ -48,7 +84,7 @@ export default function CifraViewer({ cifra, titulo, artista, tomOriginal, tomTo
 
     // Persistir fontSize e modo
     useEffect(() => { localStorage.setItem('cifra_font_size', String(fontSize)) }, [fontSize])
-    useEffect(() => { localStorage.setItem('cifra_modo_separado', String(modoSeparado)) }, [modoSeparado])
+    useEffect(() => { localStorage.setItem('cifra_modo', modo) }, [modo])
 
     // Reset semitons quando a cifra muda (navegacao entre musicas)
     useEffect(() => {
@@ -167,7 +203,7 @@ export default function CifraViewer({ cifra, titulo, artista, tomOriginal, tomTo
                     )}
                 </div>
 
-                <div className="flex items-center gap-1.5">
+                <div className={`flex items-center gap-1.5 ${modo === 'letra' ? 'invisible' : ''}`}>
                     {tomAtual && (
                         <div className="flex items-center gap-1.5 bg-white/10 rounded-xl px-2.5 py-1.5">
                             <Hash size={11} className="text-white/50" />
@@ -185,10 +221,20 @@ export default function CifraViewer({ cifra, titulo, artista, tomOriginal, tomTo
                 </div>
             </div>
 
+            {/* MODO: tres botoes sempre a vista */}
+            <div role="radiogroup" aria-label="Como ver" className="flex gap-1 px-4 py-2 shrink-0 border-b border-white/5">
+                {MODOS.map(m => (
+                    <button key={m.valor} role="radio" aria-checked={modo === m.valor} onClick={() => setModo(m.valor)}
+                        className={`flex-1 min-h-[40px] rounded-lg text-[13px] font-semibold active:scale-95 ${modo === m.valor ? 'bg-emerald-500 text-white' : 'bg-white/10 text-white/70 hover:bg-white/20'}`}>
+                        {m.texto}
+                    </button>
+                ))}
+            </div>
+
             {/* TOOLBAR */}
             <div className="flex items-center justify-between px-4 py-2 shrink-0 border-b border-white/5 bg-white/5">
-                {/* Transpor */}
-                <div className="flex items-center gap-1">
+                {/* Transpor (sem acordes, nao serve) */}
+                <div className={`flex items-center gap-1 ${modo === 'letra' ? 'invisible' : ''}`}>
                     <button onClick={() => setSemitons(s => s - 1)}
                         className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 text-white/60 hover:bg-white/20 active:scale-90">
                         <Minus size={14} />
@@ -201,13 +247,6 @@ export default function CifraViewer({ cifra, titulo, artista, tomOriginal, tomTo
                         <Plus size={14} />
                     </button>
                 </div>
-
-                {/* Modo: inline vs separado */}
-                <button onClick={() => setModoSeparado(s => !s)}
-                    className={`h-8 px-3 flex items-center gap-1.5 rounded-lg text-[8px] font-black uppercase tracking-widest active:scale-90 ${modoSeparado ? 'bg-emerald-500 text-white' : 'bg-white/10 text-white/60 hover:bg-white/20'}`}>
-                    {modoSeparado ? <AlignLeft size={12} /> : <AlignCenter size={12} />}
-                    {modoSeparado ? 'Separado' : 'Inline'}
-                </button>
 
                 {/* Auto-scroll com +/- velocidade */}
                 <div className="flex items-center gap-1">
@@ -249,8 +288,23 @@ export default function CifraViewer({ cifra, titulo, artista, tomOriginal, tomTo
                     if (initialPinchDistance.current !== null) { initialPinchDistance.current = null; return }
                     if (scrollWasActive.current) { setScrolling(true); scrollWasActive.current = false }
                 }}>
+                {modo === 'letra' ? (
+                    /* SO LETRA: letra corrida, maior e com mais espaco, para ler de longe */
+                    <div className="max-w-2xl mx-auto" style={{ fontSize: fontSize + 6, lineHeight: 1.6 }}>
+                        {soLetra(linhas).map((l, i) =>
+                            l.parte !== undefined ? (
+                                <p key={i} className="mt-6 mb-1 text-emerald-400 font-bold" style={{ fontSize: fontSize + 2 }}>{l.parte}</p>
+                            ) : l.texto !== undefined ? (
+                                <p key={i} className="text-white">{l.texto}</p>
+                            ) : (
+                                <div key={i} className="h-[1em]" />
+                            )
+                        )}
+                        <div className="h-[60vh]" />
+                    </div>
+                ) : (
                 <div className="max-w-2xl mx-auto font-mono whitespace-pre-wrap" style={{ fontSize }}>
-                    {modoSeparado ? (
+                    {modo === 'separado' ? (
                         /* MODO SEPARADO: acordes numa linha, letra na outra */
                         linhas.map((segs, i) => {
                             if (segs.length === 0) return <br key={i} />
@@ -307,6 +361,7 @@ export default function CifraViewer({ cifra, titulo, artista, tomOriginal, tomTo
                     )}
                     <div className="h-[60vh]" />
                 </div>
+                )}
             </div>
         </div>
     )

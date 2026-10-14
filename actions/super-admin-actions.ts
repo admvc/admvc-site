@@ -438,7 +438,7 @@ export async function criarSuperAdmin(formData: FormData) {
         if (motivoSenha) return { error: motivoSenha }
 
         const existe = await prisma.superAdmin.findUnique({ where: { email } })
-        if (existe) return { error: 'Este email ja esta em uso.' }
+        if (existe) return { error: 'Este email já esta em uso.' }
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -465,7 +465,7 @@ export async function toggleSuperAdmin(saId: number) {
 
     try {
         const sa = await prisma.superAdmin.findUnique({ where: { id: saId } })
-        if (!sa) return { error: 'Administrador nao encontrado.' }
+        if (!sa) return { error: 'Administrador não encontrado.' }
 
         await prisma.superAdmin.update({
             where: { id: saId },
@@ -493,13 +493,13 @@ export async function impersonarIgreja(tenantId: number) {
             congregacoes: { take: 1, orderBy: { id: 'asc' } },
         },
     })
-    if (!tenant) return { error: 'Igreja nao encontrada.' }
+    if (!tenant) return { error: 'Igreja não encontrada.' }
 
     // Find admin member of that church
     const admin = await prisma.membro.findFirst({
         where: { tenant_id: tenantId, role: 'ADMIN', is_active: true },
     })
-    if (!admin) return { error: 'Admin nao encontrado nesta igreja.' }
+    if (!admin) return { error: 'Admin não encontrado nesta igreja.' }
 
     // Log the impersonation
     await prisma.superAdminLog.create({
@@ -529,7 +529,7 @@ export async function enviarAviso(formData: FormData) {
 
     try {
         if (!titulo || !mensagem || !tipo) {
-            return { error: 'Preencha todos os campos obrigatorios.' }
+            return { error: 'Preencha todos os campos obrigatórios.' }
         }
 
         await prisma.avisoPlataforma.create({
@@ -575,7 +575,7 @@ export async function eliminarSA(saId: number) {
     'use server'
     const session = await requireSAAuth()
 
-    if (saId === session.saId) return { error: 'Nao pode eliminar a si mesmo.' }
+    if (saId === session.saId) return { error: 'Não pode eliminar a si mesmo.' }
 
     try {
         await prisma.superAdmin.delete({ where: { id: saId } })

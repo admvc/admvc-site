@@ -156,7 +156,7 @@ export default async function DashboardCantinaPage() {
                 </div>
                 <div className="flex items-center gap-2 text-figueira">
                     <BarChart3 size={18} />
-                    <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide">Analise de Vendas</span>
+                    <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide">Análise de Vendas</span>
                 </div>
             </header>
 
@@ -186,7 +186,7 @@ export default async function DashboardCantinaPage() {
                 <div className="bg-bg2 border border-soft rounded-2xl p-5 space-y-1">
                     <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5">
                         <BarChart3 size={10} className="text-figueira" />
-                        Vendas Mes
+                        Vendas Mês
                     </p>
                     <p className="text-3xl font-bold text-fg">{monthCount}</p>
                     <p className="text-xs font-bold text-figueira">{fmt(monthTotal)} EUR</p>
@@ -211,12 +211,12 @@ export default async function DashboardCantinaPage() {
                         Formas de Pagamento
                     </h2>
                     <div className="h-[1px] flex-1 bg-soft" />
-                    <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Este Mes</span>
+                    <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Este Mês</span>
                 </div>
 
                 <div className="bg-bg2 border border-soft rounded-2xl p-6 space-y-4">
                     {paymentBreakdown.length === 0 ? (
-                        <p className="text-sm text-muted text-center py-4">Sem dados este mes.</p>
+                        <p className="text-sm text-muted text-center py-4">Sem dados este mês.</p>
                     ) : (
                         paymentBreakdown.map((p) => (
                             <div key={p.label} className="space-y-1.5">
@@ -248,12 +248,12 @@ export default async function DashboardCantinaPage() {
                         Top 5 Produtos
                     </h2>
                     <div className="h-[1px] flex-1 bg-soft" />
-                    <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Ultimos 30 Dias</span>
+                    <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">Últimos 30 Dias</span>
                 </div>
 
                 <div className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                     {top5.length === 0 ? (
-                        <p className="text-sm text-muted text-center py-8">Sem dados nos ultimos 30 dias.</p>
+                        <p className="text-sm text-muted text-center py-8">Sem dados nos últimos 30 dias.</p>
                     ) : (
                         <>
                             <div className="hidden sm:grid grid-cols-[auto_1fr_100px_100px] gap-4 px-6 py-3 border-b border-soft">
@@ -285,14 +285,14 @@ export default async function DashboardCantinaPage() {
                 <div className="flex items-center gap-4">
                     <ShoppingCart size={20} className="text-figueira" />
                     <h2 className="text-2xl font-bold text-fg">
-                        Ultimas Transacoes
+                        Últimas Transações
                     </h2>
                     <div className="h-[1px] flex-1 bg-soft" />
                 </div>
 
                 <div className="bg-bg2 border border-soft rounded-2xl overflow-hidden">
                     {lastTx.length === 0 ? (
-                        <p className="text-sm text-muted text-center py-8">Nenhuma transacao registada.</p>
+                        <p className="text-sm text-muted text-center py-8">Nenhuma transação registada.</p>
                     ) : (
                         <>
                             {/* Desktop header */}
@@ -346,7 +346,7 @@ export default async function DashboardCantinaPage() {
                             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[13px] md:text-[14px] font-bold uppercase tracking-wide bg-figueira/10 text-figueira border border-figueira/20 hover:bg-figueira/20 transition-all active:scale-95"
                         >
                             <BarChart3 size={12} />
-                            Relatorio P&L
+                            Relatório P&L
                         </Link>
                     }
                 >
@@ -383,7 +383,7 @@ export default async function DashboardCantinaPage() {
                     href="/cantina/relatorio-financeiro"
                     className="flex items-center gap-2 px-4 py-2.5 bg-bg2 border border-soft rounded-2xl hover:border-figueira/50 transition-all text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-fg"
                 >
-                    <DollarSign size={14} className="text-figueira" /> Relatorio Financeiro
+                    <DollarSign size={14} className="text-figueira" /> Relatório Financeiro
                 </Link>
             </section>
         </main>

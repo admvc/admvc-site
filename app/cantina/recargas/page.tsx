@@ -62,7 +62,7 @@ export default async function RecargasPage() {
                 </Link>
                 <div className="text-center space-y-2 pb-6 border-b border-soft">
                     <span className="text-figueira font-bold text-[14px] uppercase tracking-wide flex items-center justify-center gap-2">
-                        <Wallet2 size={14} /> Gestao de Recargas
+                        <Wallet2 size={14} /> Gestão de Recargas
                     </span>
                     <h1 className="text-4xl md:text-6xl font-bold text-fg leading-none">
                         Recargas <span className="text-muted/20">pendentes.</span>
@@ -108,7 +108,7 @@ export default async function RecargasPage() {
             {/* Historico */}
             {pedidosRecentes.length > 0 && (
                 <section className="space-y-3">
-                    <h2 className="text-xs font-bold text-muted">Historico Recente</h2>
+                    <h2 className="text-xs font-bold text-muted">Histórico Recente</h2>
                     <div className="space-y-2">
                         {pedidosRecentes.map(p => (
                             <div key={p.id} className="bg-bg2 border border-soft rounded-2xl p-4 flex items-center justify-between opacity-60">

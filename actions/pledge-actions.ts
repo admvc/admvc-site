@@ -22,7 +22,7 @@ export async function criarPledge(formData: FormData) {
     const membro_id = membro_id_raw ? Number(membro_id_raw) : session.membroId
 
     if (!fundo_id || isNaN(fundo_id)) {
-        return { ok: false, error: 'Fundo e obrigatorio.' }
+        return { ok: false, error: 'Fundo e obrigatório.' }
     }
 
     if (!valor_mensal || isNaN(valor_mensal) || valor_mensal <= 0) {
@@ -30,12 +30,12 @@ export async function criarPledge(formData: FormData) {
     }
 
     if (!duracao_meses || isNaN(duracao_meses) || duracao_meses < 1) {
-        return { ok: false, error: 'Duracao deve ser pelo menos 1 mes.' }
+        return { ok: false, error: 'Duração deve ser pelo menos 1 mês.' }
     }
 
     // Apenas admin pode criar pledge para outro membro
     if (membro_id !== session.membroId && !['ADMIN', 'FINANCE'].includes(session.role)) {
-        return { ok: false, error: 'Sem permissao para criar pledge para outro membro.' }
+        return { ok: false, error: 'Sem permissão para criar pledge para outro membro.' }
     }
 
     try {
@@ -45,7 +45,7 @@ export async function criarPledge(formData: FormData) {
         })
 
         if (!fundo) {
-            return { ok: false, error: 'Fundo nao encontrado ou inativo.' }
+            return { ok: false, error: 'Fundo não encontrado ou inativo.' }
         }
 
         // data_inicio = primeiro dia do proximo mes
@@ -87,16 +87,16 @@ export async function cancelarPledge(pledgeId: number) {
         })
 
         if (!pledge) {
-            return { ok: false, error: 'Pledge nao encontrado.' }
+            return { ok: false, error: 'Pledge não encontrado.' }
         }
 
         // Apenas o dono ou admin pode cancelar
         if (pledge.membro_id !== session.membroId && !['ADMIN', 'FINANCE'].includes(session.role)) {
-            return { ok: false, error: 'Sem permissao para cancelar este pledge.' }
+            return { ok: false, error: 'Sem permissão para cancelar este pledge.' }
         }
 
         if (pledge.status === 'CANCELADO') {
-            return { ok: false, error: 'Este pledge ja esta cancelado.' }
+            return { ok: false, error: 'Este pledge já esta cancelado.' }
         }
 
         await prisma.pledge.update({

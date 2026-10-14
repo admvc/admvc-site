@@ -335,7 +335,7 @@ export async function toggleVisibilidadeAgenda(agendaId: number) {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
 
         const agenda = await (await getDb()).agenda.findUnique({ where: { id: agendaId } })
-        if (!agenda) return { ok: false, error: 'Agenda nao encontrada.' }
+        if (!agenda) return { ok: false, error: 'Agenda não encontrada.' }
 
         await (await getDb()).agenda.update({
             where: { id: agendaId },
@@ -389,11 +389,11 @@ export async function pedirAgendamentoAction(dados: {
         const data_fim = new Date(`${dados.data}T${dados.hora_fim}:00`)
 
         if (data_inicio < new Date()) {
-            return { ok: false, error: 'Nao e possivel agendar para uma data/hora ja passada.' }
+            return { ok: false, error: 'Não e possível agendar para uma data/hora já passada.' }
         }
 
         const agenda = await (await getDb()).agenda.findUnique({ where: { id: dados.agenda_id } })
-        if (!agenda) return { ok: false, error: 'Agenda nao encontrada.' }
+        if (!agenda) return { ok: false, error: 'Agenda não encontrada.' }
 
         await (await getDb()).compromisso.create({
             data: {

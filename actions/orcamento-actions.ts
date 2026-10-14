@@ -13,23 +13,23 @@ export async function salvarOrcamento(fundo_id: number, categoria_id: number, an
     const tenantId = await getTenantIdFromHeaders()
 
     if (!fundo_id || isNaN(fundo_id)) {
-        return { ok: false, error: 'Fundo e obrigatorio.' }
+        return { ok: false, error: 'Fundo e obrigatório.' }
     }
 
     if (!categoria_id || isNaN(categoria_id)) {
-        return { ok: false, error: 'Categoria e obrigatoria.' }
+        return { ok: false, error: 'Categoria e obrigatória.' }
     }
 
     if (!ano || isNaN(ano) || ano < 2000 || ano > 2100) {
-        return { ok: false, error: 'Ano invalido.' }
+        return { ok: false, error: 'Ano inválido.' }
     }
 
     if (mes !== null && (isNaN(mes) || mes < 1 || mes > 12)) {
-        return { ok: false, error: 'Mes invalido (1-12).' }
+        return { ok: false, error: 'Mês inválido (1-12).' }
     }
 
     if (isNaN(valor_previsto) || valor_previsto < 0) {
-        return { ok: false, error: 'Valor previsto invalido.' }
+        return { ok: false, error: 'Valor previsto inválido.' }
     }
 
     try {
@@ -44,11 +44,11 @@ export async function salvarOrcamento(fundo_id: number, categoria_id: number, an
         ])
 
         if (!fundo) {
-            return { ok: false, error: 'Fundo nao encontrado.' }
+            return { ok: false, error: 'Fundo não encontrado.' }
         }
 
         if (!categoria) {
-            return { ok: false, error: 'Categoria nao encontrada ou nao pertence a este fundo.' }
+            return { ok: false, error: 'Categoria não encontrada ou não pertence a este fundo.' }
         }
 
         // Upsert: unique on fundo_id + categoria_id + ano + mes
@@ -78,7 +78,7 @@ export async function salvarOrcamento(fundo_id: number, categoria_id: number, an
         return { ok: true, orcamento }
     } catch (error) {
         console.error('Erro ao salvar orcamento:', error)
-        return { ok: false, error: 'Erro ao salvar orcamento.' }
+        return { ok: false, error: 'Erro ao salvar orçamento.' }
     }
 }
 
@@ -95,15 +95,15 @@ export async function salvarOrcamentoLote(
     const tenantId = await getTenantIdFromHeaders()
 
     if (!ano || ano < 2000 || ano > 2100) {
-        return { ok: false, error: 'Ano invalido.' }
+        return { ok: false, error: 'Ano inválido.' }
     }
 
     if (!fundoId) {
-        return { ok: false, error: 'Fundo e obrigatorio.' }
+        return { ok: false, error: 'Fundo e obrigatório.' }
     }
 
     if (!itens || itens.length === 0) {
-        return { ok: false, error: 'Nenhum item de orcamento informado.' }
+        return { ok: false, error: 'Nenhum item de orçamento informado.' }
     }
 
     try {
@@ -113,7 +113,7 @@ export async function salvarOrcamentoLote(
         })
 
         if (!fundo) {
-            return { ok: false, error: 'Fundo nao encontrado.' }
+            return { ok: false, error: 'Fundo não encontrado.' }
         }
 
         // Verificar se todas as categorias pertencem ao fundo/tenant
@@ -127,7 +127,7 @@ export async function salvarOrcamentoLote(
         })
 
         if (categorias.length !== categoriaIds.length) {
-            return { ok: false, error: 'Uma ou mais categorias sao invalidas.' }
+            return { ok: false, error: 'Uma ou mais categorias são invalidas.' }
         }
 
         // Upsert em lote usando transacao
@@ -161,7 +161,7 @@ export async function salvarOrcamentoLote(
         return { ok: true }
     } catch (error) {
         console.error('Erro ao salvar orcamentos em lote:', error)
-        return { ok: false, error: 'Erro ao salvar orcamentos em lote.' }
+        return { ok: false, error: 'Erro ao salvar orçamentos em lote.' }
     }
 }
 
@@ -175,11 +175,11 @@ export async function obterVariance(fundoId: number, ano: number) {
     const tenantId = await getTenantIdFromHeaders()
 
     if (!fundoId) {
-        return { ok: false, error: 'Fundo e obrigatorio.' }
+        return { ok: false, error: 'Fundo e obrigatório.' }
     }
 
     if (!ano || ano < 2000 || ano > 2100) {
-        return { ok: false, error: 'Ano invalido.' }
+        return { ok: false, error: 'Ano inválido.' }
     }
 
     try {
@@ -189,7 +189,7 @@ export async function obterVariance(fundoId: number, ano: number) {
         })
 
         if (!fundo) {
-            return { ok: false, error: 'Fundo nao encontrado.' }
+            return { ok: false, error: 'Fundo não encontrado.' }
         }
 
         // Buscar categorias do fundo
@@ -248,6 +248,6 @@ export async function obterVariance(fundoId: number, ano: number) {
         return { ok: true, dados: resultado }
     } catch (error) {
         console.error('Erro ao obter variance:', error)
-        return { ok: false, error: 'Erro ao obter analise de variancia.' }
+        return { ok: false, error: 'Erro ao obter análise de variancia.' }
     }
 }

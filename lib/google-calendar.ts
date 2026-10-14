@@ -125,7 +125,7 @@ export async function criarEventoGoogleCalendar(
         // return { ok: true, eventId: response.data.id }
 
         console.log(`[GoogleCalendar] Evento preparado: ${event.summary} (${calendarId})`)
-        return { ok: false, error: 'Google Calendar requer: npm install googleapis + configuracao no .env' }
+        return { ok: false, error: 'Google Calendar requer: npm install googleapis + configuração no .env' }
     } catch (error) {
         const message = error instanceof Error ? error.message : 'Erro desconhecido'
         console.error('[GoogleCalendar] Erro:', message)

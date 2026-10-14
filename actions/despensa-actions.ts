@@ -15,7 +15,7 @@ export async function cadastrarItemLoyverse(formData: FormData) {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
         const tenantId = await getTenantId();
         const LOYVERSE_TOKEN = await getLoyverseTokenForTenant(tenantId);
-        if (!LOYVERSE_TOKEN) return { error: "Loyverse nao configurado para este tenant." };
+        if (!LOYVERSE_TOKEN) return { error: "Loyverse não configurado para este tenant." };
 
         const nome = formData.get('nome') as string;
         const categoriaId = formData.get('categoria_id') as string;
@@ -63,7 +63,7 @@ export async function atualizarStockLoyverseAction(variantId: string, novoStock:
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
         const tenantId = await getTenantId();
         const token = await getLoyverseTokenForTenant(tenantId);
-        if (!token) return { ok: false, error: "Loyverse nao configurado para este tenant." };
+        if (!token) return { ok: false, error: "Loyverse não configurado para este tenant." };
 
         // 1. Descobrir o ID da Loja
         const storesRes = await fetch('https://api.loyverse.com/v1.0/stores', {
@@ -117,7 +117,7 @@ export async function atualizarPropriedadesItemLoyverse(
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
         const tenantId = await getTenantId();
         const token = await getLoyverseTokenForTenant(tenantId);
-        if (!token) return { ok: false, error: "Loyverse nao configurado para este tenant." };
+        if (!token) return { ok: false, error: "Loyverse não configurado para este tenant." };
 
         // 1. Puxar TODOS os items (Isto garante que temos a versão completa do item, com todas as variantes)
         const getRes = await fetch(`https://api.loyverse.com/v1.0/items?limit=250`, {
@@ -184,7 +184,7 @@ export async function salvarItemLoyverseAction(formData: FormData) {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN', 'FINANCE'])
         const tenantId = await getTenantId();
         const token = await getLoyverseTokenForTenant(tenantId);
-        if (!token) return { ok: false, error: "Loyverse nao configurado para este tenant." };
+        if (!token) return { ok: false, error: "Loyverse não configurado para este tenant." };
         const id = formData.get('id') as string;
         const nome = formData.get('nome') as string;
         const categoria_id = formData.get('categoria_id') as string;

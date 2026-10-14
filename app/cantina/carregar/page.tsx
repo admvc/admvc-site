@@ -97,7 +97,7 @@ export default async function CarregarSaldoPage() {
             {pedidosRecentes.length > 0 && (
                 <section className="space-y-3">
                     <h2 className="text-xs font-bold text-muted flex items-center gap-2">
-                        <CheckCircle size={12} /> Historico
+                        <CheckCircle size={12} /> Histórico
                     </h2>
                     <div className="space-y-2">
                         {pedidosRecentes.map(p => (

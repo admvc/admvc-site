@@ -18,12 +18,12 @@ export async function criarFundo(formData: FormData) {
     const restrito = formData.get('restrito') === 'true'
 
     if (!nome) {
-        return { ok: false, error: 'O nome do fundo e obrigatorio.' }
+        return { ok: false, error: 'O nome do fundo e obrigatório.' }
     }
 
     const tiposValidos = ['GERAL', 'CONSTRUCAO', 'MISSOES', 'SOCIAL', 'CANTINA', 'CUSTOM']
     if (!tiposValidos.includes(tipo)) {
-        return { ok: false, error: 'Tipo de fundo invalido.' }
+        return { ok: false, error: 'Tipo de fundo inválido.' }
     }
 
     try {
@@ -33,7 +33,7 @@ export async function criarFundo(formData: FormData) {
         })
 
         if (existente) {
-            return { ok: false, error: 'Ja existe um fundo com este nome.' }
+            return { ok: false, error: 'Já existe um fundo com este nome.' }
         }
 
         const fundo = await prisma.fundoFinanceiro.create({
@@ -70,7 +70,7 @@ export async function atualizarFundo(fundoId: number, formData: FormData) {
     const ativo = formData.get('ativo') !== 'false'
 
     if (!nome) {
-        return { ok: false, error: 'O nome do fundo e obrigatorio.' }
+        return { ok: false, error: 'O nome do fundo e obrigatório.' }
     }
 
     try {
@@ -80,7 +80,7 @@ export async function atualizarFundo(fundoId: number, formData: FormData) {
         })
 
         if (!fundo) {
-            return { ok: false, error: 'Fundo nao encontrado.' }
+            return { ok: false, error: 'Fundo não encontrado.' }
         }
 
         // Verificar unicidade do nome (excluindo o proprio)
@@ -93,7 +93,7 @@ export async function atualizarFundo(fundoId: number, formData: FormData) {
         })
 
         if (duplicado) {
-            return { ok: false, error: 'Ja existe outro fundo com este nome.' }
+            return { ok: false, error: 'Já existe outro fundo com este nome.' }
         }
 
         const atualizado = await prisma.fundoFinanceiro.update({
@@ -121,11 +121,11 @@ export async function criarCategoriaOrcamento(formData: FormData) {
     const fundo_id = Number(formData.get('fundo_id'))
 
     if (!nome) {
-        return { ok: false, error: 'O nome da categoria e obrigatorio.' }
+        return { ok: false, error: 'O nome da categoria e obrigatório.' }
     }
 
     if (!fundo_id || isNaN(fundo_id)) {
-        return { ok: false, error: 'Fundo invalido.' }
+        return { ok: false, error: 'Fundo inválido.' }
     }
 
     try {
@@ -135,7 +135,7 @@ export async function criarCategoriaOrcamento(formData: FormData) {
         })
 
         if (!fundo) {
-            return { ok: false, error: 'Fundo nao encontrado.' }
+            return { ok: false, error: 'Fundo não encontrado.' }
         }
 
         // Verificar unicidade: fundo_id + nome
@@ -144,7 +144,7 @@ export async function criarCategoriaOrcamento(formData: FormData) {
         })
 
         if (existente) {
-            return { ok: false, error: 'Ja existe uma categoria com este nome neste fundo.' }
+            return { ok: false, error: 'Já existe uma categoria com este nome neste fundo.' }
         }
 
         const categoria = await prisma.categoriaOrcamento.create({
@@ -159,7 +159,7 @@ export async function criarCategoriaOrcamento(formData: FormData) {
         return { ok: true, categoria }
     } catch (error) {
         console.error('Erro ao criar categoria:', error)
-        return { ok: false, error: 'Erro ao criar categoria de orcamento.' }
+        return { ok: false, error: 'Erro ao criar categoria de orçamento.' }
     }
 }
 
@@ -177,7 +177,7 @@ export async function transferirEntreFundos(formData: FormData) {
     const motivo = (formData.get('motivo') as string)?.trim()
 
     if (!fundo_origem_id || !fundo_destino_id || isNaN(fundo_origem_id) || isNaN(fundo_destino_id)) {
-        return { ok: false, error: 'Fundos de origem e destino sao obrigatorios.' }
+        return { ok: false, error: 'Fundos de origem e destino são obrigatórios.' }
     }
 
     if (fundo_origem_id === fundo_destino_id) {
@@ -189,7 +189,7 @@ export async function transferirEntreFundos(formData: FormData) {
     }
 
     if (!motivo) {
-        return { ok: false, error: 'O motivo da transferencia e obrigatorio.' }
+        return { ok: false, error: 'O motivo da transferência e obrigatório.' }
     }
 
     try {
@@ -204,11 +204,11 @@ export async function transferirEntreFundos(formData: FormData) {
         ])
 
         if (!fundoOrigem) {
-            return { ok: false, error: 'Fundo de origem nao encontrado ou inativo.' }
+            return { ok: false, error: 'Fundo de origem não encontrado ou inativo.' }
         }
 
         if (!fundoDestino) {
-            return { ok: false, error: 'Fundo de destino nao encontrado ou inativo.' }
+            return { ok: false, error: 'Fundo de destino não encontrado ou inativo.' }
         }
 
         // Validar saldo suficiente
@@ -243,6 +243,6 @@ export async function transferirEntreFundos(formData: FormData) {
         return { ok: true }
     } catch (error) {
         console.error('Erro ao transferir entre fundos:', error)
-        return { ok: false, error: 'Erro ao realizar transferencia.' }
+        return { ok: false, error: 'Erro ao realizar transferência.' }
     }
 }

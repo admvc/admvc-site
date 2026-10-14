@@ -99,7 +99,7 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
             <div className="space-y-4">
                     {scenes.length === 0 && (
                         <p className="text-[14px] text-muted text-center py-4 font-bold uppercase tracking-wide">
-                            Nenhum botao configurado. Clique em "Adicionar" para criar.
+                            Nenhum botão configurado. Clique em "Adicionar" para criar.
                         </p>
                     )}
 
@@ -110,9 +110,9 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
                                 {/* Linha 1: Nome + Tipo + Apagar */}
                                 <div className="flex flex-col sm:flex-row gap-3">
                                     <div className="flex-1 space-y-1">
-                                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Nome do botao</label>
+                                        <label className="text-[13px] font-bold uppercase tracking-wide text-muted">Nome do botão</label>
                                         <input type="text" value={scene.nome} onChange={e => update(scene.id, 'nome', e.target.value)}
-                                            placeholder="Ex: Oracao, Louvor, Flash..."
+                                            placeholder="Ex: Oração, Louvor, Flash..."
                                             className="w-full bg-bg2 border border-soft rounded-lg px-3 py-2 text-sm font-bold text-fg focus:border-figueira outline-none placeholder:text-muted/30" />
                                     </div>
 
@@ -232,7 +232,7 @@ export default function LumikitCenasEditor({ initialConfig }: Props) {
                 <p><strong>Push:</strong> Clica e executa o script uma vez (ex: flash, transicao).</p>
                 <p><strong>Toggle:</strong> Liga/desliga — usa 2 scripts diferentes (ex: ligar cena / desligar cena).</p>
                 <p><strong>Script ID:</strong> No Holyrics, va a Ferramentas &gt; Scripts e copie o ID do script que controla o Lumikit.</p>
-                <p>Os comandos sao enviados via API do Holyrics que ja esta conectado.</p>
+                <p>Os comandos são enviados via API do Holyrics que já esta conectado.</p>
             </div>
 
             {/* GUARDAR */}

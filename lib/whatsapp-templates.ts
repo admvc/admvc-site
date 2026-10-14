@@ -46,7 +46,7 @@ export const WHATSAPP_TEMPLATES: WhatsAppTemplate[] = [
     },
     {
         id: 'aniversario',
-        label: 'Parabens de Aniversario',
+        label: 'Parabens de Aniversário',
         categoria: 'aniversario',
         buildMessage: ({ nome }) =>
             `Feliz aniversario, *${nome}*! 🎂🎉\n\n` +

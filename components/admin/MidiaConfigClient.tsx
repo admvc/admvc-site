@@ -76,7 +76,7 @@ export default function MidiaConfigClient({ config }: { config: Config | null })
                     onTest={() => handleTest('holyrics')}
                 >
                     <div className="grid sm:grid-cols-2 gap-3">
-                        <InputField label="Endereco (URL)" name="holyrics_url" value={holyricsUrl} onChange={setHolyricsUrl}
+                        <InputField label="Endereço (URL)" name="holyrics_url" value={holyricsUrl} onChange={setHolyricsUrl}
                             placeholder="http://192.168.1.100:8090" />
                         <InputField label="Token de Acesso" name="holyrics_token" value={holyricsToken} onChange={setHolyricsToken}
                             placeholder="LGDaoWadzR7Bn4fS" />
@@ -94,7 +94,7 @@ export default function MidiaConfigClient({ config }: { config: Config | null })
                     onTest={() => handleTest('x32')}
                 >
                     <div className="grid sm:grid-cols-2 gap-3">
-                        <InputField label="Endereco IP" name="x32_ip" value={x32Ip} onChange={setX32Ip}
+                        <InputField label="Endereço IP" name="x32_ip" value={x32Ip} onChange={setX32Ip}
                             placeholder="192.168.1.50" />
                         <InputField label="Porta OSC" name="x32_port" value={x32Port} onChange={setX32Port}
                             placeholder="10023" type="number" />
@@ -111,7 +111,7 @@ export default function MidiaConfigClient({ config }: { config: Config | null })
                     testing={testing === 'lumikit'}
                     onTest={() => handleTest('lumikit')}
                 >
-                    <InputField label="Endereco (URL)" name="lumikit_url" value={lumikitUrl} onChange={setLumikitUrl}
+                    <InputField label="Endereço (URL)" name="lumikit_url" value={lumikitUrl} onChange={setLumikitUrl}
                         placeholder="http://192.168.1.60" />
                 </DeviceCard>
 

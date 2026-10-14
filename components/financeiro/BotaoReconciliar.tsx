@@ -41,7 +41,7 @@ export function BotaoReconciliar({ movimentoId }: { movimentoId: number }) {
                 type="text"
                 value={referencia}
                 onChange={e => setReferencia(e.target.value)}
-                placeholder="contribuicao:123 ou manual:Descricao"
+                placeholder="contribuicao:123 ou manual:Descrição"
                 className="h-8 px-2 bg-bg border border-soft rounded-lg text-xs text-fg placeholder:text-muted/50 focus:outline-none focus:ring-1 focus:ring-accent w-56"
                 onKeyDown={e => { if (e.key === 'Enter') handleReconciliar() }}
                 autoFocus

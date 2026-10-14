@@ -42,7 +42,7 @@ export default function BotaoImportarLoyverse() {
                 <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-4 flex items-start gap-3 animate-in fade-in duration-300">
                     <CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" />
                     <div className="text-[14px] font-bold uppercase tracking-wide text-emerald-700 space-y-1">
-                        <p>Importacao concluida com sucesso!</p>
+                        <p>Importação concluída com sucesso!</p>
                         <p className="text-emerald-600/70">
                             {resultado.categorias} categorias novas
                             {' · '}{resultado.produtosNovos} produtos novos

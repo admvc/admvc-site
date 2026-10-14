@@ -47,7 +47,7 @@ export default function FiltroAuditoria({
                         value={q}
                         onChange={e => setQ(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && aplicarFiltro({ q, categoria: categoriaActual, acao: acaoActual })}
-                        placeholder="Pesquisar por nome, descricao..."
+                        placeholder="Pesquisar por nome, descrição..."
                         className="w-full bg-bg2 border border-soft rounded-2xl pl-10 pr-4 py-3 text-sm font-medium text-fg focus:border-figueira outline-none transition-all placeholder:text-muted/40"
                     />
                 </div>
