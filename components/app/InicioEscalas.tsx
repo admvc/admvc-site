@@ -2,6 +2,7 @@
 // os meus ministerios, as minhas escalas (a proxima com os botoes grandes), as
 // meus grupos, as datas em que nao posso; a semana e os aniversariantes ao lado
 // (computador) ou logo a seguir a proxima escala (telemovel).
+import InscricoesAbertas from '@/components/app/InscricoesAbertas'
 import Link from 'next/link'
 import { CalendarHeart, FileSignature, Music2, Users } from 'lucide-react'
 import type { SessionData } from '@/lib/auth-utils'
@@ -46,6 +47,8 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
                     <Link href="/membros/termos" className="a-botao a-botao-principal !min-h-[44px]">Ler e aceitar</Link>
                 </section>
             )}
+
+            <InscricoesAbertas sessao={sessao} />
 
             <AtivarNotificacoes />
 

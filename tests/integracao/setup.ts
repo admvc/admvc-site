@@ -20,4 +20,10 @@ vi.mock('@/lib/mail', () => ({
     enviarEmailNotificacaoEquipa: async () => ({ ok: true }),
     enviarEmailBoasVindas: async () => ({ ok: true }),
     enviarEmailNovaSenha: async () => ({ ok: true }),
+    // Os testes contam as chamadas (globalThis.__emailsInscricao)
+    enviarEmailInscricaoConfirmada: async (d: unknown) => {
+        const g = globalThis as unknown as { __emailsInscricao?: unknown[] }
+        ;(g.__emailsInscricao ??= []).push(d)
+        return { ok: true }
+    },
 }))

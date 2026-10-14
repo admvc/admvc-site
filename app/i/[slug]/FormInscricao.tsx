@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { inscreverAction, type ResultadoInscricao } from '@/actions/inscricao-actions'
 import type { CampoEvento } from '@/lib/inscricoes'
 import { Loader2, CheckCircle2, Send } from 'lucide-react'
+import QRCode from 'react-qr-code'
 
 interface Props {
     slug: string
@@ -58,6 +59,12 @@ export default function FormInscricao({ slug, cor, campos, prefill, visitantes, 
                 <div className="rounded-2xl p-4 text-center" style={{ background: `${cor}14` }}>
                     <p className="text-sm uppercase tracking-widest opacity-70">O teu código</p>
                     <p className="text-4xl font-bold tracking-[0.2em]" style={{ color: cor }}>{resultado.codigo}</p>
+                    {resultado.codigo && (
+                        <div className="mt-3 inline-block bg-white p-3 rounded-xl">
+                            <QRCode value={resultado.codigo} size={140} fgColor="#3B2A22" />
+                        </div>
+                    )}
+                    <p className="text-sm opacity-70 mt-1">Mostra este código à entrada.</p>
                 </div>
                 {preco != null && preco > 0 && (
                     <div className="rounded-2xl p-4 space-y-1" style={{ border: `1px solid ${cor}40` }}>

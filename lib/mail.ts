@@ -197,3 +197,40 @@ export async function enviarEmailNovaSenha(nome: string, email: string, link: st
     return { ok: false };
   }
 }
+
+const escHtml = (t: string) => t.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!))
+
+/** Inscrição num evento confirmada pela organização (com o código e como pagar). */
+export async function enviarEmailInscricaoConfirmada(d: {
+  email: string; nome: string; titulo: string; quando: string; local: string | null
+  codigo: string; preco: number | null; pagamento: string | null; pago: boolean; cor: string; link: string
+}) {
+  const primeiro = escHtml(d.nome.trim().split(/\s+/)[0] || d.nome)
+  const pagar = d.preco && !d.pago
+    ? `<p style="font-size: 15px; line-height: 1.7; background:#fff7ed; border-radius: 12px; padding: 14px;">
+         <strong>Pagamento: ${d.preco.toLocaleString('pt-PT')} €</strong><br/>${escHtml(d.pagamento ?? '')}<br/>Na descrição, escreve o código <strong>${escHtml(d.codigo)}</strong>.
+       </p>`
+    : ''
+  try {
+    const r = await enviarEmail({
+      from: 'Igreja ADMVC <acolhimento@igrejaadmvc.org>',
+      to: d.email,
+      subject: `Inscrição confirmada — ${d.titulo}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; color: #3B2A22;">
+          <h1 style="font-family: Georgia, serif; color: ${d.cor}; font-weight: normal;">${escHtml(d.titulo)}</h1>
+          <p style="font-size: 16px;">Olá <strong>${primeiro}</strong>,</p>
+          <p style="font-size: 15px; line-height: 1.7;">A tua inscrição está <strong>confirmada</strong> ✅<br/>${escHtml(d.quando)}${d.local ? ` · ${escHtml(d.local)}` : ''}</p>
+          <p style="font-size: 15px;">O teu código: <strong style="font-size: 20px; letter-spacing: 3px; color: ${d.cor};">${escHtml(d.codigo)}</strong></p>
+          ${pagar}
+          <p style="font-size: 13px; color: #6b5b53;">Mais informações: <a href="${d.link}" style="color: ${d.cor};">${d.link.replace(/^https?:\/\//, '')}</a></p>
+        </div>
+      `,
+    })
+    if (!r.ok) { console.error('[INSCRICAO] Email:', r.error); return { ok: false } }
+    return { ok: true }
+  } catch (err) {
+    console.error('[INSCRICAO] Erro ao enviar email:', err)
+    return { ok: false }
+  }
+}

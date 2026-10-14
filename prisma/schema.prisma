@@ -1997,6 +1997,7 @@ model Inscricao {
   codigo              String          // referência para o pagamento
   consentimento_em    DateTime
   quer_contacto       Boolean         @default(false)
+  presente_em         DateTime?       // entrada no dia (para o sorteio entre as presentes)
   criado_em           DateTime        @default(now())
   atualizado_em       DateTime        @updatedAt
   tenant              Tenant          @relation(fields: [tenant_id], references: [id])

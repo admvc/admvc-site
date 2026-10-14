@@ -7,7 +7,7 @@ import { podeGerirEvento } from '@/lib/inscricoes-acesso'
 import { dataDoEvento, mensagemWhatsApp, linkWhatsApp, lerCampos } from '@/lib/inscricoes'
 import LinhaInscricao from './LinhaInscricao'
 import CopiarLink from './CopiarLink'
-import { ArrowLeft, Download, ExternalLink, Search } from 'lucide-react'
+import { ArrowLeft, Download, ExternalLink, Search, DoorOpen, Gift, Pencil } from 'lucide-react'
 
 const FILTROS = [
     { chave: 'todas', texto: 'Todas' },
@@ -94,6 +94,15 @@ export default async function GestaoInscricoesPage({ params, searchParams }: {
                 <a href={`/inscricoes/${evento.slug}/csv`} className="a-botao a-botao-secundario !min-h-[44px] !text-[15px]">
                     <Download size={16} aria-hidden /> Exportar (Excel)
                 </a>
+                <Link href={`/inscricoes/${evento.slug}/entrada`} className="a-botao a-botao-secundario !min-h-[44px] !text-[15px]">
+                    <DoorOpen size={16} aria-hidden /> Entrada no dia
+                </Link>
+                <Link href={`/inscricoes/${evento.slug}/sorteio`} className="a-botao a-botao-secundario !min-h-[44px] !text-[15px]">
+                    <Gift size={16} aria-hidden /> Sorteio
+                </Link>
+                <Link href={`/inscricoes/${evento.slug}/editar`} className="a-botao a-botao-secundario !min-h-[44px] !text-[15px]">
+                    <Pencil size={16} aria-hidden /> Editar evento
+                </Link>
             </section>
 
             <form method="get" className="flex items-center gap-2 a-card px-3">
