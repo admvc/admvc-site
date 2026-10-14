@@ -26,7 +26,7 @@ export default function SiteFooter() {
 
             <div className="text-sm text-muted2">
               Sede: Figueira da Foz<br />
-              Congregações: Leiria · Barcelos
+              Congregações: Montemor · Barcelos
             </div>
           </div>
 

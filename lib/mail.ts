@@ -18,7 +18,7 @@ export async function enviarEmailNotificacaoEquipa(dados: { nome: string, telefo
 
   const telefoneLimpo = dados.telefone.replace(/\D/g, '');
   const linkWhatsapp = `https://wa.me/${telefoneLimpo}`;
-  const linkDashboard = `https://igrejaadmvc.org/departamentos/acolhimento`;
+  const linkDashboard = `https://app.igrejaadmvc.org/departamentos/acolhimento`;
 
   try {
     const destinatario = process.env.NOTIFICATION_EMAIL || 'admvcff@gmail.com';

@@ -49,7 +49,7 @@ export default function SiteHeader({ logoUrl }: { logoUrl?: string | null }) {
 
           <div className="leading-tight">
             <div className="text-base font-semibold text-fg">{SITE_NAME}</div>
-            <div className="text-xs text-muted2">Figueira da Foz · Leiria · Barcelos</div>
+            <div className="text-xs text-muted2">Figueira da Foz · Montemor · Barcelos</div>
           </div>
         </Link>
 
