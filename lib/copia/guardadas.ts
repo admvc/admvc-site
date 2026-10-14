@@ -6,9 +6,12 @@
  * So se leem atraves da app (`/super-admin/copia/guardada`), com sessao de
  * Super Admin.
  *
- * Em testes (`COPIAS_PASTA_LOCAL=pasta`) ficam numa pasta do computador: o
- * `BLOB_READ_WRITE_TOKEN` do .env e o da producao, e uma base de teste nao
- * deve escrever la.
+ * Ficam num store PRIVADO proprio (`BLOB_COPIAS_TOKEN`): o das imagens
+ * (`BLOB_READ_WRITE_TOKEN`) e publico, e no Vercel Blob cada store e todo
+ * publico ou todo privado. Sem `BLOB_COPIAS_TOKEN`, usa o outro (como antes).
+ *
+ * Em testes (`COPIAS_PASTA_LOCAL=pasta`) ficam numa pasta do computador: os
+ * tokens do .env sao os da producao, e uma base de teste nao deve escrever la.
  *
  * Fora de `actions/` de proposito: grava sem validar quem pede.
  */
@@ -27,7 +30,8 @@ export interface CopiaGuardada {
 }
 
 const pastaLocal = () => process.env.COPIAS_PASTA_LOCAL || null
-const blobConfigurado = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN)
+const tokenCopias = () => process.env.BLOB_COPIAS_TOKEN || process.env.BLOB_READ_WRITE_TOKEN || ''
+const blobConfigurado = () => Boolean(tokenCopias())
 
 /** Grava a copia e devolve o caminho. Sem onde a guardar: rebenta. */
 export async function guardarCopia(json: string, motivo: string): Promise<string> {
@@ -47,6 +51,7 @@ export async function guardarCopia(json: string, motivo: string): Promise<string
         access: 'private',
         addRandomSuffix: true,
         contentType: 'application/json',
+        token: tokenCopias(),
     })
     return r.pathname
 }
@@ -66,7 +71,7 @@ export async function listarCopias(): Promise<CopiaGuardada[]> {
     const out: CopiaGuardada[] = []
     let cursor: string | undefined
     do {
-        const r = await list({ prefix: PREFIXO_COPIAS, cursor, limit: 1000 })
+        const r = await list({ prefix: PREFIXO_COPIAS, cursor, limit: 1000, token: tokenCopias() })
         out.push(...r.blobs.map((b) => ({ caminho: b.pathname, gravadaEm: new Date(b.uploadedAt), tamanho: b.size })))
         cursor = r.hasMore ? r.cursor : undefined
     } while (cursor)
@@ -86,6 +91,6 @@ export async function lerCopiaGuardada(caminho: string): Promise<ReadableStream 
         return readFile(join(local, caminho.slice(PREFIXO_COPIAS.length))).catch(() => null)
     }
     if (!blobConfigurado()) return null
-    const r = await get(caminho, { access: 'private' })
+    const r = await get(caminho, { access: 'private', token: tokenCopias() })
     return r && r.statusCode === 200 ? r.stream : null
 }
