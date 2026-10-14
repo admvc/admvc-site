@@ -234,6 +234,27 @@ export default function GestaoCongregacoesClient({
                                     <input name="longitude" type="number" step="any" defaultValue={selecionada?.longitude} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all" placeholder="Ex: -8.8613" />
                                 </div>
                             </div>
+                            <p className="text-[13px] font-bold uppercase tracking-wide text-muted mt-4 mb-2 ml-4">No site público (www.igrejaadmvc.org)</p>
+                            <input type="hidden" name="site_form" value="1" />
+                            <div className="space-y-4">
+                                <label className="flex items-center gap-3 ml-4 text-[14px] font-bold text-fg cursor-pointer">
+                                    <input type="checkbox" name="site_mostrar" defaultChecked={selecionada?.site_mostrar ?? true} className="h-4 w-4 accent-[#3f6b4f]" />
+                                    Mostrar no site
+                                </label>
+                                <p className="text-[13px] text-muted ml-4">
+                                    O site mostra só o nome, a cidade, a morada e o mapa — nunca o pastor, o telefone ou o email.
+                                </p>
+                                <div className="space-y-2">
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Descrição</label>
+                                    <textarea name="site_descricao" rows={2} maxLength={600} defaultValue={selecionada?.site_descricao ?? ''} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all resize-none" placeholder="Uma ou duas frases sobre esta congregação" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[14px] font-bold uppercase text-muted ml-4 tracking-wide">Horários</label>
+                                    <textarea name="site_horarios" rows={4} defaultValue={selecionada?.site_horarios ?? ''} className="w-full bg-bg border border-soft rounded-2xl px-5 py-4 text-xs font-bold text-fg outline-none focus:border-figueira transition-all font-mono" placeholder={'Uma linha por encontro, por exemplo:\nDomingo · 10:00 · Culto da Família\nQuarta-feira · 20:00 · Culto de oração'} />
+                                    <p className="text-[13px] text-muted ml-4">Dia · hora · nome do encontro (pode usar · ou |). Vazio = o site diz &quot;em definição&quot;.</p>
+                                </div>
+                            </div>
+
                             <div className="pt-4 border-t border-soft flex gap-3">
                                 <button disabled={loading} type="submit" className={`flex-1 py-4 rounded-2xl font-bold text-[14px] uppercase tracking-wide transition-all flex items-center justify-center gap-2 ${loading ? 'bg-muted text-bg' : 'bg-fg text-bg hover:bg-figueira'}`}>
                                     {loading ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}

@@ -165,6 +165,10 @@ model Congregacao {
   co_pastor     String?                // Co-pastor ou auxiliar
   telefone      String?
   email         String?
+  // Site público (www): só nome, cidade, morada e mapa saem; contactos ficam internos
+  site_mostrar   Boolean               @default(true)
+  site_descricao String?
+  site_horarios  String?               // uma linha por encontro: "Domingo · 10:00 · Culto da Família"
   tenant_id     Int
   createdAt     DateTime               @default(now())
   tenant              Tenant                 @relation(fields: [tenant_id], references: [id], onDelete: Cascade)

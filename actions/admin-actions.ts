@@ -977,6 +977,17 @@ export async function apagarEventoAction(id: number) {
     }
 }
 
+// O que vai para o site público. Formulários sem a secção do site (o assistente
+// inicial) não mexem nestes campos.
+function camposDoSite(formData: FormData) {
+    if (!formData.has('site_form')) return {}
+    return {
+        site_mostrar: formData.get('site_mostrar') === 'on',
+        site_descricao: (formData.get('site_descricao') as string)?.trim().slice(0, 600) || null,
+        site_horarios: (formData.get('site_horarios') as string)?.trim().slice(0, 2000) || null,
+    }
+}
+
 export async function criarCongregacao(formData: FormData) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
@@ -998,6 +1009,7 @@ export async function criarCongregacao(formData: FormData) {
                 email: (formData.get('email') as string)?.trim() || null,
                 latitude: formData.get('latitude') ? Number(formData.get('latitude')) || null : null,
                 longitude: formData.get('longitude') ? Number(formData.get('longitude')) || null : null,
+                ...camposDoSite(formData),
                 tenant_id: tenantId
             }
         });
@@ -1032,6 +1044,7 @@ export async function atualizarCongregacao(id: number, formData: FormData) {
                 email: (formData.get('email') as string)?.trim() || null,
                 latitude: formData.get('latitude') ? Number(formData.get('latitude')) || null : null,
                 longitude: formData.get('longitude') ? Number(formData.get('longitude')) || null : null,
+                ...camposDoSite(formData),
             }
         });
 
