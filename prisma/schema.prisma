@@ -2,6 +2,13 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Tabelas e campos para a copia e o restauro (o cliente do Prisma 7 ja nao os
+// traz). Ver tools/gerador-modelo.mjs.
+generator modelo {
+  provider = "node tools/gerador-modelo.mjs"
+  output   = "../generated/modelo.ts"
+}
+
 datasource db {
   provider = "postgresql"
 }
