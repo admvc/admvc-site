@@ -8,7 +8,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { MonitorUp, RefreshCw } from 'lucide-react'
 import { sincronizarAcervoLocal, ligarMusicasAoHolyrics } from '@/actions/louvor-actions'
-import { enviarParaHolyrics, SemLigacaoHolyrics, MENSAGEM_SEM_LIGACAO, type MusicaParaHolyrics } from '@/lib/holyrics-cliente'
+import { clienteHolyrics, enviarParaHolyrics, SemLigacaoHolyrics, MENSAGEM_SEM_LIGACAO, type MusicaParaHolyrics } from '@/lib/holyrics-cliente'
 
 export default function BotoesHolyrics({ url, token, musicas, podeSincronizar }: {
     url: string
@@ -19,15 +19,11 @@ export default function BotoesHolyrics({ url, token, musicas, podeSincronizar }:
     const router = useRouter()
     const [aviso, setAviso] = useState<{ ok: boolean; texto: string } | null>(null)
     const [ocupado, setOcupado] = useState(false)
-    const base = url.replace(/\/$/, '')
 
     type MusicaHolyrics = { id: string | number; title: string; artist?: string }
 
     async function pedir(caminho: string, corpo: object): Promise<{ status?: string; data?: MusicaHolyrics[] }> {
-        const r = await fetch(`${base}/api/${caminho}?token=${encodeURIComponent(token)}`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo),
-        })
-        return r.json()
+        return clienteHolyrics(url, token)(caminho, corpo) as Promise<{ status?: string; data?: MusicaHolyrics[] }>
     }
 
     async function enviar() {
@@ -67,7 +63,7 @@ export default function BotoesHolyrics({ url, token, musicas, podeSincronizar }:
             router.refresh()
         } catch (e) {
             const msg = e instanceof Error ? e.message : ''
-            setAviso({ ok: false, texto: msg.includes('fetch') ? 'Sem ligação ao Holyrics.' : (msg || 'Erro ao sincronizar.') })
+            setAviso({ ok: false, texto: e instanceof SemLigacaoHolyrics ? MENSAGEM_SEM_LIGACAO : (msg || 'Erro ao sincronizar.') })
         } finally { setOcupado(false) }
     }
 

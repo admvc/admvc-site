@@ -6,6 +6,7 @@ import {
     XCircle, Wifi, WifiOff, Settings
 } from 'lucide-react'
 import { salvarConfigMidia, testarConectividade } from '@/actions/midia-actions'
+import { testarHolyrics } from '@/lib/holyrics-cliente'
 
 interface Config {
     holyrics_url?: string | null
@@ -48,7 +49,10 @@ export default function MidiaConfigClient({ config }: { config: Config | null })
         setTesting(tipo)
         const url = tipo === 'holyrics' ? holyricsUrl : tipo === 'x32' ? x32Ip : lumikitUrl
         const token = tipo === 'holyrics' ? holyricsToken : undefined
-        const res = await testarConectividade(tipo, url, token)
+        // O Holyrics esta na rede da igreja: testa-se daqui, do navegador
+        const res = tipo === 'holyrics'
+            ? await testarHolyrics(url, token || '').then((t) => ({ ok: t.ok, info: t.ok ? undefined : t.texto }))
+            : await testarConectividade(tipo, url, token)
         if (tipo === 'holyrics') setTestHolyrics(res)
         if (tipo === 'x32') setTestX32(res)
         if (tipo === 'lumikit') setTestLumikit(res)

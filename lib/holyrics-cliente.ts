@@ -12,14 +12,19 @@ type MusicaHolyrics = { id: string | number; title: string; artist?: string }
 /** O navegador nao chegou ao Holyrics (outra rede, Holyrics fechado ou pedido bloqueado). */
 export class SemLigacaoHolyrics extends Error {}
 
+// O Holyrics exige JSON (sem ele: 415) e responde bem ao pedido previo (OPTIONS) do
+// navegador. `targetAddressSpace`: o Chrome deixa uma pagina https falar com um aparelho
+// em http na rede local (pede autorizacao uma vez).
+const OPCOES = (corpo: object) => ({
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo), targetAddressSpace: 'local',
+}) as RequestInit
+
 export function clienteHolyrics(url: string, token: string) {
     const base = url.replace(/\/$/, '')
     return async function pedir(acao: string, corpo: object = {}): Promise<Resposta> {
         let r: Response
         try {
-            r = await fetch(`${base}/api/${acao}?token=${encodeURIComponent(token)}`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo),
-            })
+            r = await fetch(`${base}/api/${acao}?token=${encodeURIComponent(token)}`, OPCOES(corpo))
         } catch {
             throw new SemLigacaoHolyrics()
         }
@@ -83,3 +88,21 @@ export async function enviarParaHolyrics(
 
 export const MENSAGEM_SEM_LIGACAO =
     'Não chegou ao Holyrics. Abra esta página no computador da mídia, com o Holyrics aberto e na rede da igreja.'
+
+/** Testa a ligacao a partir do navegador (o servidor da app nunca chega a rede da igreja). */
+export async function testarHolyrics(url: string, token: string): Promise<{ ok: boolean; texto: string }> {
+    if (!url || !token) return { ok: false, texto: 'Falta o endereço ou o token.' }
+    let r: Response
+    try {
+        r = await fetch(`${url.replace(/\/$/, '')}/api/GetLyricsPlaylist?token=${encodeURIComponent(token)}`, OPCOES({}))
+    } catch {
+        return { ok: false, texto: MENSAGEM_SEM_LIGACAO }
+    }
+    const j: Resposta | null = await r.json().catch(() => null)
+    if (!j) return {
+        ok: false,
+        texto: `O endereço responde (${r.status}), mas não é a API do Holyrics. No Holyrics: Arquivo → Configurações → API Server: ative-o e use aqui a porta que lá aparece.`,
+    }
+    if (j.status === 'ok') return { ok: true, texto: 'Ligado ao Holyrics.' }
+    return { ok: false, texto: `O Holyrics respondeu: ${j.error || 'erro'}. Veja o token e as permissões dele no Holyrics.` }
+}
