@@ -662,8 +662,16 @@ model ProjetoObra {
   id            String      @id @default(cuid())
   titulo        String
   descricao     String
-  objetivoFinal Float
+  objetivoFinal Float       // valor total da obra
   videoUrl      String?
+  // Campanha dos tijolos (modelo do VOLTA): o dinheiro é o dado; os tijolos saem dele
+  valorTijolo   Float       @default(1000)
+  arrecadado    Float       @default(0)   // escrito à mão pelo financeiro
+  contribuintes Int         @default(0)   // quantos contribuem mensalmente
+  chamada       String?
+  versiculo     String?
+  versiculoRef  String?
+  atualizadoEm  DateTime    @default(now()) @updatedAt
   tenant_id     Int
   etapas        EtapaObra[]
   tenant        Tenant      @relation(fields: [tenant_id], references: [id])
@@ -671,6 +679,7 @@ model ProjetoObra {
   @@index([tenant_id])
 }
 
+// Já não se usa (a obra passou a tijolos, 14/10/2026); fica para não perder dados.
 model EtapaObra {
   id              String      @id @default(cuid())
   projeto_obra_id String

@@ -1,144 +1,50 @@
-// components/financeiro/GestaoObraWidget.tsx
-import prisma from '@/lib/prisma'
-import { revalidatePath } from 'next/cache'
-import { Building2, Save } from 'lucide-react'
-
+// components/financeiro/GestaoObraWidget.tsx — resumo da obra na tesouraria;
+// os valores mudam-se na página da obra.
+import Link from 'next/link'
+import { Building2, Pencil } from 'lucide-react'
 import { getSessionData } from '@/lib/auth-utils'
+import { obraDaIgreja } from '@/lib/obra'
+import { contasObra } from '@/lib/obra-tijolos'
+import IgrejaTijolos from '@/components/obra/IgrejaTijolos'
+
+const euro = (v: number) => new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(v)
 
 export default async function GestaoObraWidget() {
-    const session = await getSessionData();
-    if (!session) return null;
+    const session = await getSessionData()
+    if (!session) return null
 
-    const membro = await prisma.membro.findUnique({
-        where: { id: session.membroId },
-        select: { tenant_id: true }
-    });
-
-    if (!membro) return null;
-
-    // 1. Busca o projeto ou cria um padrão se não existir
-    let projeto = await prisma.projetoObra.findFirst({
-        where: { tenant_id: membro.tenant_id },
-        include: { etapas: { orderBy: { ordem: 'asc' } } }
-    });
-
-    if (!projeto) {
-        projeto = await prisma.projetoObra.create({
-            data: {
-                tenant_id: membro.tenant_id,
-                titulo: "Campanha de Construção: Nossa Sede",
-                descricao: "Acompanhe os passos de fé para a nossa sede na Figueira da Foz.",
-                objetivoFinal: 750000,
-                etapas: {
-                    create: [
-                        { tenant_id: membro.tenant_id, nome: "1. Terreno", alvo: 150000, atual: 0, ordem: 1 },
-                        { tenant_id: membro.tenant_id, nome: "2. Estrutura", alvo: 300000, atual: 0, ordem: 2 },
-                        { tenant_id: membro.tenant_id, nome: "3. Acabamentos", alvo: 300000, atual: 0, ordem: 3 }
-                    ]
-                }
-            },
-            include: { etapas: true }
-        });
-    }
-
-    // 2. Action para guardar os valores diretamente do Dashboard
-    async function salvarProgresso(formData: FormData) {
-        'use server'
-        const objFinal = Number(formData.get('objetivoFinal'));
-        const projetoId = formData.get('projetoId') as string;
-
-        if (objFinal > 0) {
-            await prisma.projetoObra.update({ where: { id: projetoId }, data: { objetivoFinal: objFinal } });
-        }
-
-        for (const [key, value] of Array.from(formData.entries())) {
-            if (key.startsWith('etapa_')) {
-                const etapaId = key.replace('etapa_', '');
-                const valorAtual = Number(value);
-                await prisma.etapaObra.update({
-                    where: { id: etapaId },
-                    data: { atual: valorAtual }
-                });
-            }
-        }
-
-        revalidatePath('/'); // Atualiza o site público
-        revalidatePath('/departamentos/financeiro/dashboard'); // Atualiza a dashboard atual
-    }
-
-    const euro = (valor: number) =>
-        new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(valor);
-
-    const totalArrecadado = projeto.etapas.reduce((acc, curr) => acc + curr.atual, 0);
-    const porcentagemGeral = projeto.objetivoFinal > 0 ? Math.min(100, Math.round((totalArrecadado / projeto.objetivoFinal) * 100)) : 0;
+    const obra = await obraDaIgreja(session.tenantId)
+    const c = contasObra({ valorObra: obra.objetivoFinal, valorTijolo: obra.valorTijolo, arrecadado: obra.arrecadado })
+    const podeEditar = session.role === 'ADMIN' || session.role === 'FINANCE'
 
     return (
-        <div className="bg-bg2 border border-soft p-6 rounded-2xl shadow-sm flex flex-col h-full">
-            {/* Cabeçalho Compacto */}
-            <div className="flex justify-between items-start mb-6">
+        <div className="bg-bg2 border border-soft p-6 rounded-2xl shadow-sm flex flex-col gap-4 h-full">
+            <div className="flex justify-between items-start">
                 <div>
                     <div className="inline-flex items-center gap-1.5 text-green-500 font-bold text-[13px] uppercase tracking-wide mb-1">
-                        <Building2 size={12} /> Gestão da Obra
+                        <Building2 size={12} /> {obra.titulo}
                     </div>
-                    <h3 className="text-xl font-bold text-fg leading-none">
-                        Progresso Financeiro
-                    </h3>
+                    <p className="text-xl font-bold text-fg leading-none valor-dinheiro">{euro(obra.arrecadado)} <span className="text-sm text-muted">de {euro(obra.objetivoFinal)}</span></p>
                 </div>
-                <div className="text-right bg-green-500/10 px-3 py-1.5 rounded-xl border border-green-500/20">
-                    <span className="text-xs font-bold text-green-600">{porcentagemGeral}%</span>
+                <span className="text-xs font-bold text-green-600 bg-green-500/10 px-3 py-1.5 rounded-xl border border-green-500/20">
+                    {Math.floor(c.pct)}%
+                </span>
+            </div>
+
+            <div className="flex items-center gap-4">
+                <IgrejaTijolos colocados={c.colocados} total={c.total} className="w-32 shrink-0 text-fg" />
+                <div className="space-y-1 text-sm">
+                    <p><b className="valor-dinheiro" style={{ color: '#C1663A' }}>{c.colocados}</b> <span className="text-muted">tijolos colocados</span></p>
+                    <p><b className="valor-dinheiro text-fg">{c.faltam}</b> <span className="text-muted">ainda faltam</span></p>
+                    <p><b className="valor-dinheiro text-fg">{obra.contribuintes}</b> <span className="text-muted">contribuem por mês</span></p>
                 </div>
             </div>
 
-            <form action={salvarProgresso} className="space-y-4 flex-1 flex flex-col">
-                <input type="hidden" name="projetoId" value={projeto.id} />
-
-                {/* Resumo Global (Mais apertado) */}
-                <div className="flex items-center justify-between bg-bg border border-soft p-4 rounded-2xl">
-                    <div>
-                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted block">Arrecadado</span>
-                        <span className="text-lg font-bold valor-dinheiro text-green-500">{euro(totalArrecadado)}</span>
-                    </div>
-                    <div className="text-right">
-                        <span className="text-[13px] font-bold uppercase tracking-wide text-muted block mb-1">Objetivo (€)</span>
-                        <input
-                            type="number"
-                            name="objetivoFinal"
-                            defaultValue={projeto.objetivoFinal}
-                            className="bg-bg2 border border-soft p-2 rounded-xl text-sm valor-dinheiro font-bold text-fg text-right w-28 outline-none focus:border-green-500 transition-colors"
-                        />
-                    </div>
-                </div>
-
-                {/* Lista de Etapas Compacta */}
-                <div className="space-y-3 flex-1 mt-2">
-                    <h4 className="text-[14px] font-bold uppercase tracking-wide text-muted border-b border-soft pb-2">Etapas / Fases</h4>
-                    {projeto.etapas.map((etapa) => (
-                        <div key={etapa.id} className="flex items-center justify-between gap-4 border-b border-soft/50 pb-3 last:border-0 last:pb-0">
-                            <div className="flex-1 overflow-hidden">
-                                <h4 className="font-bold text-fg uppercase text-[14px] truncate">{etapa.nome}</h4>
-                                <span className="text-[13px] font-bold text-muted valor-dinheiro uppercase tracking-wide block truncate">
-                                    Alvo: {euro(etapa.alvo)}
-                                </span>
-                            </div>
-                            <div className="shrink-0 w-28">
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    name={`etapa_${etapa.id}`}
-                                    defaultValue={etapa.atual}
-                                    placeholder="Atual €"
-                                    className="w-full bg-bg border border-soft rounded-xl p-2.5 valor-dinheiro text-xs font-bold text-fg text-right focus:border-green-500 outline-none transition-colors"
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Botão Salvar Compacto */}
-                <button type="submit" className="w-full mt-2 flex justify-center items-center gap-2 bg-green-600 text-white p-3.5 rounded-xl text-[14px] font-bold uppercase tracking-wide hover:bg-green-700 transition-all active:scale-95 shadow-md">
-                    <Save size={14} /> Atualizar Site
-                </button>
-            </form>
+            {podeEditar && (
+                <Link href="/departamentos/financeiro/obra" className="mt-auto flex justify-center items-center gap-2 bg-green-600 text-white p-3 rounded-xl text-[14px] font-bold uppercase tracking-wide hover:bg-green-700 transition-all">
+                    <Pencil size={14} /> Atualizar valores
+                </Link>
+            )}
         </div>
-    );
+    )
 }

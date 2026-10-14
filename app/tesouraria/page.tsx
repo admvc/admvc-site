@@ -361,8 +361,8 @@ export default async function DashboardFinanceiro() {
             <section className="grid xl:grid-cols-2 gap-6">
                 <SecaoColapsavel
                     icon={<Target size={18} />}
-                    titulo="Progresso Financeiro"
-                    subtitulo="Acompanhamento da Obra"
+                    titulo="A nossa obra"
+                    subtitulo="Campanha dos tijolos"
                     corIcone="text-figueira bg-figueira/10"
                 >
                     <GestaoObraWidget />

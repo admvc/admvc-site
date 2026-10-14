@@ -41,6 +41,12 @@ const nextConfig = {
                 ],
             },
             {
+                // A obra (números agregados, só leitura) também é lida pelo telão do
+                // VOLTA, noutro domínio. Vem depois da regra acima, por isso ganha.
+                source: '/api/public/obra',
+                headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
+            },
+            {
                 source: '/(.*)',
                 headers: [
                     {
