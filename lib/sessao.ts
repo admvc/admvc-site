@@ -25,7 +25,7 @@ export interface MembroParaSessao {
 }
 
 /** Grava a sessao do membro. `segundos` e a validade (por omissao, 7 dias). */
-export async function criarSessaoMembro(m: MembroParaSessao, segundos = 60 * 60 * 24 * 7) {
+export async function criarSessaoMembro(m: MembroParaSessao, segundos = 60 * 60 * 24 * 7, impersonadoPorSA?: number) {
     const valor = await assinarSessao({
         t: 'm',
         id: m.id,
@@ -33,6 +33,7 @@ export async function criarSessaoMembro(m: MembroParaSessao, segundos = 60 * 60 
         role: m.role,
         plano: m.plano || 'FREE',
         ...(m.congregacao_id ? { cong: m.congregacao_id } : {}),
+        ...(impersonadoPorSA ? { imp: impersonadoPorSA } : {}),
         pw: await impressaoDaSenha(m.password),
         exp: Math.floor(Date.now() / 1000) + segundos,
     })

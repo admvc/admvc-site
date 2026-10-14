@@ -3,7 +3,7 @@
 
 import { cookies } from './cookies'
 import prisma from '@/lib/prisma'
-import { assinarSessao, impressaoDaSenha, COOKIE_MEMBRO } from '@/lib/sessao-core'
+import { assinarSessao, impressaoDaSenha, COOKIE_MEMBRO, COOKIE_SA } from '@/lib/sessao-core'
 
 export async function membroPorEmail(email: string) {
     const m = await prisma.membro.findUnique({ where: { email } })
@@ -19,6 +19,16 @@ export async function entrarComo(email: string) {
         pw: await impressaoDaSenha(m.password), exp: Math.floor(Date.now() / 1000) + 3600,
     }))
     return m
+}
+
+/** Passa a "estar com sessao" do Cloud (Super Admin) com este email. */
+export async function entrarComoSA(email: string) {
+    const sa = await prisma.superAdmin.findUnique({ where: { email } })
+    if (!sa) throw new Error(`Falta o Super Admin ${email} na base de teste`)
+    cookies.set(COOKIE_SA, await assinarSessao({
+        t: 'sa', sa: sa.id, pw: await impressaoDaSenha(sa.password), exp: Math.floor(Date.now() / 1000) + 3600,
+    }))
+    return sa
 }
 
 export function sair() {

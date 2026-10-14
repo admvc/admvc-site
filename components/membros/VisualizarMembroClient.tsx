@@ -10,7 +10,7 @@ import {
 import Image from "next/image";
 import Breadcrumb from '@/components/ui/Breadcrumb'
 
-export default function VisualizarMembroClient({ membro }: any) {
+export default function VisualizarMembroClient({ membro, cantinaAtiva = true }: any) {
     const [abaAtiva, setAbaAtiva] = useState(1);
 
     const departamentos = membro.ministerios?.map((m: any) => ({
@@ -255,8 +255,8 @@ export default function VisualizarMembroClient({ membro }: any) {
 
                 {abaAtiva === 5 && (
                     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        {/* LOYVERSE INFO NO TOPO DA ABA DE SERVIÇO */}
-                        <div className="p-6 bg-figueira/5 border border-figueira/20 rounded-3xl flex items-center justify-between gap-4 max-w-xl">
+                        {/* LOYVERSE INFO NO TOPO DA ABA DE SERVIÇO (só com a Cantina ligada) */}
+                        {cantinaAtiva && <div className="p-6 bg-figueira/5 border border-figueira/20 rounded-3xl flex items-center justify-between gap-4 max-w-xl">
                             <div className="flex items-center gap-4">
                                 <div className="bg-figueira text-white p-3 rounded-xl shadow-md"><CreditCard size={20} /></div>
                                 <div>
@@ -265,7 +265,7 @@ export default function VisualizarMembroClient({ membro }: any) {
                                 </div>
                             </div>
                             {membro.loyverse_id && <CheckCircle2 size={24} className="text-figueira opacity-50" />}
-                        </div>
+                        </div>}
 
                         <ListGroup title="Departamentos & Funções" items={departamentos} color="bg-fg text-bg" icon={<ShieldCheck size={14} />} showFuncao={true} />
                         <ListGroup title="Grupos & PGs" items={todosGrupos} color="bg-blue-600 text-white" icon={<Users2 size={14} />} />

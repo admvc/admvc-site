@@ -3,17 +3,13 @@
 import { useState } from 'react'
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfMonth, endOfMonth, isToday } from 'date-fns'
 import { pt } from 'date-fns/locale'
-import { ChevronLeft, ChevronRight, Calendar, Clock, MapPin, Users, Trash2, Loader2 } from 'lucide-react'
-import { apagarEventoAction } from '@/actions/admin-actions'
+import { ChevronLeft, ChevronRight, Calendar, Clock, MapPin, Users } from 'lucide-react'
 import ModalEditarEvento from '@/components/admin/ModalEditarEvento'
-import { useConfirm, useToast } from '@/components/ui/ConfirmDialog'
+import BotaoApagarEvento from '@/components/admin/BotaoApagarEvento'
 
 export default function CalendarioAgenda({ eventos, congregacoes }: { eventos: any[]; congregacoes?: { id: number; nome: string; cidade: string }[] }) {
-    const confirmar = useConfirm()
-    const toast = useToast()
     const [mesAtual, setMesAtual] = useState(new Date())
     const [diaSelecionado, setDiaSelecionado] = useState(new Date())
-    const [isDeleting, setIsDeleting] = useState<number | null>(null)
 
     const inicioDoMes = startOfMonth(mesAtual)
     const fimDoMes = endOfMonth(mesAtual)
@@ -25,18 +21,6 @@ export default function CalendarioAgenda({ eventos, congregacoes }: { eventos: a
 
     const proximoMes = () => setMesAtual(addMonths(mesAtual, 1))
     const mesAnterior = () => setMesAtual(subMonths(mesAtual, 1))
-
-    const handleApagarEvento = async (eventoId: number) => {
-        const ok = await confirmar({ mensagem: 'Tem a certeza que deseja cancelar e apagar este evento? Esta ação removerá também as equipas escaladas.', tipo: 'perigo' })
-        if (!ok) return
-        setIsDeleting(eventoId);
-        const res = await apagarEventoAction(eventoId);
-        setIsDeleting(null);
-
-        if (!res.ok) {
-            toast(res.error, 'erro');
-        }
-    }
 
     return (
         <div className="grid lg:grid-cols-12 gap-8 items-start">
@@ -135,15 +119,9 @@ return (
                                         {/* O TEU MODAL DE EDITAR ENTRA AQUI */}
                                         <ModalEditarEvento evento={ev} congregacoes={congregacoes} />
 
-                                        {/* O TEU BOTÃO DE APAGAR (Ajustei um pouco as margens para não colidir) */}
-                                        <button
-                                            onClick={() => handleApagarEvento(ev.id)}
-                                            disabled={isDeleting === ev.id}
-                                            title="Apagar Evento"
-                                            className="p-2.5 bg-red-500/5 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-colors active:scale-90 disabled:opacity-50 border border-red-500/10 shadow-sm"
-                                        >
-                                            {isDeleting === ev.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
-                                        </button>
+                                        {/* Apagar: este culto ou este e os seguintes da série */}
+                                        <BotaoApagarEvento id={ev.id} nome={ev.nome} tamanho={14}
+                                            className="p-2.5 bg-red-500/5 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-colors active:scale-90 disabled:opacity-50 border border-red-500/10 shadow-sm" />
                                     </div>
 
                                     {/* DETALHES DO EVENTO */}

@@ -87,10 +87,13 @@ export async function middleware(request: NextRequest) {
         || pathname.startsWith('/boleia')
         || pathname.startsWith('/assistencia')
         || pathname.startsWith('/financeiro')
+        || pathname.startsWith('/inscricoes')
 
     // 2. Sem sessão em rota protegida → login
     if ((isMembrosProtected || isAdminProtected || isModuleProtected) && !session) {
-        return irPara('/membros/login', request, apagar)
+        // Depois de entrar, volta a esta página
+        const volta = pathname + request.nextUrl.search
+        return irPara(`/membros/login?volta=${encodeURIComponent(volta)}`, request, apagar)
     }
 
     // 3. Com sessão → extrair dados e verificar permissões
@@ -137,6 +140,7 @@ export const config = {
         '/escalas/:path*',
         '/grupos/:path*',
         '/departamentos/:path*',
+        '/inscricoes/:path*',
         '/gabinete/:path*',
         '/inventario/:path*',
         '/midia/:path*',

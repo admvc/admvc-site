@@ -5,13 +5,16 @@ import { useRouter } from 'next/navigation'
 import {
     Building, MapPin, Users, UserCog, CheckCircle2,
     Loader2, Plus, Palette, ArrowRight, ArrowLeft,
-    Globe, ToggleLeft, ToggleRight, ExternalLink, Pencil
+    Globe, ToggleLeft, ToggleRight, ExternalLink, Pencil, Trash2
 } from 'lucide-react'
 import {
     atualizarBrandingIgreja,
     criarCongregacaoSA,
     atualizarCongregacaoSA,
     criarDepartamentoSA,
+    atualizarDepartamentoSA,
+    eliminarDepartamentoSA,
+    eliminarCongregacaoSA,
     atualizarAdminIgreja,
     marcarOnboardingCompleto,
     impersonarIgreja,
@@ -59,13 +62,14 @@ interface Props {
 
 const STEPS = [
     { num: 1, label: 'Dados da Igreja', icon: Building },
-    { num: 2, label: 'Congregacoes', icon: MapPin },
+    { num: 2, label: 'Congregações', icon: MapPin },
     { num: 3, label: 'Departamentos', icon: Users },
     { num: 4, label: 'Admin', icon: UserCog },
     { num: 5, label: 'Checklist', icon: CheckCircle2 },
 ]
 
 const CONG_VAZIA = { nome: '', cidade: '', endereco: '', editandoId: null as number | null }
+const DEP_VAZIO = { nome: '', descricao: '', isGlobal: false, editandoId: null as number | null }
 
 export default function OnboardingWizard({ igreja, congregacoes, departamentos, admin, initialStep }: Props) {
     const router = useRouter()
@@ -73,6 +77,7 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
     const [loading, setLoading] = useState(false)
     const [msg, setMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
     const [congForm, setCongForm] = useState(CONG_VAZIA)
+    const [depForm, setDepForm] = useState(DEP_VAZIO)
 
     function goStep(n: number) {
         setStep(n)
@@ -161,6 +166,19 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
             setMsg(null)
         }
 
+        async function apagar(c: Congregacao) {
+            if (!window.confirm(`Apagar a congregação "${c.nome}"? Os membros, departamentos e grupos dela ficam sem congregação (não se perdem).`)) return
+            setLoading(true)
+            const res = await eliminarCongregacaoSA(igreja.id, c.id)
+            setLoading(false)
+            if (res.error) setMsg({ type: 'err', text: res.error })
+            else {
+                setMsg({ type: 'ok', text: res.message || 'Apagada.' })
+                if (editandoId === c.id) limpar()
+                router.refresh()
+            }
+        }
+
         async function handleAdd() {
             setLoading(true)
             const fd = new FormData()
@@ -183,7 +201,7 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
             <div className="space-y-6">
                 {congregacoes.length > 0 && (
                     <div className="space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Congregacoes Existentes ({congregacoes.length})</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Congregações existentes ({congregacoes.length})</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {congregacoes.map(c => (
                                 <div key={c.id} className={`bg-[#1A1A1A] border rounded-xl p-4 flex items-start gap-3 ${editandoId === c.id ? 'border-blue-500' : 'border-[#333]'}`}>
@@ -192,10 +210,16 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
                                         <p className="text-sm font-bold text-white">{c.nome}</p>
                                         <p className="text-xs text-gray-500">{c.cidade} - {c.endereco}</p>
                                     </div>
-                                    <button type="button" onClick={() => editar(c)}
-                                        className="shrink-0 flex items-center gap-1.5 rounded-lg border border-[#333] px-3 py-1.5 text-xs font-bold text-gray-300 hover:border-blue-500 hover:text-white">
-                                        <Pencil size={12} /> Editar
-                                    </button>
+                                    <div className="shrink-0 flex gap-1.5">
+                                        <button type="button" onClick={() => editar(c)}
+                                            className="flex items-center gap-1.5 rounded-lg border border-[#333] px-3 py-1.5 text-xs font-bold text-gray-300 hover:border-blue-500 hover:text-white">
+                                            <Pencil size={12} /> Editar
+                                        </button>
+                                        <button type="button" onClick={() => apagar(c)} disabled={loading} aria-label={`Apagar ${c.nome}`}
+                                            className="flex items-center rounded-lg border border-[#333] px-2.5 py-1.5 text-gray-400 hover:border-red-500 hover:text-red-400 disabled:opacity-50">
+                                            <Trash2 size={12} />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -226,10 +250,15 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
     }
 
     // ── Step 3: Departamentos ──
+    // Estado fora do passo (como nas congregações): os passos são recriados a cada render
     function Step3() {
-        const [nome, setNome] = useState('')
-        const [descricao, setDescricao] = useState('')
-        const [isGlobal, setIsGlobal] = useState(false)
+        const { nome, descricao, isGlobal, editandoId } = depForm
+        const mudar = (campos: Partial<typeof DEP_VAZIO>) => setDepForm(f => ({ ...f, ...campos }))
+
+        function editar(d: Departamento) {
+            setDepForm({ nome: d.nome, descricao: d.descricao || '', isGlobal: d.is_global, editandoId: d.id })
+            setMsg(null)
+        }
 
         async function handleAdd() {
             setLoading(true)
@@ -237,12 +266,27 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
             fd.set('nome', nome)
             fd.set('descricao', descricao)
             fd.set('is_global', isGlobal.toString())
-            const res = await criarDepartamentoSA(igreja.id, fd)
+            const res = editandoId
+                ? await atualizarDepartamentoSA(igreja.id, editandoId, fd)
+                : await criarDepartamentoSA(igreja.id, fd)
             setLoading(false)
             if (res.error) setMsg({ type: 'err', text: res.error })
             else {
-                setMsg({ type: 'ok', text: res.message || 'Criado!' })
-                setNome(''); setDescricao(''); setIsGlobal(false)
+                setMsg({ type: 'ok', text: res.message || 'Guardado!' })
+                setDepForm(DEP_VAZIO)
+                router.refresh()
+            }
+        }
+
+        async function apagar(d: Departamento) {
+            if (!window.confirm(`Apagar o departamento "${d.nome}"? Os integrantes saem dele. Se tiver escalas, não deixamos apagar.`)) return
+            setLoading(true)
+            const res = await eliminarDepartamentoSA(igreja.id, d.id)
+            setLoading(false)
+            if (res.error) setMsg({ type: 'err', text: res.error })
+            else {
+                setMsg({ type: 'ok', text: res.message || 'Apagado.' })
+                if (editandoId === d.id) setDepForm(DEP_VAZIO)
                 router.refresh()
             }
         }
@@ -254,12 +298,22 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
                         <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Departamentos ({departamentos.length})</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                             {departamentos.map(d => (
-                                <div key={d.id} className="bg-[#1A1A1A] border border-[#333] rounded-xl p-4 flex items-start gap-3">
+                                <div key={d.id} className={`bg-[#1A1A1A] border rounded-xl p-4 flex items-start gap-3 ${editandoId === d.id ? 'border-purple-500' : 'border-[#333]'}`}>
                                     <Users size={16} className="text-purple-400 mt-0.5 shrink-0" />
-                                    <div>
+                                    <div className="min-w-0 flex-1">
                                         <p className="text-sm font-bold text-white">{d.nome}</p>
                                         {d.descricao && <p className="text-xs text-gray-500">{d.descricao}</p>}
                                         {d.is_global && <span className="text-[9px] font-black uppercase tracking-widest text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full mt-1 inline-block">Global</span>}
+                                    </div>
+                                    <div className="shrink-0 flex gap-1.5">
+                                        <button type="button" onClick={() => editar(d)} aria-label={`Editar ${d.nome}`}
+                                            className="flex items-center rounded-lg border border-[#333] px-2.5 py-1.5 text-gray-300 hover:border-purple-500 hover:text-white">
+                                            <Pencil size={12} />
+                                        </button>
+                                        <button type="button" onClick={() => apagar(d)} disabled={loading} aria-label={`Apagar ${d.nome}`}
+                                            className="flex items-center rounded-lg border border-[#333] px-2.5 py-1.5 text-gray-400 hover:border-red-500 hover:text-red-400 disabled:opacity-50">
+                                            <Trash2 size={12} />
+                                        </button>
                                     </div>
                                 </div>
                             ))}
@@ -268,21 +322,28 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
                 )}
 
                 <div className="border border-[#333] rounded-xl p-5 space-y-4 bg-[#111]">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-purple-400">Adicionar Departamento</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-purple-400">{editandoId ? 'Editar departamento' : 'Adicionar departamento'}</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input value={nome} onChange={e => setNome(e.target.value)} placeholder="Nome do Departamento" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-purple-500" />
-                        <input value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Descrição (opcional)" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-purple-500" />
+                        <input value={nome} onChange={e => mudar({ nome: e.target.value })} placeholder="Nome do Departamento" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-purple-500" />
+                        <input value={descricao} onChange={e => mudar({ descricao: e.target.value })} placeholder="Descrição (opcional)" className="bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-purple-500" />
                     </div>
                     <div className="flex items-center gap-3">
-                        <button type="button" onClick={() => setIsGlobal(!isGlobal)} className="text-gray-400 hover:text-white transition-colors">
+                        <button type="button" onClick={() => mudar({ isGlobal: !isGlobal })} className="text-gray-400 hover:text-white transition-colors" aria-pressed={isGlobal} aria-label="Global">
                             {isGlobal ? <ToggleRight size={24} className="text-amber-400" /> : <ToggleLeft size={24} />}
                         </button>
                         <span className="text-xs text-gray-400">Global (visível em todas as congregações)</span>
                     </div>
-                    <button onClick={handleAdd} disabled={loading || !nome} className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 flex items-center gap-2">
-                        {loading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                        Adicionar
-                    </button>
+                    <div className="flex flex-wrap gap-2">
+                        <button onClick={handleAdd} disabled={loading || !nome} className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 flex items-center gap-2">
+                            {loading ? <Loader2 size={14} className="animate-spin" /> : editandoId ? <CheckCircle2 size={14} /> : <Plus size={14} />}
+                            {editandoId ? 'Guardar alterações' : 'Adicionar'}
+                        </button>
+                        {editandoId && (
+                            <button type="button" onClick={() => setDepForm(DEP_VAZIO)} disabled={loading} className="px-5 py-2.5 rounded-xl border border-[#333] text-gray-300 text-xs font-black uppercase tracking-widest hover:border-gray-500">
+                                Cancelar
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         )
@@ -364,7 +425,10 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
         }
 
         async function handleImpersonar() {
-            await impersonarIgreja(igreja.id)
+            const motivo = window.prompt('Motivo para entrar na igreja (fica no registo):', 'Verificar a configuração depois do onboarding')
+            if (!motivo) return
+            const res = await impersonarIgreja(igreja.id, motivo)
+            if (res?.error) setMsg({ type: 'err', text: res.error })
         }
 
         return (
@@ -471,7 +535,7 @@ export default function OnboardingWizard({ igreja, congregacoes, departamentos, 
 
             {/* Step content */}
             {/* Step2 sem hooks: chamado como funcao para os campos nao perderem o foco */}
-            {step === 2 ? Step2() : <CurrentStep />}
+            {step === 2 ? Step2() : step === 3 ? Step3() : <CurrentStep />}
         </div>
     )
 }

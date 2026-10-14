@@ -5,13 +5,13 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
     Server, Building, CreditCard, Layers, ShieldCheck,
-    UserCog, Megaphone, Rocket, Palette, Menu, X, PlusCircle, DatabaseBackup
+    UserCog, Megaphone, Rocket, Palette, Menu, X, PlusCircle, DatabaseBackup, ScrollText
 } from 'lucide-react'
 
 const NAV_PLATAFORMA = [
     { label: 'Visão Geral', href: '/super-admin/dashboard', icon: Server },
     { label: 'Igrejas', href: '/super-admin/igrejas', icon: Building },
-    { label: 'Facturacao', href: '/super-admin/billing', icon: CreditCard },
+    { label: 'Faturação', href: '/super-admin/billing', icon: CreditCard },
     { label: 'Planos', href: '/super-admin/planos', icon: Layers },
 ]
 
@@ -19,8 +19,9 @@ const NAV_GESTAO = [
     { label: 'Nova Igreja', href: '/super-admin/nova-igreja', icon: PlusCircle },
     { label: 'Admins', href: '/super-admin/admins', icon: ShieldCheck },
     { label: 'Impersonar', href: '/super-admin/impersonar', icon: UserCog },
-    { label: 'Comunicacao', href: '/super-admin/comunicacao', icon: Megaphone },
+    { label: 'Comunicação', href: '/super-admin/comunicacao', icon: Megaphone },
     { label: 'Cópia de segurança', href: '/super-admin/copia', icon: DatabaseBackup },
+    { label: 'Registo de ações', href: '/super-admin/registo', icon: ScrollText },
 ]
 
 interface Props {

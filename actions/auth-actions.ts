@@ -297,6 +297,11 @@ export async function loginUnificado(formData: FormData) {
 
     console.log(`=============================================\n`)
 
+    // Voltar à página que a pessoa pediu (ex.: link da gestão das inscrições).
+    // Só caminhos do próprio portal: "/…" sem "//" (evita mandar para outro site).
+    const volta = String(formData.get('volta') ?? '')
+    if (/^\/(?!\/)[^\\\s]*$/.test(volta) && !volta.startsWith('/membros/login')) redirect(volta)
+
     if (usuario.role === 'ADMIN' || usuario.role === 'CONGREGATION_ADMIN') redirect('/admin/dashboard')
     if (usuario.role === 'FINANCE') redirect('/departamentos/financeiro/dashboard')
     redirect('/membros/dashboard')

@@ -3,6 +3,7 @@
 // baixo; no computador o menu lateral fixo (um so nivel). Os mesmos itens nos
 // dois, so o que a igreja tem ligado e a pessoa pode usar.
 import { getSessionData, isAdmin } from '@/lib/auth-utils'
+import FaixaImpersonacao from '@/components/ui/FaixaImpersonacao'
 import { getTenantClient } from '@/lib/prisma'
 import CabecalhoApp from '@/components/app/CabecalhoApp'
 import BarraBaixo, { type ItemMais } from '@/components/app/BarraBaixo'
@@ -20,10 +21,11 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
     let tenantData: { nome: string } | null = null
     let ativos: string[] = []
     let gruposQueLidera: { id: number; nome: string }[] = []
+    let eventosQueGere = 0
     try {
         const db = getTenantClient(session.tenantId)
         // Tudo em paralelo (a moldura corre em cada pagina)
-        ;[membro, tenantData, ativos, gruposQueLidera] = await Promise.all([
+        ;[membro, tenantData, ativos, gruposQueLidera, eventosQueGere] = await Promise.all([
             db.membro.findUnique({
                 where: { id: session.membroId },
                 select: {
@@ -37,6 +39,16 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
             db.grupo.findMany({
                 where: { lideres: { some: { id: session.membroId } } }, select: { id: true, nome: true }, take: 1,
             }).catch(() => []),
+            // Eventos com inscrição que gere (admins: todos; senão, os do seu grupo/departamento)
+            db.eventoInscricao.count({
+                where: isAdmin(session.role) ? {} : {
+                    OR: [
+                        { grupo: { lideres: { some: { id: session.membroId } } } },
+                        { departamento: { lider_id: session.membroId } },
+                        { departamento: { integrantes: { some: { membro_id: session.membroId, pode_gerir_escalas: true } } } },
+                    ],
+                },
+            }).catch(() => 0),
         ])
     } catch (err) {
         console.error('[MEMBRO LAYOUT] Erro ao carregar dados:', err)
@@ -67,6 +79,7 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
     const temModulo = (m: Modulo) => ativos.includes(m)
     const itensMais: ItemMais[] = []
     itensMais.push({ chave: 'agenda', texto: 'Agenda', href: '/membros/agenda', detalhe: 'Cultos e eventos' })
+    if (eventosQueGere > 0) itensMais.push({ chave: 'inscricoes', texto: 'Inscrições', href: '/inscricoes', detalhe: 'Quem se inscreveu nos eventos que organiza' })
     if (temModulo(MODULOS.MURAL)) itensMais.push({ chave: 'avisos', texto: 'Avisos', href: '/membros/mural', detalhe: 'Mensagens da igreja e da sua equipa' })
     if (temModulo(MODULOS.GRUPOS)) {
         if (gruposQueLidera[0]) itensMais.push({ chave: 'grupo', texto: 'O meu grupo', href: `/grupos/gestao/${gruposQueLidera[0].id}`, detalhe: gruposQueLidera[0].nome })
@@ -108,7 +121,7 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
             cabecalho={<CabecalhoApp igreja={igrejaName} nome={nome} avatar={membro.avatar_file || null} perfilHref={perfilHref} adminHref={permissoes.isAdmin ? '/admin/dashboard' : undefined} />}
             barra={<BarraBaixo itensMais={itensMais} repertorio={repertorio} />}
         >
-            <PullToRefresh><div className="bg-bg min-h-screen">{children}</div></PullToRefresh>
+            <PullToRefresh><div className="bg-bg min-h-screen"><FaixaImpersonacao />{children}</div></PullToRefresh>
         </Moldura>
     )
 }

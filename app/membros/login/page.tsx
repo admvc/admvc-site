@@ -17,6 +17,8 @@ export default function LoginPage() {
         setLoading(true);
         setError(null);
 
+        // Página a que volta depois de entrar (o middleware põe-na em ?volta=)
+        formData.set('volta', new URLSearchParams(window.location.search).get('volta') ?? '');
         const res = await loginUnificado(formData);
 
         if (res?.error) {

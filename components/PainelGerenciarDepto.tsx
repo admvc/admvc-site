@@ -270,7 +270,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
 
                     {/* ABA DEFINIÇÕES */}
                     {aba === 'dados' && (
-                        <form action={async (formData) => { setLoading(true); const res = await atualizarDepartamento(formData); setLoading(false); if (res?.ok) toast("Atualizado!", 'sucesso') }}
+                        <form action={async (formData) => { setLoading(true); const res = await atualizarDepartamento(formData); setLoading(false); if (res?.ok) toast("Atualizado!", 'sucesso'); else toast(res?.error || "Não foi possível guardar.", 'erro') }}
                             className="space-y-5 animate-in fade-in">
                             <input type="hidden" name="id" value={depto.id} />
 

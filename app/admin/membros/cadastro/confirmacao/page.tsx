@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import BotaoImprimir from "@/components/BotaoImprimir";
 import QrCodeMembro from "@/components/cantina/QrCodeMembro";
+import { modulosAtivosDaIgreja } from '@/lib/modulos'
+import { MODULOS } from '@/lib/planos'
 
 interface ConfirmacaoPageProps {
     searchParams: Promise<{ id?: string }>
@@ -49,12 +51,14 @@ export default async function PaginaConfirmacao(props: ConfirmacaoPageProps) {
                 </div>
             </header>
 
-            {/* QR CODE DO MEMBRO */}
-            <div className="flex justify-center">
-                <div className="w-64">
-                    <QrCodeMembro membroId={membro.id} qrCode={membro.qr_code || null} />
+            {/* QR CODE DO MEMBRO (cartão da cantina: só com o módulo ligado) */}
+            {(await modulosAtivosDaIgreja()).includes(MODULOS.CANTINA) && (
+                <div className="flex justify-center">
+                    <div className="w-64">
+                        <QrCodeMembro membroId={membro.id} qrCode={membro.qr_code || null} />
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* 2. RELATÓRIO TÉCNICO (GRID) */}
             <section className="space-y-6">

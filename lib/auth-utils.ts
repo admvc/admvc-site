@@ -14,6 +14,8 @@ export interface SessionData {
     email?: string;
     plano?: string;
     congregacaoId?: number;
+    /** Sessao aberta por um Super Admin do Cloud ("impersonar") */
+    impersonadoPor?: { saId: number; nome: string };
 }
 
 export type Role = 'ADMIN' | 'CONGREGATION_ADMIN' | 'LEADER' | 'USER' | 'FINANCE' | 'MANAGER'
@@ -73,6 +75,14 @@ export async function sessaoDoCookie(valor: string | undefined): Promise<Session
     if (membro.tenant_id !== payload.tid) return null
     if ((await impressaoDaSenha(membro.password)) !== payload.pw) return null
 
+    // Impersonacao: so vale enquanto a conta do Cloud estiver ativa
+    let impersonadoPor: SessionData['impersonadoPor']
+    if (payload.imp) {
+        const sa = await prisma.superAdmin.findUnique({ where: { id: payload.imp }, select: { id: true, nome: true, is_active: true } })
+        if (!sa || !sa.is_active) return null
+        impersonadoPor = { saId: sa.id, nome: sa.nome }
+    }
+
     return {
         membroId: membro.id,
         tenantId: membro.tenant_id,
@@ -80,6 +90,7 @@ export async function sessaoDoCookie(valor: string | undefined): Promise<Session
         email: membro.email || undefined,
         plano: membro.tenant?.plano || 'FREE',
         congregacaoId: membro.congregacao_id ?? undefined,
+        ...(impersonadoPor ? { impersonadoPor } : {}),
     }
 }
 

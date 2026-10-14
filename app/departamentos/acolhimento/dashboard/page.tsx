@@ -173,6 +173,7 @@ export default async function AcolhimentoDashboard({ searchParams }: { searchPar
             PRESENCIAL: { icon: MapPin, label: 'Presencial' },
             REDES_SOCIAIS: { icon: Globe, label: 'Redes' },
             INDICACAO: { icon: Users, label: 'Indicação' },
+            EVENTO: { icon: Calendar, label: 'Evento' },
         }
         return map[origem] || null
     }

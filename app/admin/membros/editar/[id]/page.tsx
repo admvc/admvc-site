@@ -4,6 +4,8 @@ import EditarMembroClient from '@/components/membros/Client'
 import { redirect } from 'next/navigation'
 import { getSessionData } from '@/lib/auth-utils'
 import { getTenantIdFromHeaders } from '@/lib/db'
+import { modulosAtivosDaIgreja } from '@/lib/modulos'
+import { MODULOS } from '@/lib/planos'
 
 export default async function EditarMembroPage({ params }: { params: Promise<{ id: string }> }) {
 
@@ -74,6 +76,7 @@ export default async function EditarMembroPage({ params }: { params: Promise<{ i
     return (
         <EditarMembroClient
             membro={membro}
+            cantinaAtiva={(await modulosAtivosDaIgreja()).includes(MODULOS.CANTINA)}
             todosCargos={todosCargos}
             todosDeptos={todosDeptos}
             todosGrupos={todosGrupos}

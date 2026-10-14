@@ -44,8 +44,10 @@ export default async function SuperAdminLayout({
                     <div className="flex items-center gap-3 px-4 py-3 bg-[#1A1A1A] rounded-xl border border-[#333] mb-4">
                         <ShieldAlert size={16} className="text-orange-500" />
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-orange-500">Acesso Restrito</p>
-                            <p className="text-[10px] font-bold text-zinc-400">Super Administrador</p>
+                            <p className="text-[10px] font-bold text-zinc-200 truncate">{saSession.nome}</p>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-orange-500">
+                                {saSession.role === 'ADMIN' ? 'Admin · tudo' : saSession.role === 'SUPPORT' ? 'Suporte · ver e entrar' : 'Só consulta'}
+                            </p>
                         </div>
                     </div>
 

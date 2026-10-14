@@ -27,9 +27,9 @@ export default async function ImpersonarPage() {
             <div className="bg-orange-500/10 border border-orange-500/30 rounded-2xl p-5 flex items-start gap-4">
                 <AlertTriangle size={24} className="text-orange-500 shrink-0 mt-0.5" />
                 <div>
-                    <p className="text-sm font-bold text-orange-400">Atenção: Todas as ações serao registadas no log</p>
+                    <p className="text-sm font-bold text-orange-400">Atenção: tudo o que fizer fica registado</p>
                     <p className="text-xs text-orange-400/70 mt-1">
-                        A impersonacao cria uma sessão de 2 horas. Todas as atividades ficam registadas no histórico de auditoria.
+                        A sessão dura 2 horas e mostra uma faixa no topo para voltar ao Cloud. Na auditoria da igreja, as ações aparecem como suas (Cloud), não do administrador.
                     </p>
                 </div>
             </div>

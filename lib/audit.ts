@@ -106,16 +106,13 @@ export async function audit(params: AuditParams): Promise<void> {
         let actorId = params.actor_id
         let actorNome = params.actor_nome
 
-        if (!actorId) {
-            try {
-                const session = await getSessionData()
-                if (session) {
-                    actorId = session.membroId
-                }
-            } catch {
-                // Pode nao ter sessao (ex: login falhado)
-            }
+        let sessao: Awaited<ReturnType<typeof getSessionData>> = null
+        try {
+            sessao = await getSessionData()
+        } catch {
+            // Pode nao ter sessao (ex: login falhado)
         }
+        if (!actorId && sessao) actorId = sessao.membroId
 
         // Auto-preencher nome do actor se temos ID mas nao nome
         if (actorId && !actorNome) {
@@ -126,6 +123,11 @@ export async function audit(params: AuditParams): Promise<void> {
                 })
                 if (actor) actorNome = `${actor.first_name} ${actor.last_name}`
             } catch { /* nao bloqueia o audit */ }
+        }
+
+        // Impersonacao: fica claro que foi alguem do Cloud, nao a propria pessoa
+        if (sessao?.impersonadoPor && actorId === sessao.membroId) {
+            actorNome = `${sessao.impersonadoPor.nome} (Cloud) como ${actorNome || `membro ${actorId}`}`
         }
 
         const dadosAntes = params.dados_antes

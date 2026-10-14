@@ -15,6 +15,7 @@ import { requireAuth, requireRole } from '@/lib/auth-utils'
 import { getTenantIdFromHeaders } from '@/lib/db'
 import { Prisma } from '@prisma/client'
 import { lerArea } from '@/lib/area-grupo'
+import { serieDoEvento, apagarEventoComDependencias, minutosDe, deslocar } from '@/lib/eventos-serie'
 
 async function getDb() {
     const tenantId = await getTenantIdFromHeaders()
@@ -342,25 +343,38 @@ export async function atualizarDepartamento(formData: FormData) {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
         const { db, tenantId } = await getDb();
         const id = Number(formData.get("id"));
-        const nome = formData.get("nome") as string;
-        const descricao = formData.get("descricao") as string;
+        const nome = (formData.get("nome") as string)?.trim();
+        const descricao = (formData.get("descricao") as string)?.trim() || null;
         const liderInput = formData.get("lider_id");
-        const lider_id = liderInput ? Number(liderInput) : null;
+        const lider_id = liderInput && Number(liderInput) !== 0 ? Number(liderInput) : null;
 
         const congIdStr = formData.get("congregacaoId") as string;
         const congregacaoId = congIdStr ? Number(congIdStr) : null;
         const is_global = !congregacaoId;
         const e_louvor = formData.get("e_louvor") === "on";
 
+        if (!nome) return { ok: false, error: "O nome é obrigatório." };
+        // Líder e congregação têm de ser desta igreja (o cliente filtrado garante-o)
+        if (lider_id && !(await db.membro.findUnique({ where: { id: lider_id }, select: { id: true } }))) {
+            return { ok: false, error: "Líder não encontrado." };
+        }
+        if (congregacaoId && !(await db.congregacao.findUnique({ where: { id: congregacaoId }, select: { id: true } }))) {
+            return { ok: false, error: "Congregação não encontrada." };
+        }
+        const repetido = await db.departamento.findFirst({ where: { nome, congregacaoId, id: { not: id } }, select: { id: true } });
+        if (repetido) return { ok: false, error: `Já existe um ministério "${nome}" ${congregacaoId ? 'nesta congregação' : 'geral'}.` };
+
         await db.departamento.update({
             where: { id },
-            data: { nome, descricao, lider_id: lider_id === 0 ? null : lider_id, congregacaoId, is_global, e_louvor }
+            data: { nome, descricao, lider_id, congregacaoId, is_global, e_louvor }
         });
 
         revalidatePath("/admin/configuracoes");
+        invalidateDepartamentos(tenantId).catch(() => {})
         return { ok: true };
     } catch (error) {
-        return { ok: false };
+        console.error("Erro ao atualizar departamento:", error);
+        return { ok: false, error: "Não foi possível guardar o ministério." };
     }
 }
 
@@ -681,6 +695,12 @@ export async function excluirDepartamento(id: number) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
         const { db, tenantId } = await getDb();
+        // Apagar leva em cascata as escalas, os integrantes e os avisos do ministério
+        const d = await db.departamento.findUnique({ where: { id }, select: { nome: true, _count: { select: { escalas: true } } } });
+        if (!d) return { ok: false, error: "Ministério não encontrado." };
+        if (d._count.escalas > 0) {
+            return { ok: false, error: `"${d.nome}" tem ${d._count.escalas} escala(s): apagar levava-as também. Mude-lhe o nome em vez de o apagar.` };
+        }
         await db.departamento.delete({ where: { id } });
         revalidatePath('/admin/configuracoes');
         invalidateDepartamentos(tenantId).catch(() => {})
@@ -912,34 +932,113 @@ export async function editarEscalaAction(formData: FormData) {
 }
 
 export async function editarEventoAction(formData: FormData) {
-    console.log('=== EDITAR EVENTO ===')
-    console.log('id:', formData.get('id'))
-    console.log('nome:', formData.get('nome'))
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
-        const { db, tenantId } = await getDb();
-        console.log('db obtido com sucesso')
+        const { db } = await getDb();
 
-        const id = formData.get('id') as string;
-        const nome = formData.get('nome') as string;
+        const id = Number(formData.get('id'));
+        const nome = (formData.get('nome') as string)?.trim();
         const dataStr = formData.get('data') as string;
         const horaStr = formData.get('horario') as string;
         const descricao = formData.get('descricao') as string;
         const congIdStr = formData.get('congregacao_id') as string;
         const congregacao_id = congIdStr ? Number(congIdStr) : null;
+        // "SEGUINTES" = este culto e os seguintes da mesma série
+        const alcance = formData.get('alcance') === 'SEGUINTES' ? 'SEGUINTES' : 'ESTE';
+
+        if (!nome) return { ok: false, error: "O nome é obrigatório." };
+        if (congregacao_id && !(await db.congregacao.findUnique({ where: { id: congregacao_id }, select: { id: true } }))) {
+            return { ok: false, error: "Congregação não encontrada." };
+        }
+
+        if (alcance === 'SEGUINTES') {
+            const r = await serieDoEvento(db, id);
+            if (!r) return { ok: false, error: "Evento não encontrado." };
+            // A hora muda pela diferença (cada culto fica no seu dia)
+            const antes = minutosDe(formData.get('horario_original') as string);
+            const depois = minutosDe(horaStr);
+            const delta = antes != null && depois != null ? depois - antes : 0;
+            for (const e of r.serie) {
+                await db.evento.update({
+                    where: { id: e.id },
+                    data: { nome, descricao: descricao || null, congregacao_id, ...(delta ? { data: deslocar(e.data, delta) } : {}) },
+                });
+            }
+            revalidatePath('/escalas/admin');
+            revalidatePath('/membros/dashboard');
+            return { ok: true, total: r.serie.length };
+        }
 
         const dataCompleta = new Date(`${dataStr}T${horaStr}:00`);
-
         await db.evento.update({
-            where: { id: Number(id) },
+            where: { id },
             data: { nome, data: dataCompleta, descricao: descricao || null, congregacao_id }
         });
 
         revalidatePath('/escalas/admin');
         revalidatePath('/membros/dashboard');
-        return { ok: true };
+        return { ok: true, total: 1 };
     } catch (error: any) {
+        console.error('Erro ao editar evento:', error?.message || error)
         return { ok: false, error: "Erro ao atualizar o evento na base de dados." };
+    }
+}
+
+/**
+ * O que um culto e os seguintes da mesma série têm (para a janela de apagar
+ * e para a de editar dizer quantos são).
+ */
+export async function resumoSerieEventoAction(id: number) {
+    try {
+        await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
+        const { db } = await getDb();
+        const r = await serieDoEvento(db, id);
+        if (!r) return { ok: false as const, error: "Evento não encontrado." };
+        const este = r.serie.find(e => e.id === id);
+        const conta = (lista: typeof r.serie) => ({
+            cultos: lista.length,
+            comEscalas: lista.filter(e => e._count.escalas > 0).length,
+            escalas: lista.reduce((t, e) => t + e._count.escalas, 0),
+            comRepertorio: lista.filter(e => e._count.repertorio > 0).length,
+            comSermoes: lista.filter(e => e._count.sermoes > 0).length,
+        });
+        return {
+            ok: true as const,
+            este: conta(este ? [este] : []),
+            seguintes: conta(r.serie),
+            ate: r.serie.length ? r.serie[r.serie.length - 1].data.toISOString() : null,
+        };
+    } catch (error: any) {
+        console.error('Erro no resumo da série:', error?.message || error)
+        return { ok: false as const, error: "Erro ao ler o evento." };
+    }
+}
+
+/**
+ * Apaga este culto e os seguintes da série (nunca os anteriores). Se algum tiver
+ * escalas feitas, só apaga com `confirmouEscalas` (a janela pede confirmação extra).
+ */
+export async function apagarSerieEventoAction(id: number, confirmouEscalas: boolean) {
+    try {
+        await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
+        const { db } = await getDb();
+        const r = await serieDoEvento(db, id);
+        if (!r) return { ok: false, error: "Evento não encontrado." };
+        const escalas = r.serie.reduce((t, e) => t + e._count.escalas, 0);
+        if (escalas > 0 && !confirmouEscalas) {
+            return { ok: false, error: `Há ${escalas} escala(s) feitas nestes cultos: confirme que as quer apagar.` };
+        }
+        for (const e of r.serie) await apagarEventoComDependencias(db, e.id);
+
+        audit({ tenant_id: r.evento.tenant_id, categoria: 'ESCALAS', acao: 'APAGAR', alvo_tipo: 'SISTEMA', descricao: `Série "${r.evento.nome}": ${r.serie.length} culto(s) apagados a partir de ${r.evento.data.toISOString().slice(0, 10)} (${escalas} escala(s))` }).catch(() => {});
+        revalidatePath('/escalas/admin');
+        revalidatePath('/admin/eventos');
+        revalidatePath('/admin/escalas');
+        revalidatePath('/membros/dashboard');
+        return { ok: true, total: r.serie.length };
+    } catch (error: any) {
+        console.error('Erro ao apagar série:', error?.message || error)
+        return { ok: false, error: "Erro ao apagar os cultos." };
     }
 }
 
@@ -947,26 +1046,8 @@ export async function apagarEventoAction(id: number) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
         const { db } = await getDb();
-
-        // Apagar dependencias antes do evento
-        await db.escala.deleteMany({ where: { evento_id: id } })
-        await db.repertorioEvento.deleteMany({ where: { evento_id: id } })
-        await db.mensagemEvento.deleteMany({ where: { evento_id: id } })
-        await db.boleiaOferta.deleteMany({ where: { evento_id: id } })
-        await db.preEncomendaCantina.deleteMany({ where: { evento_id: id } })
-
-        // Apagar cardapio (itens + cardapio)
-        const cardapio = await db.cardapioCantina.findUnique({ where: { evento_id: id } })
-        if (cardapio) {
-            await db.cardapioItem.deleteMany({ where: { cardapio_id: cardapio.id } })
-            await db.cardapioCantina.delete({ where: { id: cardapio.id } })
-        }
-
-        // Apagar sermoes associados
-        await db.sermao.deleteMany({ where: { evento_id: id } })
-
-        // Finalmente apagar o evento
-        await db.evento.delete({ where: { id } })
+        if (!(await db.evento.findUnique({ where: { id }, select: { id: true } }))) return { ok: false, error: "Evento não encontrado." };
+        await apagarEventoComDependencias(db, id)
 
         revalidatePath('/admin/eventos')
         revalidatePath('/admin/escalas')
@@ -1066,10 +1147,14 @@ export async function excluirCongregacao(id: number) {
         revalidatePath('/admin/congregacoes');
         return { ok: true, message: "Congregação eliminada com sucesso!" };
     } catch (error: any) {
-        // Proteção essencial: Se houver membros nesta congregação, a BD não deixa apagar
-        if (error.code === 'P2003') {
-            return { ok: false, error: "Não é possível apagar: existem membros ou grupos associados a esta congregação." };
+        // Os ministérios dela passam a gerais: um nome repetido com um geral choca
+        if (error.code === 'P2002') {
+            return { ok: false, error: "Há um ministério desta congregação com o mesmo nome de um geral. Mude-lhe o nome antes de apagar." };
         }
+        if (error.code === 'P2003') {
+            return { ok: false, error: "Não é possível apagar: há registos ligados a esta congregação." };
+        }
+        console.error("Erro ao excluir congregação:", error);
         return { ok: false, error: "Erro ao excluir a congregação." };
     }
 }

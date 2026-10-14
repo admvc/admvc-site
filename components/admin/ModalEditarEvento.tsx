@@ -1,14 +1,24 @@
 'use client'
 
 import { useState } from 'react'
-import { CalendarDays, X, Save, Loader2, Clock, Type, Edit3, Church, AlignLeft } from 'lucide-react'
-import { editarEventoAction } from '@/actions/admin-actions'
+import { CalendarDays, X, Save, Loader2, Clock, Type, Edit3, Church, AlignLeft, Repeat } from 'lucide-react'
+import { editarEventoAction, resumoSerieEventoAction } from '@/actions/admin-actions'
 import { useToast } from '@/components/ui/ConfirmDialog'
 
 export default function ModalEditarEvento({ evento, congregacoes = [] }: { evento: any; congregacoes?: { id: number; nome: string; cidade: string }[] }) {
     const toast = useToast()
     const [isOpen, setIsOpen] = useState(false)
     const [isPending, setIsPending] = useState(false)
+    // Cultos desta série a partir deste (inclusive); >1 = dá para editar os seguintes
+    const [naSerie, setNaSerie] = useState(1)
+    const [alcance, setAlcance] = useState<'ESTE' | 'SEGUINTES'>('ESTE')
+
+    async function abrir() {
+        setIsOpen(true)
+        setAlcance('ESTE')
+        const r = await resumoSerieEventoAction(evento.id)
+        setNaSerie(r.ok ? r.seguintes.cultos : 1)
+    }
 
     const dataObj = new Date(evento.data)
     const defaultData = dataObj.toISOString().split('T')[0]
@@ -18,13 +28,16 @@ export default function ModalEditarEvento({ evento, congregacoes = [] }: { event
         setIsPending(true)
         const res = await editarEventoAction(formData)
         setIsPending(false)
-        if (res.ok) setIsOpen(false)
+        if (res.ok) {
+            setIsOpen(false)
+            if (res.total && res.total > 1) toast(`${res.total} cultos atualizados.`, 'sucesso')
+        }
         else toast(res.error || "Erro ao atualizar o evento.", 'erro')
     }
 
     return (
         <>
-            <button type="button" onClick={() => setIsOpen(true)}
+            <button type="button" onClick={abrir}
                 className="p-2 bg-bg2 border border-soft text-muted hover:text-figueira hover:border-figueira/30 rounded-xl transition-all active:scale-90 shadow-sm"
                 title="Editar Evento">
                 <Edit3 size={14} />
@@ -46,6 +59,25 @@ export default function ModalEditarEvento({ evento, congregacoes = [] }: { event
 
                         <form action={handleAction} className="p-6 space-y-4">
                             <input type="hidden" name="id" value={evento.id} />
+                            <input type="hidden" name="horario_original" value={defaultHora} />
+                            <input type="hidden" name="alcance" value={alcance} />
+
+                            {naSerie > 1 && (
+                                <fieldset className="rounded-xl border border-soft bg-bg2 p-3 space-y-2">
+                                    <legend className="px-1 text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1.5">
+                                        <Repeat size={10} /> Culto que se repete
+                                    </legend>
+                                    {([['ESTE', 'Só este culto'], ['SEGUINTES', `Este e os seguintes (${naSerie} cultos)`]] as const).map(([v, txt]) => (
+                                        <label key={v} className="flex items-center gap-2 text-sm font-bold text-fg cursor-pointer">
+                                            <input type="radio" name="alcance_escolha" checked={alcance === v} onChange={() => setAlcance(v)} className="accent-figueira" />
+                                            {txt}
+                                        </label>
+                                    ))}
+                                    {alcance === 'SEGUINTES' && (
+                                        <p className="text-[13px] text-muted">Muda o nome, a hora, a congregação e a descrição de todos; cada culto fica no seu dia.</p>
+                                    )}
+                                </fieldset>
+                            )}
 
                             <div className="space-y-1.5">
                                 <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1.5">
@@ -60,8 +92,8 @@ export default function ModalEditarEvento({ evento, congregacoes = [] }: { event
                                     <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1.5">
                                         <CalendarDays size={10} /> Data
                                     </label>
-                                    <input type="date" name="data" required defaultValue={defaultData}
-                                        className="w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-sm font-bold text-fg focus:border-figueira outline-none cursor-pointer" />
+                                    <input type="date" name="data" required defaultValue={defaultData} disabled={alcance === 'SEGUINTES'}
+                                        className="disabled:opacity-50 w-full bg-bg2 border border-soft rounded-xl px-3 py-2.5 text-sm font-bold text-fg focus:border-figueira outline-none cursor-pointer" />
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className="text-[13px] font-bold uppercase text-muted tracking-wide flex items-center gap-1.5">

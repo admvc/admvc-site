@@ -149,6 +149,8 @@ model Tenant {
   pledges                  Pledge[]
   contasBancarias          ContaBancaria[]
   movimentosBancarios      MovimentoBancario[]
+  eventosInscricao         EventoInscricao[]
+  inscricoes               Inscricao[]
 }
 
 model Congregacao {
@@ -304,6 +306,7 @@ model Membro {
   interessesDepartamento     InteresseDepartamento[]    @relation("MembroInteresse")
   sugestoes_feitas       InteresseDepartamento[] @relation("SugestaoInteresse")
 
+  inscricoes                 Inscricao[]
   @@index([tenant_id])
   @@map("membros")
 }
@@ -341,6 +344,7 @@ model Departamento {
   compromissos     Compromisso[]            @relation("CompromissoDepartamentos")
   itens_inventario ItemInventario[]
   interesses       InteresseDepartamento[] @relation("InteresseDepartamento")
+  eventosInscricao EventoInscricao[]
 
   @@unique([nome, tenant_id, congregacaoId])
   @@index([tenant_id])
@@ -423,6 +427,7 @@ model Grupo {
   compromissos    Compromisso[]    @relation("CompromissoGrupos")
   lideres         Membro[]         @relation("LideresGrupo")
   membros         Membro[]         @relation("MembrosGrupo")
+  eventosInscricao EventoInscricao[]
   itemInventarios ItemInventario[]
 
   @@index([tenant_id])
@@ -639,6 +644,7 @@ model Visitante {
   responsavel          Membro?                   @relation("ResponsavelVisitante", fields: [responsavel_id], references: [id])
   tenant               Tenant                    @relation(fields: [tenant_id], references: [id])
   compromissos         Compromisso[]             @relation("CompromissoVisitantes")
+  inscricoes           Inscricao[]
 
   @@index([tenant_id])
   @@index([responsavel_id])
@@ -1938,4 +1944,68 @@ model MovimentoBancario {
   @@index([conta_id])
   @@index([reconciliado])
   @@map("financeiro_movimentos_bancarios")
+}
+
+/// Evento com inscrição (Chá de Mulheres, retiros, conferências…). Pertence a um
+/// grupo ou departamento: os líderes dele (e os admins) gerem as inscrições.
+model EventoInscricao {
+  id                  Int           @id @default(autoincrement())
+  tenant_id           Int
+  slug                String        // endereço público: /i/<slug>
+  titulo              String
+  subtitulo           String?
+  descricao           String?       // texto da página: parágrafos; "## " = título; "• " = lista
+  local               String?
+  inicio              DateTime      // hora "de parede", como os eventos da agenda
+  inscricoes_ate      DateTime?
+  vagas               Int?          // null = sem limite
+  preco_eur           Float?
+  pagamento           String?       // instruções (ex.: MB WAY)
+  precisa_confirmacao Boolean       @default(true)
+  aberto_visitantes   Boolean       @default(true)
+  campos              Json?         // [{ id, rotulo, tipo: "aceite", obrigatorio }]
+  cor_principal       String        @default("#3F6B4F")
+  cor_fundo           String        @default("#F5F1EA")
+  imagem_url          String?
+  grupo_id            Int?
+  departamento_id     Int?
+  estado              String        @default("RASCUNHO") // RASCUNHO, ABERTO, FECHADO
+  criado_em           DateTime      @default(now())
+  tenant              Tenant        @relation(fields: [tenant_id], references: [id])
+  grupo               Grupo?        @relation(fields: [grupo_id], references: [id], onDelete: SetNull)
+  departamento        Departamento? @relation(fields: [departamento_id], references: [id], onDelete: SetNull)
+  inscricoes          Inscricao[]
+
+  @@unique([tenant_id, slug])
+  @@index([tenant_id])
+  @@map("eventos_inscricao")
+}
+
+model Inscricao {
+  id                  Int             @id @default(autoincrement())
+  tenant_id           Int
+  evento_inscricao_id Int
+  membro_id           Int?            // reconhecido pelo telefone (em silêncio) ou pela sessão
+  visitante_id        Int?            // quem pediu contacto e não é membro: entra no acolhimento
+  nome                String
+  telefone            String
+  email               String?
+  respostas           Json?
+  estado              String          @default("PENDENTE") // PENDENTE, CONFIRMADA, CANCELADA
+  pago                Boolean         @default(false)
+  pago_em             DateTime?
+  codigo              String          // referência para o pagamento
+  consentimento_em    DateTime
+  quer_contacto       Boolean         @default(false)
+  criado_em           DateTime        @default(now())
+  atualizado_em       DateTime        @updatedAt
+  tenant              Tenant          @relation(fields: [tenant_id], references: [id])
+  evento              EventoInscricao @relation(fields: [evento_inscricao_id], references: [id], onDelete: Cascade)
+  membro              Membro?         @relation(fields: [membro_id], references: [id], onDelete: SetNull)
+  visitante           Visitante?      @relation(fields: [visitante_id], references: [id], onDelete: SetNull)
+
+  @@unique([evento_inscricao_id, codigo])
+  @@index([evento_inscricao_id])
+  @@index([tenant_id])
+  @@map("inscricoes")
 }

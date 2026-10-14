@@ -17,6 +17,8 @@ export interface PayloadMembro {
     role: string
     plano: string
     cong?: number
+    /** Impersonacao: id do Super Admin do Cloud que entrou como este membro. */
+    imp?: number
     /** Impressao digital da senha: mudar a senha invalida as sessoes. */
     pw: string
     /** Validade em segundos desde 1970. */

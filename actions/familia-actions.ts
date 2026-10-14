@@ -4,6 +4,7 @@ import prisma, { getTenantClient } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { requireRole } from '@/lib/auth-utils'
 import { getTenantIdFromHeaders } from '@/lib/db'
+import { audit } from '@/lib/audit'
 
 async function getDb() {
     const tenantId = await getTenantIdFromHeaders();
@@ -108,6 +109,36 @@ export async function criarFamiliaAction(formData: FormData) {
         return { ok: true };
     } catch (error: any) {
         return { ok: false, error: "Erro ao criar família." };
+    }
+}
+
+/** Mudar o nome da família (a mesma regra de quando se cria: sem nomes repetidos). */
+export async function renomearFamiliaAction(familiaId: number, nome: string) {
+    try {
+        await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
+        const { db, tenantId } = await getDb();
+        const novo = (nome ?? '').trim().replace(/\s+/g, ' ');
+        if (!novo) return { ok: false, error: 'Escreva o nome da família.' };
+        if (novo.length > 80) return { ok: false, error: 'Nome demasiado comprido.' };
+
+        const familia = await db.familia.findUnique({ where: { id: familiaId }, select: { id: true, surname: true } });
+        if (!familia) return { ok: false, error: 'Família não encontrada.' };
+        if (familia.surname === novo) return { ok: true };
+
+        const repetida = await db.familia.findFirst({
+            where: { surname: { equals: novo, mode: 'insensitive' }, id: { not: familiaId } },
+            select: { id: true },
+        });
+        if (repetida) return { ok: false, error: `A família "${novo}" já está registada.` };
+
+        await db.familia.update({ where: { id: familiaId }, data: { surname: novo } });
+        audit({ tenant_id: tenantId, categoria: 'FAMILIAS', acao: 'EDITAR', alvo_id: familiaId, alvo_nome: novo, alvo_tipo: 'FAMILIA', descricao: `Família "${familia.surname}" passou a "${novo}"` }).catch(() => {});
+
+        revalidatePath('/admin/familias');
+        return { ok: true };
+    } catch (error: any) {
+        console.error('Erro ao renomear família:', error);
+        return { ok: false, error: 'Erro ao guardar o nome.' };
     }
 }
 

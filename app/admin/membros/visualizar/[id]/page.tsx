@@ -5,6 +5,8 @@ import { notFound, redirect } from "next/navigation";
 import VisualizarMembroClient from "@/components/membros/VisualizarMembroClient";
 import QrCodeMembro from "@/components/cantina/QrCodeMembro";
 import { getTenantIdFromHeaders } from '@/lib/db'
+import { modulosAtivosDaIgreja } from '@/lib/modulos'
+import { MODULOS } from '@/lib/planos'
 
 export default async function VisualizarMembroPage({
     params
@@ -54,13 +56,17 @@ export default async function VisualizarMembroPage({
         return notFound();
     }
 
+    // Cartão da cantina só com o módulo Cantina ligado
+    const cantinaAtiva = (await modulosAtivosDaIgreja()).includes(MODULOS.CANTINA)
+
     return (
         <div className="bg-bg min-h-screen pb-20 relative">
-            <VisualizarMembroClient membro={membro} />
-            {/* QR Code no canto superior direito */}
-            <div className="absolute top-4 right-4 z-10">
-                <QrCodeMembro membroId={membro.id} qrCode={membro.qr_code || null} />
-            </div>
+            <VisualizarMembroClient membro={membro} cantinaAtiva={cantinaAtiva} />
+            {cantinaAtiva && (
+                <div className="absolute top-4 right-4 z-10">
+                    <QrCodeMembro membroId={membro.id} qrCode={membro.qr_code || null} />
+                </div>
+            )}
         </div>
     );
 }

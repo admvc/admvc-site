@@ -5,6 +5,7 @@ import { getSessionData } from '@/lib/auth-utils'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import CongregacaoFilter from '@/components/admin/CongregacaoFilter'
 import { modulosAtivosDaIgreja } from '@/lib/modulos'
+import FaixaImpersonacao from '@/components/ui/FaixaImpersonacao'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
     const session = await getSessionData()
@@ -78,6 +79,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 }
             />
             <main className="flex-1 overflow-y-auto">
+                <FaixaImpersonacao />
                 {children}
             </main>
         </div>

@@ -329,10 +329,11 @@ export default async function SuperAdminDashboardPage() {
 
                 {/* ── D. ULTIMAS ACOES SA ───────────────────────────────── */}
                 <div className="bg-[#111] border border-zinc-800 rounded-2xl overflow-hidden">
-                    <div className="p-6 border-b border-zinc-800">
+                    <div className="p-6 border-b border-zinc-800 flex items-center justify-between gap-3">
                         <h2 className="text-sm font-black uppercase tracking-tighter text-white italic flex items-center gap-2">
-                            <Shield size={16} className="text-violet-500" /> Últimas Ações Super Admin
+                            <Shield size={16} className="text-violet-500" /> Últimas ações no Cloud
                         </h2>
+                        <a href="/super-admin/registo" className="text-[10px] font-black uppercase tracking-widest text-violet-400 hover:text-violet-300">Ver tudo →</a>
                     </div>
                     <div className="divide-y divide-zinc-800/50">
                         {recentLogs.length === 0 && (

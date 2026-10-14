@@ -20,7 +20,8 @@ export default function EditarMembroClient({
     isAdmin = false,
     escolaridades = [],
     familias = [],
-    congregacoes = []
+    congregacoes = [],
+    cantinaAtiva = true,
 }: any) {
     const router = useRouter()
     const toast = useToast()
@@ -444,7 +445,10 @@ export default function EditarMembroClient({
                                     { label: 'Visitante', value: 'VISITANTE' }, { label: 'Pendente', value: 'PENDENTE' },
                                     { label: 'Arquivado', value: 'ARQUIVADO' }
                                 ]} />
-                                <Input label="ID Loyverse (Cantina)" name="loyverse_id" defaultValue={membro.loyverse_id} placeholder="Ex: a1b2c3d4..." />
+                                {cantinaAtiva
+                                    ? <Input label="ID Loyverse (Cantina)" name="loyverse_id" defaultValue={membro.loyverse_id} placeholder="Ex: a1b2c3d4..." />
+                                    // Cantina desligada: o campo não aparece, mas o valor guardado não se perde
+                                    : <input type="hidden" name="loyverse_id" value={membro.loyverse_id ?? ''} />}
                             </div>
                         </div>
                     </div>

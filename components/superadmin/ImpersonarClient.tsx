@@ -16,6 +16,7 @@ export default function ImpersonarClient({ igrejas }: { igrejas: Igreja[] }) {
     const [selecionada, setSelecionada] = useState<Igreja | null>(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [motivo, setMotivo] = useState('')
 
     const filtradas = igrejas.filter(
         (ig) =>
@@ -27,7 +28,7 @@ export default function ImpersonarClient({ igrejas }: { igrejas: Igreja[] }) {
         if (!selecionada) return
         setLoading(true)
         setError(null)
-        const res = await impersonarIgreja(selecionada.id)
+        const res = await impersonarIgreja(selecionada.id, motivo)
         if (res?.error) {
             setError(res.error)
             setLoading(false)
@@ -76,19 +77,27 @@ export default function ImpersonarClient({ igrejas }: { igrejas: Igreja[] }) {
 
             {/* Selected + Action */}
             {selecionada && (
-                <div className="border-t border-[#222] pt-4 flex items-center justify-between">
+                <div className="border-t border-[#222] pt-4 space-y-4">
                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Igreja Selecionada</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Igreja selecionada</p>
                         <p className="text-white font-bold">{selecionada.nome}</p>
                     </div>
+                    <div className="space-y-1">
+                        <label htmlFor="imp-motivo" className="text-[10px] font-black uppercase tracking-widest text-gray-500">Motivo (fica no registo)</label>
+                        <input id="imp-motivo" value={motivo} onChange={e => setMotivo(e.target.value)}
+                            placeholder="Ex.: o pastor pediu ajuda com as escalas"
+                            className="w-full bg-[#0A0A0A] border border-[#333] rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-blue-600" />
+                    </div>
+                    <div className="flex justify-end">
                     <button
                         onClick={handleImpersonar}
-                        disabled={loading}
+                        disabled={loading || motivo.trim().length < 5}
                         className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black uppercase tracking-widest rounded-xl transition disabled:opacity-50"
                     >
                         <LogIn size={14} />
                         {loading ? 'A entrar...' : 'Entrar como Admin'}
                     </button>
+                    </div>
                 </div>
             )}
 

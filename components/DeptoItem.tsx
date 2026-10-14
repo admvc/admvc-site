@@ -1,12 +1,13 @@
 "use client"
 import { useState } from 'react'
-import { useConfirm } from '@/components/ui/ConfirmDialog'
+import { useConfirm, useToast } from '@/components/ui/ConfirmDialog'
 import PainelGerenciarDepto from '@/components/PainelGerenciarDepto'
 import Image from 'next/image'
 import { LayoutGrid, Users, Wrench, Settings2, Trash2, Church, Globe } from 'lucide-react'
 
 export default function DeptoItem({ depto, membrosDisponiveis, congregacoes = [], onExcluir }: any) {
     const confirmar = useConfirm()
+    const toast = useToast()
     const [painelAberto, setPainelAberto] = useState(false)
     const total = depto._count?.integrantes || 0
 
@@ -32,8 +33,15 @@ export default function DeptoItem({ depto, membrosDisponiveis, congregacoes = []
                         </div>
                     </div>
                     <button
-                        onClick={async () => { const ok = await confirmar({ mensagem: 'Excluir este departamento?', tipo: 'perigo' }); if (ok) onExcluir(depto.id) }}
-                        className="p-1.5 rounded-lg text-muted opacity-0 group-hover:opacity-100 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                        aria-label={`Excluir ${depto.nome}`}
+                        onClick={async () => {
+                            const ok = await confirmar({ mensagem: `Excluir "${depto.nome}"? Os integrantes saem dele. Se tiver escalas, não deixamos apagar.`, tipo: 'perigo' })
+                            if (!ok) return
+                            const res = await onExcluir(depto.id)
+                            if (res?.ok) toast('Ministério excluído.', 'sucesso')
+                            else toast(res?.error || 'Não foi possível excluir.', 'erro')
+                        }}
+                        className="p-1.5 rounded-lg text-muted md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 hover:text-red-500 hover:bg-red-500/10 transition-all"
                     >
                         <Trash2 size={13} />
                     </button>

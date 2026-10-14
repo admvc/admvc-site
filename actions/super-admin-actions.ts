@@ -5,12 +5,13 @@ import bcrypt from 'bcryptjs'
 import { validarSenhaNova } from '@/lib/senhas'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { criarSessaoMembro } from '@/lib/sessao'
-import { requireSAAuth, getSASession } from '@/lib/sa-auth'
+import { criarSessaoMembro, apagarSessaoMembro } from '@/lib/sessao'
+import { requireSAAuth, getSASession, exigirPapelSA, registarAcaoSA, papelChega, PAPEIS_SA, type PapelSA } from '@/lib/sa-auth'
 import { type PlanoId, type Modulo, PLANOS, MODULOS } from '@/lib/planos'
 
 export async function criarNovaIgreja(formData: FormData) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     // 1. Dados da Igreja
     const nomeIgreja = formData.get('nomeIgreja') as string;
@@ -73,6 +74,7 @@ export async function criarNovaIgreja(formData: FormData) {
             return tenant;
         });
 
+        await registarAcaoSA(session.saId, 'CRIAR_IGREJA', `Igreja ${novaIgreja.id} (${novaIgreja.nome}), admin ${adminEmail}`)
         revalidatePath('/super-admin/igrejas')
         return { success: true, message: `Igreja ${novaIgreja.nome} criada com sucesso!`, tenantId: novaIgreja.id };
 
@@ -86,7 +88,8 @@ export async function criarNovaIgreja(formData: FormData) {
 // Adicione isto no final de @/actions/super-admin-actions.ts
 
 export async function atualizarIgreja(id: number, formData: FormData) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     const nome = formData.get('nomeIgreja') as string;
     const slug = formData.get('slug') as string;
@@ -109,7 +112,8 @@ export async function atualizarIgreja(id: number, formData: FormData) {
             }
         });
 
-        revalidatePath('/super-admin/igrejas'); // Ajuste para a rota onde o painel vai ficar
+        await registarAcaoSA(session.saId, 'EDITAR_IGREJA', `Igreja ${id}: nome "${nome}", slug "${slug}", plano ${plano}`)
+        revalidatePath('/super-admin/igrejas');
         return { success: true, message: `Igreja atualizada com sucesso!` };
 
     } catch (error) {
@@ -140,7 +144,8 @@ export async function buscarIgrejaComModulos(igrejaId: number) {
 }
 
 export async function atualizarPlanoIgreja(igrejaId: number, plano: string) {
-    const session = await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     try {
         if (!PLANOS[plano as PlanoId]) {
@@ -166,6 +171,7 @@ export async function atualizarPlanoIgreja(igrejaId: number, plano: string) {
                     alterado_por: session.email,
                 },
             })
+            await registarAcaoSA(session.saId, 'ALTERAR_PLANO', `Igreja ${igrejaId}: ${oldPlano} → ${plano}`)
         }
 
         revalidatePath('/super-admin/igrejas')
@@ -178,7 +184,8 @@ export async function atualizarPlanoIgreja(igrejaId: number, plano: string) {
 }
 
 export async function atualizarModulosCustom(igrejaId: number, modulos: string[]) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     try {
         // Valida que todos os módulos são válidos
@@ -192,6 +199,7 @@ export async function atualizarModulosCustom(igrejaId: number, modulos: string[]
             where: { id: igrejaId },
             data: { modulos_custom: modulos.length > 0 ? modulos : null }
         })
+        await registarAcaoSA(session.saId, 'ALTERAR_MODULOS', `Igreja ${igrejaId}: ${modulos.length > 0 ? modulos.join(', ') : 'os do plano'}`)
 
         revalidatePath('/super-admin/igrejas')
         revalidatePath(`/super-admin/igrejas/${igrejaId}/modulos`)
@@ -204,7 +212,8 @@ export async function atualizarModulosCustom(igrejaId: number, modulos: string[]
 // ── ONBOARDING ─────────────────────────────────────────────────────────────
 
 export async function atualizarBrandingIgreja(tenantId: number, formData: FormData) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     const logo_url = formData.get('logo_url') as string || null
     const cor_primaria = formData.get('cor_primaria') as string || '#3F6B4F'
@@ -215,6 +224,7 @@ export async function atualizarBrandingIgreja(tenantId: number, formData: FormDa
             where: { id: tenantId },
             data: { logo_url, cor_primaria, cor_secundaria },
         })
+        await registarAcaoSA(session.saId, 'ALTERAR_BRANDING', `Igreja ${tenantId}`)
 
         revalidatePath(`/super-admin/onboarding/${tenantId}`)
         return { ok: true, message: 'Branding atualizado com sucesso.' }
@@ -225,7 +235,8 @@ export async function atualizarBrandingIgreja(tenantId: number, formData: FormDa
 }
 
 export async function criarCongregacaoSA(tenantId: number, formData: FormData) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     const nome = formData.get('nome') as string
     const cidade = formData.get('cidade') as string
@@ -239,6 +250,7 @@ export async function criarCongregacaoSA(tenantId: number, formData: FormData) {
         await prisma.congregacao.create({
             data: { nome, cidade, endereco, tenant_id: tenantId },
         })
+        await registarAcaoSA(session.saId, 'CRIAR_CONGREGACAO', `Igreja ${tenantId}: ${nome} (${cidade})`)
 
         revalidatePath(`/super-admin/onboarding/${tenantId}`)
         return { ok: true, message: 'Congregação criada com sucesso.' }
@@ -249,7 +261,8 @@ export async function criarCongregacaoSA(tenantId: number, formData: FormData) {
 }
 
 export async function atualizarCongregacaoSA(tenantId: number, congregacaoId: number, formData: FormData) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     const nome = (formData.get('nome') as string)?.trim()
     const cidade = (formData.get('cidade') as string)?.trim()
@@ -266,6 +279,7 @@ export async function atualizarCongregacaoSA(tenantId: number, congregacaoId: nu
             data: { nome, cidade, endereco },
         })
         if (r.count === 0) return { error: 'Congregação não encontrada nesta igreja.' }
+        await registarAcaoSA(session.saId, 'EDITAR_CONGREGACAO', `Igreja ${tenantId}, congregação ${congregacaoId}: ${nome} (${cidade})`)
 
         revalidatePath(`/super-admin/onboarding/${tenantId}`)
         return { ok: true, message: 'Congregação atualizada.' }
@@ -276,7 +290,8 @@ export async function atualizarCongregacaoSA(tenantId: number, congregacaoId: nu
 }
 
 export async function criarDepartamentoSA(tenantId: number, formData: FormData) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     const nome = formData.get('nome') as string
     const descricao = formData.get('descricao') as string || null
@@ -290,6 +305,7 @@ export async function criarDepartamentoSA(tenantId: number, formData: FormData) 
         await prisma.departamento.create({
             data: { nome, descricao, is_global, tenant_id: tenantId },
         })
+        await registarAcaoSA(session.saId, 'CRIAR_DEPARTAMENTO', `Igreja ${tenantId}: ${nome}`)
 
         revalidatePath(`/super-admin/onboarding/${tenantId}`)
         return { ok: true, message: 'Departamento criado com sucesso.' }
@@ -299,8 +315,107 @@ export async function criarDepartamentoSA(tenantId: number, formData: FormData) 
     }
 }
 
+/**
+ * Apagar uma congregação: o que estava ligado a ela (membros, departamentos,
+ * grupos, eventos…) fica "sem congregação" — nada se perde.
+ */
+export async function eliminarCongregacaoSA(tenantId: number, congregacaoId: number) {
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
+
+    try {
+        const c = await prisma.congregacao.findFirst({
+            where: { id: congregacaoId, tenant_id: tenantId },
+            select: { id: true, nome: true, _count: { select: { membros: true, departamentos: true, grupos: true } } },
+        })
+        if (!c) return { error: 'Congregação não encontrada nesta igreja.' }
+
+        // Os departamentos dela passam a gerais: o nome não pode repetir um geral que já exista
+        const repetidos = await prisma.departamento.findMany({
+            where: { tenant_id: tenantId, congregacaoId: c.id, nome: { in: (await prisma.departamento.findMany({ where: { tenant_id: tenantId, congregacaoId: null }, select: { nome: true } })).map(d => d.nome) } },
+            select: { nome: true },
+        })
+        if (repetidos.length > 0) {
+            return { error: `Há departamentos com o mesmo nome noutra parte da igreja (${repetidos.map(d => d.nome).join(', ')}). Mude o nome ou apague-os primeiro.` }
+        }
+
+        await prisma.congregacao.delete({ where: { id: c.id } })
+        const ficou = [
+            c._count.membros && `${c._count.membros} membro(s)`,
+            c._count.departamentos && `${c._count.departamentos} departamento(s)`,
+            c._count.grupos && `${c._count.grupos} grupo(s)`,
+        ].filter(Boolean).join(', ')
+        await registarAcaoSA(session.saId, 'ELIMINAR_CONGREGACAO', `Igreja ${tenantId}: ${c.nome}${ficou ? ` (ficaram sem congregação: ${ficou})` : ''}`)
+
+        revalidatePath(`/super-admin/onboarding/${tenantId}`)
+        return { ok: true, message: ficou ? `Congregação apagada. Ficaram sem congregação: ${ficou}.` : 'Congregação apagada.' }
+    } catch (error) {
+        console.error('Erro ao apagar congregação:', error)
+        return { error: 'Erro ao apagar a congregação.' }
+    }
+}
+
+export async function atualizarDepartamentoSA(tenantId: number, departamentoId: number, formData: FormData) {
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
+
+    const nome = (formData.get('nome') as string)?.trim()
+    const descricao = (formData.get('descricao') as string)?.trim() || null
+    const is_global = formData.get('is_global') === 'true'
+    if (!nome) return { error: 'Nome do departamento é obrigatório.' }
+
+    try {
+        const d = await prisma.departamento.findFirst({ where: { id: departamentoId, tenant_id: tenantId }, select: { id: true, nome: true, congregacaoId: true } })
+        if (!d) return { error: 'Departamento não encontrado nesta igreja.' }
+        const repetido = await prisma.departamento.findFirst({
+            where: { tenant_id: tenantId, congregacaoId: d.congregacaoId, nome, id: { not: d.id } },
+            select: { id: true },
+        })
+        if (repetido) return { error: `Já existe um departamento "${nome}" nesta parte da igreja.` }
+
+        await prisma.departamento.update({ where: { id: d.id }, data: { nome, descricao, is_global } })
+        await registarAcaoSA(session.saId, 'EDITAR_DEPARTAMENTO', `Igreja ${tenantId}, departamento ${d.id}: ${d.nome}${d.nome !== nome ? ` → ${nome}` : ''}`)
+
+        revalidatePath(`/super-admin/onboarding/${tenantId}`)
+        return { ok: true, message: 'Departamento atualizado.' }
+    } catch (error) {
+        console.error('Erro ao atualizar departamento:', error)
+        return { error: 'Erro ao atualizar o departamento.' }
+    }
+}
+
+/**
+ * Apagar um departamento. Na base, isso apaga em cascata as escalas, os
+ * integrantes e os avisos dele — por isso só deixamos quando não há escalas.
+ */
+export async function eliminarDepartamentoSA(tenantId: number, departamentoId: number) {
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
+
+    try {
+        const d = await prisma.departamento.findFirst({
+            where: { id: departamentoId, tenant_id: tenantId },
+            select: { id: true, nome: true, _count: { select: { escalas: true, integrantes: true } } },
+        })
+        if (!d) return { error: 'Departamento não encontrado nesta igreja.' }
+        if (d._count.escalas > 0) {
+            return { error: `"${d.nome}" tem ${d._count.escalas} escala(s): apagar levava-as também. Mude-lhe o nome em vez de o apagar.` }
+        }
+
+        await prisma.departamento.delete({ where: { id: d.id } })
+        await registarAcaoSA(session.saId, 'ELIMINAR_DEPARTAMENTO', `Igreja ${tenantId}: ${d.nome} (${d._count.integrantes} integrante(s) saíram)`)
+
+        revalidatePath(`/super-admin/onboarding/${tenantId}`)
+        return { ok: true, message: d._count.integrantes ? `Departamento apagado (${d._count.integrantes} integrante(s) saíram dele).` : 'Departamento apagado.' }
+    } catch (error) {
+        console.error('Erro ao apagar departamento:', error)
+        return { error: 'Erro ao apagar o departamento.' }
+    }
+}
+
 export async function atualizarAdminIgreja(tenantId: number, formData: FormData) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     const email = formData.get('email') as string
     const password = formData.get('password') as string
@@ -328,6 +443,7 @@ export async function atualizarAdminIgreja(tenantId: number, formData: FormData)
 
         if (Object.keys(data).length > 0) {
             await prisma.membro.update({ where: { id: admin.id }, data })
+            await registarAcaoSA(session.saId, 'EDITAR_ADMIN_IGREJA', `Igreja ${tenantId}, membro ${admin.id}: ${[data.email && `email → ${data.email}`, data.password && 'nova palavra-passe'].filter(Boolean).join(', ')}`)
         }
 
         revalidatePath(`/super-admin/onboarding/${tenantId}`)
@@ -339,13 +455,15 @@ export async function atualizarAdminIgreja(tenantId: number, formData: FormData)
 }
 
 export async function marcarOnboardingCompleto(tenantId: number) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     try {
         await prisma.tenant.update({
             where: { id: tenantId },
             data: { onboarding_completo: true },
         })
+        await registarAcaoSA(session.saId, 'ONBOARDING_CONCLUIDO', `Igreja ${tenantId}`)
 
         revalidatePath(`/super-admin/onboarding/${tenantId}`)
         revalidatePath('/super-admin/dashboard')
@@ -359,7 +477,8 @@ export async function marcarOnboardingCompleto(tenantId: number) {
 // ── BILLING ────────────────────────────────────────────────────────────────
 
 export async function atualizarBilling(tenantId: number, formData: FormData) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     const valor_mensal = Number(formData.get('valor_mensal')) || null
     const plano_inicio = formData.get('plano_inicio') as string || null
@@ -374,6 +493,7 @@ export async function atualizarBilling(tenantId: number, formData: FormData) {
                 plano_fim: plano_fim ? new Date(plano_fim) : null,
             },
         })
+        await registarAcaoSA(session.saId, 'ALTERAR_FATURACAO', `Igreja ${tenantId}: ${valor_mensal ?? 0} €/mês, ${plano_inicio || '—'} a ${plano_fim || '—'}`)
 
         revalidatePath('/super-admin/billing')
         return { ok: true, message: 'Facturação atualizada com sucesso.' }
@@ -384,13 +504,15 @@ export async function atualizarBilling(tenantId: number, formData: FormData) {
 }
 
 export async function suspenderIgreja(tenantId: number) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     try {
         await prisma.tenant.update({
             where: { id: tenantId },
             data: { status: 'SUSPENSO' },
         })
+        await registarAcaoSA(session.saId, 'SUSPENDER_IGREJA', `Igreja ${tenantId}`)
 
         revalidatePath('/super-admin/billing')
         revalidatePath('/super-admin/igrejas')
@@ -402,13 +524,15 @@ export async function suspenderIgreja(tenantId: number) {
 }
 
 export async function ativarIgreja(tenantId: number) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     try {
         await prisma.tenant.update({
             where: { id: tenantId },
             data: { status: 'ATIVO' },
         })
+        await registarAcaoSA(session.saId, 'ATIVAR_IGREJA', `Igreja ${tenantId}`)
 
         revalidatePath('/super-admin/billing')
         revalidatePath('/super-admin/igrejas')
@@ -422,10 +546,12 @@ export async function ativarIgreja(tenantId: number) {
 // ── GESTAO DE SUPER ADMINS ──────────────────────────────────────────────────
 
 export async function criarSuperAdmin(formData: FormData) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
-    const nome = formData.get('nome') as string
-    const email = formData.get('email') as string
+    const nome = (formData.get('nome') as string)?.trim()
+    // O login passa o email a minúsculas: guardar igual, senão a conta nunca entra
+    const email = (formData.get('email') as string)?.toLowerCase().trim()
     const password = formData.get('password') as string
     const role = formData.get('role') as string
 
@@ -433,6 +559,8 @@ export async function criarSuperAdmin(formData: FormData) {
         if (!nome || !email || !password || !role) {
             return { error: 'Preencha todos os campos.' }
         }
+
+        if (!PAPEIS_SA.includes(role as PapelSA)) return { error: 'Papel inválido.' }
 
         const motivoSenha = validarSenhaNova(password, email)
         if (motivoSenha) return { error: motivoSenha }
@@ -451,6 +579,7 @@ export async function criarSuperAdmin(formData: FormData) {
                 is_active: true,
             },
         })
+        await registarAcaoSA(session.saId, 'CRIAR_SA', `${email} (${role})`)
 
         revalidatePath('/super-admin/admins')
         return { success: true }
@@ -461,16 +590,22 @@ export async function criarSuperAdmin(formData: FormData) {
 }
 
 export async function toggleSuperAdmin(saId: number) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     try {
         const sa = await prisma.superAdmin.findUnique({ where: { id: saId } })
         if (!sa) return { error: 'Administrador não encontrado.' }
+        if (sa.is_active) {
+            if (saId === session.saId) return { error: 'Não pode desativar a sua própria conta.' }
+            if (sa.role === 'ADMIN' && !(await haOutroAdminAtivo(saId))) return { error: 'É o único ADMIN ativo: crie ou ative outro antes.' }
+        }
 
         await prisma.superAdmin.update({
             where: { id: saId },
             data: { is_active: !sa.is_active },
         })
+        await registarAcaoSA(session.saId, sa.is_active ? 'DESATIVAR_SA' : 'ATIVAR_SA', `${sa.email}`)
 
         revalidatePath('/super-admin/admins')
         return { success: true }
@@ -482,44 +617,51 @@ export async function toggleSuperAdmin(saId: number) {
 
 // ── IMPERSONACAO ────────────────────────────────────────────────────────────
 
-export async function impersonarIgreja(tenantId: number) {
-    const session = await getSASession()
-    if (!session) throw new Error('Nao autenticado')
+/**
+ * Entrar numa igreja como o seu administrador (suporte). Precisa de um motivo;
+ * a sessão fica marcada (faixa no topo, auditoria "X (Cloud) como …") e dura 2 horas.
+ */
+export async function impersonarIgreja(tenantId: number, motivo: string) {
+    const session = await exigirPapelSA('SUPPORT')
+    if ('error' in session) return { error: session.error }
 
-    // Find the tenant
-    const tenant = await prisma.tenant.findUnique({
-        where: { id: tenantId },
-        include: {
-            congregacoes: { take: 1, orderBy: { id: 'asc' } },
-        },
-    })
+    const porque = (motivo ?? '').trim()
+    if (porque.length < 5) return { error: 'Escreva o motivo (fica no registo).' }
+
+    const tenant = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { id: true, nome: true, plano: true } })
     if (!tenant) return { error: 'Igreja não encontrada.' }
 
-    // Find admin member of that church
+    // O administrador mais antigo da igreja
     const admin = await prisma.membro.findFirst({
         where: { tenant_id: tenantId, role: 'ADMIN', is_active: true },
+        orderBy: { id: 'asc' },
     })
     if (!admin) return { error: 'Admin não encontrado nesta igreja.' }
 
-    // Log the impersonation
-    await prisma.superAdminLog.create({
-        data: {
-            sa_id: session.saId,
-            acao: 'IMPERSONAR',
-            detalhes: `Tenant ${tenantId} (${tenant.nome}) como membro ${admin.id} (${admin.email})`,
-        },
-    })
+    await registarAcaoSA(session.saId, 'IMPERSONAR', `Igreja ${tenantId} (${tenant.nome}) como ${admin.first_name} ${admin.last_name} <${admin.email}> · motivo: ${porque.slice(0, 300)}`)
 
-    // Sessao de membro (o admin dessa igreja), so por 2 horas
-    await criarSessaoMembro({ ...admin, plano: tenant.plano }, 60 * 60 * 2)
+    // Sessao de membro (o admin dessa igreja), so por 2 horas, marcada como do Cloud
+    await criarSessaoMembro({ ...admin, plano: tenant.plano }, 60 * 60 * 2, session.saId)
 
     redirect('/membros/dashboard')
+}
+
+/** Sair da impersonação: fecha a sessão de membro e volta ao Cloud. */
+export async function terminarImpersonacao() {
+    const { getSessionData } = await import('@/lib/auth-utils')
+    const membro = await getSessionData()
+    if (membro?.impersonadoPor) {
+        await registarAcaoSA(membro.impersonadoPor.saId, 'FIM_IMPERSONAR', `Igreja ${membro.tenantId}, membro ${membro.membroId}`)
+    }
+    await apagarSessaoMembro()
+    redirect(membro?.impersonadoPor ? '/super-admin/dashboard' : '/membros/login')
 }
 
 // ── COMUNICACAO / AVISOS ────────────────────────────────────────────────────
 
 export async function enviarAviso(formData: FormData) {
-    await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     const titulo = formData.get('titulo') as string
     const mensagem = formData.get('mensagem') as string
@@ -535,6 +677,7 @@ export async function enviarAviso(formData: FormData) {
         await prisma.avisoPlataforma.create({
             data: { titulo, mensagem, tipo, tenant_id },
         })
+        await registarAcaoSA(session.saId, 'ENVIAR_AVISO', `${tipo} "${titulo}" para ${tenant_id ? `igreja ${tenant_id}` : 'todas as igrejas'}`)
 
         revalidatePath('/super-admin/comunicacao')
         return { success: true }
@@ -547,22 +690,26 @@ export async function enviarAviso(formData: FormData) {
 // ── GESTAO DE SUPER ADMINS (avancado) ────────────────────────────────────────
 
 export async function alterarRoleSA(saId: number, novoRole: string) {
-    'use server'
-    const session = await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
-    if (!['ADMIN', 'VIEWER', 'SUPPORT'].includes(novoRole)) {
-        return { error: 'Role inválido.' }
+    if (!PAPEIS_SA.includes(novoRole as PapelSA)) {
+        return { error: 'Papel inválido.' }
     }
 
     try {
+        const sa = await prisma.superAdmin.findUnique({ where: { id: saId }, select: { role: true, is_active: true, email: true } })
+        if (!sa) return { error: 'Administrador não encontrado.' }
+        if (sa.role === 'ADMIN' && novoRole !== 'ADMIN' && sa.is_active && !(await haOutroAdminAtivo(saId))) {
+            return { error: 'É o único ADMIN ativo: dê o papel ADMIN a outra conta antes.' }
+        }
+
         await prisma.superAdmin.update({
             where: { id: saId },
             data: { role: novoRole },
         })
 
-        await prisma.superAdminLog.create({
-            data: { sa_id: session.saId, acao: 'ALTERAR_ROLE_SA', detalhes: `SA ${saId} alterado para ${novoRole}` },
-        })
+        await registarAcaoSA(session.saId, 'ALTERAR_ROLE_SA', `${sa.email}: ${sa.role} → ${novoRole}`)
 
         revalidatePath('/super-admin/admins')
         return { success: true }
@@ -572,17 +719,21 @@ export async function alterarRoleSA(saId: number, novoRole: string) {
 }
 
 export async function eliminarSA(saId: number) {
-    'use server'
-    const session = await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
-    if (saId === session.saId) return { error: 'Não pode eliminar a si mesmo.' }
+    if (saId === session.saId) return { error: 'Não pode eliminar a sua própria conta.' }
 
     try {
+        const sa = await prisma.superAdmin.findUnique({ where: { id: saId }, select: { role: true, is_active: true, email: true, _count: { select: { logs: true } } } })
+        if (!sa) return { error: 'Administrador não encontrado.' }
+        if (sa.role === 'ADMIN' && sa.is_active && !(await haOutroAdminAtivo(saId))) return { error: 'É o único ADMIN ativo.' }
+        // O registo de ações tem de continuar a dizer quem fez o quê
+        if (sa._count.logs > 0) return { error: 'Esta conta tem ações registadas: desative-a em vez de a eliminar.' }
+
         await prisma.superAdmin.delete({ where: { id: saId } })
 
-        await prisma.superAdminLog.create({
-            data: { sa_id: session.saId, acao: 'ELIMINAR_SA', detalhes: `SA ${saId} eliminado` },
-        })
+        await registarAcaoSA(session.saId, 'ELIMINAR_SA', `${sa.email}`)
 
         revalidatePath('/super-admin/admins')
         return { success: true }
@@ -594,8 +745,8 @@ export async function eliminarSA(saId: number) {
 // ── TEMA DA IGREJA ──────────────────────────────────────────────────────────
 
 export async function atualizarTemaIgreja(formData: FormData) {
-    'use server'
-    const session = await requireSAAuth()
+    const session = await exigirPapelSA('ADMIN')
+    if ('error' in session) return { error: session.error }
 
     const tenantId = Number(formData.get('tenantId'))
     const cor_primaria = String(formData.get('cor_primaria') || '#3F6B4F')
@@ -610,13 +761,7 @@ export async function atualizarTemaIgreja(formData: FormData) {
             data: { cor_primaria, cor_secundaria, cor_fundo },
         })
 
-        await prisma.superAdminLog.create({
-            data: {
-                sa_id: session.saId,
-                acao: 'ALTERAR_TEMA',
-                detalhes: `Tema atualizado para tenant ${tenantId}: ${cor_primaria}, ${cor_secundaria}, ${cor_fundo}`,
-            },
-        })
+        await registarAcaoSA(session.saId, 'ALTERAR_TEMA', `Igreja ${tenantId}: ${cor_primaria}, ${cor_secundaria}, ${cor_fundo}`)
 
         revalidatePath(`/super-admin/igrejas/${tenantId}/tema`)
         return { success: true }
@@ -627,7 +772,6 @@ export async function atualizarTemaIgreja(formData: FormData) {
 }
 
 export async function buscarTemaIgreja(tenantId: number) {
-    'use server'
     await requireSAAuth()
 
     const tenant = await prisma.tenant.findUnique({
@@ -636,4 +780,9 @@ export async function buscarTemaIgreja(tenantId: number) {
     })
 
     return tenant
+}
+
+/** Há outra conta ADMIN ativa além desta? (para nunca ficar sem quem gere o Cloud) */
+async function haOutroAdminAtivo(excetoId: number) {
+    return (await prisma.superAdmin.count({ where: { role: 'ADMIN', is_active: true, id: { not: excetoId } } })) > 0
 }

@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useConfirm } from '@/components/ui/ConfirmDialog'
-import { removerMembroDaFamilia } from '@/actions/familia-actions'
-import { Settings2, Trash2, User, Loader2, Users, X, UserPlus } from 'lucide-react'
+import { useConfirm, useToast } from '@/components/ui/ConfirmDialog'
+import { removerMembroDaFamilia, renomearFamiliaAction } from '@/actions/familia-actions'
+import { Settings2, Trash2, User, Loader2, Users, X, UserPlus, Pencil, Check } from 'lucide-react'
 import BotaoExcluirFamilia from '@/components/familias/BotaoExcluirFamilia'
 import ModalAdicionarMembroFamilia from '@/components/familias/ModalAdicionarMembroFamilia'
 
@@ -29,10 +29,8 @@ export function GestaoFamiliaCard({ familia }: any) {
                         <div className="w-10 h-10 bg-figueira/10 text-figueira rounded-xl flex items-center justify-center shrink-0 text-sm font-bold">
                             {familia.surname[0]}
                         </div>
-                        <div>
-                            <h3 className="text-sm font-bold text-fg leading-none">
-                                {familia.surname}
-                            </h3>
+                        <div className="min-w-0">
+                            <NomeFamilia id={familia.id} nome={familia.surname} />
                             <p className="text-[13px] font-bold text-muted mt-1">
                                 {familia.members.length} membro{familia.members.length !== 1 ? 's' : ''}
                             </p>
@@ -115,5 +113,47 @@ export function GestaoFamiliaCard({ familia }: any) {
                 </div>
             )}
         </div>
+    )
+}
+
+/** O nome da família, com lápis para o mudar ali mesmo. */
+function NomeFamilia({ id, nome }: { id: number; nome: string }) {
+    const toast = useToast()
+    const [editar, setEditar] = useState(false)
+    const [valor, setValor] = useState(nome)
+    const [aGuardar, setAGuardar] = useState(false)
+
+    async function guardar() {
+        setAGuardar(true)
+        const res = await renomearFamiliaAction(id, valor)
+        setAGuardar(false)
+        if (res.ok) { setEditar(false); toast('Nome guardado.', 'sucesso') }
+        else toast(res.error || 'Não foi possível guardar.', 'erro')
+    }
+
+    if (!editar) {
+        return (
+            <div className="flex items-center gap-1.5">
+                <h3 className="text-sm font-bold text-fg leading-none truncate">{nome}</h3>
+                <button type="button" onClick={() => { setValor(nome); setEditar(true) }} aria-label={`Mudar o nome da família ${nome}`}
+                    className="p-1 rounded-md text-muted hover:text-fg hover:bg-soft/30">
+                    <Pencil size={12} />
+                </button>
+            </div>
+        )
+    }
+    return (
+        <form onSubmit={e => { e.preventDefault(); guardar() }} className="flex items-center gap-1">
+            <input value={valor} onChange={e => setValor(e.target.value)} autoFocus maxLength={80} aria-label="Nome da família"
+                onKeyDown={e => { if (e.key === 'Escape') setEditar(false) }}
+                className="w-36 bg-bg border border-soft rounded-lg px-2 py-1 text-sm font-bold text-fg outline-none focus:border-figueira" />
+            <button type="submit" disabled={aGuardar || !valor.trim()} aria-label="Guardar nome"
+                className="p-1.5 rounded-md bg-figueira text-white disabled:opacity-50">
+                {aGuardar ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
+            </button>
+            <button type="button" onClick={() => setEditar(false)} aria-label="Cancelar" className="p-1.5 rounded-md text-muted hover:text-fg">
+                <X size={12} />
+            </button>
+        </form>
     )
 }
