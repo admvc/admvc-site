@@ -253,6 +253,12 @@ model Membro {
   gdpr_data_assinatura       DateTime?
   gdpr_validade              DateTime?
   neighborhood               String?
+  // Mapa das famílias (só admins): ponto da casa e a morada com que foi calculado
+  latitude                   Float?
+  longitude                  Float?
+  geo_fonte                  String?   // censo, morada, codigo-postal, bairro
+  geo_chave                  String?   // impressão da morada (lib/mapa-familias): se mudar, localizar de novo
+  geo_falhou                 Boolean   @default(false)
   permanecer_aceite          Boolean                   @default(false)
   permanecer_data_assinatura DateTime?
   permanecer_validade        DateTime?

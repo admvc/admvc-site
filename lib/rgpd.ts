@@ -77,6 +77,12 @@ export function camposAnonimosMembro(id: number): Prisma.MembroUpdateInput {
         state: null,
         country: null,
         neighborhood: null,
+        // o ponto da casa no mapa das famílias
+        latitude: null,
+        longitude: null,
+        geo_fonte: null,
+        geo_chave: null,
+        geo_falhou: false,
         baptism_status: null,
         baptism_date: null,
         conversion_date: null,

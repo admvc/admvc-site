@@ -8,7 +8,8 @@ import Breadcrumbs from '@/components/Breadcrumbs'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminFamiliasPage() {
+export default async function AdminFamiliasPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+    const { q = '' } = await searchParams
     const db = await getDb()
     const [familias, qtdMembrosSemVinculo] = await Promise.all([
         db.familia.findMany({
@@ -40,7 +41,12 @@ export default async function AdminFamiliasPage() {
                         {qtdMembrosSemVinculo > 0 && ` · ${qtdMembrosSemVinculo} sem vinculo`}
                     </p>
                 </div>
-                <NovaFamiliaModal familiasExistentes={nomesFamiliasExistentes} />
+                <div className="flex flex-wrap gap-2">
+                    <Link href="/admin/familias/mapa" className="flex items-center gap-2 rounded-xl border border-soft bg-bg2 px-4 py-2.5 text-[14px] font-bold text-fg hover:border-figueira/40">
+                        Ver no mapa
+                    </Link>
+                    <NovaFamiliaModal familiasExistentes={nomesFamiliasExistentes} />
+                </div>
             </header>
 
             {qtdMembrosSemVinculo > 0 && (
@@ -57,7 +63,7 @@ export default async function AdminFamiliasPage() {
                 </div>
             )}
 
-            <FamiliasGrid familias={familias} />
+            <FamiliasGrid familias={familias} buscaInicial={q} />
         </main>
     )
 }

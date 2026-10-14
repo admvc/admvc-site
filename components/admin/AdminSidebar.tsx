@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import {
+import { MapPinned,
     LayoutDashboard, Users, Home, CalendarDays, HeartHandshake, BarChart3, Shield, LogOut, Package,
     Palette, Church, CreditCard, Menu, X, MonitorPlay, BookOpen, GraduationCap, Coffee, ShoppingCart,
     Wallet2, Clock, Store, Banknote, FileText, PieChart, Heart, CheckSquare, Download, Music2, Car,
@@ -29,6 +29,7 @@ function grupos(louvorHref: string | null, obreiros: boolean): Grupo[] {
                 { label: 'Ministérios e grupos', href: '/admin/configuracoes', icon: Network },
                 { label: 'Congregações', href: '/admin/congregacoes', icon: Church },
                 { label: 'Famílias', href: '/admin/familias', icon: Home },
+                { label: 'Mapa das famílias', href: '/admin/familias/mapa', icon: MapPinned },
                 { label: 'Inventário', href: '/admin/inventario', icon: Package, modulo: 'inventario' },
             ],
         },
@@ -106,9 +107,12 @@ export default function AdminSidebar({ adminNome, igrejaName, logoUrl, congregac
     const visiveis = grupos(louvorHref, obreiros)
         .map((g) => ({ ...g, itens: g.itens.filter((i) => ligado(i.modulo) && (!i.adminOnly || isFullAdmin)) }))
         .filter((g) => g.itens.length > 0)
+    // O item mais específico ganha (/admin/familias/mapa não acende também "Famílias")
+    const todosHrefs = visiveis.flatMap((g) => g.itens.map((i) => i.href.split('?')[0]))
     const ativo = (href: string) => {
         const base = href.split('?')[0]
-        return pathname === base || pathname.startsWith(base + '/')
+        const casa = (b: string) => pathname === b || pathname.startsWith(b + '/')
+        return casa(base) && !todosHrefs.some((h) => h !== base && h.startsWith(base + '/') && casa(h))
     }
 
     const item = 'a-foco flex min-h-[44px] items-center gap-3 rounded-[12px] px-3 text-[15px] font-semibold'

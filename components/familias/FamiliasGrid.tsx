@@ -4,8 +4,8 @@ import { useState, useMemo } from 'react'
 import { GestaoFamiliaCard } from '@/components/familias/GestaoFamiliaCard'
 import { Search, X, Home } from 'lucide-react'
 
-export default function FamiliasGrid({ familias }: { familias: any[] }) {
-    const [busca, setBusca] = useState('')
+export default function FamiliasGrid({ familias, buscaInicial = '' }: { familias: any[]; buscaInicial?: string }) {
+    const [busca, setBusca] = useState(buscaInicial)
 
     const filtradas = useMemo(() => {
         if (!busca || busca.length < 2) return familias
