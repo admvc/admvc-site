@@ -1,19 +1,25 @@
 // lib/mail.ts
 import { enviarEmail } from '@/lib/email-transport'
 
-export async function enviarEmailNotificacaoEquipa(dados: { nome: string, telefone: string, pedido: string }) {
+export async function enviarEmailNotificacaoEquipa(dados: { nome: string, telefone: string, pedido: string, visitas?: number }) {
   const isContactoSite = dados.pedido?.includes('[CONTACTO SITE]') ?? false;
+  // Mesma pessoa a voltar (já estava registada): visitas = n.º da visita
+  const voltou = !isContactoSite && (dados.visitas ?? 0) > 1;
 
   const config = {
     subject: isContactoSite
       ? `✉️ Mensagem do Site: ${dados.nome}`
-      : `🌱 Novo Visitante: ${dados.nome}`,
+      : voltou
+        ? `🔁 Voltou: ${dados.nome} (${dados.visitas}.ª visita)`
+        : `🌱 Novo Visitante: ${dados.nome}`,
     headerColor: isContactoSite
       ? '#1a202c'
       : '#3F6B4F',
     title: isContactoSite
       ? 'Contacto Geral'
-      : 'Novo Acolhimento'
+      : voltou
+        ? `Voltou: ${dados.visitas}.ª visita`
+        : 'Novo Acolhimento'
   };
 
   const telefoneLimpo = dados.telefone.replace(/\D/g, '');

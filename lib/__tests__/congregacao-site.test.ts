@@ -31,3 +31,21 @@ describe('mapaDe', () => {
             .toBe('https://www.google.com/maps/search/?api=1&query=Rua%20Elias%20Garcia%20105%2C%20Barcelos')
     })
 })
+
+describe('QR por congregação', () => {
+    const lista = [{ id: 1, nome: 'Sede' }, { id: 7, nome: 'Montemor' }, { id: 9, nome: 'São João da Madeira' }]
+    it('nome curto sem acentos', async () => {
+        const { slugCongregacao } = await import('@/lib/congregacao-site')
+        expect(slugCongregacao('São João da Madeira')).toBe('sao-joao-da-madeira')
+        expect(slugCongregacao('  Montemor-o-Velho ')).toBe('montemor-o-velho')
+    })
+    it('acha pelo nome curto ou pelo número', async () => {
+        const { acharCongregacao } = await import('@/lib/congregacao-site')
+        expect(acharCongregacao(lista, 'montemor')?.id).toBe(7)
+        expect(acharCongregacao(lista, 'Sao Joao da Madeira')?.id).toBe(9)
+        expect(acharCongregacao(lista, '1')?.id).toBe(1)
+        expect(acharCongregacao(lista, 'leiria')).toBeNull()
+        expect(acharCongregacao(lista, '')).toBeNull()
+        expect(acharCongregacao(lista, 99)).toBeNull()
+    })
+})

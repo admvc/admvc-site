@@ -26,3 +26,18 @@ export function mapaDe(c: { latitude: number | null; longitude: number | null; e
     const morada = [c.endereco, c.cidade].filter(Boolean).join(', ')
     return morada ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(morada)}` : null
 }
+
+/** Nome curto para endereços: "Montemor-o-Velho" → "montemor-o-velho", "Sede" → "sede". */
+export function slugCongregacao(nome: string): string {
+    return nome.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+}
+
+/** A congregação do QR (/boasvindas?c=…): pelo nome curto ou pelo número. */
+export function acharCongregacao<T extends { id: number; nome: string }>(lista: T[], c: string | number | null | undefined): T | null {
+    if (c == null || c === '') return null
+    const texto = String(c).trim()
+    if (/^\d+$/.test(texto)) return lista.find(x => x.id === Number(texto)) ?? null
+    const s = slugCongregacao(texto)
+    return lista.find(x => slugCongregacao(x.nome) === s) ?? null
+}

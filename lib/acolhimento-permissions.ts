@@ -39,6 +39,31 @@ export function podeVerNotasLider(role: AcolhimentoRole): boolean {
 }
 
 /**
+ * Quem pode ficar responsável por visitantes: integrantes e líderes dos
+ * departamentos de acolhimento/integração da igreja (por ordem de nome).
+ */
+export async function equipaAcolhimento(tenantId: number): Promise<Array<{ id: number; nome: string }>> {
+    const { default: prisma } = await import('@/lib/prisma')
+    const deps = await prisma.departamento.findMany({
+        where: {
+            tenant_id: tenantId,
+            OR: TERMOS_ACOLHIMENTO.map(t => ({ nome: { contains: t, mode: 'insensitive' as const } })),
+        },
+        select: {
+            lider: { select: { id: true, first_name: true, last_name: true, is_active: true } },
+            integrantes: { select: { membro: { select: { id: true, first_name: true, last_name: true, is_active: true } } } },
+        },
+    })
+    const porId = new Map<number, string>()
+    for (const d of deps) {
+        for (const m of [d.lider, ...d.integrantes.map(i => i.membro)]) {
+            if (m && m.is_active) porId.set(m.id, `${m.first_name} ${m.last_name}`.trim())
+        }
+    }
+    return [...porId].map(([id, nome]) => ({ id, nome })).sort((a, b) => a.nome.localeCompare(b.nome, 'pt'))
+}
+
+/**
  * Para as actions de visitantes: a sessao tem de ser da equipa de acolhimento
  * (nivel MEMBRO) ou lider/admin (nivel LIDER), e o visitante tem de ser da
  * mesma igreja. Lanca erro se nao.

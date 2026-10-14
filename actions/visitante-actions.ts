@@ -3,7 +3,9 @@
 
 import prisma from '@/lib/prisma'
 import { getSessionData } from '@/lib/auth-utils'
-import { exigirAcolhimento } from '@/lib/acolhimento-permissions'
+import { exigirAcolhimento, equipaAcolhimento } from '@/lib/acolhimento-permissions'
+import { lerDataContacto } from '@/lib/acolhimento-prazos'
+import { registarVisita, telefoneValido, ORIGENS_MANUAIS } from '@/lib/visitante-registo'
 import { revalidatePath } from 'next/cache'
 import { audit } from '@/lib/audit'
 
@@ -101,6 +103,9 @@ export async function registarAcompanhamento(formData: FormData) {
         const observacoes = formData.get('observacoes') as string;
         const novoStatus = formData.get('status') as string;
         const quantidadeVisitas = Number(formData.get('quantidade_visitas')) || 1;
+        // Depois de um contacto, a data marcada fica cumprida: vale a nova (ou nenhuma).
+        let proximoContacto: Date | null
+        try { proximoContacto = lerDataContacto(String(formData.get('proximo_contacto') ?? '')) } catch { return { error: "Data do próximo contacto inválida." } }
 
         // Validar transição de status
         const statusValidos = ['NOVO', 'EM_CONTACTO', 'REUNIAO_PASTOR', 'CONSOLIDADO', 'NAO_RETORNOU', 'OUTRA_IGREJA', 'DESISTIU'] as const;
@@ -151,7 +156,8 @@ export async function registarAcompanhamento(formData: FormData) {
             data: {
                 status: novoStatus,
                 quantidade_visitas: quantidadeVisitas,
-                data_ultima_visita: new Date()
+                data_ultima_visita: new Date(),
+                proximo_contacto: proximoContacto
             }
         });
 
@@ -276,22 +282,25 @@ export async function registarAcompanhamento(formData: FormData) {
     }
 }
 
-export async function atribuirResponsavel(visitanteId: number, responsavelId: number) {
+export async function atribuirResponsavel(visitanteId: number, responsavelId: number | null) {
     try {
         const session = await exigirAcolhimento('LIDER', visitanteId);
 
         const membro = await prisma.membro.findUnique({ where: { id: session.membroId } });
         if (!membro) return { error: "Membro não encontrado." };
 
-        const responsavel = await prisma.membro.findUnique({
-            where: { id: responsavelId },
-            select: { first_name: true, last_name: true, tenant_id: true }
-        });
-        if (!responsavel || responsavel.tenant_id !== session.tenantId) return { error: "Responsável não encontrado." };
+        // Só alguém da equipa de acolhimento (null = tirar o responsável)
+        let nomeResponsavel = ''
+        if (responsavelId) {
+            const equipa = await equipaAcolhimento(session.tenantId);
+            const escolhido = equipa.find(m => m.id === responsavelId);
+            if (!escolhido) return { error: "Essa pessoa não é da equipa de acolhimento." };
+            nomeResponsavel = escolhido.nome
+        }
 
         await prisma.visitante.update({
             where: { id: visitanteId },
-            data: { responsavel_id: responsavelId }
+            data: { responsavel_id: responsavelId || null }
         });
 
         await prisma.acompanhamentoVisitante.create({
@@ -301,7 +310,7 @@ export async function atribuirResponsavel(visitanteId: number, responsavelId: nu
                 membro_id: session.membroId,
                 tipo_contacto: 'PRESENCIAL',
                 tipo_evento: 'ATRIBUICAO',
-                observacoes: `Responsavel atribuido: ${responsavel.first_name} ${responsavel.last_name}`,
+                observacoes: nomeResponsavel ? `Responsável: ${nomeResponsavel}` : 'Responsável retirado',
             }
         });
 
@@ -312,7 +321,7 @@ export async function atribuirResponsavel(visitanteId: number, responsavelId: nu
             actor_id: session.membroId,
             alvo_id: visitanteId,
             alvo_tipo: 'VISITANTE',
-            descricao: `Responsavel atribuido: ${responsavel.first_name}`,
+            descricao: nomeResponsavel ? `Responsável atribuído: ${nomeResponsavel}` : 'Responsável retirado',
         }).catch((err) => console.error('[VISITANTE] Falha no audit:', err));
 
         revalidatePath('/departamentos/acolhimento/dashboard');
@@ -330,9 +339,10 @@ export async function guardarNotaLider(visitanteId: number, nota: string) {
         const membro = await prisma.membro.findUnique({ where: { id: session.membroId } });
         if (!membro) return { error: "Membro não encontrado." };
 
+        nota = nota.trim()
         await prisma.visitante.update({
             where: { id: visitanteId },
-            data: { notas_lider: nota }
+            data: { notas_lider: nota || null }
         });
 
         await prisma.acompanhamentoVisitante.create({
@@ -342,7 +352,7 @@ export async function guardarNotaLider(visitanteId: number, nota: string) {
                 membro_id: session.membroId,
                 tipo_contacto: 'PRESENCIAL',
                 tipo_evento: 'NOTA_LIDER',
-                observacoes: nota,
+                observacoes: nota || 'Nota apagada',
             }
         });
 
@@ -356,11 +366,14 @@ export async function guardarNotaLider(visitanteId: number, nota: string) {
 
 export async function agendarProximoContacto(visitanteId: number, data: string) {
     try {
-        const session = await exigirAcolhimento('MEMBRO', visitanteId);
+        await exigirAcolhimento('MEMBRO', visitanteId);
+
+        let proximo: Date | null
+        try { proximo = lerDataContacto(data) } catch { return { error: "Data inválida." } }
 
         await prisma.visitante.update({
             where: { id: visitanteId },
-            data: { proximo_contacto: new Date(data) }
+            data: { proximo_contacto: proximo }
         });
 
         revalidatePath('/departamentos/acolhimento/dashboard');
@@ -368,5 +381,77 @@ export async function agendarProximoContacto(visitanteId: number, data: string) 
     } catch (error) {
         console.error("Erro ao agendar contacto:", error);
         return { error: "Falha ao agendar." };
+    }
+}
+
+/**
+ * Registo feito pela equipa (quem chega ao culto sem telemóvel ou sem QR).
+ * Se o telefone já existe, soma a visita a esse visitante em vez de duplicar.
+ */
+export async function registarVisitanteAction(formData: FormData) {
+    try {
+        const session = await exigirAcolhimento('MEMBRO');
+
+        const nome = String(formData.get('nome') ?? '').trim();
+        const telefone = String(formData.get('telefone') ?? '').trim();
+        const email = String(formData.get('email') ?? '').trim().toLowerCase();
+        const pedido = String(formData.get('pedido_oracao') ?? '').trim();
+        const origem = String(formData.get('origem') ?? 'PRESENCIAL');
+
+        if (!nome || !telefone) return { error: "Nome e telefone são obrigatórios." };
+        if (!telefoneValido(telefone)) return { error: "Telefone inválido (9 a 15 dígitos)." };
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "Email inválido." };
+        if (!(ORIGENS_MANUAIS as readonly string[]).includes(origem)) return { error: "Origem inválida." };
+        // RGPD: a pessoa tem de ter autorizado que a igreja guarde os dados
+        if (formData.get('consentimento') !== 'on') return { error: "Confirme que a pessoa autorizou guardar os dados." };
+
+        const congregacaoId = Number(formData.get('congregacao_id')) || null;
+        const congregacao = congregacaoId ? await congregacaoDaIgreja(congregacaoId, session.tenantId) : null;
+        if (congregacaoId && !congregacao) return { error: "Congregação não encontrada." };
+
+        const r = await registarVisita(prisma, {
+            tenantId: session.tenantId, nome, telefone, email: email || null, pedido: pedido || null, origem, congregacao,
+        }, session.membroId);
+
+        audit({
+            tenant_id: session.tenantId,
+            categoria: 'VISITANTES',
+            acao: r.novo ? 'CRIAR' : 'EDITAR',
+            actor_id: session.membroId,
+            alvo_id: r.id,
+            alvo_nome: r.nome,
+            alvo_tipo: 'VISITANTE',
+            descricao: r.novo ? 'Visitante registado pela equipa' : `Visita somada (${r.visitas}.ª)${r.reativado ? ', voltou aos novos' : ''}`,
+        }).catch((err) => console.error('[VISITANTE] Falha no audit:', err));
+
+        revalidatePath('/departamentos/acolhimento/dashboard');
+        return { ok: true, ...r };
+    } catch (error) {
+        console.error("Erro ao registar visitante:", error);
+        return { error: error instanceof Error && error.message.startsWith('Só ') ? error.message : "Falha ao registar o visitante." };
+    }
+}
+
+async function congregacaoDaIgreja(id: number, tenantId: number) {
+    return prisma.congregacao.findFirst({ where: { id, tenant_id: tenantId }, select: { id: true, nome: true } });
+}
+
+/** Em que congregação esteve o visitante (null = nenhuma). Qualquer pessoa da equipa. */
+export async function definirCongregacaoVisitante(visitanteId: number, congregacaoId: number | null) {
+    try {
+        const session = await exigirAcolhimento('MEMBRO', visitanteId);
+        const congregacao = congregacaoId ? await congregacaoDaIgreja(congregacaoId, session.tenantId) : null;
+        if (congregacaoId && !congregacao) return { error: "Congregação não encontrada." };
+
+        await prisma.visitante.update({
+            where: { id: visitanteId },
+            data: { congregacao_id: congregacao?.id ?? null },
+        });
+
+        revalidatePath('/departamentos/acolhimento/dashboard');
+        return { ok: true };
+    } catch (error) {
+        console.error("Erro ao mudar a congregação do visitante:", error);
+        return { error: "Falha ao guardar a congregação." };
     }
 }

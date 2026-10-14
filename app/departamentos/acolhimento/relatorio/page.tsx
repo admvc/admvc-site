@@ -9,7 +9,8 @@ import {
     TrendingUp, HeartHandshake, Calendar, Shield, BarChart3
 } from 'lucide-react'
 
-export default async function RelatorioAcolhimentoPage() {
+export default async function RelatorioAcolhimentoPage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
+    const { c } = await searchParams
     const db = await getDb()
     const session = await getSessionData()
     if (!session) redirect('/membros/login')
@@ -29,6 +30,12 @@ export default async function RelatorioAcolhimentoPage() {
         redirect('/membros/dashboard?error=Acesso restrito ao relatorio.')
     }
 
+    // Filtro por congregação (?c=id): visitantes dessa casa e os contactos com eles
+    const congregacoes = await db.congregacao.findMany({ select: { id: true, nome: true }, orderBy: { nome: 'asc' } })
+    const congFiltro = congregacoes.find(x => String(x.id) === c) ?? null
+    const fv = congFiltro ? { congregacao_id: congFiltro.id } : {}
+    const fa = congFiltro ? { visitante: { congregacao_id: congFiltro.id } } : {}
+
     const agora = new Date()
     const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1)
     const inicioMesAnterior = new Date(agora.getFullYear(), agora.getMonth() - 1, 1)
@@ -47,19 +54,19 @@ export default async function RelatorioAcolhimentoPage() {
         porStatus,
         followUpsPorMembro,
     ] = await Promise.all([
-        db.visitante.count(),
-        db.visitante.count({ where: { data_primeira_visita: { gte: inicioMes } } }),
-        db.visitante.count({ where: { data_primeira_visita: { gte: inicioMesAnterior, lte: fimMesAnterior } } }),
-        db.visitante.count({ where: { status: 'EM_CONTACTO' } }),
-        db.visitante.count({ where: { status: 'CONSOLIDADO' } }),
-        db.acompanhamentoVisitante.count({ where: { tipo_evento: 'CONTACTO' } }),
-        db.acompanhamentoVisitante.count({ where: { data_contacto: { gte: inicioMes }, tipo_evento: 'CONTACTO' } }),
+        db.visitante.count({ where: fv }),
+        db.visitante.count({ where: { ...fv, data_primeira_visita: { gte: inicioMes } } }),
+        db.visitante.count({ where: { ...fv, data_primeira_visita: { gte: inicioMesAnterior, lte: fimMesAnterior } } }),
+        db.visitante.count({ where: { ...fv, status: 'EM_CONTACTO' } }),
+        db.visitante.count({ where: { ...fv, status: 'CONSOLIDADO' } }),
+        db.acompanhamentoVisitante.count({ where: { ...fa, tipo_evento: 'CONTACTO' } }),
+        db.acompanhamentoVisitante.count({ where: { ...fa, data_contacto: { gte: inicioMes }, tipo_evento: 'CONTACTO' } }),
         // Visitantes por mes (ultimos 6 meses)
         Promise.all(
             Array.from({ length: 6 }, (_, i) => {
                 const inicio = new Date(agora.getFullYear(), agora.getMonth() - 5 + i, 1)
                 const fim = new Date(agora.getFullYear(), agora.getMonth() - 4 + i, 0, 23, 59, 59)
-                return db.visitante.count({ where: { data_primeira_visita: { gte: inicio, lte: fim } } })
+                return db.visitante.count({ where: { ...fv, data_primeira_visita: { gte: inicio, lte: fim } } })
                     .then(count => ({
                         mes: inicio.toLocaleDateString('pt-PT', { month: 'short' }),
                         count,
@@ -67,7 +74,7 @@ export default async function RelatorioAcolhimentoPage() {
             })
         ),
         db.visitante.findMany({
-            where: { status: 'CONSOLIDADO' },
+            where: { ...fv, status: 'CONSOLIDADO' },
             select: { id: true, nome: true, data_primeira_visita: true, data_ultima_visita: true },
             orderBy: { data_ultima_visita: 'desc' },
             take: 10,
@@ -75,12 +82,13 @@ export default async function RelatorioAcolhimentoPage() {
         // Distribuição por status (funil)
         db.visitante.groupBy({
             by: ['status'],
+            where: fv,
             _count: true
         }),
         // Follow-ups por membro este mês
         db.acompanhamentoVisitante.groupBy({
             by: ['membro_id'],
-            where: { data_contacto: { gte: inicioMes }, tipo_evento: 'CONTACTO' },
+            where: { ...fa, data_contacto: { gte: inicioMes }, tipo_evento: 'CONTACTO' },
             _count: true
         }),
     ])
@@ -110,8 +118,8 @@ export default async function RelatorioAcolhimentoPage() {
 
     // Funil
     const statusLabels: Record<string, string> = {
-        NOVO: 'Novos', EM_CONTACTO: 'Em Contacto', REUNIAO_PASTOR: 'Reuniao Pastor',
-        CONSOLIDADO: 'Consolidados', NAO_RETORNOU: 'Nao Retornou', OUTRA_IGREJA: 'Outra Igreja', DESISTIU: 'Desistiu'
+        NOVO: 'Novos', EM_CONTACTO: 'Em Contacto', REUNIAO_PASTOR: 'Reunião com pastor',
+        CONSOLIDADO: 'Consolidados', NAO_RETORNOU: 'Não voltou', OUTRA_IGREJA: 'Outra Igreja', DESISTIU: 'Desistiu'
     }
     const statusCores: Record<string, string> = {
         NOVO: 'bg-orange-500', EM_CONTACTO: 'bg-figueira', REUNIAO_PASTOR: 'bg-blue-500',
@@ -136,8 +144,22 @@ export default async function RelatorioAcolhimentoPage() {
                         <Shield size={9} /> Líder
                     </span>
                 </div>
-                <p className="text-xs text-muted">Metricas de visitantes, acompanhamentos e consolidacao.</p>
+                <p className="text-xs text-muted">Métricas de visitantes, acompanhamentos e consolidação.</p>
             </header>
+
+            {congregacoes.length > 1 && (
+                <nav aria-label="Congregação" className="flex flex-wrap gap-2">
+                    {[{ id: null as number | null, nome: 'Todas as casas' }, ...congregacoes].map(x => {
+                        const ativo = (congFiltro?.id ?? null) === x.id
+                        return (
+                            <Link key={x.id ?? 'todas'} href={x.id ? `?c=${x.id}` : '?'} aria-current={ativo ? 'page' : undefined}
+                                className={`px-3 py-1.5 rounded-full text-[13px] font-bold border transition-all ${ativo ? 'bg-figueira text-white border-figueira' : 'bg-bg2 text-muted border-soft hover:text-fg'}`}>
+                                {x.nome}
+                            </Link>
+                        )
+                    })}
+                </nav>
+            )}
 
             {/* KPIs */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

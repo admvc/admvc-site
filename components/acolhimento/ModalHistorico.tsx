@@ -1,15 +1,19 @@
 'use client'
 
 import { useState } from 'react'
-import { History, X, MessageCircle, Phone, Users, Clock, ArrowRight, StickyNote, UserPlus } from 'lucide-react'
+import { History, X, MessageCircle, Phone, Users, Clock, ArrowRight, StickyNote, UserPlus, HandHeart, DoorOpen } from 'lucide-react'
+import GestaoVisitante, { type MembroEquipa, type CongregacaoOpcao } from './GestaoVisitante'
 
 interface ModalHistoricoProps {
     visitante: any;
     acionador?: React.ReactNode;
     viewerRole?: string;
+    /** Com a equipa, a ficha mostra também responsável, próximo contacto e notas */
+    equipa?: MembroEquipa[];
+    congregacoes?: CongregacaoOpcao[];
 }
 
-export default function ModalHistorico({ visitante, acionador, viewerRole }: ModalHistoricoProps) {
+export default function ModalHistorico({ visitante, acionador, viewerRole, equipa, congregacoes = [] }: ModalHistoricoProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     const isLider = viewerRole === 'LIDER' || viewerRole === 'ADMIN'
@@ -18,6 +22,7 @@ export default function ModalHistorico({ visitante, acionador, viewerRole }: Mod
         if (tipoEvento === 'MUDANCA_STATUS') return <ArrowRight size={14} className="text-amber-500" />;
         if (tipoEvento === 'NOTA_LIDER') return <StickyNote size={14} className="text-purple-500" />;
         if (tipoEvento === 'ATRIBUICAO') return <UserPlus size={14} className="text-blue-500" />;
+        if (tipoEvento === 'NOVA_VISITA') return <DoorOpen size={14} className="text-emerald-500" />;
         if (tipo === 'WHATSAPP') return <MessageCircle size={14} className="text-green-500" />;
         if (tipo === 'LIGACAO') return <Phone size={14} className="text-blue-500" />;
         return <Users size={14} className="text-figueira" />;
@@ -26,14 +31,16 @@ export default function ModalHistorico({ visitante, acionador, viewerRole }: Mod
     const getEventLabel = (acomp: any) => {
         if (acomp.tipo_evento === 'MUDANCA_STATUS') {
             const labels: Record<string, string> = {
-                NOVO: 'Novo', EM_CONTACTO: 'Em Contacto', REUNIAO_PASTOR: 'Reuniao Pastor',
-                CONSOLIDADO: 'Consolidado', NAO_RETORNOU: 'Nao Retornou', OUTRA_IGREJA: 'Outra Igreja', DESISTIU: 'Desistiu'
+                NOVO: 'Novo', EM_CONTACTO: 'Em contacto', REUNIAO_PASTOR: 'Reunião com pastor',
+                CONSOLIDADO: 'Consolidado', NAO_RETORNOU: 'Não voltou', OUTRA_IGREJA: 'Outra igreja', DESISTIU: 'Desistiu'
             }
             return `${labels[acomp.status_anterior] || acomp.status_anterior} → ${labels[acomp.status_novo] || acomp.status_novo}`
         }
-        if (acomp.tipo_evento === 'NOTA_LIDER') return 'Nota do Lider'
-        if (acomp.tipo_evento === 'ATRIBUICAO') return 'Atribuicao'
-        return acomp.tipo_contacto
+        if (acomp.tipo_evento === 'NOTA_LIDER') return 'Nota do líder'
+        if (acomp.tipo_evento === 'ATRIBUICAO') return 'Responsável'
+        if (acomp.tipo_evento === 'NOVA_VISITA') return 'Visita'
+        const canais: Record<string, string> = { WHATSAPP: 'WhatsApp', LIGACAO: 'Chamada', PRESENCIAL: 'Presencial' }
+        return canais[acomp.tipo_contacto] || acomp.tipo_contacto
     }
 
     const acompanhamentos = (visitante.acompanhamentos || []).filter((a: any) => {
@@ -53,7 +60,7 @@ export default function ModalHistorico({ visitante, acionador, viewerRole }: Mod
                     className="text-figueira hover:underline flex items-center gap-1 transition-all group text-[13px] font-bold uppercase tracking-wide bg-figueira/10 px-3 py-1.5 rounded-lg hover:bg-figueira/20"
                 >
                     <History size={12} className="group-hover:-rotate-45 transition-transform" />
-                    Historico ({acompanhamentos.length})
+                    Ficha ({acompanhamentos.length})
                 </button>
             )}
 
@@ -67,19 +74,44 @@ export default function ModalHistorico({ visitante, acionador, viewerRole }: Mod
 
                         <div className="mb-6 pr-12 shrink-0 border-b border-soft pb-4">
                             <span className="text-figueira font-bold text-[13px] uppercase tracking-wide flex items-center gap-2 mb-1">
-                                <History size={12} /> Linha do Tempo
+                                <History size={12} /> Ficha do visitante
                             </span>
                             <h2 className="text-xl md:text-2xl font-bold text-fg leading-none">
-                                Histórico de <span className="opacity-50">{visitante.nome}</span>
+                                {visitante.nome}
                             </h2>
-                            {visitante.proximo_contacto && (
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-[13px] font-bold text-muted">
+                                {visitante.telefone && (
+                                    <a href={`tel:${visitante.telefone}`} className="flex items-center gap-1 hover:text-fg">
+                                        <Phone size={10} /> {visitante.telefone}
+                                    </a>
+                                )}
+                                {visitante.quantidade_visitas != null && (
+                                    <span>
+                                        {visitante.quantidade_visitas} visita{visitante.quantidade_visitas !== 1 ? 's' : ''}
+                                        {visitante.data_primeira_visita && ` · 1.ª em ${new Date(visitante.data_primeira_visita).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' })}`}
+                                    </span>
+                                )}
+                            </div>
+                            {!equipa && visitante.proximo_contacto && (
                                 <p className="text-[13px] font-bold text-blue-600 mt-2 flex items-center gap-1">
-                                    <Clock size={10} /> Proximo contacto: {new Date(visitante.proximo_contacto).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                    <Clock size={10} /> Próximo contacto: {new Date(visitante.proximo_contacto).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' })}
                                 </p>
                             )}
                         </div>
 
                         <div className="flex-1 overflow-y-auto pr-2 space-y-6 custom-scrollbar pb-4">
+                            {visitante.pedido_oracao && (
+                                <div className="bg-figueira/5 border border-figueira/15 rounded-2xl p-4">
+                                    <p className="text-[13px] font-bold uppercase text-figueira tracking-wide flex items-center gap-1.5 mb-1">
+                                        <HandHeart size={12} /> Pedido de oração
+                                    </p>
+                                    <p className="text-sm text-fg whitespace-pre-line">{visitante.pedido_oracao}</p>
+                                </div>
+                            )}
+
+                            {equipa && <GestaoVisitante visitante={visitante} equipa={equipa} congregacoes={congregacoes} isLider={isLider} />}
+
+                            <p className="text-[13px] font-bold uppercase text-muted tracking-wide">Histórico</p>
                             {acompanhamentos.length > 0 ? (
                                 <div className="relative border-l-2 border-soft/50 ml-4 space-y-6 py-2">
                                     {acompanhamentos.map((acomp: any) => {
@@ -107,7 +139,7 @@ export default function ModalHistorico({ visitante, acionador, viewerRole }: Mod
                                                                 {getEventLabel(acomp)}
                                                             </span>
                                                             <p className="text-[14px] font-bold text-fg uppercase tracking-wide mt-1.5 truncate max-w-[120px] md:max-w-none">
-                                                                {acomp.membro?.first_name} {acomp.membro?.last_name}
+                                                                {acomp.membro ? `${acomp.membro.first_name} ${acomp.membro.last_name}` : 'Formulário (site ou QR)'}
                                                             </p>
                                                         </div>
                                                         <span className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-1.5 bg-soft/30 px-2 py-1 rounded-full border border-soft/50 shrink-0">

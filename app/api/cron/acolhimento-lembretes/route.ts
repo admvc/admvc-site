@@ -1,9 +1,11 @@
 // app/api/cron/acolhimento-lembretes/route.ts
-// Cron diário: notifica membros/líderes sobre visitantes com acompanhamento atrasado (+48h)
+// Cron diário: notifica membros/líderes sobre visitantes com acompanhamento atrasado
+// (a mesma regra do painel: lib/acolhimento-prazos.ts)
 import { NextResponse } from 'next/server'
 import { cronAutorizado } from '@/lib/cron'
 import prisma from '@/lib/prisma'
 import { sendPushToMembros } from '@/lib/web-push'
+import { estaAtrasado } from '@/lib/acolhimento-prazos'
 
 export const dynamic = 'force-dynamic'
 
@@ -13,9 +15,9 @@ export async function GET(request: Request) {
     }
 
     try {
-        const limite48h = new Date(Date.now() - 48 * 60 * 60 * 1000)
+        const agora = new Date()
 
-        // Visitantes activos com último contacto > 48h
+        // Visitantes ativos: novos e em acompanhamento
         const atrasados = await prisma.visitante.findMany({
             where: {
                 status: { in: ['NOVO', 'EM_CONTACTO'] },
@@ -23,6 +25,7 @@ export async function GET(request: Request) {
             include: {
                 responsavel: { select: { id: true, first_name: true } },
                 acompanhamentos: {
+                    where: { tipo_evento: 'CONTACTO' },
                     orderBy: { data_contacto: 'desc' },
                     take: 1,
                     select: { data_contacto: true }
@@ -41,10 +44,9 @@ export async function GET(request: Request) {
             }
         })
 
-        const visitantesAtrasados = atrasados.filter(v => {
-            const ultima = v.acompanhamentos[0]?.data_contacto || v.data_primeira_visita
-            return new Date(ultima) < limite48h
-        })
+        const visitantesAtrasados = atrasados.filter(v =>
+            estaAtrasado(v, v.acompanhamentos[0]?.data_contacto, agora)
+        )
 
         if (visitantesAtrasados.length === 0) {
             return NextResponse.json({ ok: true, notificados: 0 })
@@ -71,8 +73,8 @@ export async function GET(request: Request) {
             for (const [membroId, nomes] of notificacoes) {
                 const plural = nomes.length > 1
                 const corpo = plural
-                    ? `${nomes.length} visitantes aguardam contacto ha mais de 48h`
-                    : `${nomes[0]} aguarda contacto ha mais de 48h`
+                    ? `${nomes.length} visitantes com o contacto atrasado`
+                    : `${nomes[0]} tem o contacto atrasado`
 
                 try {
                     await sendPushToMembros(

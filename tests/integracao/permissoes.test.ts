@@ -7,7 +7,7 @@ import { entrarComo, sair, tentar, foiRecusado, membroPorEmail, prisma } from '.
 
 import { apagarAviso } from '@/actions/mural-actions'
 import { deletarEscalaAction } from '@/actions/escalas-actions'
-import { guardarNotaLider, agendarProximoContacto } from '@/actions/visitante-actions'
+import { guardarNotaLider, agendarProximoContacto, registarVisitanteAction } from '@/actions/visitante-actions'
 import { criarSermao, criarCurso } from '@/actions/pregacao-actions'
 import { registarVenda, obterSaldoMembro } from '@/actions/cantina-local-actions'
 import { criarItemAssistencia } from '@/actions/assistencia-actions'
@@ -51,6 +51,15 @@ describe('igreja B nao mexe na igreja A (mesmo sendo admin la)', () => {
         const depois = await prisma.visitante.findUnique({ where: { id: A.visitante } })
         expect(depois?.notas_lider).toBe(antes?.notas_lider)
         expect(depois?.proximo_contacto).toEqual(antes?.proximo_contacto)
+    })
+
+    it('quem nao e do acolhimento nao regista visitantes', async () => {
+        await entrarComo('user@a.teste')
+        const antes = await prisma.visitante.count({ where: { tenant_id: A.tenant } })
+        const f = new FormData()
+        f.set('nome', 'Intruso'); f.set('telefone', '919999999'); f.set('origem', 'PRESENCIAL'); f.set('consentimento', 'on')
+        expect(foiRecusado(await tentar(() => registarVisitanteAction(f)))).toBe(true)
+        expect(await prisma.visitante.count({ where: { tenant_id: A.tenant } })).toBe(antes)
     })
 
     it('nao muda para uma congregacao de A', async () => {

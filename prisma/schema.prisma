@@ -180,6 +180,7 @@ model Congregacao {
   escalas             Escala[]
   repertorios         RepertorioEvento[]
   indisponibilidades  IndisponibilidadeMembro[]
+  visitantes          Visitante[]
   mensagensEvento     MensagemEvento[]
   itensInventario     ItemInventario[]
   movimentosInventario MovimentoInventario[]
@@ -631,21 +632,24 @@ model Visitante {
   notas_lider          String?
   prioridade           String                    @default("NORMAL")
   consentimento_em     DateTime?                 // RGPD: quando aceitou que a igreja guarde os dados (boas-vindas)
+  congregacao_id       Int?                      // onde esteve (QR /boasvindas?c=… ou escolhida pela equipa)
   tenant_id            Int
   acompanhamentos      AcompanhamentoVisitante[]
+  congregacao          Congregacao?              @relation(fields: [congregacao_id], references: [id], onDelete: SetNull)
   responsavel          Membro?                   @relation("ResponsavelVisitante", fields: [responsavel_id], references: [id])
   tenant               Tenant                    @relation(fields: [tenant_id], references: [id])
   compromissos         Compromisso[]             @relation("CompromissoVisitantes")
 
   @@index([tenant_id])
   @@index([responsavel_id])
+  @@index([congregacao_id])
   @@map("visitantes")
 }
 
 model AcompanhamentoVisitante {
   id              Int       @id @default(autoincrement())
   visitante_id    Int
-  membro_id       Int
+  membro_id       Int?      // vazio = registado pelo formulário público (site, QR)
   tipo_contacto   String
   observacoes     String?
   data_contacto   DateTime  @default(now())
@@ -653,7 +657,7 @@ model AcompanhamentoVisitante {
   status_anterior String?
   status_novo     String?
   tenant_id       Int
-  membro          Membro    @relation(fields: [membro_id], references: [id])
+  membro          Membro?   @relation(fields: [membro_id], references: [id], onDelete: Restrict)
   tenant          Tenant    @relation(fields: [tenant_id], references: [id])
   visitante       Visitante @relation(fields: [visitante_id], references: [id], onDelete: Cascade)
 

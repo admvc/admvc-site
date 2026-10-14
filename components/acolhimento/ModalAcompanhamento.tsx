@@ -108,7 +108,7 @@ export default function ModalAcompanhamento({ visitante }: { visitante: Visitant
                                         <option value="EM_CONTACTO">Em Acompanhamento</option>
                                         <option value="REUNIAO_PASTOR">Reunião com Pastor</option>
                                         <option value="CONSOLIDADO">Consolidado (Novo Membro)</option>
-                                        <option value="NAO_RETORNOU">Não Retornou</option>
+                                        <option value="NAO_RETORNOU">Não voltou</option>
                                         <option value="OUTRA_IGREJA">Foi para Outra Igreja</option>
                                         <option value="DESISTIU">Desistiu</option>
                                     </select>
@@ -125,6 +125,13 @@ export default function ModalAcompanhamento({ visitante }: { visitante: Visitant
                                         className="w-full bg-bg border border-soft rounded-2xl p-4 text-xs font-bold text-fg outline-none focus:border-figueira"
                                     />
                                 </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <label className="text-[13px] font-bold uppercase text-muted tracking-wide ml-2">Próximo contacto (opcional)</label>
+                                <input type="date" name="proximo_contacto"
+                                    className="w-full bg-bg border border-soft rounded-2xl p-4 text-xs font-bold text-fg outline-none focus:border-figueira" />
+                                <p className="text-[13px] text-muted ml-2">Sem data, o aviso de atraso aparece 48h depois deste contacto.</p>
                             </div>
 
                             <div className="space-y-1">

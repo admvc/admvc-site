@@ -12,7 +12,7 @@ const SAIDAS = ['NAO_RETORNOU', 'OUTRA_IGREJA', 'DESISTIU']
 export default function VisitantePipelineBar({ status }: { status: string }) {
     if (SAIDAS.includes(status)) {
         const labels: Record<string, string> = {
-            NAO_RETORNOU: 'Nao Retornou',
+            NAO_RETORNOU: 'Não voltou',
             OUTRA_IGREJA: 'Outra Igreja',
             DESISTIU: 'Desistiu',
         }
