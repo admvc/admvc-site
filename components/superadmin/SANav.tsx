@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
     Server, Building, CreditCard, Layers, ShieldCheck,
-    UserCog, Megaphone, Rocket, Palette, Menu, X, PlusCircle
+    UserCog, Megaphone, Rocket, Palette, Menu, X, PlusCircle, DatabaseBackup
 } from 'lucide-react'
 
 const NAV_PLATAFORMA = [
@@ -20,6 +20,7 @@ const NAV_GESTAO = [
     { label: 'Admins', href: '/super-admin/admins', icon: ShieldCheck },
     { label: 'Impersonar', href: '/super-admin/impersonar', icon: UserCog },
     { label: 'Comunicacao', href: '/super-admin/comunicacao', icon: Megaphone },
+    { label: 'Cópia de segurança', href: '/super-admin/copia', icon: DatabaseBackup },
 ]
 
 interface Props {
