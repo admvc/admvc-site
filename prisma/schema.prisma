@@ -111,6 +111,8 @@ model Tenant {
   visitantes               Visitante[]
   indisponibilidadeMembros IndisponibilidadeMembro[]
   mensagemEventos          MensagemEvento[]
+  rotinasCulto             RotinaCulto[]
+  rotinasModelo            RotinaModelo[]
   audit_logs               AuditLog[]
   itemInventarios          ItemInventario[]
   movimentosInventario     MovimentoInventario[]
@@ -184,6 +186,7 @@ model Congregacao {
   indisponibilidades  IndisponibilidadeMembro[]
   visitantes          Visitante[]
   mensagensEvento     MensagemEvento[]
+  rotinasModelo       RotinaModelo[]
   itensInventario     ItemInventario[]
   movimentosInventario MovimentoInventario[]
   sermoes             Sermao[]
@@ -477,6 +480,7 @@ model Evento {
   boleias        BoleiaOferta[]
   preEncomendas  PreEncomendaCantina[]
   cardapio       CardapioCantina?
+  rotina         RotinaCulto?
 
   @@index([tenant_id])
 }
@@ -811,6 +815,40 @@ model Sermao {
 
   @@index([tenant_id])
   @@index([pregador_id])
+}
+
+// Rotina (ordem) de um culto: momentos por ordem, cada um com responsável,
+// duração e nota. itens = [{ momento, membro_id?, nome?, duracao?, nota? }]
+// (membro_id: o título vem do cargo; nome: pessoa de fora, escrita à mão)
+model RotinaCulto {
+  id             Int      @id @default(autoincrement())
+  tenant_id      Int
+  evento_id      Int      @unique
+  itens          Json
+  atualizado_por Int?
+  criado_em      DateTime @default(now())
+  atualizado_em  DateTime @updatedAt
+  evento         Evento   @relation(fields: [evento_id], references: [id], onDelete: Cascade)
+  tenant         Tenant   @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+  @@map("rotinas_culto")
+}
+
+// Modelo de rotina de uma congregação (ex.: "Culto de domingo"), com os mesmos itens
+model RotinaModelo {
+  id             Int          @id @default(autoincrement())
+  tenant_id      Int
+  congregacao_id Int?
+  nome           String
+  itens          Json
+  criado_em      DateTime     @default(now())
+  atualizado_em  DateTime     @updatedAt
+  congregacao    Congregacao? @relation(fields: [congregacao_id], references: [id], onDelete: Cascade)
+  tenant         Tenant       @relation(fields: [tenant_id], references: [id])
+
+  @@index([tenant_id])
+  @@map("rotinas_modelo")
 }
 
 model EscolaBiblica {

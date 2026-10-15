@@ -164,7 +164,7 @@ export default function EditorSermao({ sermao, membros, eventos }: Props) {
             {/* Back + Title */}
             <div className="flex items-center gap-4 mb-8">
                 <Link
-                    href="/pregacao"
+                    href="/pregacao/sermoes"
                     className="flex items-center gap-1.5 text-[14px] font-bold uppercase tracking-wide text-muted hover:text-figueira transition-colors"
                 >
                     <ArrowLeft size={12} />

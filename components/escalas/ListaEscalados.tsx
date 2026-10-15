@@ -4,7 +4,7 @@ import { useState } from 'react'
 import {
     CalendarDays, Clock, ShieldCheck, User, CheckCircle2, Trash2,
     Edit3, X, Save, Loader2, LayoutGrid, MessageCircle, ChevronDown,
-    Music, XCircle, AlertCircle, MonitorPlay
+    Music, XCircle, AlertCircle, MonitorPlay, ListOrdered
 } from 'lucide-react'
 import { removerEscalaAction, atualizarEscalaAction } from '@/actions/admin-actions'
 import { useConfirm, useToast } from '@/components/ui/ConfirmDialog'
@@ -331,6 +331,10 @@ export default function ListaEscalados({
                                         <Link href={`/louvor/setlist/${evento.id}`}
                                             className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-soft bg-bg p-3 text-[14px] font-bold uppercase tracking-wide text-fg hover:border-figueira/40">
                                             <MonitorPlay size={14} className="text-figueira" /> Modo palco
+                                        </Link>
+                                        <Link href={`/pregacao/culto/${evento.id}`}
+                                            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-soft bg-bg p-3 text-[14px] font-bold uppercase tracking-wide text-fg hover:border-figueira/40">
+                                            <ListOrdered size={14} className="text-figueira" /> Rotina do culto
                                         </Link>
                                     </div>
                                     <SecaoMensagemEvento

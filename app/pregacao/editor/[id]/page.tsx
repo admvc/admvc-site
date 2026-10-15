@@ -37,7 +37,7 @@ export default async function EditorSermaoPage({
         }),
     ])
 
-    if (!sermao) redirect('/pregacao')
+    if (!sermao) redirect('/pregacao/sermoes')
 
     // Serialize dates for client
     const sermaoSerializado = {

@@ -56,7 +56,7 @@ const PROTECTED_MODELS = [
     'ProjetoObra', 'EtapaObra', 'AvisoMural', 'Agenda',
     'Compromisso', 'RepertorioEvento', 'Musica',
     'ItemInventario', 'MovimentoInventario',
-    'IndisponibilidadeMembro', 'MensagemEvento',
+    'IndisponibilidadeMembro', 'MensagemEvento', 'RotinaCulto', 'RotinaModelo',
     'BoleiaOferta', 'BoleiaReserva',
     'CategoriaCantina', 'ProdutoCantina', 'SaldoCantina', 'TransacaoCantina',
     'TurnoCantina', 'FiadoCantina',

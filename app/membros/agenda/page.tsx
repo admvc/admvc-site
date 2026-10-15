@@ -6,6 +6,12 @@ import { getTenantClient } from '@/lib/prisma'
 import { estadoDaEscala } from '@/lib/escalas-app'
 import Estado from '@/components/app/Estado'
 import { diaPorExtenso, hora } from '@/components/app/datas'
+import Link from 'next/link'
+import RotinaLista from '@/components/pregacao/RotinaLista'
+import { normalizarItens } from '@/lib/rotina-culto'
+import { membrosDosItens } from '@/lib/rotina-culto-dados'
+import { checkModulo } from '@/lib/modulos'
+import { MODULOS } from '@/lib/planos'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,6 +41,7 @@ export default async function AgendaPage() {
         orderBy: { data: 'asc' },
         select: {
             id: true, nome: true, data: true, descricao: true,
+            rotina: { select: { itens: true } },
             mensagemEvento: { select: { titulo: true, tema: true, texto_biblico: true, pregador: { select: { first_name: true, last_name: true } } } },
             escalas: {
                 where: { motivo_recusa: null },
@@ -47,6 +54,13 @@ export default async function AgendaPage() {
             },
         },
     })
+
+    // A rotina de cada culto (todos os membros veem)
+    const rotinas = new Map(eventos.map((ev) => [ev.id, ev.rotina ? normalizarItens(ev.rotina.itens) : []]))
+    const [membrosRotina, temPregacao] = await Promise.all([
+        membrosDosItens(sessao.tenantId, [...rotinas.values()].flat()),
+        checkModulo(MODULOS.PREGACAO),
+    ])
 
     const semanas = new Map<number, typeof eventos>()
     for (const ev of eventos) {
@@ -97,6 +111,15 @@ export default async function AgendaPage() {
                                                     </p>
                                                 )}
                                                 {ev.descricao && <p className="a-suave">{ev.descricao}</p>}
+                                                {(rotinas.get(ev.id) ?? []).length > 0 && (
+                                                    <div className="space-y-2">
+                                                        <p className="font-semibold">Rotina do culto</p>
+                                                        <RotinaLista inicio={ev.data.toISOString()} itens={rotinas.get(ev.id)!} membros={membrosRotina} compacta />
+                                                        {temPregacao && <Link href={`/pregacao/culto/${ev.id}`} className="a-foco inline-flex min-h-[44px] items-center text-[15px] font-semibold" style={{ color: 'var(--a-destaque)' }}>
+                                                            Ver e partilhar a rotina
+                                                        </Link>}
+                                                    </div>
+                                                )}
                                                 {porDepto.size > 0 ? (
                                                     [...porDepto.entries()].map(([d, pessoas]) => (
                                                         <p key={d}><span className="font-semibold">{d}:</span> {pessoas.join(', ')}</p>

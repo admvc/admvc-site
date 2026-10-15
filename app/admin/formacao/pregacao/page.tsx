@@ -2,6 +2,8 @@ import { getDb, getTenantIdFromHeaders } from '@/lib/db'
 import { getSessionData } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
 import PregacaoClient from '@/components/pregacao/PregacaoClient'
+import Link from 'next/link'
+import { ListOrdered } from 'lucide-react'
 
 export default async function AdminPregacaoPage({
     searchParams,
@@ -62,6 +64,11 @@ export default async function AdminPregacaoPage({
             mes={mes}
             ano={ano}
             podeGerir={true}
+            atalho={
+                <Link href="/pregacao" className="inline-flex items-center gap-2 rounded-xl border border-soft bg-bg2 px-4 py-3 text-[14px] font-bold text-figueira hover:border-figueira/40">
+                    <ListOrdered size={16} /> Rotina dos cultos (ordem de cada culto)
+                </Link>
+            }
         />
     )
 }

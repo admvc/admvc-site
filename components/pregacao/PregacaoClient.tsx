@@ -51,9 +51,10 @@ interface Props {
     mes: number
     ano: number
     podeGerir?: boolean
+    atalho?: React.ReactNode // ex.: ligação para a rotina dos cultos
 }
 
-export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, podeGerir = false }: Props) {
+export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, podeGerir = false, atalho }: Props) {
     const confirmar = useConfirm()
     const toast = useToast()
     const router = useRouter()
@@ -322,6 +323,7 @@ export default function PregacaoClient({ sermoes, membros, eventos, mes, ano, po
 
     return (
         <main className="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-8 pb-24 animate-in fade-in duration-700">
+            {atalho}
             {/* Header */}
             <header className="space-y-4">
                 <div className="flex items-center gap-2 text-figueira">

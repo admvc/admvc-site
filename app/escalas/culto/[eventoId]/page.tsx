@@ -2,7 +2,7 @@
 // partilhar/agenda, musicas (setlist + modo palco) e participantes.
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { ArrowLeft, CalendarPlus, Share2 } from 'lucide-react'
+import { ArrowLeft, CalendarPlus, ChevronRight, ListOrdered, Share2 } from 'lucide-react'
 import { getSessionData } from '@/lib/auth-utils'
 import { dadosDaEscala, type DadosEscala } from '@/lib/ministerios-app'
 import BlocoData from '@/components/app/BlocoData'
@@ -10,6 +10,10 @@ import CartaoProximaEscala from '@/components/app/CartaoProximaEscala'
 import MusicasEscala from '@/components/app/MusicasEscala'
 import ParticipantesEscala from '@/components/app/ParticipantesEscala'
 import { daquiA, diaDaSemana, diaPorExtenso, hora } from '@/components/app/datas'
+import { getTenantClient } from '@/lib/prisma'
+import { checkModulo } from '@/lib/modulos'
+import { MODULOS } from '@/lib/planos'
+import { normalizarItens } from '@/lib/rotina-culto'
 
 export const dynamic = 'force-dynamic'
 
@@ -52,6 +56,12 @@ export default async function EscalaPage(props: {
     const dados = await dadosDaEscala(sessao, Number(eventoId), Number(equipa))
     if (!dados) redirect('/escalas')
     const { evento, departamento } = dados
+    // A rotina do culto (módulo Pregações): atalho para a ver
+    const [rotina, temPregacao] = await Promise.all([
+        getTenantClient(sessao.tenantId).rotinaCulto.findUnique({ where: { evento_id: evento.id }, select: { itens: true } }),
+        checkModulo(MODULOS.PREGACAO),
+    ])
+    const momentos = rotina ? normalizarItens(rotina.itens) : []
 
     const botao = 'a-foco inline-flex min-h-[44px] items-center gap-2 rounded-full border px-4 text-[15px] font-semibold'
 
@@ -81,6 +91,17 @@ export default async function EscalaPage(props: {
                         <CalendarPlus size={17} aria-hidden /> Google Agenda
                     </a>
                 </div>
+
+                {temPregacao && momentos.length > 0 && (
+                    <Link href={`/pregacao/culto/${evento.id}`} className="a-card a-foco flex items-center gap-3 p-4">
+                        <ListOrdered size={22} aria-hidden style={{ color: 'var(--a-destaque)' }} />
+                        <span className="min-w-0 flex-1">
+                            <span className="block text-[17px] font-semibold">Rotina do culto</span>
+                            <span className="block truncate text-[15px] a-suave">{momentos.map((m) => m.momento).join(' · ')}</span>
+                        </span>
+                        <ChevronRight size={20} aria-hidden />
+                    </Link>
+                )}
 
                 {dados.minhas.map((m) => (
                     <CartaoProximaEscala key={m.id} titulo="A sua parte" compacto
