@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
     normalizarItens, tituloDoCargo, responsavel, horasPrevistas, duracaoTotal,
-    textoDaRotina, quandoPorExtenso, semNotas, minutosPorExtenso, type MembroRotina,
+    textoDaRotina, quandoPorExtenso, semNotas, minutosPorExtenso, ePalavra, palavraDe, repeticoes, chaveDeComparacao, type MembroRotina,
 } from '@/lib/rotina-culto'
 
 const membros = new Map<number, MembroRotina>([
@@ -96,5 +96,37 @@ describe('textoDaRotina', () => {
     })
     it('semNotas tira só as notas', () => {
         expect(semNotas([{ momento: 'Palavra', membro_id: 1, nota: 'x', duracao: 40 }])).toEqual([{ momento: 'Palavra', membro_id: 1, nota: null, duracao: 40 }])
+    })
+})
+
+describe('Palavra', () => {
+    it('reconhece o momento da pregação e guarda o texto bíblico só aí', () => {
+        expect(ePalavra('Palavra')).toBe(true)
+        expect(ePalavra('Ministração da Palavra')).toBe(true)
+        expect(ePalavra('Pregação')).toBe(true)
+        expect(ePalavra('Louvor')).toBe(false)
+        const r = normalizarItens([
+            { momento: 'Palavra', membro_id: 1, nota: 'Os talentos', texto: ' Mateus 25:14-30 ' },
+            { momento: 'Louvor', texto: 'ignorado' },
+        ])
+        expect(r[0].texto).toBe('Mateus 25:14-30')
+        expect(r[1]).not.toHaveProperty('texto')
+        expect(palavraDe(r)?.nota).toBe('Os talentos')
+    })
+    it('o texto bíblico entra no texto partilhado', () => {
+        const t = textoDaRotina({ nome: 'Culto', data: '2026-10-18T18:00:00.000Z' },
+            [{ momento: 'Palavra', membro_id: 1, nota: 'Os talentos de Deus', texto: 'Mateus 25:14-30' }], membros)
+        expect(t.split('\n').pop()).toBe('• 18:00 Palavra — Pastor Rafael Castro — _Os talentos de Deus_ (Mateus 25:14-30)')
+    })
+    it('avisa quando o tema ou o texto já foram pregados (sem ligar a acentos)', () => {
+        const feitas = [
+            { data: '2026-03-01T18:00:00.000Z', culto: 'Culto', quem: 'Pastor X', tema: 'A Fé que Move Montanhas', texto: 'Marcos 11:22-24' },
+            { data: '2026-05-01T18:00:00.000Z', culto: 'Culto', quem: 'Pastor Y', tema: 'Graça', texto: 'Efésios 2:8' },
+        ]
+        expect(repeticoes({ nota: 'a fe que move montanhas!' }, feitas)).toHaveLength(1)
+        expect(repeticoes({ texto: 'Efesios 2:8' }, feitas)[0].quem).toBe('Pastor Y')
+        expect(repeticoes({ nota: 'Outro tema' }, feitas)).toHaveLength(0)
+        expect(repeticoes({}, feitas)).toHaveLength(0)
+        expect(chaveDeComparacao('  Mateus  25:14 ')).toBe('mateus 25:14')
     })
 })

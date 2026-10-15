@@ -5,9 +5,10 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Copy, Edit3, Printer, Repeat, Share2 } from 'lucide-react'
+import { Copy, Edit3, FileText, Printer, Repeat, Share2 } from 'lucide-react'
 import { aplicarRotinaASerie, guardarRotina } from '@/actions/rotina-actions'
-import { duracaoTotal, minutosPorExtenso, semNotas, textoDaRotina, type ItemRotina } from '@/lib/rotina-culto'
+import { abrirEsbocoDoCulto } from '@/actions/esboco-actions'
+import { duracaoTotal, minutosPorExtenso, palavraDe, responsavel, semNotas, textoDaRotina, type ItemRotina } from '@/lib/rotina-culto'
 import type { DadosRotina } from '@/lib/rotina-culto-dados'
 import { useConfirm, useToast } from '@/components/ui/ConfirmDialog'
 import EditorRotina, { useRotina } from './EditorRotina'
@@ -81,6 +82,14 @@ export default function RotinaDoCulto({ dados }: { dados: DadosRotina }) {
         })
     }
 
+    function escreverEsboco() {
+        iniciar(async () => {
+            const r = await abrirEsbocoDoCulto(evento.id)
+            if ('error' in r) toast(r.error, 'erro')
+            else router.push(`/pregacao/editor/${r.id}`)
+        })
+    }
+
     async function copiar() {
         try {
             await navigator.clipboard.writeText(texto)
@@ -115,7 +124,7 @@ export default function RotinaDoCulto({ dados }: { dados: DadosRotina }) {
         return (
             <section className="space-y-4">
                 <h2 className="text-[20px] font-bold">Alterar a rotina</h2>
-                <EditorRotina linhas={rotina.linhas} setLinhas={rotina.setLinhas} membros={membros} inicio={evento.data} desativado={pendente} />
+                <EditorRotina linhas={rotina.linhas} setLinhas={rotina.setLinhas} membros={membros} inicio={evento.data} desativado={pendente} feitas={dados.feitas} />
                 {aviso && <p role="alert" className="text-[15px] font-semibold" style={{ color: 'var(--a-erro)' }}>{aviso}</p>}
                 <div className="sticky bottom-24 z-10 flex gap-2 md:bottom-4">
                     <button type="button" className="a-botao a-botao-secundario flex-1" disabled={pendente} onClick={() => setEditar(false)}>Cancelar</button>
@@ -140,6 +149,29 @@ export default function RotinaDoCulto({ dados }: { dados: DadosRotina }) {
                     </div>
                     <RotinaLista inicio={evento.data} itens={itens} membros={membros} />
                     {total && <p className="text-[15px] a-suave">Duração prevista: {minutosPorExtenso(total)}</p>}
+                    {(dados.esboco || dados.podeEscreverEsboco) && (() => {
+                        const palavra = palavraDe(itens)!
+                        const quem = responsavel(palavra, new Map(membros.map((m) => [m.id, m])))
+                        return (
+                            <div className="a-card flex flex-wrap items-center gap-3 p-4 no-print">
+                                <FileText size={22} aria-hidden style={{ color: 'var(--a-destaque)' }} />
+                                <span className="min-w-0 flex-1">
+                                    <span className="block text-[17px] font-semibold">Esboço da Palavra</span>
+                                    <span className="block text-[15px] a-suave">
+                                        {dados.esboco ? (dados.esboco.publicado ? `Publicado · ${quem}` : 'Ainda por publicar') : `Para ${quem} escrever`}
+                                    </span>
+                                </span>
+                                {dados.esboco && (
+                                    <a href={`/pregacao/sermao/${dados.esboco.id}`} className="a-botao a-botao-secundario !min-h-[44px]">Ler</a>
+                                )}
+                                {dados.podeEscreverEsboco && (
+                                    <button type="button" className="a-botao a-botao-principal !min-h-[44px]" disabled={pendente} onClick={escreverEsboco}>
+                                        {dados.esboco ? 'Alterar' : 'Escrever o esboço'}
+                                    </button>
+                                )}
+                            </div>
+                        )
+                    })()}
                 </>
             ) : (
                 <p className="a-card p-5 text-[16px] a-suave">

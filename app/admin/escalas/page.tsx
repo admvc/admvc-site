@@ -27,13 +27,6 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
         db.evento.findMany({
             where: { data: { gte: dataInicioMes }, ...congWhere },
             include: {
-                mensagemEvento: {
-                    include: {
-                        pregador: {
-                            select: { id: true, first_name: true, last_name: true, avatar_file: true }
-                        }
-                    }
-                },
                 escalas: {
                     include: {
                         membro: {

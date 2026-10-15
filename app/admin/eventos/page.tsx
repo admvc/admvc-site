@@ -30,13 +30,6 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
         db.evento.findMany({
             where: { data: { gte: dataInicio }, ...congWhere, ...tipoFilter },
             include: {
-                mensagemEvento: {
-                    include: {
-                        pregador: {
-                            select: { id: true, first_name: true, last_name: true, avatar_file: true }
-                        }
-                    }
-                },
                 escalas: {
                     include: {
                         membro: {

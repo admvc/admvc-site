@@ -7,7 +7,8 @@ export type ItemRotina = {
     membro_id?: number | null // membro da igreja: o título vem do cargo
     nome?: string | null // pessoa de fora, escrita à mão (já com o título, se tiver)
     duracao?: number | null // minutos
-    nota?: string | null
+    nota?: string | null // na Palavra: o tema
+    texto?: string | null // na Palavra: o texto bíblico (ex.: Mateus 25:14-30)
 }
 
 /** Momentos mais comuns (sugestões ao escrever). */
@@ -38,9 +39,38 @@ export function normalizarItens(entrada: unknown): ItemRotina[] {
         const dur = Math.round(Number(b.duracao))
         const duracao = Number.isFinite(dur) && dur > 0 && dur <= 600 ? dur : null
         const nota = texto(b.nota, 200) || null
-        itens.push({ momento, membro_id, nome, duracao, nota })
+        const tb = ePalavra(momento) ? texto(b.texto, 80) || null : null
+        itens.push({ momento, membro_id, nome, duracao, nota, ...(tb ? { texto: tb } : {}) })
     }
     return itens
+}
+
+/** O momento da pregação ("Palavra", "Pregação", "Mensagem", "Ministração da Palavra"). */
+export function ePalavra(momento: string | null | undefined): boolean {
+    return /palavra|prega[cç][aã]o|mensagem|ministra[cç][aã]o/i.test(momento ?? '')
+}
+
+/** O primeiro momento de pregação da rotina (com a posição). */
+export function palavraDe(itens: ItemRotina[]): ItemRotina | null {
+    return itens.find((i) => ePalavra(i.momento)) ?? null
+}
+
+/** Para comparar temas e textos: sem acentos, maiúsculas, pontuação nem espaços a mais. */
+export function chaveDeComparacao(s: string | null | undefined): string {
+    return (s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9:]+/g, ' ').trim()
+}
+
+export type PregacaoFeita = { data: string; culto: string; quem: string; tema: string | null; texto: string | null }
+
+/**
+ * Pregações anteriores com o mesmo tema ou o mesmo texto bíblico (para avisar
+ * antes de repetir). Compara sem acentos nem pontuação.
+ */
+export function repeticoes(item: { nota?: string | null; texto?: string | null }, feitas: PregacaoFeita[]): PregacaoFeita[] {
+    const tema = chaveDeComparacao(item.nota)
+    const tb = chaveDeComparacao(item.texto)
+    if (!tema && !tb) return []
+    return feitas.filter((f) => (tema && chaveDeComparacao(f.tema) === tema) || (tb && chaveDeComparacao(f.texto) === tb))
 }
 
 /** Título a partir do cargo do cadastro (ex.: "Pastor(a)" + Feminino → "Pastora"). */
@@ -121,6 +151,7 @@ export function textoDaRotina(evento: { nome: string; data: string }, itens: Ite
         if (it.duracao) l += ` (${minutosPorExtenso(it.duracao)})`
         if (quem) l += ` — ${quem}`
         if (it.nota) l += ` — _${it.nota}_`
+        if (it.texto) l += ` (${it.texto})`
         linhas.push(l)
     })
     return linhas.join('\n')

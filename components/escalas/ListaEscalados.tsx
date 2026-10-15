@@ -11,7 +11,6 @@ import { useConfirm, useToast } from '@/components/ui/ConfirmDialog'
 import ModalEditarEvento from '@/components/admin/ModalEditarEvento'
 import BotaoApagarEvento from '@/components/admin/BotaoApagarEvento'
 import Link from 'next/link'
-import SecaoMensagemEvento from '@/components/escalas/SecaoMensagemEvento'
 
 export default function ListaEscalados({
     eventos,
@@ -20,7 +19,6 @@ export default function ListaEscalados({
     isLouvor,
     congregacoes,
     podeEditarRepertorio,
-    podeEditarMensagem,
     deptoId
 }: {
     eventos: any[]
@@ -29,7 +27,6 @@ export default function ListaEscalados({
     isLouvor?: boolean
     congregacoes?: { id: number; nome: string; cidade: string }[]
     podeEditarRepertorio?: boolean
-    podeEditarMensagem?: boolean
     deptoId?: number
 }) {
     const confirmar = useConfirm()
@@ -337,12 +334,6 @@ export default function ListaEscalados({
                                             <ListOrdered size={14} className="text-figueira" /> Rotina do culto
                                         </Link>
                                     </div>
-                                    <SecaoMensagemEvento
-                                        eventoId={evento.id}
-                                        eventoNome={evento.nome}
-                                        membros={membros || []}
-                                        podeEditar={!!isAdmin || !!podeEditarMensagem}
-                                    />
                                 </div>
 
                             )}

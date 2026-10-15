@@ -1,69 +1,56 @@
-import { getDb, getTenantIdFromHeaders } from '@/lib/db'
-import { getSessionData } from '@/lib/auth-utils'
+// Escrever o esboço de uma pregação: quem prega, ou quem gere as pregações.
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import EditorSermao from '@/components/pregacao/EditorSermao'
+import { ArrowLeft } from 'lucide-react'
+import { getSessionData } from '@/lib/auth-utils'
+import { getTenantClient } from '@/lib/prisma'
+import { formatarReferencia, podeEditarSermao } from '@/lib/pregacoes'
+import { quandoPorExtenso } from '@/lib/rotina-culto'
+import EditorEsboco from '@/components/pregacao/EditorEsboco'
 
-export default async function EditorSermaoPage({
-    params,
-}: {
-    params: Promise<{ id: string }>
-}) {
-    const db = await getDb()
-    const session = await getSessionData()
-    if (!session) redirect('/membros/login')
+export const dynamic = 'force-dynamic'
 
+export default async function EditorEsbocoPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
-    const tenantId = await getTenantIdFromHeaders()
+    const sessao = await getSessionData()
+    if (!sessao) redirect(`/membros/login?volta=/pregacao/editor/${id}`)
+    const s = await getTenantClient(sessao.tenantId).sermao.findUnique({
+        where: { id },
+        include: {
+            pregador: { select: { first_name: true, last_name: true } },
+            evento: { select: { id: true, nome: true, data: true } },
+        },
+    })
+    if (!s) redirect('/pregacao/historico')
+    if (!(await podeEditarSermao(sessao, s))) redirect(`/pregacao/sermao/${id}`)
 
-    const [sermao, membros, eventos] = await Promise.all([
-        db.sermao.findFirst({
-            where: { id, tenant_id: tenantId },
-            include: {
-                pregador: { select: { id: true, first_name: true, last_name: true } },
-                evento: { select: { id: true, nome: true, data: true } },
-                escolasBiblicas: { select: { id: true, titulo: true, data: true } },
-            },
-        }),
-        db.membro.findMany({
-            where: { tenant_id: tenantId, is_active: true },
-            select: { id: true, first_name: true, last_name: true },
-            orderBy: { first_name: 'asc' },
-        }),
-        db.evento.findMany({
-            where: { tenant_id: tenantId },
-            select: { id: true, nome: true, data: true },
-            orderBy: { data: 'desc' },
-            take: 100,
-        }),
-    ])
-
-    if (!sermao) redirect('/pregacao/sermoes')
-
-    // Serialize dates for client
-    const sermaoSerializado = {
-        ...sermao,
-        data_pregacao: sermao.data_pregacao.toISOString(),
-        created_at: sermao.created_at.toISOString(),
-        updated_at: sermao.updated_at.toISOString(),
-        evento: sermao.evento
-            ? { ...sermao.evento, data: sermao.evento.data.toISOString() }
-            : null,
-        escolasBiblicas: sermao.escolasBiblicas.map(ebd => ({
-            ...ebd,
-            data: ebd.data.toISOString(),
-        })),
-    }
-
-    const eventosSerializados = eventos.map(e => ({
-        ...e,
-        data: e.data.toISOString(),
-    }))
+    const refs = Array.isArray(s.referencias_biblicas) ? (s.referencias_biblicas as Parameters<typeof formatarReferencia>[0][]) : []
+    const voltar = s.evento ? `/pregacao/culto/${s.evento.id}` : '/pregacao/historico'
 
     return (
-        <EditorSermao
-            sermao={sermaoSerializado}
-            membros={membros}
-            eventos={eventosSerializados}
-        />
+        <div className="app-novo min-h-screen">
+            <main className="mx-auto max-w-2xl px-4 pt-20 pb-28 md:pt-8 space-y-5">
+                <Link href={voltar} className="a-foco inline-flex min-h-[44px] items-center gap-2 text-[16px] font-semibold" style={{ color: 'var(--a-destaque)' }}>
+                    <ArrowLeft size={20} aria-hidden /> {s.evento ? 'Rotina do culto' : 'Pregações'}
+                </Link>
+                <div className="space-y-1">
+                    <p className="text-[15px] font-semibold a-suave">Esboço · {s.pregador.first_name} {s.pregador.last_name}</p>
+                    <h1 className="text-[24px] font-bold leading-tight">{s.evento ? s.evento.nome : 'Pregação'}</h1>
+                    <p className="text-[16px] a-suave">{quandoPorExtenso((s.evento?.data ?? s.data_pregacao).toISOString())}</p>
+                </div>
+                <EditorEsboco
+                    id={s.id}
+                    voltar={voltar}
+                    inicial={{
+                        titulo: s.titulo,
+                        referencias: refs.map(formatarReferencia).filter(Boolean).join('; '),
+                        texto_corpo: s.texto_corpo ?? '',
+                        notas_privadas: s.notas_privadas ?? '',
+                        tags: Array.isArray(s.tags) ? (s.tags as string[]).join(', ') : '',
+                        publicado: s.publicado,
+                    }}
+                />
+            </main>
+        </div>
     )
 }

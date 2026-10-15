@@ -1,7 +1,9 @@
 // Rotina dos cultos: quem pode alterar e os dados das páginas (servidor).
 import { getTenantClient } from '@/lib/prisma'
 import { podeEditarMensagemDoCulto } from '@/lib/obreiros-permissions'
-import { normalizarItens, type ItemRotina, type MembroRotina } from '@/lib/rotina-culto'
+import { normalizarItens, palavraDe, type ItemRotina, type MembroRotina, type PregacaoFeita } from '@/lib/rotina-culto'
+import { podeGerirSermoes } from '@/lib/cursos-permissoes'
+import { pregacoesRecentes } from '@/lib/pregacoes'
 
 type Sessao = { membroId: number; role: string; tenantId: number; congregacaoId?: number }
 
@@ -80,7 +82,9 @@ export async function dadosDaRotina(sessao: Sessao, eventoId: number) {
     let modelos: { id: number; nome: string; itens: ItemRotina[] }[] = []
     let anterior: { nome: string; data: string; itens: ItemRotina[] } | null = null
     let membros: MembroRotina[]
+    let feitas: PregacaoFeita[] = []
     if (podeEditar) {
+        feitas = await pregacoesRecentes(sessao, evento.id)
         const [ms, mods, ant] = await Promise.all([
             membrosParaEscolher(sessao.tenantId),
             db.rotinaModelo.findMany({
@@ -103,6 +107,16 @@ export async function dadosDaRotina(sessao: Sessao, eventoId: number) {
         membros = await membrosDosItens(sessao.tenantId, itens)
     }
 
+    // O esboço da Palavra: quem prega escreve-o; os outros leem-no depois de publicado
+    const palavra = palavraDe(itens)
+    const pregadorId = palavra?.membro_id ?? null
+    const sermao = pregadorId
+        ? await db.sermao.findFirst({ where: { evento_id: evento.id, pregador_id: pregadorId }, select: { id: true, publicado: true } })
+        : null
+    const podeEscreverEsboco = !!pregadorId
+        && (pregadorId === sessao.membroId || podeEditar || (await podeGerirSermoes(sessao.membroId, sessao.role)))
+    const esboco = sermao && (sermao.publicado || podeEscreverEsboco) ? sermao : null
+
     return {
         evento: {
             id: evento.id, nome: evento.nome, data: evento.data.toISOString(), tipo: evento.tipo,
@@ -114,6 +128,9 @@ export async function dadosDaRotina(sessao: Sessao, eventoId: number) {
         membros,
         modelos,
         anterior,
+        feitas,
+        esboco,
+        podeEscreverEsboco,
     }
 }
 

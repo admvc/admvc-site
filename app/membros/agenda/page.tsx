@@ -42,7 +42,6 @@ export default async function AgendaPage() {
         select: {
             id: true, nome: true, data: true, descricao: true,
             rotina: { select: { itens: true } },
-            mensagemEvento: { select: { titulo: true, tema: true, texto_biblico: true, pregador: { select: { first_name: true, last_name: true } } } },
             escalas: {
                 where: { motivo_recusa: null },
                 select: {
@@ -85,7 +84,6 @@ export default async function AgendaPage() {
                                     const d = e.departamento.nome
                                     porDepto.set(d, [...(porDepto.get(d) ?? []), `${e.membro.first_name} ${e.membro.last_name} (${e.funcao_ref?.nome || e.funcao})`])
                                 }
-                                const msg = ev.mensagemEvento
                                 return (
                                     <li key={ev.id}>
                                         <details className="a-card group">
@@ -103,13 +101,6 @@ export default async function AgendaPage() {
                                                 <ChevronDown size={22} className="a-suave transition-transform group-open:rotate-180" aria-hidden />
                                             </summary>
                                             <div className="space-y-3 border-t px-4 py-3 text-[15px]" style={{ borderColor: 'var(--a-borda)' }}>
-                                                {msg && (msg.titulo || msg.tema || msg.texto_biblico) && (
-                                                    <p>
-                                                        <span className="font-semibold">Mensagem:</span> {[msg.titulo, msg.tema].filter(Boolean).join(' — ')}
-                                                        {msg.texto_biblico && <> ({msg.texto_biblico})</>}
-                                                        {msg.pregador && <span className="a-suave"> · {msg.pregador.first_name} {msg.pregador.last_name}</span>}
-                                                    </p>
-                                                )}
                                                 {ev.descricao && <p className="a-suave">{ev.descricao}</p>}
                                                 {(rotinas.get(ev.id) ?? []).length > 0 && (
                                                     <div className="space-y-2">

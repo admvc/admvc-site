@@ -4,8 +4,11 @@
 // setas para mudar a ordem (mais fácil do que arrastar no telemóvel).
 
 import { useId, useState } from 'react'
-import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
-import { MOMENTOS, horasPrevistas, responsavel, type ItemRotina, type MembroRotina } from '@/lib/rotina-culto'
+import { AlertTriangle, ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
+import {
+    MOMENTOS, ePalavra, horasPrevistas, repeticoes, responsavel,
+    type ItemRotina, type MembroRotina, type PregacaoFeita,
+} from '@/lib/rotina-culto'
 
 const OUTRO = 'outro'
 
@@ -24,12 +27,15 @@ export function useRotina(inicial: ItemRotina[]) {
     }
 }
 
-export default function EditorRotina({ linhas, setLinhas, membros, inicio, desativado }: {
+const dataCurta = (iso: string) => new Date(iso).toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+
+export default function EditorRotina({ linhas, setLinhas, membros, inicio, desativado, feitas = [] }: {
     linhas: Linha[]
     setLinhas: (f: (l: Linha[]) => Linha[]) => void
     membros: MembroRotina[]
     inicio?: string // hora do culto, para mostrar a hora prevista de cada momento
     desativado?: boolean
+    feitas?: PregacaoFeita[] // pregações anteriores (avisar se o tema ou o texto se repete)
 }) {
     const idLista = useId()
     const mapa = new Map(membros.map((m) => [m.id, m]))
@@ -103,10 +109,30 @@ export default function EditorRotina({ linhas, setLinhas, membros, inicio, desat
                             )}
 
                             <label className="block space-y-1">
-                                <span className="text-[14px] font-semibold a-suave">Nota</span>
-                                <input value={l.nota ?? ''} disabled={desativado} placeholder="ex.: tema da Palavra, texto bíblico"
+                                <span className="text-[14px] font-semibold a-suave">{ePalavra(l.momento) ? 'Tema' : 'Nota'}</span>
+                                <input value={l.nota ?? ''} disabled={desativado}
+                                    placeholder={ePalavra(l.momento) ? 'ex.: Os talentos de Deus' : 'ex.: quem canta, o que levar'}
                                     onChange={(e) => mudar(l.chave, { nota: e.target.value })} className={campo} style={estilo} />
                             </label>
+
+                            {ePalavra(l.momento) && (
+                                <label className="block space-y-1">
+                                    <span className="text-[14px] font-semibold a-suave">Texto bíblico</span>
+                                    <input value={l.texto ?? ''} disabled={desativado} placeholder="ex.: Mateus 25:14-30"
+                                        onChange={(e) => mudar(l.chave, { texto: e.target.value })} className={campo} style={estilo} />
+                                </label>
+                            )}
+
+                            {ePalavra(l.momento) && repeticoes(l, feitas).slice(0, 3).map((f, k) => (
+                                <p key={k} role="status" className="flex gap-2 rounded-[12px] p-3 text-[15px]"
+                                    style={{ background: 'var(--a-aviso-suave)', color: 'var(--a-aviso)' }}>
+                                    <AlertTriangle size={18} className="mt-0.5 shrink-0" aria-hidden />
+                                    <span>
+                                        Já pregado a {dataCurta(f.data)} ({f.culto}){f.quem ? `, por ${f.quem}` : ''}:{' '}
+                                        {[f.tema, f.texto].filter(Boolean).join(' · ')}
+                                    </span>
+                                </p>
+                            ))}
 
                             <div className="flex gap-2">
                                 <button type="button" className="a-botao a-botao-secundario flex-1 !min-h-[44px]" disabled={desativado || i === 0}

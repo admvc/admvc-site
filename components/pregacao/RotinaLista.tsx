@@ -29,7 +29,11 @@ export default function RotinaLista({ inicio, itens, membros, compacta = false }
                                 {it.duracao ? <span className="font-normal a-suave"> · {minutosPorExtenso(it.duracao)}</span> : null}
                             </span>
                             {quem && <span className={`block ${compacta ? 'text-[15px]' : 'text-[16px]'}`}>{quem}</span>}
-                            {it.nota && <span className={`block italic a-suave ${compacta ? 'text-[14px]' : 'text-[15px]'}`}>{it.nota}</span>}
+                            {(it.nota || it.texto) && (
+                                <span className={`block italic a-suave ${compacta ? 'text-[14px]' : 'text-[15px]'}`}>
+                                    {[it.nota, it.texto].filter(Boolean).join(' · ')}
+                                </span>
+                            )}
                         </span>
                     </li>
                 )

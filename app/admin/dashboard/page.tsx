@@ -12,6 +12,13 @@ import {
 } from 'lucide-react'
 import BotaoModalDocumentos from '@/components/admin/BotaoModalDocumentos'
 import { modulosAtivosDaIgreja } from '@/lib/modulos'
+import { normalizarItens, palavraDe } from '@/lib/rotina-culto'
+
+// O tema da Palavra (rotina do culto), para o cartão de cada culto
+function temaDaPalavra(itens: unknown): string | null {
+    const p = palavraDe(normalizarItens(itens))
+    return p?.nota || p?.texto || null
+}
 
 export default async function AdminDashboard({ searchParams }: { searchParams: Promise<{ congregacao?: string }> }) {
     const params = await searchParams
@@ -55,9 +62,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
             take: 6,
             include: {
                 _count: { select: { escalas: true } },
-                mensagemEvento: {
-                    select: { titulo: true, pregador: { select: { first_name: true, last_name: true } } }
-                }
+                rotina: { select: { itens: true } },
             }
         }),
         db.membro.findMany({
@@ -182,9 +187,9 @@ export default async function AdminDashboard({ searchParams }: { searchParams: P
                                             <span className="text-[13px] md:text-[14px] font-bold text-muted uppercase tracking-wide">
                                                 {format(dataEv, "EEEE 'as' HH:mm", { locale: pt })}
                                             </span>
-                                            {ev.mensagemEvento?.titulo && (
+                                            {temaDaPalavra(ev.rotina?.itens) && (
                                                 <span className="text-[13px] font-bold bg-figueira/10 text-figueira px-1.5 py-0.5 rounded flex items-center gap-1">
-                                                    <BookOpen size={10} /> {ev.mensagemEvento.titulo}
+                                                    <BookOpen size={10} /> {temaDaPalavra(ev.rotina?.itens)}
                                                 </span>
                                             )}
                                         </div>

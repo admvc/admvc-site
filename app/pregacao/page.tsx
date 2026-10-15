@@ -26,7 +26,7 @@ export default async function PregacaoPage() {
                     {gereModelos && (
                         <Link href="/pregacao/modelos" className="a-botao a-botao-secundario"><LayoutList size={18} aria-hidden /> Modelos de rotina</Link>
                     )}
-                    <Link href="/pregacao/sermoes" className="a-botao a-botao-secundario"><BookOpen size={18} aria-hidden /> Sermões</Link>
+                    <Link href="/pregacao/historico" className="a-botao a-botao-secundario"><BookOpen size={18} aria-hidden /> Pregações e esboços</Link>
                 </div>
 
                 {cultos.length === 0 ? (
