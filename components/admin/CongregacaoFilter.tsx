@@ -29,10 +29,13 @@ function FilterSelect({
 
     function handleChange(value: string) {
         const params = new URLSearchParams(searchParams.toString())
+        // A escolha fica guardada (cookie): o middleware volta a aplicá-la nas outras páginas
         if (value === '' || value === 'todas') {
             params.delete('congregacao')
+            document.cookie = 'admvc_filtro_cong=; path=/admin; max-age=0; samesite=lax'
         } else {
             params.set('congregacao', value)
+            document.cookie = `admvc_filtro_cong=${encodeURIComponent(value)}; path=/admin; max-age=${60 * 60 * 24 * 30}; samesite=lax`
         }
         const qs = params.toString()
         router.push(qs ? `${pathname}?${qs}` : pathname)

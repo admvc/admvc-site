@@ -41,7 +41,7 @@ export default function RelatoriosClient({ membros }: { membros: any[] }) {
             case 'batismo': return agruparPor('baptism_status');
             case 'permissoes': return agruparPor('role');
             case 'cidade': return agruparPor('id_city');
-            case 'bairro': return agruparPor('state');
+            case 'bairro': return agruparPor('neighborhood'); // o bairro (antes agrupava pelo distrito)
 
             case 'gdpr': {
                 const assinados: any[] = [];

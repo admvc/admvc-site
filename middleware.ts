@@ -118,6 +118,16 @@ export async function middleware(request: NextRequest) {
             return NextResponse.redirect(url)
         }
 
+        // 3c. Filtro de congregação da Administração: a escolha fica num cookie e
+        // volta a pôr-se no endereço em qualquer página (os links do menu não o levam)
+        const filtroCong = request.cookies.get('admvc_filtro_cong')?.value
+        if (isAdminProtected && userRole === 'ADMIN' && request.method === 'GET'
+            && filtroCong && /^\d+$/.test(filtroCong) && !request.nextUrl.searchParams.has('congregacao')) {
+            const url = request.nextUrl.clone()
+            url.searchParams.set('congregacao', filtroCong)
+            return NextResponse.redirect(url)
+        }
+
         // 4. Injectar headers multitenant
         requestHeaders.set('x-user-id', userId)
         requestHeaders.set('x-user-role', userRole)
