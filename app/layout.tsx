@@ -8,6 +8,7 @@ import ServiceWorkerRegister from "@/components/ui/ServiceWorkerRegister";
 import IndicadorNavegacao from "@/components/ui/IndicadorNavegacao";
 import { Suspense } from "react";
 import PWAInstallPrompt from "@/components/ui/PWAInstallPrompt";
+import AtualizarAoVoltar from "@/components/AtualizarAoVoltar";
 import { ConfirmProvider, ToastProvider } from "@/components/ui/ConfirmDialog";
 
 export const metadata: Metadata = {
@@ -57,6 +58,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ServiceWorkerRegister />
         <Suspense fallback={null}><IndicadorNavegacao /></Suspense>
         <PWAInstallPrompt />
+        <AtualizarAoVoltar />
       </body>
     </html>
   );

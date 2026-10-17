@@ -455,3 +455,17 @@ export async function definirCongregacaoVisitante(visitanteId: number, congregac
         return { error: "Falha ao guardar a congregação." };
     }
 }
+
+
+/** Apaga um registo de visitante (spam ou dados falsos). Os contactos dele vão juntos. */
+export async function apagarVisitante(visitanteId: number) {
+    try {
+        const sessao = await exigirAcolhimento('LIDER', visitanteId)
+        const v = await prisma.visitante.delete({ where: { id: visitanteId }, select: { id: true } })
+        await audit({ tenant_id: sessao.tenantId, categoria: 'VISITANTES', acao: 'APAGAR', alvo_id: v.id, alvo_tipo: 'VISITANTE', descricao: `Visitante #${v.id} apagado (spam / dados falsos)` }).catch(() => {})
+        revalidatePath('/departamentos/acolhimento/dashboard')
+        return { ok: true }
+    } catch (err: any) {
+        return { ok: false, error: err?.message || 'Não foi possível apagar.' }
+    }
+}

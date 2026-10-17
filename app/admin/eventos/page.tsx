@@ -7,8 +7,9 @@ import { CalendarDays, Users, ArrowRight } from 'lucide-react'
 import { getTipoEvento, LISTA_TIPOS } from '@/lib/evento-tipos'
 import Link from 'next/link'
 import Breadcrumbs from '@/components/Breadcrumbs'
+import { TIPOS_AGENDA_DEPTO, type TipoAgendaDepto } from '@/lib/agenda'
 
-export default async function EventosPage({ searchParams }: { searchParams: Promise<{ congregacao?: string; tipo?: string }> }) {
+export default async function EventosPage({ searchParams }: { searchParams: Promise<{ congregacao?: string; tipo?: string; vista?: string }> }) {
     const db = await getDb()
     const params = await searchParams
     const session = await getSessionData()
@@ -26,7 +27,9 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
     const congWhere = congFilter ? { congregacao_id: congFilter } : {}
     const tipoFilter = params.tipo && params.tipo !== 'TODOS' ? { tipo: params.tipo } : {}
 
-    const [eventos, congregacoes] = await Promise.all([
+    const vista = params.vista === 'calendario' ? 'calendario' : 'lista'
+    const daqui30 = new Date(Date.now() + 30 * 86400000)
+    const [eventos, congregacoes, encontros] = await Promise.all([
         db.evento.findMany({
             where: { data: { gte: dataInicio }, ...congWhere, ...tipoFilter },
             include: {
@@ -47,7 +50,20 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
             select: { id: true, nome: true, cidade: true },
             orderBy: { nome: 'asc' }
         }) : [],
+        // Agendas dos departamentos (reuniões, orações, ensaios…): o administrador/pastor vê todas
+        db.agendaDepartamento.findMany({
+            where: { inicio: { gte: new Date(new Date().toISOString().slice(0, 10) + 'T00:00:00Z'), lte: daqui30 } },
+            orderBy: { inicio: 'asc' },
+            select: { id: true, titulo: true, tipo: true, inicio: true, local: true, departamento_id: true, departamento: { select: { nome: true } } },
+        }),
     ])
+    const comFiltros = (v: string) => {
+        const u = new URLSearchParams()
+        if (params.tipo) u.set('tipo', params.tipo)
+        if (params.congregacao) u.set('congregacao', params.congregacao)
+        if (v === 'calendario') u.set('vista', 'calendario')
+        const t = u.toString(); return `/admin/eventos${t ? `?${t}` : ''}`
+    }
 
     const hoje = new Date(new Date().setHours(0, 0, 0, 0))
     const eventosFuturos = eventos.filter((e: any) => new Date(e.data) >= hoje)
@@ -79,7 +95,14 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
                     <h1 className="text-3xl font-bold text-fg">Gestão de Eventos</h1>
                     <p className="text-xs text-muted">Criar, visualizar e gerir todos os eventos da igreja.</p>
                 </div>
-                <ModalNovoEvento congregacoes={congregacoes} />
+                <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex rounded-xl border border-soft bg-bg2 p-1 text-sm font-semibold" role="tablist" aria-label="Ver como">
+                        <Link role="tab" aria-selected={vista === 'lista'} href={comFiltros('lista')} className={`rounded-lg px-3 py-1.5 ${vista === 'lista' ? 'bg-fg text-bg' : 'text-muted'}`}>Lista</Link>
+                        <Link role="tab" aria-selected={vista === 'calendario'} href={comFiltros('calendario')} className={`rounded-lg px-3 py-1.5 ${vista === 'calendario' ? 'bg-fg text-bg' : 'text-muted'}`}>Calendário</Link>
+                    </div>
+                    <Link href="/midia/agenda" className="rounded-xl border border-soft bg-bg2 px-3 py-2 text-sm font-semibold text-fg hover:border-figueira">Imprimir / telão / redes</Link>
+                    <ModalNovoEvento congregacoes={congregacoes} />
+                </div>
             </header>
 
             {/* FILTER TABS */}
@@ -129,7 +152,7 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
             </div>
 
             {/* CALENDARIO */}
-            <section className="bg-bg2 border border-soft rounded-[2.5rem] overflow-hidden shadow-sm">
+            {vista === 'calendario' && <section className="bg-bg2 border border-soft rounded-[2.5rem] overflow-hidden shadow-sm">
                 <div className="flex items-center gap-3 px-6 py-5 border-b border-soft">
                     <CalendarDays size={16} className="text-figueira" />
                     <h2 className="text-sm font-bold text-fg">Visão Calendário</h2>
@@ -137,10 +160,29 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
                 <div className="p-6">
                     <CalendarioAgenda eventos={eventos} congregacoes={congregacoes} />
                 </div>
-            </section>
+            </section>}
+
+            {/* AGENDAS DOS DEPARTAMENTOS */}
+            {encontros.length > 0 && (
+                <section className="space-y-2">
+                    <h2 className="text-sm font-bold text-fg">Agendas dos departamentos · próximos 30 dias</h2>
+                    <ul className="grid gap-2 sm:grid-cols-2">
+                        {encontros.map((e) => (
+                            <li key={e.id}>
+                                <Link href={`/membros/gestao/equipa/${e.departamento_id}/agenda`} className="block rounded-xl border border-soft bg-bg2 px-4 py-3 hover:border-figueira/40">
+                                    <span className="block text-sm font-semibold text-fg">{e.titulo}</span>
+                                    <span className="block text-[13px] text-muted">
+                                        {e.departamento.nome} · {TIPOS_AGENDA_DEPTO[e.tipo as TipoAgendaDepto] ?? e.tipo} · {e.inicio.toLocaleDateString('pt-PT', { weekday: 'short', day: '2-digit', month: 'short', timeZone: 'UTC' })} às {e.inicio.toISOString().slice(11, 16)}{e.local ? ` · ${e.local}` : ''}
+                                    </span>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+            )}
 
             {/* UPCOMING EVENTS LIST */}
-            <section className="space-y-4">
+            {vista === 'lista' && <section className="space-y-4">
                 <div className="flex items-center gap-3 px-1">
                     <CalendarDays size={15} className="text-figueira" />
                     <h2 className="text-sm font-bold text-fg">Próximos Eventos</h2>
@@ -158,9 +200,9 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
                     {eventosFuturos.map((evento: any) => {
                         const tipoInfo = getTipoEvento(evento.tipo || 'CULTO_REGULAR')
                         const dataEvento = new Date(evento.data)
-                        const diaSemana = dataEvento.toLocaleDateString('pt-PT', { weekday: 'short' })
-                        const dataFormatada = dataEvento.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric' })
-                        const horaFormatada = dataEvento.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })
+                        const diaSemana = dataEvento.toLocaleDateString('pt-PT', { weekday: 'short', timeZone: 'UTC' })
+                        const dataFormatada = dataEvento.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' })
+                        const horaFormatada = dataEvento.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })
                         const nEscalados = evento.escalas?.length || 0
 
                         return (
@@ -207,7 +249,7 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
                         )
                     })}
                 </div>
-            </section>
+            </section>}
         </main>
     )
 }

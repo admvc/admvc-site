@@ -130,8 +130,8 @@ export async function criarCompromissoAction(formData: FormData) {
             return { ok: false, error: "Preencha todos os campos obrigatórios." };
         }
 
-        const data_inicio = new Date(`${dataStr}T${hora_inicioStr}:00`);
-        const data_fim = new Date(`${dataStr}T${hora_fimStr}:00`);
+        const data_inicio = new Date(`${dataStr}T${hora_inicioStr}:00Z`);
+        const data_fim = new Date(`${dataStr}T${hora_fimStr}:00Z`);
 
         // Validar: não permitir marcar hora já passada
         if (data_inicio < new Date()) {
@@ -301,8 +301,8 @@ export async function editarCompromissoAction(formData: FormData) {
         const hora_fimStr = formData.get('hora_fim') as string;
         const observacoes = formData.get('observacoes') as string;
 
-        const data_inicio = new Date(`${dataStr}T${hora_inicioStr}:00`);
-        const data_fim = new Date(`${dataStr}T${hora_fimStr}:00`);
+        const data_inicio = new Date(`${dataStr}T${hora_inicioStr}:00Z`);
+        const data_fim = new Date(`${dataStr}T${hora_fimStr}:00Z`);
 
         // No Prisma, para atualizar relações muitos-para-muitos, usamos "set" para substituir a lista atual
         const membros_ids = formData.getAll('membros[]').map(id => ({ id: Number(id) }));

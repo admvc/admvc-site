@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { guardarEventoAction } from '@/actions/inscricao-actions'
 import { Loader2, Save } from 'lucide-react'
+import { reduzirImagensDoForm } from '@/lib/reduzir-imagem'
 
 export interface ValoresEvento {
     titulo: string; subtitulo: string; descricao: string; local: string
@@ -27,6 +28,7 @@ export default function FormEvento({ id, slug, valores, organizadores }: {
     async function guardar(f: FormData) {
         setAGuardar(true); setErro(null)
         try {
+            await reduzirImagensDoForm(f)
             const r = await guardarEventoAction(id, f)
             if ('error' in r) { setErro(r.error); return }
             router.push(`/inscricoes/${r.slug}`)
@@ -62,7 +64,9 @@ export default function FormEvento({ id, slug, valores, organizadores }: {
                     <select name="organizador" required defaultValue={valores.organizador} className={campo} style={estilo}>
                         <option value="" disabled>Escolher…</option>
                         {organizadores.map(o => <option key={o.valor} value={o.valor}>{o.nome}</option>)}
-                    </select></label>
+                    </select>
+                    <span className="block text-[14px] a-suave">Gerem as inscrições os <strong>líderes</strong> desse grupo ou ministério (e quem o líder do ministério nomear). Os líderes escolhem-se em Administração → Ministérios e grupos.</span>
+                </label>
                 <label className="block space-y-1"><span className={rotulo}>Texto da página</span>
                     <textarea name="descricao" rows={10} defaultValue={valores.descricao} className={`${campo} font-mono text-[14px]`} style={estilo} />
                     <span className="block text-[13px] a-suave">Linha em branco = parágrafo novo. "## Título" = título. "• item" = lista.</span></label>

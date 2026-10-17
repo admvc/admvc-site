@@ -43,3 +43,4 @@ export async function exigirEquipa(termos: string[], papeis: Role[] = [], nomeEq
 // Equipas usadas em mais de um sitio (os mesmos termos das paginas)
 export const EQUIPA_SOCIAL = ['social', 'despensa', 'assist']
 export const EQUIPA_CANTINA = ['cantina']
+export const EQUIPA_MIDIA = ['mídia', 'midia', 'comunica']

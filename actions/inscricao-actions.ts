@@ -1,7 +1,10 @@
 'use server'
+
 // Inscrições em eventos: a inscrição (página pública, sem senha) e a gestão.
 
+import { after } from 'next/server'
 import { headers } from 'next/headers'
+import { urlDoPortal } from '@/lib/redefinir-senha'
 import { revalidatePath } from 'next/cache'
 import prisma from '@/lib/prisma'
 import { getSessionData } from '@/lib/auth-utils'
@@ -110,14 +113,15 @@ export async function inscreverAction(slug: string, formData: FormData): Promise
         if (!codigo) return { ok: false, error: 'Não foi possível gravar. Tenta de novo.' }
 
         // Aviso no telemóvel de quem organiza (não atrasa a resposta)
-        gestoresDoEvento(evento)
+        // (after: no Vercel a função não acaba antes de o aviso sair)
+        after(() => gestoresDoEvento(evento)
             .then(ids => ids.length && sendPushToMembros(ids, {
                 title: `Nova inscrição · ${evento.titulo}`,
                 body: `${nome} (${membroId ? 'membro' : 'visitante'}) inscreveu-se.`,
                 url: `/inscricoes/${evento.slug}`,
                 tag: `inscricao-${evento.slug}`,
             }))
-            .catch(err => console.error('[INSCRICAO] Aviso à organização:', err))
+            .catch(err => console.error('[INSCRICAO] Aviso à organização:', err)))
 
         revalidatePath(`/inscricoes/${evento.slug}`)
         return { ok: true, codigo, repetida: false }
@@ -155,7 +159,7 @@ export async function alterarInscricaoAction(inscricaoId: number, acao: AcaoInsc
         // Confirmada agora: email com o código e como pagar (se deixou email)
         if (acao === 'CONFIRMAR' && i.estado !== 'CONFIRMADA' && i.email) {
             const { dia, hora } = dataDoEvento(i.evento.inicio)
-            const origem = process.env.APP_URL || 'https://app.igrejaadmvc.org'
+            const origem = urlDoPortal()
             enviarEmailInscricaoConfirmada({
                 email: i.email, nome: i.nome, titulo: i.evento.titulo, quando: `${dia.charAt(0).toUpperCase()}${dia.slice(1)}, às ${hora}`,
                 local: i.evento.local, codigo: i.codigo, preco: i.evento.preco_eur, pagamento: i.evento.pagamento, pago: i.pago,

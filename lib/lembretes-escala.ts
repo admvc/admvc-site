@@ -5,19 +5,18 @@
 // Os dias contam-se na hora de Portugal. Todas as igrejas (e uma tarefa do sistema).
 
 import prisma from '@/lib/prisma'
-import { fromZonedTime } from 'date-fns-tz'
 
 export const FUSO = 'Europe/Lisbon'
 
-/** Inicio do dia (00:00 em Portugal) de `agora` + `mais` dias, em UTC. */
+/** Inicio do dia de `agora` (dia de Portugal) + `mais` dias. As horas dos eventos estao gravadas
+ *  como hora de Lisboa "escrita" em UTC (20:00 → 20:00Z), por isso o dia comeca as 00:00Z. */
 function inicioDoDia(agora: Date, mais: number) {
     const [a, m, d] = new Intl.DateTimeFormat('en-CA', { timeZone: FUSO, year: 'numeric', month: '2-digit', day: '2-digit' })
         .format(agora).split('-').map(Number)
-    const dia = new Date(Date.UTC(a, m - 1, d + mais))
-    return fromZonedTime(`${dia.toISOString().slice(0, 10)}T00:00:00`, FUSO)
+    return new Date(Date.UTC(a, m - 1, d + mais))
 }
 
-const hora = (d: Date) => d.toLocaleTimeString('pt-PT', { timeZone: FUSO, hour: '2-digit', minute: '2-digit' })
+const hora = (d: Date) => d.toLocaleTimeString('pt-PT', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' })
 
 export interface Lembrete {
     membroId: number

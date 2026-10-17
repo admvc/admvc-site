@@ -36,7 +36,7 @@ export default async function DashboardFinanceiro() {
     const db = await getDb()
     const session = await getSessionData()
     if (!session || !['FINANCE', 'ADMIN'].includes(session.role)) {
-        redirect('/membros/dashboard?error=Acesso negado ao módulo financeiro')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso negado ao módulo financeiro')}`)
     }
 
     // ── QUERY CONSOLIDADA ────────────────────────────────────────────────────

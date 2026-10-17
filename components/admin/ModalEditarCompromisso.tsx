@@ -14,8 +14,8 @@ export default function ModalEditarCompromisso({ comp }: { comp: any }) {
     const dataInicial = new Date(comp.data_inicio);
     const dataFim = new Date(comp.data_fim);
     const defaultData = dataInicial.toISOString().split('T')[0];
-    const defaultHoraInicio = dataInicial.toTimeString().split(' ')[0].substring(0, 5);
-    const defaultHoraFim = dataFim.toTimeString().split(' ')[0].substring(0, 5);
+    const defaultHoraInicio = dataInicial.toISOString().slice(11, 16); // hora gravada em UTC
+    const defaultHoraFim = dataFim.toISOString().slice(11, 16);
 
     async function handleAction(formData: FormData) {
         setIsPending(true);

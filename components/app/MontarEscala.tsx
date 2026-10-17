@@ -11,6 +11,7 @@ import { ArrowLeft, Bell, Check, MessageCircle, Plus, X } from 'lucide-react'
 import { escalarNaFuncao, lembrarQuemNaoConfirmou, tirarDaEscala } from '@/actions/escala-app-actions'
 import type { MontarEscalaDados, PessoaDaEquipa } from '@/lib/escalas-app'
 import { diaPorExtenso, haQuanto, hora } from './datas'
+import { useConfirm } from '@/components/ui/ConfirmDialog'
 import Estado from './Estado'
 
 type Funcao = MontarEscalaDados['funcoes'][number]
@@ -19,6 +20,7 @@ export default function MontarEscala({ dados }: { dados: MontarEscalaDados }) {
     const router = useRouter()
     const [pendente, iniciar] = useTransition()
     const [escolher, setEscolher] = useState<Funcao | null>(null)
+    const confirmar = useConfirm()
     const [aviso, setAviso] = useState<{ tipo: 'ok' | 'erro'; texto: string } | null>(null)
     const { evento, departamento, funcoes, equipa } = dados
 
@@ -130,7 +132,11 @@ export default function MontarEscala({ dados }: { dados: MontarEscalaDados }) {
                     equipa={equipa}
                     pendente={pendente}
                     onFechar={() => setEscolher(null)}
-                    onEscalar={(p) => correr(() => escalarNaFuncao(evento.id, departamento.id, escolher.id, p.membroId))}
+                    onEscalar={async (p) => {
+                        // Já está noutra função (ou noutro culto) à mesma hora: confirmar antes
+                        if (p.noutraFuncao && !(await confirmar({ titulo: 'Já está escalado à mesma hora', mensagem: `${p.nome} já está em: ${p.noutraFuncao}. Escalar mesmo assim?`, botaoConfirmar: 'Escalar', tipo: 'aviso' }))) return
+                        correr(() => escalarNaFuncao(evento.id, departamento.id, escolher.id, p.membroId))
+                    }}
                     onTirar={(escalaId) => correr(() => tirarDaEscala(escalaId))}
                 />
             )}

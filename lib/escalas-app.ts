@@ -98,13 +98,14 @@ export async function equipasQueGiro(sessao: SessionData): Promise<EquipaQueGiro
     if (isAdmin(sessao.role)) {
         // Admin: so os departamentos que tem funcoes (os que fazem escalas)
         return db.departamento.findMany({
-            where: { funcoes: { some: {} } },
+            where: { funcoes: { some: {} }, tem_escala: true },
             select: { id: true, nome: true },
             orderBy: { nome: 'asc' },
         })
     }
     const candidatos = await db.departamento.findMany({
         where: {
+            tem_escala: true,
             OR: [
                 { lider_id: sessao.membroId },
                 { integrantes: { some: { membro_id: sessao.membroId } } },
@@ -162,13 +163,18 @@ export async function dadosMontarEscala(sessao: SessionData, deptoId: number, ev
     ])
 
     const ids = integrantes.map((i) => i.membro_id)
-    const [indisponibilidades, ultimas] = await Promise.all([
+    const [indisponibilidades, ultimas, mesmaHora] = await Promise.all([
         db.indisponibilidadeMembro.findMany({ where: { membro_id: { in: ids } } }),
         db.escala.findMany({
             where: { membro_id: { in: ids }, departamento_id: deptoId, motivo_recusa: null, evento: { data: { lt: inicioDeHoje() } } },
             select: { membro_id: true, evento: { select: { data: true } } },
             orderBy: { evento: { data: 'desc' } },
             take: 500,
+        }),
+        // Outro culto à mesma hora (ex.: outra casa): também conta como "já está"
+        db.escala.findMany({
+            where: { membro_id: { in: ids }, motivo_recusa: null, evento_id: { not: eventoId }, evento: { data: evento.data } },
+            select: { membro_id: true, funcao: true, funcao_ref: { select: { nome: true } }, evento: { select: { nome: true } } },
         }),
     ])
 
@@ -184,7 +190,8 @@ export async function dadosMontarEscala(sessao: SessionData, deptoId: number, ev
             avatar: i.membro.avatar_file,
             funcoes: i.funcoes.map((f) => f.funcao_id),
             indisponivel: motivoIndisponivel(indisponibilidades.filter((x) => x.membro_id === i.membro_id), dataEvento),
-            noutraFuncao: outra ? `${outra.funcao_ref?.nome || outra.funcao}${outra.departamento_id !== deptoId ? ` (${outra.departamento.nome})` : ''}` : null,
+            noutraFuncao: outra ? `${outra.funcao_ref?.nome || outra.funcao}${outra.departamento_id !== deptoId ? ` (${outra.departamento.nome})` : ''}`
+                : (() => { const m = mesmaHora.find((e) => e.membro_id === i.membro_id); return m ? `${m.funcao_ref?.nome || m.funcao} (${m.evento.nome}, à mesma hora)` : null })(),
             ultimaVez: ult ? ult.toISOString() : null,
         }
     }).sort((a, b) => a.nome.localeCompare(b.nome, 'pt'))

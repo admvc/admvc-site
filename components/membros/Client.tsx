@@ -13,6 +13,7 @@ import Image from 'next/image'
 import Breadcrumb from '@/components/ui/Breadcrumb'
 import { useToast } from '@/components/ui/ConfirmDialog'
 import AcoesContaMembro from '@/components/admin/AcoesContaMembro'
+import { reduzirImagensDoForm } from '@/lib/reduzir-imagem'
 
 export default function EditarMembroClient({
     membro,
@@ -22,6 +23,7 @@ export default function EditarMembroClient({
     familias = [],
     congregacoes = [],
     cantinaAtiva = true,
+    todosCargos = [],
 }: any) {
     const router = useRouter()
     const toast = useToast()
@@ -103,6 +105,7 @@ export default function EditarMembroClient({
 
     async function handleAction(formData: FormData) {
         setIsPending(true)
+        await reduzirImagensDoForm(formData)
         const res = await atualizarMembroAdmin(membro.id, formData)
         setIsPending(false)
         if (res.ok) {
@@ -415,7 +418,7 @@ export default function EditarMembroClient({
                             </h4>
                             <div className="grid md:grid-cols-3 gap-6">
                                 <Input label="Igreja Anterior" name="previous_church" defaultValue={membro.previous_church} />
-                                <Input label="Cargo que exercia" name="church_role" defaultValue={membro.church_role} placeholder="Ex: Membro, Diacono..." />
+                                <Input label="Cargo na igreja anterior" name="church_role" defaultValue={membro.church_role} placeholder="Ex: Membro, Diacono..." />
                                 <Input label="Ministério de atuacao" name="ministry" defaultValue={membro.ministry} placeholder="Ex: Louvor, Jovens..." />
                             </div>
                         </div>
@@ -438,6 +441,22 @@ export default function EditarMembroClient({
                                     </span>
                                 </label>
                             </div>
+                            {/* Cargo na igreja: dá o título na rotina do culto e nas pregações ("Pastor Rafael") */}
+                            {todosCargos.length > 0 && (
+                                <fieldset className="space-y-2">
+                                    <legend className="text-[14px] font-bold uppercase tracking-wide text-muted">Cargo na igreja</legend>
+                                    <input type="hidden" name="cargos_enviados" value="1" />
+                                    <div className="flex flex-wrap gap-2">
+                                        {todosCargos.map((c: any) => (
+                                            <label key={c.id} className="flex cursor-pointer items-center gap-2 rounded-xl border border-soft bg-white/60 px-3 py-2 text-sm font-semibold hover:border-figueira">
+                                                <input type="checkbox" name="cargos" value={c.id} defaultChecked={membro.cargos?.some((x: any) => x.id === c.id)} className="h-4 w-4 accent-figueira" />
+                                                {c.nome}
+                                            </label>
+                                        ))}
+                                    </div>
+                                    <p className="text-[13px] text-muted">A lista edita-se em Estrutura → Cargos.</p>
+                                </fieldset>
+                            )}
                             <div className="grid md:grid-cols-3 gap-6">
                                 <Select label="Nível de Permissão (Role)" name="role" defaultValue={membro.role} options={roles.length > 0 ? roles : ['USER', 'ADMIN', 'FINANCE']} />
                                 <Select label="Status de Cadastro" name="status" defaultValue={membro.status} options={[

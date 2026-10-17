@@ -4,17 +4,21 @@ import { getSessionData } from '@/lib/auth-utils'
 import MembrosListClient from '@/components/admin/MembrosListClient'
 import BotaoGerarQrCodes from '@/components/admin/BotaoGerarQrCodes'
 import Breadcrumbs from '@/components/Breadcrumbs'
+import Link from 'next/link'
+import AtribuirCasa from '@/components/admin/AtribuirCasa'
 
 export default async function ListaMembrosAdmin({ searchParams }: { searchParams: Promise<{ congregacao?: string }> }) {
     const db = await getDb()
     const params = await searchParams
     const session = await getSessionData()
+    // "sem" = só os membros sem congregação (para os atribuir de uma vez)
+    const soSemCasa = params.congregacao === 'sem' && session?.role === 'ADMIN'
     const congFilter = session?.role === 'CONGREGATION_ADMIN' && session.congregacaoId
         ? session.congregacaoId
-        : params.congregacao ? Number(params.congregacao) : undefined
+        : params.congregacao && !soSemCasa ? Number(params.congregacao) : undefined
 
-    const membros = await db.membro.findMany({
-        where: congFilter ? { congregacao_id: congFilter } : undefined,
+    const [membros, semCasa, congregacoes] = await Promise.all([db.membro.findMany({
+        where: soSemCasa ? { congregacao_id: null } : congFilter ? { congregacao_id: congFilter } : undefined,
         orderBy: { created_at: 'desc' },
         select: {
             id: true,
@@ -39,7 +43,10 @@ export default async function ListaMembrosAdmin({ searchParams }: { searchParams
             departamentos_liderados: { select: { id: true } },
             ministerios: { select: { departamento: { select: { nome: true } } } },
         }
-    })
+    }),
+        session?.role === 'ADMIN' ? db.membro.count({ where: { congregacao_id: null } }) : Promise.resolve(0),
+        db.congregacao.findMany({ select: { id: true, nome: true }, orderBy: { nome: 'asc' } }),
+    ])
 
     // KPIs
     const total = membros.length
@@ -58,6 +65,16 @@ export default async function ListaMembrosAdmin({ searchParams }: { searchParams
                         {semQr} membro{semQr !== 1 ? 's' : ''} sem QR Code
                     </p>
                     <BotaoGerarQrCodes />
+                </div>
+            )}
+            {soSemCasa ? (
+                <AtribuirCasa congregacoes={congregacoes} membros={membros.map(m => ({ id: m.id, nome: `${m.first_name} ${m.last_name ?? ''}`.trim() }))} />
+            ) : semCasa > 0 && (
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
+                    <p className="text-[14px] font-semibold text-amber-800">
+                        {semCasa} membro{semCasa !== 1 ? 's' : ''} sem congregação: não aparece{semCasa !== 1 ? 'm' : ''} quando se escolhe uma casa.
+                    </p>
+                    <Link href="/admin/membros?congregacao=sem" className="text-sm font-semibold text-figueira hover:underline">Atribuir a casa →</Link>
                 </div>
             )}
             <MembrosListClient

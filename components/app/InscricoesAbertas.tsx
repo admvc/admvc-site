@@ -7,6 +7,7 @@ import { inscricoesAbertas, dataDoEvento } from '@/lib/inscricoes'
 import { mesmoTelefone } from '@/lib/visitante-registo'
 import { ClipboardList } from 'lucide-react'
 import QRCode from 'react-qr-code'
+import CartaoFechavel from './CartaoFechavel'
 
 export default async function InscricoesAbertas({ sessao }: { sessao: SessionData }) {
     const [eventos, membro] = await Promise.all([
@@ -32,8 +33,9 @@ export default async function InscricoesAbertas({ sessao }: { sessao: SessionDat
                 const { dia, hora } = dataDoEvento(e.inicio)
                 const cobra = !!e.preco_eur && e.preco_eur > 0
                 return (
-                    <article key={e.id} className="a-card p-4 space-y-3" style={{ borderColor: e.cor_principal, borderWidth: 2 }}>
-                        <div className="flex items-start gap-3">
+                    <CartaoFechavel key={e.id} id={`inscricao-${e.slug}`} titulo={e.titulo}>
+                    <article className="a-card p-4 space-y-3" style={{ borderColor: e.cor_principal, borderWidth: 2 }}>
+                        <div className="flex items-start gap-3 pr-20">
                             <ClipboardList size={24} style={{ color: e.cor_principal }} className="shrink-0 mt-0.5" aria-hidden />
                             <div className="min-w-0">
                                 <p className="text-[14px] font-semibold uppercase tracking-wide" style={{ color: e.cor_principal }}>
@@ -65,6 +67,7 @@ export default async function InscricoesAbertas({ sessao }: { sessao: SessionDat
                             </Link>
                         )}
                     </article>
+                    </CartaoFechavel>
                 )
             })}
         </section>

@@ -108,7 +108,7 @@ export default function CalendarioAgenda({ eventos, congregacoes }: { eventos: a
                         {eventosDoDia.map(ev => {
                             const totalEscalados = ev.escalas?.length || 0;
                             // AQUI ESTÁ A CORREÇÃO: Formatamos a hora diretamente da data do evento!
-                            const horarioEvento = format(new Date(ev.data), 'HH:mm');
+                            const horarioEvento = new Date(ev.data).toISOString().slice(11, 16); // hora gravada em UTC
 
 return (
                                 <div key={ev.id} className="bg-bg2 p-5 rounded-3xl border border-soft hover:border-figueira/30 transition-all flex flex-col gap-4 group relative overflow-hidden">

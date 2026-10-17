@@ -16,7 +16,7 @@ export default async function DonativosDashboard() {
     const db = await getDb()
     const session = await getSessionData()
     if (!session || !['FINANCE', 'ADMIN'].includes(session.role)) {
-        redirect('/membros/dashboard?error=Acesso negado')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso negado')}`)
     }
 
     const now = new Date()

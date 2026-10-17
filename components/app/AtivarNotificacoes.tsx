@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from 'react'
 import { BellRing, Loader2 } from 'lucide-react'
+import CartaoFechavel from './CartaoFechavel'
 
 function chaveParaBytes(base64: string): Uint8Array {
     const pad = '='.repeat((4 - (base64.length % 4)) % 4)
@@ -31,7 +32,12 @@ export default function AtivarNotificacoes() {
         if (Notification.permission === 'denied') { setEstado('bloqueado'); return }
         navigator.serviceWorker.ready
             .then((reg) => reg.pushManager.getSubscription())
-            .then((sub) => setEstado(sub ? 'ligado' : 'pode'))
+            .then((sub) => {
+                setEstado(sub ? 'ligado' : 'pode')
+                // Já ligado neste aparelho: volta a dizer ao servidor (só guarda um aparelho por
+                // membro e apaga os que expiram — sem isto o aviso podia deixar de chegar)
+                if (sub) fetch('/api/push/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sub.toJSON()) }).catch(() => {})
+            })
             .catch(() => setEstado('pode'))
     }, [chave])
 
@@ -55,7 +61,8 @@ export default function AtivarNotificacoes() {
     if (estado === 'a-ver' || estado === 'ligado' || estado === 'sem-suporte') return null
 
     return (
-        <section className="a-card flex flex-wrap items-center gap-3 p-4" aria-labelledby="avisos-telemovel">
+        <CartaoFechavel id="ativar-avisos" titulo="Receber avisos no telemóvel">
+        <section className="a-card flex flex-wrap items-center gap-3 p-4 pr-20" aria-labelledby="avisos-telemovel">
             <BellRing size={24} style={{ color: 'var(--a-destaque)' }} aria-hidden />
             <div className="min-w-0 flex-1">
                 <p id="avisos-telemovel" className="text-[16px] font-bold">Receber avisos no telemóvel</p>
@@ -74,5 +81,6 @@ export default function AtivarNotificacoes() {
                 </button>
             )}
         </section>
+        </CartaoFechavel>
     )
 }

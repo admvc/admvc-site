@@ -18,9 +18,9 @@ export default function ModalListaConsolidados({ consolidados }: { consolidados:
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className="w-full bg-fg text-bg py-4 rounded-2xl text-[14px] font-bold uppercase tracking-wide hover:bg-figueira hover:text-white transition-all shadow-sm active:scale-95"
+                className="shrink-0 rounded-lg bg-soft px-3 py-1.5 text-[13px] font-semibold text-fg hover:bg-figueira hover:text-white transition-all"
             >
-                Ver Lista Completa
+                Ver todos
             </button>
 
             {isOpen && (

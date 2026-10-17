@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function CestasPage() {
     const session = await getSessionData()
-    if (!session) redirect('/membros/login?error=Sessao expirada')
+    if (!session) redirect(`/membros/login?error=${encodeURIComponent('Sessao expirada')}`)
 
     const db = await getDb()
 
@@ -34,10 +34,10 @@ export default async function CestasPage() {
     )
 
     if (!isAdmin && !isFinance && !isEquipaSocial && !isLiderSocial) {
-        redirect('/membros/dashboard?error=Acesso restrito a equipa de Assistencia Social.')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso restrito a equipa de Assistencia Social.')}`)
     }
 
-    const [tiposCesta, itensStock, entregas] = await Promise.all([
+    const [tiposCesta, itensStock, entregas, familias] = await Promise.all([
         db.tipoCesta.findMany({
             include: {
                 itens: { include: { item: true } },
@@ -54,6 +54,7 @@ export default async function CestasPage() {
             orderBy: { criado_em: 'desc' },
             take: 20,
         }),
+        db.familiaAssistencia.findMany({ where: { ativo: true }, select: { id: true, nome: true }, orderBy: { nome: 'asc' } }),
     ])
 
     const cestasSerializadas = tiposCesta.map(c => ({
@@ -86,6 +87,7 @@ export default async function CestasPage() {
                 itensStock={itensStock}
                 entregas={entregasSerializadas}
                 podeGerir={isLiderSocial}
+                familias={familias}
             />
         </main>
     )

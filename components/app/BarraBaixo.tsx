@@ -20,7 +20,7 @@ import { logoutMembro } from '@/actions/auth-actions'
 export type ItemMais = {
     chave: 'agenda' | 'avisos' | 'louvor' | 'grupo' | 'acolhimento' | 'midia' | 'perfil' | 'admin' | 'privacidade'
         | 'cantina' | 'tesouraria' | 'social' | 'pregacao' | 'obreiros' | 'cursos' | 'boleias'
-        | 'gabinete' | 'atendimento' | 'inventario' | 'mesa' | 'luz' | 'culto-holyrics' | 'inscricoes'
+        | 'gabinete' | 'atendimento' | 'inventario' | 'mesa' | 'luz' | 'culto-holyrics' | 'inscricoes' | 'divulgar'
     texto: string
     href: string
     detalhe?: string
@@ -31,7 +31,7 @@ export const ICONES: Record<ItemMais['chave'], typeof Users> = {
     midia: MonitorPlay, perfil: UserRound, admin: ShieldCheck, privacidade: Shield,
     cantina: Store, tesouraria: Wallet, social: HandHeart, pregacao: BookOpen, obreiros: Church,
     cursos: GraduationCap, boleias: Car, gabinete: Briefcase, atendimento: CalendarClock, inventario: Package,
-    mesa: SlidersVertical, luz: Lightbulb, 'culto-holyrics': MonitorUp, inscricoes: ClipboardList,
+    mesa: SlidersVertical, luz: Lightbulb, 'culto-holyrics': MonitorUp, inscricoes: ClipboardList, divulgar: Megaphone,
 }
 
 export default function BarraBaixo({ itensMais, repertorio = false }: { itensMais: ItemMais[]; repertorio?: boolean }) {

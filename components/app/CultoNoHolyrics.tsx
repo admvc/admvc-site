@@ -22,7 +22,7 @@ const ESTADO: Record<EstadoNoHolyrics, { texto: string; icone: typeof Check; cor
 
 const quando = (iso: string) => {
     const d = new Date(iso)
-    const t = `${d.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })}, ${d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}`
+    const t = `${d.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })}, ${d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}`
     return t[0].toUpperCase() + t.slice(1)
 }
 

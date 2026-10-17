@@ -100,6 +100,7 @@ export async function validarLoginGeral(email: string, pass: string, redirectPat
         }
 
         await criarSessaoMembro({ ...membro, plano: membro.tenant?.plano }, 60 * 60 * 2); // 2 horas
+        await limparRateLimit(email)
 
         logado = true;
         userRole = membro.role;
@@ -156,6 +157,21 @@ export async function logoutGeral(tipo: 'admin' | 'membro') {
 }
 
 export async function logoutMembro() { return logoutGeral('membro'); }
+
+/** Entrada certa: limpa os contadores (só as tentativas falhadas devem contar; na igreja
+ *  muitos entram pela mesma rede, e quem entra e sai várias vezes não pode ficar bloqueado). */
+async function limparRateLimit(email: string) {
+    try {
+        const headersList = await headers()
+        const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || headersList.get('x-real-ip') || 'unknown'
+        await Promise.all([
+            ratelimitPorEmail?.resetUsedTokens(email.toLowerCase().trim()),
+            ratelimitPorIp?.resetUsedTokens(ip),
+        ])
+    } catch (err) {
+        console.error('[LOGIN] Não foi possível limpar o limite de tentativas:', err)
+    }
+}
 
 async function verificarRateLimit(email: string): Promise<{ permitido: boolean; erro: string | null }> {
     try {
@@ -280,6 +296,7 @@ export async function loginUnificado(formData: FormData) {
     console.log(`LOGIN BEM SUCEDIDO! Role: ${usuario.role}`)
 
     await criarSessaoMembro({ ...usuario, plano: usuario.tenant?.plano })
+    await limparRateLimit(email)
 
     // Atualizar ultimo_login e enviar email de boas-vindas se for o primeiro acesso
     const primeiroLogin = usuario.ultimo_login === null
@@ -377,6 +394,7 @@ export async function loginAdmin(formData: FormData) {
     })
 
     await criarSessaoMembro({ ...membro, plano: membro.tenant?.plano }, 60 * 60 * 24)
+    await limparRateLimit(email)
 
     console.log(`LOGIN ADMIN BEM SUCEDIDO!`)
     console.log(`=============================================\n`)

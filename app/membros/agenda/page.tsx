@@ -1,6 +1,7 @@
-// Agenda: os proximos cultos e eventos, por semana, com a minha escala em cada um.
+// Agenda: os proximos cultos e eventos, por semana (lista) ou mes a mes (calendario), com a minha
+// escala em cada um e os encontros das minhas equipas (reunioes, oracoes, ensaios...).
 import { redirect } from 'next/navigation'
-import { ChevronDown, UserCheck } from 'lucide-react'
+import { CalendarDays, ChevronDown, List, MapPin, UserCheck, Users } from 'lucide-react'
 import { getSessionData } from '@/lib/auth-utils'
 import { getTenantClient } from '@/lib/prisma'
 import { estadoDaEscala } from '@/lib/escalas-app'
@@ -12,6 +13,10 @@ import { normalizarItens } from '@/lib/rotina-culto'
 import { membrosDosItens } from '@/lib/rotina-culto-dados'
 import { checkModulo } from '@/lib/modulos'
 import { MODULOS } from '@/lib/planos'
+import { isAdmin } from '@/lib/auth-utils'
+import { lerMes, limitesDoMes, TIPOS_AGENDA_DEPTO, type TipoAgendaDepto } from '@/lib/agenda'
+import CalendarioMes from '@/components/CalendarioMes'
+import { getTipoEvento } from '@/lib/evento-tipos'
 
 export const dynamic = 'force-dynamic'
 
@@ -30,17 +35,36 @@ function nomeDaSemana(inicio: Date) {
     return `Semana de ${inicio.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long' })}`
 }
 
-export default async function AgendaPage() {
+export default async function AgendaPage({ searchParams }: { searchParams: Promise<{ vista?: string; mes?: string; dia?: string }> }) {
     const sessao = await getSessionData()
     if (!sessao) redirect('/membros/login')
     const db = getTenantClient(sessao.tenantId)
+    const q = await searchParams
+    const vista = q.vista === 'calendario' ? 'calendario' : 'lista'
+    const hojeTxt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Lisbon' }).format(new Date())
+    const mes = lerMes(q.mes, hojeTxt)
+    const diaEscolhido = typeof q.dia === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(q.dia) ? q.dia : (mes === hojeTxt.slice(0, 7) ? hojeTxt : null)
 
-    const hoje = new Date(); hoje.setHours(0, 0, 0, 0)
+    const hoje = new Date(`${hojeTxt}T00:00:00Z`)
+    const periodo = vista === 'calendario'
+        ? { gte: limitesDoMes(mes).inicio, lt: limitesDoMes(mes).fim }
+        : { gte: hoje, lte: new Date(hoje.getTime() + 56 * 86400000) }
+
+    // Encontros das minhas equipas (o administrador vê todos)
+    const encontros = await db.agendaDepartamento.findMany({
+        where: {
+            inicio: periodo,
+            ...(isAdmin(sessao.role) ? {} : { departamento: { OR: [{ lider_id: sessao.membroId }, { integrantes: { some: { membro_id: sessao.membroId } } }] } }),
+        },
+        orderBy: { inicio: 'asc' },
+        select: { id: true, titulo: true, tipo: true, inicio: true, local: true, departamento_id: true, departamento: { select: { nome: true } } },
+    })
+
     const eventos = await db.evento.findMany({
-        where: { data: { gte: hoje, lte: new Date(hoje.getTime() + 56 * 86400000) } },
+        where: { data: periodo },
         orderBy: { data: 'asc' },
         select: {
-            id: true, nome: true, data: true, descricao: true,
+            id: true, nome: true, data: true, descricao: true, tipo: true,
             rotina: { select: { itens: true } },
             escalas: {
                 where: { motivo_recusa: null },
@@ -66,14 +90,94 @@ export default async function AgendaPage() {
         const k = inicioDaSemana(ev.data).getTime()
         semanas.set(k, [...(semanas.get(k) ?? []), ev])
     }
+    const encontrosDaSemana = new Map<number, typeof encontros>()
+    for (const e of encontros) {
+        const k = inicioDaSemana(e.inicio).getTime()
+        encontrosDaSemana.set(k, [...(encontrosDaSemana.get(k) ?? []), e])
+        if (!semanas.has(k)) semanas.set(k, [])
+    }
+    const chavesSemanas = [...semanas.keys()].sort((a, b) => a - b)
+
+    const link = (x: { vista?: string; mes?: string; dia?: string }) => {
+        const u = new URLSearchParams()
+        const v = x.vista ?? vista
+        if (v === 'calendario') u.set('vista', 'calendario')
+        if (v === 'calendario' && (x.mes ?? mes)) u.set('mes', x.mes ?? mes)
+        if (x.dia) u.set('dia', x.dia)
+        const t = u.toString()
+        return `/membros/agenda${t ? `?${t}` : ''}`
+    }
+    const diaDe = (d: Date) => d.toISOString().slice(0, 10)
+
+    const CartaoEncontro = ({ e }: { e: (typeof encontros)[number] }) => (
+        <li>
+            <Link href={`/membros/gestao/equipa/${e.departamento_id}/agenda`} className="a-card a-foco flex items-center gap-3 px-4 py-3">
+                <Users size={20} className="shrink-0 a-suave" aria-hidden />
+                <span className="min-w-0 flex-1">
+                    <span className="block text-[16px] font-semibold">{e.titulo}</span>
+                    <span className="block text-[14px] a-suave">
+                        {TIPOS_AGENDA_DEPTO[e.tipo as TipoAgendaDepto] ?? e.tipo} · {e.departamento.nome} · {diaPorExtenso(e.inicio.toISOString())}, às {hora(e.inicio.toISOString())}
+                    </span>
+                    {e.local && <span className="flex items-center gap-1 text-[14px] a-suave"><MapPin size={14} aria-hidden /> {e.local}</span>}
+                </span>
+            </Link>
+        </li>
+    )
 
     return (
         <div className="app-novo min-h-screen">
             <main className="mx-auto max-w-md px-4 pt-20 pb-28 md:pt-8 space-y-6">
-                <h1 className="text-[24px] font-bold">Agenda</h1>
-                {eventos.length === 0 && <p className="a-card p-5 text-[16px] a-suave">Não há cultos nem eventos marcados nas próximas semanas.</p>}
+                <header className="flex items-center justify-between gap-3">
+                    <h1 className="text-[24px] font-bold">Agenda</h1>
+                    <div className="flex gap-1 rounded-[14px] p-1" style={{ background: 'var(--a-borda)' }} role="tablist" aria-label="Ver como">
+                        <Link role="tab" aria-selected={vista === 'lista'} href={link({ vista: 'lista' })} className={`a-foco flex items-center gap-1.5 rounded-[12px] px-3 py-2 text-[15px] font-semibold ${vista === 'lista' ? '' : 'a-suave'}`}
+                            style={vista === 'lista' ? { background: 'var(--a-card)' } : undefined}><List size={17} aria-hidden /> Lista</Link>
+                        <Link role="tab" aria-selected={vista === 'calendario'} href={link({ vista: 'calendario' })} className={`a-foco flex items-center gap-1.5 rounded-[12px] px-3 py-2 text-[15px] font-semibold ${vista === 'calendario' ? '' : 'a-suave'}`}
+                            style={vista === 'calendario' ? { background: 'var(--a-card)' } : undefined}><CalendarDays size={17} aria-hidden /> Calendário</Link>
+                    </div>
+                </header>
 
-                {[...semanas.entries()].map(([k, lista]) => (
+                {vista === 'calendario' && (
+                    <>
+                        <CalendarioMes mes={mes} hoje={hojeTxt} diaEscolhido={diaEscolhido} href={(x) => link({ vista: 'calendario', ...x })}
+                            itens={[
+                                ...eventos.map((ev) => ({ chave: `e${ev.id}`, dia: diaDe(ev.data), titulo: ev.nome, cor: 'var(--a-destaque)' })),
+                                ...encontros.map((e) => ({ chave: `d${e.id}`, dia: diaDe(e.inicio), titulo: e.titulo, cor: '#d97706' })),
+                            ]} />
+                        <p className="flex gap-4 text-[14px] a-suave">
+                            <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ background: 'var(--a-destaque)' }} /> Cultos e eventos</span>
+                            <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-full" style={{ background: '#d97706' }} /> As minhas equipas</span>
+                        </p>
+                        {diaEscolhido && (() => {
+                            const doDia = eventos.filter((ev) => diaDe(ev.data) === diaEscolhido)
+                            const encDoDia = encontros.filter((e) => diaDe(e.inicio) === diaEscolhido)
+                            return (
+                                <section className="space-y-3" aria-label="Neste dia">
+                                    <h2 className="text-[17px] font-bold">{diaPorExtenso(`${diaEscolhido}T12:00:00Z`)}</h2>
+                                    {doDia.length + encDoDia.length === 0 && <p className="a-card p-4 text-[16px] a-suave">Nada marcado neste dia.</p>}
+                                    <ul className="space-y-3">
+                                        {doDia.map((ev) => (
+                                            <li key={ev.id} className="a-card px-4 py-3">
+                                                <span className="block text-[17px] font-semibold">{ev.nome}</span>
+                                                <span className="block text-[15px] a-suave">{hora(ev.data.toISOString())} · {getTipoEvento(ev.tipo).label}</span>
+                                                {ev.escalas.filter((e) => e.membro_id === sessao.membroId).map((m, i) => (
+                                                    <span key={i} className="mt-1 flex flex-wrap items-center gap-2 text-[15px] font-semibold" style={{ color: 'var(--a-destaque)' }}>
+                                                        <UserCheck size={17} aria-hidden /> Sirvo: {m.funcao_ref?.nome || m.funcao} <Estado estado={estadoDaEscala(m)} />
+                                                    </span>
+                                                ))}
+                                            </li>
+                                        ))}
+                                        {encDoDia.map((e) => <CartaoEncontro key={e.id} e={e} />)}
+                                    </ul>
+                                </section>
+                            )
+                        })()}
+                    </>
+                )}
+
+                {vista === 'lista' && eventos.length + encontros.length === 0 && <p className="a-card p-5 text-[16px] a-suave">Não há cultos nem eventos marcados nas próximas semanas.</p>}
+
+                {vista === 'lista' && chavesSemanas.map((k) => [k, semanas.get(k)!] as const).map(([k, lista]) => (
                     <section key={k} className="space-y-3">
                         <h2 className="text-[17px] font-bold a-suave">{nomeDaSemana(new Date(k))}</h2>
                         <ul className="space-y-3">
@@ -124,6 +228,9 @@ export default async function AgendaPage() {
                                 )
                             })}
                         </ul>
+                        {(encontrosDaSemana.get(k) ?? []).length > 0 && (
+                            <ul className="space-y-3">{encontrosDaSemana.get(k)!.map((e) => <CartaoEncontro key={e.id} e={e} />)}</ul>
+                        )}
                     </section>
                 ))}
             </main>

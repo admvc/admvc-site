@@ -15,8 +15,8 @@ export const dynamic = 'force-dynamic'
 
 export default async function ProdutosPage() {
     const session = await getSessionData()
-    if (!session) redirect('/membros/login?error=Sessao expirada')
-    if (!isAdmin(session.role)) redirect('/membros/dashboard?error=Acesso restrito')
+    if (!session) redirect(`/membros/login?error=${encodeURIComponent('Sessao expirada')}`)
+    if (!isAdmin(session.role)) redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso restrito')}`)
 
     const db = await getDb()
 

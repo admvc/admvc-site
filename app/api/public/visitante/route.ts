@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
 import prisma from '@/lib/prisma'
 import { enviarEmailNotificacaoEquipa } from '@/lib/mail'
 import { sendPushToDepartamento } from '@/lib/web-push'
@@ -16,6 +16,14 @@ export async function POST(request: Request) {
 
         const body = await request.json()
         const { nome, telefone, pedido_oracao, consentimento, congregacao: congregacaoPedida } = body
+        // De onde veio: QR das boas-vindas (portal) ou site (www). Outro valor = site.
+        const origem = body.origem === 'QR' ? 'QR' : 'SITE'
+
+        // Armadilha para robôs: campo escondido que uma pessoa nunca preenche. Responde "ok" e não grava.
+        if (typeof body.empresa === 'string' && body.empresa.trim()) {
+            console.warn('[VISITANTE-API] Ignorado (campo escondido preenchido)')
+            return NextResponse.json({ ok: true })
+        }
 
         // RGPD: sem consentimento explicito nao se guarda nada
         if (consentimento !== true) {
@@ -39,6 +47,13 @@ export async function POST(request: Request) {
                 { status: 400 }
             )
         }
+        // O mesmo telefone no máximo 3 vezes por dia (evita encher a lista)
+        if (!(await rateLimit(`visitante-tel:${String(telefone).replace(/\D/g, '')}`, 3, 24 * 60 * 60 * 1000)).success) {
+            return NextResponse.json({ error: 'Este número já se registou hoje. Obrigado!' }, { status: 429 })
+        }
+        if (String(nome).length > 120 || (typeof pedido_oracao === 'string' && pedido_oracao.length > 2000)) {
+            return NextResponse.json({ error: 'Texto demasiado longo.' }, { status: 400 })
+        }
 
         // Resolver tenant — prioridade para tenant activo
         const tenant = await prisma.tenant.findFirst({
@@ -60,7 +75,7 @@ export async function POST(request: Request) {
         const visita = eContacto
             ? null
             : await registarVisita(prisma, {
-                tenantId: tenant.id, nome, telefone, pedido: pedido_oracao,
+                tenantId: tenant.id, nome, telefone, pedido: pedido_oracao, origem,
                 // QR da congregação (/boasvindas?c=montemor): nome curto ou número; desconhecida = sem
                 congregacao: congregacaoPedida
                     ? acharCongregacao(await prisma.congregacao.findMany({ where: { tenant_id: tenant.id }, select: { id: true, nome: true } }), congregacaoPedida)
@@ -78,13 +93,13 @@ export async function POST(request: Request) {
         if (visita?.repetido) return NextResponse.json({ ok: true, id: visitante.id })
         const voltou = visita && !visita.novo ? visita : null
 
-        // Email para equipa (log em caso de falha)
-        enviarEmailNotificacaoEquipa({ nome, telefone, pedido: pedido_oracao, visitas: voltou?.visitas }).catch((err) => {
+        // Email para equipa (log em caso de falha); after: no Vercel a função não acaba antes de sair
+        after(() => enviarEmailNotificacaoEquipa({ nome, telefone, pedido: pedido_oracao, visitas: voltou?.visitas }).catch((err) => {
             console.error('[VISITANTE-API] Falha ao enviar email de notificação:', err)
-        })
+        }))
 
         // Push notification para membros do acolhimento
-        sendPushToDepartamento(
+        after(() => sendPushToDepartamento(
             ['acolhimento', 'integração', 'Acolhimento'],
             {
                 title: voltou ? 'Um visitante voltou!' : 'Novo Visitante!',
@@ -96,7 +111,7 @@ export async function POST(request: Request) {
             }
         ).catch((err) => {
             console.error('[VISITANTE-API] Falha ao enviar push notification:', err)
-        })
+        }))
 
         return NextResponse.json({ ok: true, id: visitante.id })
     } catch (error: any) {

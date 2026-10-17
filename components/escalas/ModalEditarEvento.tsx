@@ -13,7 +13,7 @@ export default function ModalEditarEvento({ evento }: { evento: any }) {
     // Preparar as datas por defeito para os inputs
     const dataObj = new Date(evento.data);
     const defaultData = dataObj.toISOString().split('T')[0];
-    const defaultHora = dataObj.toTimeString().split(' ')[0].substring(0, 5);
+    const defaultHora = dataObj.toISOString().slice(11, 16) // hora gravada em UTC (ver components/app/datas.ts)
 
     async function handleAction(formData: FormData) {
         setIsPending(true)

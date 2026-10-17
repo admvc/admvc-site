@@ -228,11 +228,11 @@ function compromissoToEvent(compromisso: Compromisso): GoogleCalendarEvent {
         summary: compromisso.titulo,
         description: descriptionParts.join('\n'),
         start: {
-            dateTime: dataInicio.toISOString(),
+            dateTime: dataInicio.toISOString().slice(0, 19), // hora de Lisboa gravada em UTC: sem o Z, o Google lê-a em TIMEZONE
             timeZone: TIMEZONE,
         },
         end: {
-            dateTime: dataFim.toISOString(),
+            dateTime: dataFim.toISOString().slice(0, 19),
             timeZone: TIMEZONE,
         },
         reminders: {

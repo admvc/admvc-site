@@ -34,7 +34,7 @@ export async function podeGerirCursos(membroId: number, role: string): Promise<b
     if (membro.departamentos_liderados.length > 0) return true
 
     // Membro da Diaconia com função Discipulado ou Pastor
-    const diaconiaterms = ['diaconia', 'diácono', 'diacono', 'diaconato']
+    const diaconiaterms = ['diaconia', 'diácono', 'diacono', 'diaconato', 'obreiro']
     const funcoesPermitidas = ['discipulado', 'pastor']
 
     for (const min of membro.ministerios) {
@@ -79,7 +79,7 @@ export async function podeGerirSermoes(membroId: number, role: string): Promise<
 
     if (!membro) return false
 
-    const diaconiaterms = ['diaconia', 'diácono', 'diacono', 'diaconato']
+    const diaconiaterms = ['diaconia', 'diácono', 'diacono', 'diaconato', 'obreiro']
     const funcoesPermitidas = ['discipulado', 'pastor']
 
     for (const min of membro.ministerios) {

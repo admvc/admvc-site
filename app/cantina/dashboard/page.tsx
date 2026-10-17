@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function DashboardCantinaPage() {
     const session = await getSessionData()
-    if (!session) redirect('/membros/login?error=Sessao expirada')
+    if (!session) redirect(`/membros/login?error=${encodeURIComponent('Sessao expirada')}`)
 
     const db = await getDb()
 
@@ -26,7 +26,7 @@ export default async function DashboardCantinaPage() {
         if (lideraCantina) temPermissao = true
     }
 
-    if (!temPermissao) redirect('/membros/dashboard?error=Acesso restrito')
+    if (!temPermissao) redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso restrito')}`)
 
     // ── Date boundaries ──────────────────────────────────────────────
     const now = new Date()

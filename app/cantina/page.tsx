@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic'
 export default async function GestaoCantinaPage() {
     const db = await getDb()
     const session = await getSessionData()
-    if (!session) redirect('/membros/login?error=Sessao expirada')
+    if (!session) redirect(`/membros/login?error=${encodeURIComponent('Sessao expirada')}`)
 
     const membroLogado = await db.membro.findUnique({
         where: { id: session.membroId },
@@ -28,7 +28,7 @@ export default async function GestaoCantinaPage() {
     })
 
     if (!isAdmin && !isEquipaCantina) {
-        redirect('/membros/dashboard?error=Acesso restrito a equipa da Cantina.')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso restrito a equipa da Cantina.')}`)
     }
 
     // Stats rapidos

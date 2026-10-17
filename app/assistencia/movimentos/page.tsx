@@ -24,7 +24,7 @@ const TIPO_LABELS: Record<string, string> = {
 
 export default async function MovimentosPage() {
     const session = await getSessionData()
-    if (!session) redirect('/membros/login?error=Sessao expirada')
+    if (!session) redirect(`/membros/login?error=${encodeURIComponent('Sessao expirada')}`)
 
     const db = await getDb()
 
@@ -49,7 +49,7 @@ export default async function MovimentosPage() {
     )
 
     if (!isAdmin && !isFinance && !isEquipaSocial && !isLiderSocial) {
-        redirect('/membros/dashboard?error=Acesso restrito a equipa de Assistencia Social.')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso restrito a equipa de Assistencia Social.')}`)
     }
 
     // Itens para o formulario
@@ -98,7 +98,7 @@ export default async function MovimentosPage() {
                             </p>
                         </div>
                     ) : (
-                        <FormMovimento itens={itens} />
+                        <FormMovimento itens={itens} familias={await db.familiaAssistencia.findMany({ where: { ativo: true }, select: { id: true, nome: true }, orderBy: { nome: 'asc' } })} />
                     )}
                 </div>
             </section>

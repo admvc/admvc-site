@@ -169,6 +169,24 @@ export default function VisualizarMembroClient({ membro, cantinaAtiva = true }: 
                 </div>
             </div>
 
+            {/* FAZ PARTE DE: sempre à vista (antes só no separador "Serviço") */}
+            {(departamentos.length > 0 || todosGrupos.length > 0) && (
+                <section aria-label="Faz parte de" className="flex flex-wrap items-center gap-2 rounded-2xl border border-soft bg-bg2 px-4 py-3">
+                    <span className="text-[13px] font-bold uppercase tracking-wide text-muted mr-1">Faz parte de</span>
+                    {departamentos.map((d: any) => (
+                        <a key={`d${d.id}`} href={`/membros/gestao/equipa/${d.id}`} className="rounded-full border border-soft bg-bg px-3 py-1 text-sm hover:border-figueira">
+                            <span className="font-semibold">{d.nome}</span>{d.funcao && d.funcao !== 'Membro' ? <span className="text-muted"> · {d.funcao}</span> : null}
+                            {d.lider_id === membro.id && <span className="text-figueira"> · Líder</span>}
+                        </a>
+                    ))}
+                    {todosGrupos.map((g: any) => (
+                        <a key={`g${g.id}${g.isLider ? 'l' : ''}`} href={`/grupos/gestao/${g.id}`} className="rounded-full border border-blue-500/30 bg-blue-500/5 px-3 py-1 text-sm hover:border-blue-500">
+                            <span className="font-semibold">{g.nome}</span>{g.isLider && <span className="text-blue-600"> · Líder</span>}
+                        </a>
+                    ))}
+                </section>
+            )}
+
             {/* NAVEGAÇÃO POR ABAS */}
             <nav className="flex flex-wrap gap-1.5 border-b border-soft pb-3 sticky top-0 bg-bg/90 backdrop-blur-md z-30 pt-3">
                 {abas.map((aba) => (

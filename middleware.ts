@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getModuloDaRota, moduloIncluidoNoPlano } from '@/lib/planos'
-import { COOKIE_MEMBRO, COOKIE_SA, lerSessao } from '@/lib/sessao-core'
+import { assinarSessao, COOKIE_MEMBRO, COOKIE_SA, lerSessao, type PayloadMembro } from '@/lib/sessao-core'
 
 // Cabecalhos de identidade: so o middleware os pode pôr. Os que chegam do
 // pedido sao apagados sempre. O servidor nao confia neles (usa a sessao
@@ -25,6 +25,23 @@ function seguir(request: NextRequest, h: Headers, apagarCookie?: string) {
 function irPara(destino: string, request: NextRequest, apagarCookie?: string) {
     const res = NextResponse.redirect(new URL(destino, request.url))
     if (apagarCookie) res.cookies.delete(apagarCookie)
+    return res
+}
+
+// Sessão do membro "sempre ligada" (app no telemóvel): cada visita volta a dar-lhe 30 dias.
+// Só se renova uma vez por dia. Mudar a senha continua a terminar todas as sessões (pw).
+const RENOVAR_SEGUNDOS = 60 * 60 * 24 * 30
+
+async function renovarSessao(session: PayloadMembro, res: NextResponse) {
+    if (session.imp) return res // entrada do Super Admin como membro: nunca se prolonga
+    const agora = Math.floor(Date.now() / 1000)
+    if (session.exp - agora > RENOVAR_SEGUNDOS - 60 * 60 * 24) return res
+    try {
+        const valor = await assinarSessao({ ...session, exp: agora + RENOVAR_SEGUNDOS })
+        res.cookies.set(COOKIE_MEMBRO, valor, {
+            httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: RENOVAR_SEGUNDOS,
+        })
+    } catch { /* sem renovar: a sessão atual continua válida até expirar */ }
     return res
 }
 
@@ -135,7 +152,7 @@ export async function middleware(request: NextRequest) {
         requestHeaders.set('x-tenant-plano', plano)
         if (congId) requestHeaders.set('x-congregation-id', congId)
 
-        return seguir(request, requestHeaders)
+        return renovarSessao(session, seguir(request, requestHeaders))
     }
 
     return seguir(request, requestHeaders, apagar)

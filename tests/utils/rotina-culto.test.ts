@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
     normalizarItens, tituloDoCargo, responsavel, horasPrevistas, duracaoTotal,
-    textoDaRotina, quandoPorExtenso, semNotas, minutosPorExtenso, ePalavra, palavraDe, repeticoes, chaveDeComparacao, type MembroRotina,
+    textoDaRotina, quandoPorExtenso, semNotas, minutosPorExtenso, ePalavra, palavraDe, repeticoes, chaveDeComparacao, type MembroRotina, tituloDoMembro,
 } from '@/lib/rotina-culto'
 
 const membros = new Map<number, MembroRotina>([
@@ -10,6 +10,15 @@ const membros = new Map<number, MembroRotina>([
     [3, { id: 3, first_name: 'Gustavo', last_name: 'Santos', church_role: 'Evangelista', gender: 'Masculino' }],
     [4, { id: 4, first_name: 'Ana', last_name: 'Silva', church_role: 'Membro', gender: 'Feminino' }],
 ])
+
+describe('tituloDoMembro', () => {
+    it('usa o cargo da lista antes do texto antigo', () => {
+        expect(tituloDoMembro({ church_role: 'Membro', gender: 'Feminino', cargos: [{ nome: 'Voluntário' }, { nome: 'Pastor(a)' }] })).toBe('Pastora')
+    })
+    it('sem cargo na lista, usa o texto antigo', () => {
+        expect(tituloDoMembro({ church_role: 'Diácono/Diaconisa', gender: 'Masculino', cargos: [] })).toBe('Diácono')
+    })
+})
 
 describe('tituloDoCargo', () => {
     it('vem do cargo, no feminino quando é o caso', () => {

@@ -38,7 +38,7 @@ export default async function AcolhimentoDashboard({ searchParams }: { searchPar
 
     const acolhimentoRole = getAcolhimentoRole(membroLogado, session.role)
     if (acolhimentoRole === 'NONE') {
-        redirect('/membros/dashboard?error=Acesso restrito.')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso restrito.')}`)
     }
 
     const isLiderOuAdmin = podeGerirEquipa(acolhimentoRole)
@@ -170,6 +170,7 @@ export default async function AcolhimentoDashboard({ searchParams }: { searchPar
         if (!origem) return null
         const map: Record<string, { icon: any; label: string }> = {
             SITE: { icon: Globe, label: 'Site' },
+            QR: { icon: MapPin, label: 'QR na igreja' },
             PRESENCIAL: { icon: MapPin, label: 'Presencial' },
             REDES_SOCIAIS: { icon: Globe, label: 'Redes' },
             INDICACAO: { icon: Users, label: 'Indicação' },
@@ -286,14 +287,14 @@ export default async function AcolhimentoDashboard({ searchParams }: { searchPar
                         {novos.map(v => {
                             const origemInfo = origemIcon(v.origem)
                             return (
-                                <div key={v.id} className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-x-4 gap-y-2 px-5 py-3 hover:bg-orange-500/5 transition-colors">
+                                <div key={v.id} className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5 hover:bg-orange-500/5 transition-colors">
                                     <div className="flex items-center gap-3 min-w-0 flex-1">
                                         <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center shrink-0">
                                             <span className="text-[13px] md:text-[14px] font-bold text-orange-600">{v.nome[0]}</span>
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2 flex-wrap">
-                                                <p className="text-[14px] font-bold uppercase text-fg truncate">{v.nome}</p>
+                                                <p className="text-[15px] font-bold text-fg line-clamp-2 break-words">{v.nome}</p>
                                                 {origemInfo && (
                                                     <span className="text-[13px] font-bold bg-blue-500/10 text-blue-600 px-1.5 py-0.5 rounded border border-blue-500/20">
                                                         {origemInfo.label}
@@ -326,10 +327,10 @@ export default async function AcolhimentoDashboard({ searchParams }: { searchPar
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-end gap-1.5 shrink-0 w-full sm:w-auto">
+                                    <div className="flex items-center justify-end gap-1.5 shrink-0">
                                         <ModalHistorico visitante={v} viewerRole={acolhimentoRole} equipa={equipa} congregacoes={congregacoes} />
                                         <a href={`https://wa.me/${v.telefone?.replace(/\D/g, '')}`} target="_blank"
-                                            className="w-10 h-10 sm:w-8 sm:h-8 bg-green-500/10 text-green-600 rounded-lg flex items-center justify-center hover:bg-green-500 hover:text-white transition-all">
+                                            aria-label={`WhatsApp de ${v.nome}`} rel="noopener noreferrer" className="w-10 h-10 sm:w-8 sm:h-8 bg-green-500/10 text-green-600 rounded-lg flex items-center justify-center hover:bg-green-500 hover:text-white transition-all">
                                             <MessageCircle size={16} className="sm:hidden" />
                                             <MessageCircle size={14} className="hidden sm:block" />
                                         </a>
@@ -343,7 +344,7 @@ export default async function AcolhimentoDashboard({ searchParams }: { searchPar
             )}
 
             {/* EM ACOMPANHAMENTO */}
-            <SeccaoColapsavel key={`${filtrado}`} defaultOpen={filtrado}
+            <SeccaoColapsavel key={`acompanhamento-${filtrado}`} defaultOpen={filtrado}
                 titulo="Em Acompanhamento"
                 icon={<Clock size={14} className="text-figueira" />}
                 badge={<span className="text-[13px] md:text-[14px] font-bold bg-soft px-2 py-0.5 rounded text-muted">{emContacto.length}</span>}
@@ -360,14 +361,14 @@ export default async function AcolhimentoDashboard({ searchParams }: { searchPar
                             const isSite = v.pedido_oracao?.includes('SITE') || v.pedido_oracao?.includes('CONTACTO') || v.origem === 'SITE'
 
                             return (
-                                <div key={v.id} className={`flex flex-wrap sm:flex-nowrap items-center justify-between gap-x-4 gap-y-2 px-5 py-3.5 transition-colors ${isAtrasado ? 'bg-red-500/5' : 'hover:bg-soft/10'}`}>
+                                <div key={v.id} className={`flex items-center justify-between gap-3 px-4 py-3 sm:px-5.5 transition-colors ${isAtrasado ? 'bg-red-500/5' : 'hover:bg-soft/10'}`}>
                                     <div className="flex items-center gap-3 min-w-0 flex-1">
                                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isAtrasado ? 'bg-red-500/10' : 'bg-figueira/10'}`}>
                                             <span className={`text-[13px] md:text-[14px] font-bold ${isAtrasado ? 'text-red-500' : 'text-figueira'}`}>{v.nome[0]}</span>
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <div className="flex items-center gap-2 flex-wrap">
-                                                <p className="text-[14px] font-bold uppercase text-fg truncate">{v.nome}</p>
+                                                <p className="text-[15px] font-bold text-fg line-clamp-2 break-words">{v.nome}</p>
                                                 {isSite && (
                                                     <span className="text-[13px] font-bold bg-blue-500/10 text-blue-600 px-1.5 py-0.5 rounded border border-blue-500/20">Site</span>
                                                 )}
@@ -402,10 +403,10 @@ export default async function AcolhimentoDashboard({ searchParams }: { searchPar
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-end gap-1.5 shrink-0 w-full sm:w-auto">
+                                    <div className="flex items-center justify-end gap-1.5 shrink-0">
                                         <ModalHistorico visitante={v} viewerRole={acolhimentoRole} equipa={equipa} congregacoes={congregacoes} />
                                         <a href={`https://wa.me/${v.telefone?.replace(/\D/g, '')}`} target="_blank"
-                                            className="w-10 h-10 sm:w-8 sm:h-8 bg-green-500/10 text-green-600 rounded-lg flex items-center justify-center hover:bg-green-500 hover:text-white transition-all">
+                                            aria-label={`WhatsApp de ${v.nome}`} rel="noopener noreferrer" className="w-10 h-10 sm:w-8 sm:h-8 bg-green-500/10 text-green-600 rounded-lg flex items-center justify-center hover:bg-green-500 hover:text-white transition-all">
                                             <MessageCircle size={16} className="sm:hidden" />
                                             <MessageCircle size={14} className="hidden sm:block" />
                                         </a>
@@ -428,14 +429,14 @@ export default async function AcolhimentoDashboard({ searchParams }: { searchPar
                     </div>
                     <div className="divide-y divide-blue-500/10">
                         {reuniaoPastor.map(v => (
-                            <div key={v.id} className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-x-4 gap-y-2 px-5 py-3.5 hover:bg-blue-500/5 transition-colors">
+                            <div key={v.id} className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5.5 hover:bg-blue-500/5 transition-colors">
                                 <div className="flex items-center gap-3 min-w-0 flex-1">
                                     <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
                                         <span className="text-[13px] md:text-[14px] font-bold text-blue-600">{v.nome[0]}</span>
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <p className="text-[14px] font-bold uppercase text-fg truncate">{v.nome}</p>
+                                            <p className="text-[15px] font-bold text-fg line-clamp-2 break-words">{v.nome}</p>
                                             {!congFiltro && v.congregacao && (
                                                 <span className="text-[13px] font-bold text-figueira bg-figueira/10 px-1.5 py-0.5 rounded">{v.congregacao.nome}</span>
                                             )}
@@ -453,10 +454,10 @@ export default async function AcolhimentoDashboard({ searchParams }: { searchPar
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center justify-end gap-1.5 shrink-0 w-full sm:w-auto">
+                                <div className="flex items-center justify-end gap-1.5 shrink-0">
                                     <ModalHistorico visitante={v} viewerRole={acolhimentoRole} equipa={equipa} congregacoes={congregacoes} />
                                     <a href={`https://wa.me/${v.telefone?.replace(/\D/g, '')}`} target="_blank"
-                                        className="w-10 h-10 sm:w-8 sm:h-8 bg-green-500/10 text-green-600 rounded-lg flex items-center justify-center hover:bg-green-500 hover:text-white transition-all">
+                                        aria-label={`WhatsApp de ${v.nome}`} rel="noopener noreferrer" className="w-10 h-10 sm:w-8 sm:h-8 bg-green-500/10 text-green-600 rounded-lg flex items-center justify-center hover:bg-green-500 hover:text-white transition-all">
                                         <MessageCircle size={16} className="sm:hidden" />
                                         <MessageCircle size={14} className="hidden sm:block" />
                                     </a>
@@ -469,11 +470,11 @@ export default async function AcolhimentoDashboard({ searchParams }: { searchPar
             )}
 
             {/* CONSOLIDADOS */}
-            <SeccaoColapsavel key={`${filtrado}`} defaultOpen={filtrado}
+            <SeccaoColapsavel key={`consolidados-${filtrado}`} defaultOpen={filtrado}
                 titulo="Consolidados"
                 icon={<CheckCircle2 size={14} className="text-emerald-500" />}
                 badge={<span className="text-[13px] md:text-[14px] font-bold bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded">{totalConsolidados}</span>}
-                headerExtra={<ModalListaConsolidados consolidados={consolidados} />}
+                headerExtra={consolidados.length > 0 ? <ModalListaConsolidados consolidados={consolidados} /> : undefined}
             >
                 {consolidados.length > 0 ? (
                     <div className="px-5 py-4">
@@ -502,26 +503,26 @@ export default async function AcolhimentoDashboard({ searchParams }: { searchPar
 
             {/* SAIDAS */}
             {saidas.length > 0 && (
-                <SeccaoColapsavel key={`${filtrado}`} defaultOpen={filtrado}
+                <SeccaoColapsavel key={`outros-${filtrado}`} defaultOpen={filtrado}
                     titulo="Saídas"
                     icon={<UserX size={14} className="text-red-400" />}
                     badge={<span className="text-[13px] md:text-[14px] font-bold bg-red-500/10 text-red-500 px-2 py-0.5 rounded">{saidas.length}</span>}
                 >
                     <div className="divide-y divide-soft">
                         {saidas.slice(0, 10).map(v => (
-                            <div key={v.id} className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-x-4 gap-y-2 px-5 py-3 hover:bg-soft/10 transition-colors">
+                            <div key={v.id} className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5 hover:bg-soft/10 transition-colors">
                                 <div className="flex items-center gap-3 min-w-0 flex-1">
                                     <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
                                         <span className="text-[13px] md:text-[14px] font-bold text-red-400">{v.nome[0]}</span>
                                     </div>
                                     <div className="min-w-0">
-                                        <p className="text-[14px] font-bold uppercase text-fg truncate">{v.nome}</p>
+                                        <p className="text-[15px] font-bold text-fg line-clamp-2 break-words">{v.nome}</p>
                                         <div className="flex items-center gap-2 mt-0.5">
                                             <VisitantePipelineBar status={v.status} />
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center justify-end gap-1.5 shrink-0 w-full sm:w-auto">
+                                <div className="flex items-center justify-end gap-1.5 shrink-0">
                                     <ModalHistorico visitante={v} viewerRole={acolhimentoRole} equipa={equipa} congregacoes={congregacoes} />
                                     <ModalAcompanhamento visitante={v} />
                                 </div>

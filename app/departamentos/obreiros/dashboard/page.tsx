@@ -30,7 +30,7 @@ export default async function ObreirosDashboard() {
 
     const obreirosRole = getObreirosRole(membroLogado, session.role)
     if (obreirosRole === 'NONE') {
-        redirect('/membros/dashboard?error=Acesso restrito.')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso restrito.')}`)
     }
 
     const isLiderOuAdmin = podeGerirObreiros(obreirosRole)

@@ -1,7 +1,7 @@
 // app/admin/escalas/page.tsx
 import { getDb, getTenantIdFromHeaders } from '@/lib/db'
 import { getSessionData } from '@/lib/auth-utils'
-import { Settings2, Users, ArrowRight } from 'lucide-react'
+import { Settings2, ArrowRight } from 'lucide-react'
 import MontadorEscalas from '@/components/escalas/MontadorEscalas'
 import ListaEscalados from '@/components/escalas/ListaEscalados'
 import { getTipoEvento } from '@/lib/evento-tipos'
@@ -41,8 +41,8 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
         }),
         db.departamento.findMany({
             where: congFilter
-                ? { OR: [{ congregacaoId: congFilter }, { is_global: true }] }
-                : undefined,
+                ? { tem_escala: true, OR: [{ congregacaoId: congFilter }, { is_global: true }] }
+                : { tem_escala: true },
             select: { id: true, nome: true, congregacaoId: true, is_global: true, funcoes: { select: { id: true, nome: true }, orderBy: { nome: 'asc' as const } } },
             orderBy: { nome: 'asc' }
         }),
@@ -76,7 +76,7 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
         ),
     }))
 
-    const hoje = new Date(new Date().setHours(0, 0, 0, 0))
+    const hoje = new Date(new Date().setUTCHours(0, 0, 0, 0))
     const eventosFuturos = eventos.filter(e => new Date(e.data) >= hoje)
 
     // KPIs rapidos
@@ -86,117 +86,91 @@ export default async function EscalasPage({ searchParams }: { searchParams: Prom
         (sum, ev) => sum + ev.escalas.filter((e: any) => !e.confirmado && !e.motivo_recusa).length, 0
     )
 
+    const selecionado = eventosFuturos.find(e => String(e.id) === params.evento) ?? eventosFuturos[0]
+    const contar = (ev: any) => ({
+        sim: ev.escalas.filter((e: any) => e.confirmado).length,
+        nao: ev.escalas.filter((e: any) => !e.confirmado && e.motivo_recusa).length,
+        falta: ev.escalas.filter((e: any) => !e.confirmado && !e.motivo_recusa).length,
+    })
+    const diaCurto = (d: Date) => new Date(d).toLocaleDateString('pt-PT', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).replace(/\./g, '')
+    const horaDe = (d: Date) => new Date(d).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })
+    const comCong = (q: string) => params.congregacao ? `${q}&congregacao=${params.congregacao}` : q
+
     return (
-        <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6 animate-in fade-in duration-700 pb-20">
+        <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6 pb-20">
             <Breadcrumbs items={[{ label: 'Escalas' }]} />
 
-            <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <header className="flex flex-wrap items-end justify-between gap-4">
                 <div className="space-y-1">
-                    <h1 className="text-3xl font-bold text-fg">Gestão de Escalas</h1>
-                    <p className="text-xs text-muted">Atribuir voluntários aos eventos agendados.</p>
+                    <h1 className="text-3xl font-bold text-fg">Escalas</h1>
+                    <p className="text-sm text-muted">
+                        {totalEventos} culto{totalEventos !== 1 ? 's' : ''} marcado{totalEventos !== 1 ? 's' : ''} · {totalVoluntarios} pessoas escaladas
+                        {pendentesConfirmacao > 0 && <> · <span className="font-semibold text-orange-600">{pendentesConfirmacao} por confirmar</span></>}
+                    </p>
                 </div>
-                <Link
-                    href="/admin/eventos"
-                    className="flex items-center gap-2 text-[14px] md:text-xs font-bold uppercase tracking-wide text-figueira hover:text-figueira/70 transition-all"
-                >
+                <Link href="/admin/eventos" className="flex items-center gap-2 text-sm font-semibold text-figueira hover:underline">
                     Gerir eventos <ArrowRight size={14} />
                 </Link>
             </header>
 
-            {/* KPIs */}
-            <div className="grid grid-cols-3 gap-3">
-                {[
-                    { label: 'Próximos Eventos', value: totalEventos, cor: 'text-fg' },
-                    { label: 'Voluntários Escalados', value: totalVoluntarios, cor: 'text-blue-600' },
-                    { label: 'Pendentes Confirmação', value: pendentesConfirmacao, cor: pendentesConfirmacao > 0 ? 'text-orange-600' : 'text-emerald-600' },
-                ].map(k => (
-                    <div key={k.label} className="bg-bg2 border border-soft rounded-2xl px-5 py-4">
-                        <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted">{k.label}</p>
-                        <p className={`text-2xl font-bold ${k.cor}`}>{k.value}</p>
-                    </div>
-                ))}
-            </div>
+            {eventosFuturos.length === 0 ? (
+                <p className="text-sm text-muted">Nenhum culto marcado. <Link href="/admin/eventos" className="text-figueira underline">Criar evento</Link></p>
+            ) : (
+                <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
+                    {/* PRÓXIMOS CULTOS */}
+                    <nav aria-label="Próximos cultos" className="space-y-2 lg:max-h-[calc(100dvh-10rem)] lg:overflow-y-auto lg:pr-1">
+                        {eventosFuturos.slice(0, 30).map((ev: any) => {
+                            const tipoInfo = getTipoEvento(ev.tipo || 'CULTO_REGULAR')
+                            const c = contar(ev)
+                            const ativo = selecionado?.id === ev.id
+                            return (
+                                <Link key={ev.id} href={comCong(`/admin/escalas?evento=${ev.id}`)} aria-current={ativo ? 'page' : undefined}
+                                    className={`block rounded-xl border px-4 py-3 transition-colors ${ativo ? 'border-figueira bg-figueira/5' : 'border-soft bg-bg2 hover:border-fg/30'}`}>
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <span className={`h-2 w-2 shrink-0 rounded-full ${tipoInfo.cor}`} aria-hidden />
+                                        <span className="font-semibold capitalize text-fg">{diaCurto(ev.data)}</span>
+                                        <span className="text-muted">{horaDe(ev.data)}</span>
+                                    </div>
+                                    <p className="mt-0.5 truncate text-[15px] font-medium text-fg">{ev.nome}</p>
+                                    <p className="mt-1 text-[13px] text-muted">
+                                        {ev.escalas.length === 0 ? 'Ninguém escalado' : (
+                                            <>
+                                                <span className="text-emerald-600">{c.sim} confirmados</span>
+                                                {c.falta > 0 && <> · <span className="text-orange-600">{c.falta} por confirmar</span></>}
+                                                {c.nao > 0 && <> · <span className="text-red-600">{c.nao} não podem</span></>}
+                                            </>
+                                        )}
+                                    </p>
+                                </Link>
+                            )
+                        })}
+                    </nav>
 
-            {/* EVENT SELECTOR - Upcoming events with tipo badge */}
-            <section className="bg-bg2 border border-soft rounded-2xl overflow-hidden shadow-sm">
-                <div className="flex items-center gap-3 px-6 py-4 border-b border-soft">
-                    <Settings2 size={14} className="text-figueira" />
-                    <h2 className="text-[14px] md:text-xs font-bold uppercase tracking-wide text-fg">Eventos Próximos</h2>
-                </div>
-                <div className="p-4 flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar">
-                    {eventosFuturos.length === 0 && (
-                        <p className="text-xs text-muted font-bold px-2">Nenhum evento agendado. <Link href="/admin/eventos" className="text-figueira underline">Criar evento</Link></p>
-                    )}
-                    {eventosFuturos.slice(0, 20).map((ev: any) => {
-                        const tipoInfo = getTipoEvento(ev.tipo || 'CULTO_REGULAR')
-                        const d = new Date(ev.data)
-                        const isSelected = params.evento === String(ev.id)
-                        return (
-                            <Link
-                                key={ev.id}
-                                href={`/admin/escalas?evento=${ev.id}`}
-                                className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-[9px] md:text-[11px] font-bold transition-all ${
-                                    isSelected
-                                        ? 'bg-figueira/10 border-figueira text-figueira'
-                                        : 'bg-bg border-soft text-muted hover:border-fg/30'
-                                }`}
-                            >
-                                <span className={`w-1.5 h-1.5 rounded-full ${tipoInfo.cor}`} />
-                                <span className="font-bold">{d.getDate()}/{d.getMonth() + 1}</span>
-                                <span className="truncate max-w-[120px]">{ev.nome}</span>
-                                <span className={`text-[13px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded border ${tipoInfo.corFundo} ${tipoInfo.corTexto} ${tipoInfo.corBorda}`}>
-                                    {tipoInfo.label}
-                                </span>
-                            </Link>
-                        )
-                    })}
-                </div>
-            </section>
-
-            {/* MONTADOR — FULL WIDTH */}
-            <section className="bg-bg2 border border-soft rounded-2xl overflow-hidden shadow-sm relative">
-                <div className="absolute top-0 left-0 w-full h-1 bg-blue-500" />
-                <div className="flex items-center gap-4 px-6 py-5 border-b border-soft">
-                    <div className="w-10 h-10 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
-                        <Settings2 size={18} />
-                    </div>
-                    <div>
-                        <h2 className="text-sm font-bold text-fg leading-none">Atribuir Escala</h2>
-                        <p className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide text-muted mt-1">
-                            Selecionar evento, departamento, membro e função
-                        </p>
+                    {/* O CULTO ESCOLHIDO */}
+                    <div className="min-w-0 space-y-4">
+                        {selecionado && selecionado.escalas.length === 0 ? (
+                            <div className="rounded-2xl border border-dashed border-soft px-6 py-8 text-center">
+                                <p className="font-semibold text-fg">{selecionado.nome} · <span className="capitalize">{diaCurto(selecionado.data)}</span></p>
+                                <p className="mt-1 text-sm text-muted">Ainda ninguém escalado neste culto.</p>
+                            </div>
+                        ) : <ListaEscalados
+                            eventos={selecionado ? [selecionado] : []}
+                            isAdmin={true}
+                            membros={membrosFormatados}
+                            congregacoes={congregacoes}
+                            podeEditarRepertorio={true}
+                        />}
+                        <details className="rounded-2xl border border-soft bg-bg2" open={selecionado?.escalas.length === 0}>
+                            <summary className="flex cursor-pointer items-center gap-2 px-5 py-4 text-sm font-semibold text-fg">
+                                <Settings2 size={16} className="text-figueira" /> Escalar alguém (qualquer culto e ministério)
+                            </summary>
+                            <div className="border-t border-soft p-5">
+                                <MontadorEscalas eventos={eventosFuturos} departamentos={departamentos} membros={membrosFormatados} />
+                            </div>
+                        </details>
                     </div>
                 </div>
-                <div className="p-6">
-                    <MontadorEscalas
-                        eventos={eventosFuturos}
-                        departamentos={departamentos}
-                        membros={membrosFormatados}
-                    />
-                </div>
-            </section>
-
-            {/* LISTA DE ESCALADOS */}
-            <section className="space-y-4">
-                <div className="flex items-center gap-3 px-1">
-                    <Users size={15} className="text-emerald-500" />
-                    <h2 className="text-sm font-bold text-fg">Quadro Geral de Escalas</h2>
-                    {totalEventos > 0 && (
-                        <span className="text-[13px] md:text-[14px] font-bold uppercase tracking-wide bg-soft border border-soft px-2 py-1 rounded-lg text-muted">
-                            {totalEventos} evento{totalEventos !== 1 ? 's' : ''}
-                        </span>
-                    )}
-                </div>
-                <div className="animate-in slide-in-from-bottom-4 duration-500">
-                    <ListaEscalados
-                        eventos={eventosFuturos}
-                        isAdmin={true}
-                        membros={membrosFormatados}
-                        congregacoes={congregacoes}
-                        podeEditarRepertorio={true}
-                    />
-                </div>
-            </section>
+            )}
         </main>
     )
 }

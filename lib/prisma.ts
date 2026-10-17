@@ -71,7 +71,7 @@ const PROTECTED_MODELS = [
     // Faltavam (tinham tenant_id mas o cliente nao os filtrava):
     'Sermao', 'EscolaBiblica', 'CursoEBD', 'TurmaEBD', 'MatriculaEBD',
     'AtividadeEBD', 'NotaEBD', 'InteresseCurso',
-    'AuditLog', 'BoleiaTracking', 'DespesaCantina', 'TipoCesta', 'EntregaCesta',
+    'AuditLog', 'BoleiaTracking', 'DespesaCantina', 'TipoCesta', 'EntregaCesta', 'FamiliaAssistencia', 'AgendaDepartamento',
     'EventoInscricao', 'Inscricao',
     // Fora de proposito: AvisoPlataforma e PlanoHistorico (da plataforma, nao de uma igreja)
 ]

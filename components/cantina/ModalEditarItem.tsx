@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { X, Save, Loader2, Image as ImageIcon, Plus, Edit3, Camera, CheckCircle2 } from 'lucide-react'
 import { salvarItemLoyverseAction } from '@/actions/despensa-actions'
 import { useToast } from '@/components/ui/ConfirmDialog'
+import { reduzirImagensDoForm } from '@/lib/reduzir-imagem'
 
 export default function ModalEditarItem({ item, categorias }: { item?: any, categorias: any[] }) {
     const toast = useToast()
@@ -31,6 +32,7 @@ export default function ModalEditarItem({ item, categorias }: { item?: any, cate
 
     async function handleSubmit(formData: FormData) {
         setLoading(true);
+        await reduzirImagensDoForm(formData);
         setSucesso(false);
 
         const res = await salvarItemLoyverseAction(formData);

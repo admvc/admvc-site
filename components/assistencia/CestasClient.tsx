@@ -21,9 +21,11 @@ interface Props {
     itensStock: ItemStock[]
     entregas: any[]
     podeGerir: boolean
+    familias?: { id: number; nome: string }[]
 }
 
-export default function CestasClient({ tiposCesta, itensStock, entregas, podeGerir }: Props) {
+export default function CestasClient({ tiposCesta, itensStock, entregas, podeGerir, familias = [] }: Props) {
+    const [familiaId, setFamiliaId] = useState('')
     const confirmar = useConfirm()
     const toast = useToast()
     const router = useRouter()
@@ -79,10 +81,10 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
     async function handleMontarCesta() {
         if (!montarId || !destinatario.trim()) return
         setLoading(true)
-        const res = await montarCesta(montarId, destinatario, obsEntrega)
+        const res = await montarCesta(montarId, destinatario, obsEntrega, Number(familiaId) || null)
         if (res.ok) {
             toast('Cesta montada e entregue com sucesso!', 'sucesso')
-            setMontarId(null); setDestinatario(''); setObsEntrega('')
+            setMontarId(null); setDestinatario(''); setObsEntrega(''); setFamiliaId('')
             router.refresh()
         } else toast(res.error || 'Erro', 'erro')
         setLoading(false)
@@ -227,6 +229,11 @@ export default function CestasClient({ tiposCesta, itensStock, entregas, podeGer
                                     {isMontando && (
                                         <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
                                             <p className="text-[13px] font-bold uppercase tracking-wide text-emerald-600">Entregar Cesta</p>
+<select value={familiaId} onChange={e => { setFamiliaId(e.target.value); const f = familias.find(x => String(x.id) === e.target.value); if (f) setDestinatario(f.nome) }}
+                                                className="w-full bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs font-bold text-fg focus:border-emerald-500 outline-none" aria-label="Família registada">
+                                                <option value="">Família registada (opcional)…</option>
+                                                {familias.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}
+                                            </select>
                                             <input value={destinatario} onChange={e => setDestinatario(e.target.value)}
                                                 placeholder="Nome da família / destinatario *"
                                                 className="w-full bg-bg border border-soft rounded-xl px-4 py-2.5 text-xs font-bold text-fg focus:border-emerald-500 outline-none" />

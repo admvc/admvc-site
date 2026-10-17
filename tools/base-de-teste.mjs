@@ -140,7 +140,8 @@ for (const letra of ['a', 'b']) {
     }
 
     // Tres cultos: domingo (com escala do USER por confirmar), quarta e o domingo seguinte
-    const diaHora = (dias, h) => { const d = new Date(hoje.getTime() + dias * 86400000); d.setHours(h, 0, 0, 0); return d }
+    // hora de Lisboa gravada em UTC (docs/BASE-DE-DADOS.md)
+    const diaHora = (dias, h) => { const d = new Date(hoje.getTime() + dias * 86400000); d.setUTCHours(h, 0, 0, 0); return d }
     // Proximo domingo (nunca hoje) e a quarta a seguir: datas reais de culto
     const domingo = ((7 - hoje.getDay()) % 7) || 7
     const quarta = domingo + 3

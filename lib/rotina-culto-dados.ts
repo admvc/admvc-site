@@ -7,7 +7,7 @@ import { pregacoesRecentes } from '@/lib/pregacoes'
 
 type Sessao = { membroId: number; role: string; tenantId: number; congregacaoId?: number }
 
-const CAMPOS_MEMBRO = { id: true, first_name: true, last_name: true, church_role: true, gender: true } as const
+const CAMPOS_MEMBRO = { id: true, first_name: true, last_name: true, church_role: true, gender: true, cargos: { select: { nome: true } } } as const
 
 /**
  * Quem altera a rotina: os administradores e os líderes da Diaconia (como a

@@ -16,6 +16,7 @@ import {
     HeartHandshake, XCircle
 } from 'lucide-react'
 import { alternarPermissaoEscala, removerFuncaoDoMembro, removerMembroTotal } from '@/actions/admin-actions'
+import { reduzirImagem } from '@/lib/reduzir-imagem'
 
 export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congregacoes = [], onClose }: any) {
     const confirmar = useConfirm()
@@ -186,6 +187,7 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                             <div className="space-y-3">
                                 <p className="text-[13px] font-bold uppercase tracking-wide text-muted flex items-center gap-2">
                                     <Users size={12} /> Voluntários <span className="bg-soft px-1.5 py-0.5 rounded text-[13px]">{listaIntegrantesAgrupados.length}</span>
+                                    <a href={`/membros/gestao/equipa/${depto.id}`} className="ml-auto normal-case tracking-normal text-figueira hover:underline">Editar funções de cada pessoa →</a>
                                 </p>
                                 {listaIntegrantesAgrupados.map((grupo: any) => (
                                     <div key={grupo.membro.id} className={`flex items-center justify-between gap-3 p-3 rounded-xl border transition-all ${grupo.membro.id === depto.lider_id ? 'border-figueira/30 bg-figueira/5' : 'bg-bg2 border-soft'}`}>
@@ -328,6 +330,15 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                 <textarea name="descricao" defaultValue={depto.descricao} rows={3} className="w-full bg-bg border border-soft px-3 py-2.5 rounded-xl text-sm font-bold focus:border-figueira outline-none resize-none" />
                             </div>
 
+                            {/* COM ESCALA (ministério) ou SEM (grupo de apoio: Acolhimento, Cantina...) */}
+                            <label className="flex items-start gap-3 rounded-xl border border-soft bg-bg p-3 cursor-pointer">
+                                <input type="checkbox" name="tem_escala" defaultChecked={depto.tem_escala !== false} className="mt-0.5 h-4 w-4 accent-figueira" />
+                                <span className="text-xs font-bold text-fg">
+                                    Tem escala
+                                    <span className="block text-[14px] font-medium text-muted">Sem escala, aparece aos membros como grupo de apoio (ex.: Acolhimento, Cantina, Ação Social).</span>
+                                </span>
+                            </label>
+
                             {/* MINISTERIO DE LOUVOR: tem repertorio e musicas em cada escala */}
                             <label className="flex items-start gap-3 rounded-xl border border-soft bg-bg p-3 cursor-pointer">
                                 <input type="checkbox" name="e_louvor" defaultChecked={!!depto.e_louvor} className="mt-0.5 h-4 w-4 accent-figueira" />
@@ -354,14 +365,14 @@ export default function PainelGerenciarDepto({ depto, membrosDisponiveis, congre
                                         <input
                                             ref={fotoInputRef}
                                             type="file"
-                                            accept="image/jpeg,image/png,image/webp"
+                                            accept="image/*"
                                             className="hidden"
                                             onChange={async (e) => {
                                                 const file = e.target.files?.[0]
                                                 if (!file) return
                                                 setUploadingFoto(true)
                                                 const fd = new FormData()
-                                                fd.append('file', file)
+                                                fd.append('file', await reduzirImagem(file))
                                                 const res = await uploadFotoDepartamento(depto.id, fd)
                                                 if (res?.ok && res.url) {
                                                     setFotoPreview(res.url)

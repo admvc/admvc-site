@@ -352,6 +352,8 @@ export async function atualizarDepartamento(formData: FormData) {
         const congregacaoId = congIdStr ? Number(congIdStr) : null;
         const is_global = !congregacaoId;
         const e_louvor = formData.get("e_louvor") === "on";
+        // Sem escala = grupo de apoio (Acolhimento, Cantina...): aparece em "Os meus grupos"
+        const tem_escala = formData.get("tem_escala") === "on";
 
         if (!nome) return { ok: false, error: "O nome é obrigatório." };
         // Líder e congregação têm de ser desta igreja (o cliente filtrado garante-o)
@@ -366,7 +368,7 @@ export async function atualizarDepartamento(formData: FormData) {
 
         await db.departamento.update({
             where: { id },
-            data: { nome, descricao, lider_id, congregacaoId, is_global, e_louvor }
+            data: { nome, descricao, lider_id, congregacaoId, is_global, e_louvor, tem_escala }
         });
 
         revalidatePath("/admin/configuracoes");
@@ -488,29 +490,29 @@ export async function gerarEventosLoteAction(formData: FormData) {
 
         const hoje = new Date();
         const dataFim = new Date();
-        dataFim.setMonth(hoje.getMonth() + mesesDuracao);
+        dataFim.setUTCMonth(hoje.getUTCMonth() + mesesDuracao);
 
         const eventosParaCriar = [];
         const dataAtual = new Date(hoje);
         const [horas, minutos] = horario.split(':');
-        dataAtual.setHours(Number(horas), Number(minutos), 0, 0);
+        dataAtual.setUTCHours(Number(horas), Number(minutos), 0, 0);
 
         while (dataAtual <= dataFim) {
-            if (dataAtual.getDay() === diaDaSemana) {
+            if (dataAtual.getUTCDay() === diaDaSemana) {
                 let isMatch = false;
-                const diaDoMes = dataAtual.getDate();
+                const diaDoMes = dataAtual.getUTCDate();
                 const semanaDoMes = Math.ceil(diaDoMes / 7);
 
                 if (frequencia === 'TODAS') isMatch = true;
                 else if (frequencia === 'ULTIMO') {
                     const proximaSemana = new Date(dataAtual);
-                    proximaSemana.setDate(diaDoMes + 7);
-                    if (proximaSemana.getMonth() !== dataAtual.getMonth()) isMatch = true;
+                    proximaSemana.setUTCDate(diaDoMes + 7);
+                    if (proximaSemana.getUTCMonth() !== dataAtual.getUTCMonth()) isMatch = true;
                 } else if (frequencia === semanaDoMes.toString()) isMatch = true;
 
                 if (isMatch) eventosParaCriar.push({ nome, data: new Date(dataAtual) });
             }
-            dataAtual.setDate(dataAtual.getDate() + 1);
+            dataAtual.setUTCDate(dataAtual.getUTCDate() + 1);
         }
 
         await db.evento.createMany({ data: eventosParaCriar });
@@ -536,7 +538,7 @@ export async function criarEventoUnificadoAction(formData: FormData) {
         if (tipo === 'UNICO') {
             const dataString = formData.get('dataUnica') as string;
             const dataEvento = new Date(dataString);
-            dataEvento.setHours(Number(horas), Number(minutos), 0, 0);
+            dataEvento.setUTCHours(Number(horas), Number(minutos), 0, 0);
 
             await db.evento.create({ data: { nome, data: dataEvento, tipo: tipo_evento, tenant_id: tenantId, congregacao_id } });
             revalidatePath('/escalas/admin');
@@ -550,28 +552,28 @@ export async function criarEventoUnificadoAction(formData: FormData) {
 
             const hoje = new Date();
             const dataFim = new Date();
-            dataFim.setMonth(hoje.getMonth() + mesesDuracao);
+            dataFim.setUTCMonth(hoje.getUTCMonth() + mesesDuracao);
 
             const eventosParaCriar = [];
             const dataAtual = new Date(hoje);
-            dataAtual.setHours(Number(horas), Number(minutos), 0, 0);
+            dataAtual.setUTCHours(Number(horas), Number(minutos), 0, 0);
 
             while (dataAtual <= dataFim) {
-                if (dataAtual.getDay() === diaDaSemana) {
+                if (dataAtual.getUTCDay() === diaDaSemana) {
                     let isMatch = false;
-                    const diaDoMes = dataAtual.getDate();
+                    const diaDoMes = dataAtual.getUTCDate();
                     const semanaDoMes = Math.ceil(diaDoMes / 7);
 
                     if (frequencia === 'TODAS') isMatch = true;
                     else if (frequencia === 'ULTIMO') {
                         const proximaSemana = new Date(dataAtual);
-                        proximaSemana.setDate(diaDoMes + 7);
-                        if (proximaSemana.getMonth() !== dataAtual.getMonth()) isMatch = true;
+                        proximaSemana.setUTCDate(diaDoMes + 7);
+                        if (proximaSemana.getUTCMonth() !== dataAtual.getUTCMonth()) isMatch = true;
                     } else if (frequencia === semanaDoMes.toString()) isMatch = true;
 
                     if (isMatch) eventosParaCriar.push({ nome, data: new Date(dataAtual), tipo: tipo_evento, congregacao_id });
                 }
-                dataAtual.setDate(dataAtual.getDate() + 1);
+                dataAtual.setUTCDate(dataAtual.getUTCDate() + 1);
             }
 
             await db.evento.createMany({ data: eventosParaCriar });
@@ -969,7 +971,7 @@ export async function editarEventoAction(formData: FormData) {
             return { ok: true, total: r.serie.length };
         }
 
-        const dataCompleta = new Date(`${dataStr}T${horaStr}:00`);
+        const dataCompleta = new Date(`${dataStr}T${horaStr}:00Z`); // hora de Lisboa gravada em UTC (ver components/app/datas.ts)
         await db.evento.update({
             where: { id },
             data: { nome, data: dataCompleta, descricao: descricao || null, congregacao_id }
@@ -1453,8 +1455,8 @@ export async function criarNovoMembroAction(formData: FormData) {
             console.log(`[CRIAR MEMBRO] Upload OK! URL: ${avatarUrl}`)
         } catch (err: any) {
             console.error('[CRIAR MEMBRO] ERRO no upload da foto:', err.message)
-            console.error(err)
-            // Nao bloqueia o processo — continua sem foto
+            // Antes continuava sem foto e ninguém sabia; agora diz o que se passou
+            return { ok: false, error: erroDaFoto(err) }
         }
     } else {
         console.log('[CRIAR MEMBRO] Sem foto para fazer upload.')
@@ -1566,6 +1568,13 @@ const parseDate = (val: any): Date | null => {
 }
 
 // ── EDITAR MEMBRO ─────────────────────────────────────────────────────────────
+/** Mensagem clara quando o envio de uma imagem para o Blob falha (antes perdia-se calada). */
+function erroDaFoto(err: any): string {
+    const m = String(err?.message || '')
+    if (/token|unauthori|forbidden|401|403/i.test(m)) return 'A foto não foi enviada: o armazenamento de imagens recusou o acesso (token do Blob na Vercel). O resto não foi gravado; tente de novo depois de o corrigir.'
+    return 'A foto não foi enviada (erro no armazenamento de imagens). Tente outra vez ou sem foto.'
+}
+
 export async function atualizarMembroAdmin(membroId: number, formData: FormData) {
     try {
         await requireRole(['ADMIN', 'CONGREGATION_ADMIN'])
@@ -1595,6 +1604,7 @@ export async function atualizarMembroAdmin(membroId: number, formData: FormData)
                 avatarUrl = blob.url
             } catch (err: any) {
                 console.error('[EDITAR MEMBRO] Erro no upload da foto:', err.message)
+                return { ok: false, error: erroDaFoto(err) }
             }
         }
 
@@ -1651,6 +1661,13 @@ export async function atualizarMembroAdmin(membroId: number, formData: FormData)
         }
 
         if (avatarUrl) dataUpdate.avatar_file = avatarUrl
+
+        // Cargos na igreja (só quando o formulário os traz; a lista é a da Estrutura)
+        if (formData.get('cargos_enviados')) {
+            const ids = formData.getAll('cargos').map(Number).filter(Number.isInteger)
+            const validos = ids.length ? await prismaGlobal.cargo.findMany({ where: { id: { in: ids } }, select: { id: true } }) : []
+            dataUpdate.cargos = { set: validos }
+        }
 
         // Actualiza senha apenas se preenchida
         if (novaSenha && novaSenha.trim().length > 0) {

@@ -9,7 +9,7 @@ import {
 
 type Sessao = { membroId: number; role: string; tenantId: number; congregacaoId?: number }
 
-const CAMPOS_MEMBRO = { id: true, first_name: true, last_name: true, church_role: true, gender: true } as const
+const CAMPOS_MEMBRO = { id: true, first_name: true, last_name: true, church_role: true, gender: true, cargos: { select: { nome: true } } } as const
 
 /** Altera o esboço: quem gere as pregações, ou o próprio pregador. */
 export async function podeEditarSermao(sessao: Sessao, sermao: { pregador_id: number }): Promise<boolean> {

@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma'
 import { rateLimit, ipDoPedido } from '@/lib/rate-limit'
 import { inscricoesAbertas } from '@/lib/inscricoes'
 import { igrejaPublica } from '@/lib/inscricoes-acesso'
+import { urlDoPortal } from '@/lib/redefinir-senha'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,7 +18,7 @@ export async function GET(request: Request) {
         const igreja = await igrejaPublica()
         if (!igreja) return NextResponse.json({ ok: true, data: [] })
 
-        const origem = (process.env.APP_URL || 'https://app.igrejaadmvc.org').replace(/\/+$/, '')
+        const origem = urlDoPortal()
         const eventos = await prisma.eventoInscricao.findMany({
             where: { tenant_id: igreja.id, estado: 'ABERTO' },
             orderBy: { inicio: 'asc' },

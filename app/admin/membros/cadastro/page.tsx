@@ -9,6 +9,7 @@ import {
     CheckCircle2, ChevronRight, ChevronLeft, Lock, AlertCircle
 } from "lucide-react";
 import Image from "next/image";
+import { reduzirImagem } from '@/lib/reduzir-imagem'
 
 interface FormValues {
     first_name: string; last_name: string; email: string; password: string
@@ -177,7 +178,7 @@ export default function AdminCadastroMembroPage() {
             // Foto — usa o estado fotoFile (nao o ref que pode estar desmontado)
             if (fotoFile) {
                 console.log(`[SUBMIT] A anexar foto: ${fotoFile.name} (${fotoFile.size} bytes)`)
-                formData.set('avatar', fotoFile)
+                formData.set('avatar', await reduzirImagem(fotoFile))
             } else {
                 console.log('[SUBMIT] Sem foto')
             }

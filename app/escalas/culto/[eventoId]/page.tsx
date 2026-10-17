@@ -33,13 +33,15 @@ function mensagemWhatsApp(d: DadosEscala) {
 function linkGoogleAgenda(d: DadosEscala) {
     const inicio = new Date(d.evento.data)
     const fim = new Date(inicio.getTime() + 2 * 3600000)
-    const fmt = (x: Date) => x.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+    // hora de Lisboa gravada em UTC: sem o Z e com ctz, o Google lê-a como hora de Lisboa
+    const fmt = (x: Date) => x.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z/, '')
     const minha = d.minhas.map((m) => m.funcao).join(', ')
     const p = new URLSearchParams({
         action: 'TEMPLATE',
         text: `${d.evento.nome} · ${d.departamento.nome}`,
         dates: `${fmt(inicio)}/${fmt(fim)}`,
         details: minha ? `A minha função: ${minha}` : `Escala de ${d.departamento.nome}`,
+        ctz: 'Europe/Lisbon',
     })
     return `https://calendar.google.com/calendar/render?${p}`
 }

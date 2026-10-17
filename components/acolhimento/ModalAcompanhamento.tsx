@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import JanelaPorCima from '@/components/ui/JanelaPorCima'
 import { useToast } from '@/components/ui/ConfirmDialog'
 import { ClipboardEdit, X, Loader2, Save } from 'lucide-react'
-import { registarAcompanhamento } from '@/actions/visitante-actions'
+import { apagarVisitante, registarAcompanhamento } from '@/actions/visitante-actions'
 import { anonimizarVisitanteAction } from '@/actions/rgpd-actions'
 
 interface Visitante {
@@ -41,6 +42,16 @@ export default function ModalAcompanhamento({ visitante }: { visitante: Visitant
         }
     }
 
+    // Spam ou dados falsos: apaga o registo (só líderes do acolhimento e administradores)
+    async function apagar() {
+        if (!window.confirm(`Apagar "${visitante.nome}"? Use só para spam ou dados falsos. Não se pode desfazer.`)) return;
+        setLoading(true);
+        const res = await apagarVisitante(visitante.id);
+        setLoading(false);
+        if (!res.ok) toast(res.error || 'Não foi possível apagar.', 'erro');
+        else { toast('Visitante apagado.', 'sucesso'); setIsOpen(false); }
+    }
+
     async function handleAction(formData: FormData) {
         setLoading(true);
         const res = await registarAcompanhamento(formData);
@@ -58,14 +69,14 @@ export default function ModalAcompanhamento({ visitante }: { visitante: Visitant
     return (
         <>
             <button
-                onClick={() => setIsOpen(true)}
-                className="flex-1 bg-fg text-bg text-center py-3 sm:py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide hover:bg-figueira hover:text-white transition-all shadow-sm flex items-center justify-center gap-2 min-h-[44px] sm:min-h-0"
+                onClick={() => setIsOpen(true)} aria-label={`Registar contacto com ${visitante.nome}`}
+                className="bg-fg text-bg w-10 h-10 sm:w-auto sm:h-auto sm:px-3 sm:py-2.5 rounded-xl text-[13px] font-bold uppercase tracking-wide hover:bg-figueira hover:text-white transition-all shadow-sm flex items-center justify-center gap-2"
             >
-                <ClipboardEdit size={12} /> Registar
+                <ClipboardEdit size={16} /> <span className="hidden sm:inline">Registar</span>
             </button>
 
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-bg/80 backdrop-blur-sm animate-in fade-in duration-200">
+                <JanelaPorCima onFechar={() => setIsOpen(false)}>
                     <div className="bg-bg2 w-full sm:max-w-xl border border-soft p-6 sm:p-8 rounded-t-[2rem] sm:rounded-[3rem] shadow-2xl relative animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200 text-left max-h-[90vh] overflow-y-auto">
 
                         <button onClick={() => setIsOpen(false)} className="absolute top-6 right-6 p-2 bg-soft text-muted rounded-full hover:bg-red-500 hover:text-white transition-colors">
@@ -171,9 +182,15 @@ export default function ModalAcompanhamento({ visitante }: { visitante: Visitant
                                     Anonimizar este visitante (a pedido dele — RGPD)
                                 </button>
                             )}
+                            {!credenciais && (
+                                <button type="button" disabled={loading} onClick={apagar}
+                                    className="w-full text-center text-[14px] font-bold text-red-500 underline disabled:opacity-50">
+                                    Apagar (spam ou dados falsos)
+                                </button>
+                            )}
                         </form>
                     </div>
-                </div>
+                </JanelaPorCima>
             )}
         </>
     )

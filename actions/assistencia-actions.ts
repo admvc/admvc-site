@@ -51,7 +51,9 @@ export async function registarMovimentoAssistencia(formData: FormData) {
         const item_id = Number(formData.get('item_id'))
         const tipo = formData.get('tipo') as string
         const quantidade = Number(formData.get('quantidade'))
-        const destinatario = formData.get('destinatario') as string || null
+        const familiaId = Number(formData.get('familia_id')) || null
+        const familia = familiaId ? await db.familiaAssistencia.findUnique({ where: { id: familiaId }, select: { id: true, nome: true } }) : null
+        const destinatario = (formData.get('destinatario') as string) || familia?.nome || null
         const observacao = formData.get('observacao') as string || null
 
         if (!item_id || !tipo || !quantidade || quantidade <= 0) {
@@ -76,6 +78,7 @@ export async function registarMovimentoAssistencia(formData: FormData) {
                         tipo,
                         quantidade,
                         destinatario,
+                        familia_id: familia?.id ?? null,
                         observacao,
                         registrado_por: session.membroId,
                     }
@@ -99,6 +102,7 @@ export async function registarMovimentoAssistencia(formData: FormData) {
                         tipo,
                         quantidade,
                         destinatario,
+                        familia_id: familia?.id ?? null,
                         observacao,
                         registrado_por: session.membroId,
                     }
@@ -195,12 +199,14 @@ export async function eliminarTipoCesta(tipoCestaId: number) {
     }
 }
 
-export async function montarCesta(tipoCestaId: number, destinatario: string, observacao?: string) {
+export async function montarCesta(tipoCestaId: number, destinatario: string, observacao?: string, familiaId?: number | null) {
     try {
         const session = await exigirEquipa(EQUIPA_SOCIAL, ['FINANCE'], 'a equipa de Assistência Social')
         const db = await getDb()
         const tenantId = await getTenantIdFromHeaders()
 
+        const familia = familiaId ? await db.familiaAssistencia.findUnique({ where: { id: familiaId }, select: { id: true, nome: true } }) : null
+        if (familia && !destinatario?.trim()) destinatario = familia.nome
         if (!destinatario?.trim()) return { error: 'Destinatario e obrigatório.' }
 
         const tipoCesta = await db.tipoCesta.findUnique({
@@ -228,6 +234,7 @@ export async function montarCesta(tipoCestaId: number, destinatario: string, obs
                     destinatario: destinatario.trim(),
                     observacao: observacao?.trim() || null,
                     entregue_por: session.membroId,
+                    familia_id: familia?.id ?? null,
                 }
             }),
             // Descontar stock de cada item + registar movimento
@@ -243,6 +250,7 @@ export async function montarCesta(tipoCestaId: number, destinatario: string, obs
                         tipo: 'ENTREGA_FAMILIA',
                         quantidade: ic.quantidade,
                         destinatario: destinatario.trim(),
+                        familia_id: familia?.id ?? null,
                         observacao: `Cesta: ${tipoCesta.nome}`,
                         registrado_por: session.membroId,
                     }
@@ -277,5 +285,48 @@ export async function eliminarItemAssistencia(itemId: number) {
     } catch (err: any) {
         console.error('Erro ao eliminar item:', err)
         return { error: err.message || 'Erro ao eliminar item.' }
+    }
+}
+
+
+// ── FAMÍLIAS APOIADAS (registo simples) ─────────────────────────────────────────
+export async function guardarFamiliaAssistencia(formData: FormData) {
+    try {
+        const session = await exigirEquipa(EQUIPA_SOCIAL, ['FINANCE'], 'a equipa de Assistência Social')
+        const db = await getDb()
+        const tenantId = await getTenantIdFromHeaders()
+        const id = Number(formData.get('id')) || null
+        const nome = String(formData.get('nome') ?? '').trim()
+        if (nome.length < 2) return { error: 'Escreva o nome da família (ou do responsável).' }
+        const dados = {
+            nome: nome.slice(0, 120),
+            telefone: String(formData.get('telefone') ?? '').trim().slice(0, 30) || null,
+            morada: String(formData.get('morada') ?? '').trim().slice(0, 200) || null,
+            pessoas: Math.min(30, Math.max(1, Number(formData.get('pessoas')) || 1)),
+            notas: String(formData.get('notas') ?? '').trim().slice(0, 1000) || null,
+        }
+        if (id) {
+            await db.familiaAssistencia.update({ where: { id }, data: dados })
+        } else {
+            // RGPD: só se guarda com autorização da família
+            if (formData.get('consentimento') !== 'on') return { error: 'Marque que a família autorizou guardar estes dados.' }
+            await db.familiaAssistencia.create({ data: { ...dados, tenant_id: tenantId, consentimento_em: new Date(), criado_por: session.membroId } })
+        }
+        revalidatePath('/assistencia/familias')
+        return { ok: true }
+    } catch (err: any) {
+        return { error: err.message || 'Não foi possível guardar.' }
+    }
+}
+
+export async function alternarFamiliaAtiva(id: number, ativo: boolean) {
+    try {
+        await exigirEquipa(EQUIPA_SOCIAL, ['FINANCE'], 'a equipa de Assistência Social')
+        const db = await getDb()
+        await db.familiaAssistencia.update({ where: { id }, data: { ativo } })
+        revalidatePath('/assistencia/familias')
+        return { ok: true }
+    } catch (err: any) {
+        return { error: err.message || 'Não foi possível alterar.' }
     }
 }

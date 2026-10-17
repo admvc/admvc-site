@@ -13,6 +13,7 @@ import {
 import Link from 'next/link'
 import Image from 'next/image'
 import { useToast } from '@/components/ui/ConfirmDialog'
+import { reduzirImagensDoForm } from '@/lib/reduzir-imagem'
 
 interface Props {
     membro: any
@@ -94,6 +95,7 @@ export default function MeuPerfilClient({ membro, escolaridades = [], departamen
 
     async function handleAction(formData: FormData) {
         setIsPending(true)
+        await reduzirImagensDoForm(formData)
         const res: any = await atualizarDadosMembro(membro.id, formData)
         setIsPending(false)
 

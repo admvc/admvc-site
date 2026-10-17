@@ -29,7 +29,7 @@ export default async function ReconciliacaoPage({
     const db = await getDb()
     const session = await getSessionData()
     if (!session || !['FINANCE', 'ADMIN'].includes(session.role)) {
-        redirect('/membros/dashboard?error=Acesso negado')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso negado')}`)
     }
 
     const params = await searchParams

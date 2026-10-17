@@ -124,7 +124,7 @@ export default function CalendarioEscalas({ cultos, deptoId, eLouvor }: {
                     ) : (
                         <div className="grid gap-3 md:grid-cols-2">
                             {cultosDoDia.map((c) => {
-                                const h = new Date(c.data).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })
+                                const h = new Date(c.data).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })
                                 return (
                                     <Link key={c.id} href={`/escalas/culto/${c.id}?equipa=${deptoId}`} className="a-card a-foco block p-4 space-y-3">
                                         <span className="flex items-start justify-between gap-2">

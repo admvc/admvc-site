@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { Check, Image as ImageIcon, Loader2, RotateCcw, Upload } from 'lucide-react'
 import { atualizarBranding, resetBranding } from '@/actions/branding-actions'
 import type { Tema } from '@/lib/branding'
+import { reduzirImagensDoForm } from '@/lib/reduzir-imagem'
 
 interface TenantData {
     tema: Tema
@@ -62,7 +63,7 @@ export default function PersonalizacaoClient({ tenant }: { tenant: TenantData })
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setSaving(true); setStatus(null)
-        const formData = new FormData(e.currentTarget)
+        const formData = await reduzirImagensDoForm(new FormData(e.currentTarget))
         formData.set('tema', tema)
         formData.set('youtube_channel_id', youtubeId.trim())
         formData.set('instagram_handle', instaHandle.trim().replace(/^@/, ''))

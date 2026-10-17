@@ -86,7 +86,16 @@ export function tituloDoCargo(cargo: string | null | undefined, sexo?: string | 
     return ''
 }
 
-export type MembroRotina = { id: number; first_name: string; last_name: string | null; church_role?: string | null; gender?: string | null }
+export type MembroRotina = { id: number; first_name: string; last_name: string | null; church_role?: string | null; gender?: string | null; cargos?: { nome: string }[] }
+
+/** Título do membro: o cargo escolhido na ficha (lista de cargos) ou, se não houver, o texto antigo. */
+export function tituloDoMembro(m: Pick<MembroRotina, 'church_role' | 'gender' | 'cargos'>): string {
+    for (const c of m.cargos ?? []) {
+        const t = tituloDoCargo(c.nome, m.gender)
+        if (t) return t
+    }
+    return tituloDoCargo(m.church_role, m.gender)
+}
 
 /** "Pastor Rafael Castro" (membro) ou o nome escrito à mão. */
 export function responsavel(item: ItemRotina, membros: Map<number, MembroRotina>): string {
@@ -94,7 +103,7 @@ export function responsavel(item: ItemRotina, membros: Map<number, MembroRotina>
         const m = membros.get(item.membro_id)
         if (!m) return ''
         const nome = [m.first_name, m.last_name].filter(Boolean).join(' ')
-        const titulo = tituloDoCargo(m.church_role, m.gender)
+        const titulo = tituloDoMembro(m)
         return titulo ? `${titulo} ${nome}` : nome
     }
     return item.nome ?? ''

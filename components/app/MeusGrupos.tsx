@@ -34,9 +34,11 @@ export default function MeusGrupos({ grupos }: { grupos: MeuGrupo[] }) {
                         {g.lideres.length > 0 && (
                             <p className="text-[15px] a-suave">{g.lideres.length === 1 ? 'Líder' : 'Líderes'}: {g.lideres.join(', ')}</p>
                         )}
-                        {g.souLider && (
+                        {g.apoio ? (
+                            <Link href={g.apoio.href} className="a-botao a-botao-secundario !min-h-[44px] w-full">{g.apoio.texto}</Link>
+                        ) : (
                             <Link href={`/grupos/gestao/${g.id}`} className="a-botao a-botao-secundario !min-h-[44px] w-full">
-                                <Settings size={18} aria-hidden /> Gerir o grupo
+                                {g.souLider ? <><Settings size={18} aria-hidden /> Gerir o grupo</> : 'Ver o grupo e as pessoas'}
                             </Link>
                         )}
                     </li>

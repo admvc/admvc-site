@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function TurnosPage() {
     const session = await getSessionData()
-    if (!session) redirect('/membros/login?error=Sessao expirada')
+    if (!session) redirect(`/membros/login?error=${encodeURIComponent('Sessao expirada')}`)
 
     const db = await getDb()
 
@@ -39,7 +39,7 @@ export default async function TurnosPage() {
     }
 
     if (!temPermissao) {
-        redirect('/membros/dashboard?error=Acesso restrito a equipa da Cantina.')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso restrito a equipa da Cantina.')}`)
     }
 
     // ── Current open shift for this user ─────────────────────────────

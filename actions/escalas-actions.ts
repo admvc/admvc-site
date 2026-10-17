@@ -1,5 +1,6 @@
 'use server'
 
+import { after } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { getTenantClient } from '@/lib/prisma'
 import { getSessionData, requireAuth, requireRole } from '@/lib/auth-utils'
@@ -134,11 +135,11 @@ export async function criarEscalaAction(formData: FormData) {
         const evento = await db.evento.findUnique({ where: { id: eventoId }, select: { nome: true, data: true } })
         if (evento) {
             const dataFmt = new Date(evento.data).toLocaleDateString('pt-PT', { weekday: 'short', day: '2-digit', month: 'short' })
-            sendPushToMembro(membroEscaladoId, {
+            after(() => sendPushToMembro(membroEscaladoId, {
                 title: 'Nova Escala!',
                 body: `Foste escalado para ${evento.nome} (${dataFmt}) — ${funcaoRef?.nome || 'Servico'}`,
                 url: '/membros/dashboard',
-            }).catch(() => {})
+            }).catch(() => {}))
         }
 
         return { ok: true };
@@ -150,12 +151,22 @@ export async function criarEscalaAction(formData: FormData) {
 }
 
 // ── CONFIRMAR PRESENÇA ────────────────────────────────────────────────────────
-export async function confirmarEscala(ids: number[]) {
+export async function confirmarEscala(ids: number[], mesmoAssim = false) {
     try {
         const session = await getSessionData()
         if (!session) return { sucesso: false, error: 'Sessão expirada.' }
 
         const { db } = await getDb()
+
+        // Já tem outra escala confirmada à mesma hora? Pergunta antes (pode ser de propósito)
+        if (!mesmoAssim) {
+            const estas = await db.escala.findMany({ where: { id: { in: ids }, membro_id: session.membroId }, select: { evento: { select: { data: true } } } })
+            const outra = estas.length ? await db.escala.findFirst({
+                where: { membro_id: session.membroId, id: { notIn: ids }, confirmado: true, evento: { data: { in: estas.map((e) => e.evento.data) } } },
+                select: { funcao: true, departamento: { select: { nome: true } }, evento: { select: { nome: true } } },
+            }) : null
+            if (outra) return { sucesso: false, conflito: `Já confirmou ${outra.funcao} (${outra.departamento.nome}) em ${outra.evento.nome}, à mesma hora.` }
+        }
 
         await db.escala.updateMany({
             where: { id: { in: ids }, membro_id: session.membroId },
@@ -163,7 +174,7 @@ export async function confirmarEscala(ids: number[]) {
         })
 
         // Notificar lider por email (fire-and-forget)
-        notificarLiderEscala(ids[0], session.membroId, 'CONFIRMADO').catch(() => {})
+        after(() => notificarLiderEscala(ids[0], session.membroId, 'CONFIRMADO').catch(() => {}))
 
         revalidatePath('/membros/dashboard')
         return { sucesso: true }
@@ -189,7 +200,7 @@ export async function recusarEscala(ids: number[], motivo: string) {
         })
 
         // Notificar lider por email (fire-and-forget)
-        notificarLiderEscala(ids[0], session.membroId, 'RECUSADO', motivo.trim()).catch(() => {})
+        after(() => notificarLiderEscala(ids[0], session.membroId, 'RECUSADO', motivo.trim()).catch(() => {}))
 
         revalidatePath('/membros/dashboard')
         return { sucesso: true }
@@ -221,7 +232,7 @@ async function notificarLiderEscala(escalaId: number, membroId: number, tipo: 'C
     // Notificacao na app ao lider quando alguem nao pode (a confirmacao so vai por email)
     if (tipo === 'RECUSADO') {
         const quando = new Date(escala.evento.data).toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })
-        sendPushToMembro(lider.id, {
+        await sendPushToMembro(lider.id, {
             title: `${escala.membro.first_name} não pode servir`,
             body: `${escala.evento.nome}, ${quando} — ${escala.funcao}${motivo ? ` (${motivo})` : ''}`,
             url: `/escalas/culto/${escala.evento_id}?equipa=${escala.departamento_id}`,

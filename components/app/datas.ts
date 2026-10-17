@@ -1,4 +1,6 @@
 // Datas em portugues, como se diz: "Domingo, 19 de outubro" · "10:00" · "hoje", "amanha".
+// As horas dos cultos/eventos estao gravadas como hora de Lisboa "escrita" em UTC (20:00 → 20:00Z):
+// mostram-se SEMPRE com timeZone UTC, senao no verao o browser soma 1 hora.
 
 function capitalizar(s: string) {
     return s.charAt(0).toUpperCase() + s.slice(1)
@@ -9,18 +11,18 @@ export function diaPorExtenso(iso: string) {
     const hoje = new Date(); hoje.setHours(0, 0, 0, 0)
     const dia = new Date(d); dia.setHours(0, 0, 0, 0)
     const diff = Math.round((dia.getTime() - hoje.getTime()) / 86400000)
-    const base = d.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })
+    const base = d.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })
     if (diff === 0) return `Hoje, ${base.split(',').slice(1).join(',').trim()}`
     if (diff === 1) return `Amanhã, ${base.split(',').slice(1).join(',').trim()}`
     return capitalizar(base)
 }
 
 export function hora(iso: string) {
-    return new Date(iso).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })
+    return new Date(iso).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })
 }
 
 export function diaCurto(iso: string) {
-    return capitalizar(new Date(iso).toLocaleDateString('pt-PT', { weekday: 'short', day: 'numeric', month: 'short' }).replace(/\./g, ''))
+    return capitalizar(new Date(iso).toLocaleDateString('pt-PT', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).replace(/\./g, ''))
 }
 
 /** "ha 3 semanas", "ha 2 meses" (para a ultima vez que serviu). */

@@ -9,9 +9,13 @@ import EstruturaSubMenu from '@/components/admin/EstruturaSubMenu'
 import Breadcrumbs from '@/components/Breadcrumbs'
 import { getTenantIdFromHeaders } from '@/lib/db'
 
-export default async function EstruturaPage() {
+export default async function EstruturaPage({ searchParams }: { searchParams: Promise<{ congregacao?: string }> }) {
     const tenantId = await getTenantIdFromHeaders()
     const db = getTenantClient(tenantId)
+    // Casa escolhida no menu: os desta casa e os gerais (sem casa)
+    const cong = Number((await searchParams).congregacao) || null
+    const deptoDaCasa = cong ? { OR: [{ congregacaoId: cong }, { is_global: true }, { congregacaoId: null }] } : undefined
+    const grupoDaCasa = cong ? { OR: [{ congregacaoId: cong }, { congregacaoId: null }] } : undefined
 
     let cargos: any[] = [], deptos: any[] = [], deptosParaSelect: any[] = []
     let membrosDisponiveis: any[] = [], grupos: any[] = [], congregacoes: any[] = []
@@ -31,6 +35,7 @@ export default async function EstruturaPage() {
         // Batch 2: queries pesadas
         const [r3, r4, r5, r6] = await Promise.all([
             db.departamento.findMany({
+                where: deptoDaCasa,
                 include: {
                     lider: { select: { first_name: true, last_name: true } },
                     congregacao: { select: { nome: true } },
@@ -53,6 +58,7 @@ export default async function EstruturaPage() {
                 orderBy: { nome: 'asc' }
             }),
             db.grupo.findMany({
+                where: grupoDaCasa,
                 orderBy: { nome: 'asc' },
                 include: {
                     membros: { select: { id: true, first_name: true, last_name: true } },
@@ -88,7 +94,7 @@ export default async function EstruturaPage() {
             <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-bold text-fg">Estrutura</h1>
-                    <p className="text-xs text-muted">Ministérios, grupos, cargos e regiões da igreja.</p>
+                    <p className="text-xs text-muted">Ministérios, grupos, cargos e regiões da igreja.{cong ? ' A mostrar os desta casa e os gerais.' : ''}</p>
                 </div>
                 {/* Submenu: Cargos e Regiões */}
                 <EstruturaSubMenu

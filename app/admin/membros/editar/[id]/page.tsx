@@ -13,17 +13,17 @@ export default async function EditarMembroPage({ params }: { params: Promise<{ i
     const session = await getSessionData();
 
     // Sem sessão, expulsa logo
-    if (!session) redirect('/membros/login?error=Sessao expirada');
+    if (!session) redirect(`/membros/login?error=${encodeURIComponent('Sessao expirada')}`);
 
     if (session.role !== 'ADMIN') {
-        redirect('/membros/login?error=Acesso restrito a administradores');
+        redirect(`/membros/login?error=${encodeURIComponent('Acesso restrito a administradores')}`);
     }
 
     // --- 2. SEGURANÇA MULTITENANT (IGREJA) ---
     const tenantIdStr = await getTenantIdFromHeaders();
 
     if (!tenantIdStr) {
-        redirect('/membros/login?error=Igreja não identificada.');
+        redirect(`/membros/login?error=${encodeURIComponent('Igreja não identificada.')}`);
     }
 
     // Instancia o Prisma blindado para esta igreja

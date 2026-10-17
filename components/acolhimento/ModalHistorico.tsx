@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import JanelaPorCima from '@/components/ui/JanelaPorCima'
 import { History, X, MessageCircle, Phone, Users, Clock, ArrowRight, StickyNote, UserPlus, HandHeart, DoorOpen } from 'lucide-react'
 import GestaoVisitante, { type MembroEquipa, type CongregacaoOpcao } from './GestaoVisitante'
 
@@ -56,16 +57,16 @@ export default function ModalHistorico({ visitante, acionador, viewerRole, equip
                 </div>
             ) : (
                 <button
-                    onClick={() => setIsOpen(true)}
-                    className="text-figueira hover:underline flex items-center gap-1 transition-all group text-[13px] font-bold uppercase tracking-wide bg-figueira/10 px-3 py-1.5 rounded-lg hover:bg-figueira/20"
+                    onClick={() => setIsOpen(true)} aria-label={`Ficha de ${visitante.nome}`}
+                    className="text-figueira flex items-center justify-center gap-1 transition-all group text-[13px] font-bold uppercase tracking-wide bg-figueira/10 w-10 h-10 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-lg hover:bg-figueira/20"
                 >
-                    <History size={12} className="group-hover:-rotate-45 transition-transform" />
-                    Ficha ({acompanhamentos.length})
+                    <History size={16} className="group-hover:-rotate-45 transition-transform" />
+                    <span className="hidden sm:inline">Ficha ({acompanhamentos.length})</span>
                 </button>
             )}
 
             {isOpen && (
-                <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-bg/80 backdrop-blur-sm animate-in fade-in duration-200">
+                <JanelaPorCima onFechar={() => setIsOpen(false)}>
                     <div className="bg-bg2 w-full sm:max-w-lg border border-soft p-6 md:p-8 rounded-t-[2rem] sm:rounded-[3rem] shadow-2xl relative animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200 text-left max-h-[90vh] sm:max-h-[85vh] flex flex-col">
 
                         <button onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center bg-bg border border-soft text-muted rounded-2xl hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all z-20 shadow-sm">
@@ -167,7 +168,7 @@ export default function ModalHistorico({ visitante, acionador, viewerRole, equip
                             )}
                         </div>
                     </div>
-                </div>
+                </JanelaPorCima>
             )}
         </>
     )

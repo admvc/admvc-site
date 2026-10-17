@@ -27,7 +27,7 @@ export default async function RelatorioAcolhimentoPage({ searchParams }: { searc
 
     const acolhimentoRole = getAcolhimentoRole(membroLogado, session.role)
     if (!podeVerRelatorio(acolhimentoRole)) {
-        redirect('/membros/dashboard?error=Acesso restrito ao relatorio.')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso restrito ao relatorio.')}`)
     }
 
     // Filtro por congregação (?c=id): visitantes dessa casa e os contactos com eles

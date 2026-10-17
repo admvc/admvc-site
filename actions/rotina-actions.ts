@@ -5,6 +5,8 @@
 // Só os administradores e os líderes da Diaconia; tudo dentro da igreja.
 
 import { revalidatePath } from 'next/cache'
+import { after } from 'next/server'
+import { sendPushToMembros } from '@/lib/web-push'
 import { getSessionData } from '@/lib/auth-utils'
 import { getTenantClient } from '@/lib/prisma'
 import { serieDoEvento } from '@/lib/eventos-serie'
@@ -40,6 +42,7 @@ export async function guardarRotina(eventoId: number, entrada: unknown): Promise
     try {
         const { sessao, db } = await eventoQuePossoEditar(eventoId)
         const itens = normalizarItens(entrada)
+        const antes = await db.rotinaCulto.findUnique({ where: { evento_id: eventoId }, select: { itens: true } })
         if (!itens.length) {
             await db.rotinaCulto.deleteMany({ where: { evento_id: eventoId } })
         } else {
@@ -48,6 +51,24 @@ export async function guardarRotina(eventoId: number, entrada: unknown): Promise
                 create: { evento_id: eventoId, itens, atualizado_por: sessao.membroId, tenant_id: sessao.tenantId },
                 update: { itens, atualizado_por: sessao.membroId },
             })
+            // Quem passou a ter um momento recebe um aviso no telemóvel (não quem gravou)
+            const jaTinha = new Set(normalizarItens(antes?.itens).filter((i) => i.membro_id).map((i) => `${i.membro_id}|${i.momento}`))
+            const novos = itens.filter((i) => i.membro_id && i.membro_id !== sessao.membroId && !jaTinha.has(`${i.membro_id}|${i.momento}`))
+            if (novos.length) {
+                const evento = await db.evento.findUnique({ where: { id: eventoId }, select: { nome: true, data: true } })
+                const quando = evento ? evento.data.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }) : ''
+                const porMembro = new Map<number, string[]>()
+                for (const i of novos) porMembro.set(i.membro_id!, [...(porMembro.get(i.membro_id!) ?? []), i.momento])
+                after(async () => {
+                    for (const [membroId, momentos] of porMembro) {
+                        await sendPushToMembros([membroId], {
+                            title: 'Tem um momento no culto',
+                            body: `${momentos.join(', ')} · ${evento?.nome ?? 'Culto'}, ${quando}`,
+                            url: `/pregacao/culto/${eventoId}`,
+                        }).catch(() => {})
+                    }
+                })
+            }
         }
         revalidar(eventoId)
         return { ok: true }

@@ -9,7 +9,7 @@ import FormObra from '@/components/obra/FormObra'
 export default async function GestaoObraFinanceiro() {
     const session = await getSessionData()
     if (!session || (session.role !== 'ADMIN' && session.role !== 'FINANCE')) {
-        redirect('/membros/dashboard?error=Acesso Negado')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso Negado')}`)
     }
 
     const obra = await obraDaIgreja(session.tenantId)

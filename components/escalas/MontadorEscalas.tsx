@@ -7,7 +7,8 @@ import { verificarIndisponibilidade } from '@/actions/escalas-actions'
 import { subMinutes } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 
-const TIMEZONE = 'Europe/Lisbon'
+// As horas dos eventos estão gravadas como hora de Lisboa em UTC (ver components/app/datas.ts)
+const TIMEZONE = 'UTC'
 import {
     Clock, CalendarDays, User, ShieldCheck, CheckCircle2,
     ChevronDown, Loader2, Zap, AlertTriangle, X
@@ -126,7 +127,7 @@ export default function MontadorEscalas({ eventos, funcoesDisponiveis, membros, 
                     }}
                     className="space-y-5"
                 >
-                    <div className={`grid grid-cols-1 md:grid-cols-2 ${departamentos ? 'xl:grid-cols-5' : 'xl:grid-cols-4'} gap-3 md:gap-4`}>
+                    <div className={`grid grid-cols-1 md:grid-cols-2 ${departamentos ? '2xl:grid-cols-5' : '2xl:grid-cols-4'} gap-3 md:gap-4`}>
 
                     {/* PASSO 0 — DEPARTAMENTO (apenas admin) */}
                     {departamentos && (

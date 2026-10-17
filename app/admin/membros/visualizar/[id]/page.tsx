@@ -25,7 +25,7 @@ export default async function VisualizarMembroPage({
     const tenantIdStr = await getTenantIdFromHeaders();
 
     if (!tenantIdStr) {
-        return redirect('/membros/login?error=Igreja não identificada.');
+        return redirect(`/membros/login?error=${encodeURIComponent('Igreja não identificada.')}`);
     }
 
     const db = getTenantClient(Number(tenantIdStr));

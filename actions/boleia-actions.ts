@@ -1,5 +1,6 @@
 'use server'
 
+import { after } from 'next/server'
 import { getDb, getTenantIdFromHeaders } from '@/lib/db'
 import { requireAuth } from '@/lib/auth-utils'
 import { revalidatePath } from 'next/cache'
@@ -43,11 +44,11 @@ export async function iniciarTracking(ofertaId: number, latitude: number, longit
     if (isMotorista) {
         const passageiroIds = oferta.reservas.map(r => r.passageiro_id)
         for (const pid of passageiroIds) {
-            sendPushToMembro(pid, {
+            after(() => sendPushToMembro(pid, {
                 title: 'O motorista iniciou a viagem!',
                 body: 'Acompanhe a localização em tempo real.',
                 url: `/boleia/tracking/${ofertaId}`,
-            }).catch(() => {})
+            }).catch(() => {}))
         }
     }
 
@@ -200,11 +201,11 @@ export async function reservarBoleia(ofertaId: number, latitude?: number, longit
         const dataInfo = oferta.evento?.nome
             ? oferta.evento.nome
             : new Date(oferta.data_hora_saida).toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' })
-        sendPushToMembro(oferta.motorista_id, {
+        after(() => sendPushToMembro(oferta.motorista_id, {
             title: 'Nova reserva na sua boleia',
             body: `${nomePassageiro} reservou lugar na sua boleia para ${dataInfo}`,
             url: '/boleia/minhas',
-        }).catch(() => {}) // fire and forget
+        }).catch(() => {})) // fire and forget
 
         revalidatePath('/boleia')
         return { success: true }
@@ -243,11 +244,11 @@ export async function cancelarReservaBoleia(reservaId: number) {
         const dataInfo = reserva.oferta.evento?.nome
             ? reserva.oferta.evento.nome
             : new Date(reserva.oferta.data_hora_saida).toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' })
-        sendPushToMembro(reserva.oferta.motorista_id, {
+        after(() => sendPushToMembro(reserva.oferta.motorista_id, {
             title: 'Reserva cancelada',
             body: `${nomePassageiro} cancelou a reserva na sua boleia para ${dataInfo}`,
             url: '/boleia/minhas',
-        }).catch(() => {}) // fire and forget
+        }).catch(() => {})) // fire and forget
 
         revalidatePath('/boleia')
         return { success: true }

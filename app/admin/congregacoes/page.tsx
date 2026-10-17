@@ -9,7 +9,7 @@ export default async function CongregacoesPage() {
     const tenantIdStr = await getTenantIdFromHeaders()
 
     if (!tenantIdStr) {
-        redirect('/membros/login?error=Igreja nao identificada.')
+        redirect(`/membros/login?error=${encodeURIComponent('Igreja nao identificada.')}`)
     }
 
     const db = getTenantClient(Number(tenantIdStr))

@@ -12,6 +12,7 @@ import { registrarEncontroAction, atualizarDadosGrupoAction } from '@/actions/gr
 import dynamic from 'next/dynamic'
 import type { PontoArea } from '@/lib/area-grupo'
 import { useToast } from '@/components/ui/ConfirmDialog'
+import { reduzirImagensDoForm } from '@/lib/reduzir-imagem'
 
 const EditorAreaGrupo = dynamic(() => import('@/components/grupos/EditorAreaGrupo'), {
     ssr: false,
@@ -44,6 +45,7 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
 
     // Zona que o grupo abrange (desenhada no mapa)
     const [area, setArea] = useState<PontoArea[] | null>(grupo.area ?? null)
+    const [verMapa, setVerMapa] = useState(false)
 
     const [presentes, setPresentes] = useState<number[]>([])
     const [previewFoto, setPreviewFoto] = useState<string | null>(null)
@@ -90,6 +92,7 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
 
     async function handleRegistrarEncontro(formData: FormData) {
         if (!ehLider) return
+        await reduzirImagensDoForm(formData)
         if (!formData.get('data') || !formData.get('tema')) {
             toast('Escreva a data e o resumo do encontro.', 'aviso')
             return
@@ -135,17 +138,19 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
             </div>
 
             {aba === 'grupo' && (
-                <div className="space-y-4">
-                    <section className="a-card">
-                        <h2 className="flex items-center gap-3 px-4 pt-4 text-[18px] font-semibold">
+                <div className="space-y-3">
+                    {/* Secções que abrem e fecham: no telemóvel não fica uma lista sem fim */}
+                    <details open className="a-card group/sec">
+                        <summary className="flex min-h-[56px] cursor-pointer list-none items-center gap-3 px-4 text-[18px] font-semibold">
                             <Users size={22} style={{ color: 'var(--a-destaque)' }} aria-hidden />
                             <span className="flex-1">Pessoas</span>
                             <span className="text-[16px] font-normal a-suave">{todosParticipantes.length}</span>
-                        </h2>
+                            <ChevronDown size={20} className="a-suave transition-transform group-open/sec:rotate-180" aria-hidden />
+                        </summary>
                         {todosParticipantes.length > 0 ? (
-                            <ul className="a-divide mt-2">
+                            <ul className="a-divide">
                                 {todosParticipantes.map((membro: any) => (
-                                    <li key={membro.id} className="flex min-h-[60px] items-center gap-3 px-4 py-2">
+                                    <li key={membro.id} className="flex min-h-[56px] items-center gap-3 px-4 py-2">
                                         <Avatar src={membro.avatar_file} />
                                         <span className="min-w-0 flex-1 truncate text-[17px]">{membro.first_name} {membro.last_name}</span>
                                         {membro.isLider && <span className="shrink-0 text-[15px] font-semibold" style={{ color: 'var(--a-destaque)' }}>Líder</span>}
@@ -153,57 +158,75 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
                                 ))}
                             </ul>
                         ) : (
-                            <p className="p-4 text-[16px] a-suave">Ainda não há pessoas neste grupo.</p>
+                            <p className="px-4 pb-4 text-[16px] a-suave">Ainda não há pessoas neste grupo.</p>
                         )}
-                    </section>
+                    </details>
 
-                    <section className="a-card space-y-4 p-4">
-                        <h2 className="flex items-center gap-3 text-[18px] font-semibold">
-                            <MapPin size={22} style={{ color: 'var(--a-destaque)' }} aria-hidden /> Onde e quando
-                        </h2>
+                    <details className="a-card group/sec">
+                        <summary className="flex min-h-[56px] cursor-pointer list-none items-center gap-3 px-4 py-3">
+                            <MapPin size={22} style={{ color: 'var(--a-destaque)' }} aria-hidden />
+                            <span className="min-w-0 flex-1">
+                                <span className="block text-[18px] font-semibold">Onde e quando</span>
+                                <span className="block truncate text-[15px] a-suave">
+                                    {[dadosForm.dia_semana, dadosForm.horario].filter(Boolean).join(', às ') || 'Dia por definir'} · {morada || 'morada por definir'}
+                                </span>
+                            </span>
+                            <ChevronDown size={20} className="shrink-0 a-suave transition-transform group-open/sec:rotate-180" aria-hidden />
+                        </summary>
+                        <div className="space-y-4 px-4 pb-4">
+                            {ehLider ? (
+                                <>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <Escolha label="Dia" name="dia_semana" value={dadosForm.dia_semana} onChange={handleInputChange} options={DIAS} />
+                                        <Campo label="Hora" name="horario" type="time" value={dadosForm.horario} onChange={handleInputChange} />
+                                    </div>
+                                    <div className="grid grid-cols-[1fr_96px] gap-3">
+                                        <Campo label="Rua" name="endereco" value={dadosForm.endereco} onChange={handleInputChange} />
+                                        <Campo label="Número" name="numero" value={dadosForm.numero} onChange={handleInputChange} />
+                                    </div>
+                                    <div className="grid gap-3 sm:grid-cols-2">
+                                        <Campo label="Freguesia / bairro" name="bairro" value={dadosForm.bairro} onChange={handleInputChange} />
+                                        <Campo label="Cidade" name="cidade" value={dadosForm.cidade} onChange={handleInputChange} />
+                                        <Campo label="Distrito" name="distrito" value={dadosForm.distrito} onChange={handleInputChange} />
+                                        <Escolha label="País" name="pais" value={dadosForm.pais} onChange={handleInputChange} options={PAISES} />
+                                    </div>
+                                </>
+                            ) : (
+                                <dl className="space-y-3 text-[17px]">
+                                    <div><dt className="text-[15px] a-suave">Quando</dt><dd>{[dadosForm.dia_semana, dadosForm.horario].filter(Boolean).join(', às ') || 'Por definir'}</dd></div>
+                                    <div><dt className="text-[15px] a-suave">Onde</dt><dd>{morada || 'Por definir'}</dd></div>
+                                </dl>
+                            )}
+                            {ehLider && (
+                                <button type="button" onClick={handleSalvarConfig} disabled={loading} className="a-botao a-botao-principal w-full">
+                                    {loading ? <Loader2 size={20} className="animate-spin" aria-hidden /> : <Save size={20} aria-hidden />}
+                                    {loading ? 'A guardar…' : 'Guardar'}
+                                </button>
+                            )}
+                        </div>
+                    </details>
 
-                        {ehLider ? (
-                            <>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <Escolha label="Dia" name="dia_semana" value={dadosForm.dia_semana} onChange={handleInputChange} options={DIAS} />
-                                    <Campo label="Hora" name="horario" type="time" value={dadosForm.horario} onChange={handleInputChange} />
-                                </div>
-                                <Campo label="Rua" name="endereco" value={dadosForm.endereco} onChange={handleInputChange} />
-                                <Campo label="Número" name="numero" value={dadosForm.numero} onChange={handleInputChange} />
-                                <Campo label="Freguesia / bairro" name="bairro" value={dadosForm.bairro} onChange={handleInputChange} />
-                                <Campo label="Cidade" name="cidade" value={dadosForm.cidade} onChange={handleInputChange} />
-                                <Campo label="Distrito" name="distrito" value={dadosForm.distrito} onChange={handleInputChange} />
-                                <Escolha label="País" name="pais" value={dadosForm.pais} onChange={handleInputChange} options={PAISES} />
-                            </>
-                        ) : (
-                            <dl className="space-y-3 text-[17px]">
-                                <div>
-                                    <dt className="text-[15px] a-suave">Quando</dt>
-                                    <dd>{[dadosForm.dia_semana, dadosForm.horario].filter(Boolean).join(', às ') || 'Por definir'}</dd>
-                                </div>
-                                <div>
-                                    <dt className="text-[15px] a-suave">Onde</dt>
-                                    <dd>{morada || 'Por definir'}</dd>
-                                </div>
-                            </dl>
-                        )}
-
-                        {grupo.mostrar_mapa && (
-                            <div className="space-y-2">
-                                <p className="text-[16px] font-semibold">Zona que o grupo abrange</p>
-                                {ehLider && <p className="text-[15px] a-suave">Desenhe a zona no mapa e depois toque em &quot;Guardar&quot;.</p>}
-                                <EditorAreaGrupo latitude={grupo.latitude} longitude={grupo.longitude} valor={grupo.area}
-                                    onChange={ehLider ? setArea : undefined} />
+                    {grupo.mostrar_mapa && (
+                        <details className="a-card group/sec" onToggle={(e) => { if ((e.currentTarget as HTMLDetailsElement).open) setVerMapa(true) }}>
+                            <summary className="flex min-h-[56px] cursor-pointer list-none items-center gap-3 px-4 text-[18px] font-semibold">
+                                <MapPin size={22} style={{ color: 'var(--a-destaque)' }} aria-hidden />
+                                <span className="flex-1">Zona do grupo no mapa</span>
+                                <ChevronDown size={20} className="a-suave transition-transform group-open/sec:rotate-180" aria-hidden />
+                            </summary>
+                            <div className="space-y-2 px-4 pb-4">
+                                {ehLider && <p className="text-[15px] a-suave">Desenhe a zona no mapa e depois toque em &quot;Guardar zona&quot;.</p>}
+                                {/* o mapa só se desenha depois de abrir (fechado não tem tamanho) */}
+                                {verMapa && <EditorAreaGrupo latitude={grupo.latitude} longitude={grupo.longitude} valor={grupo.area}
+                                    onChange={ehLider ? setArea : undefined} />}
+                                {ehLider && (
+                                    <button type="button" onClick={handleSalvarConfig} disabled={loading} className="a-botao a-botao-principal w-full">
+                                        {loading ? <Loader2 size={20} className="animate-spin" aria-hidden /> : <Save size={20} aria-hidden />}
+                                        {loading ? 'A guardar…' : 'Guardar zona'}
+                                    </button>
+                                )}
                             </div>
-                        )}
-
-                        {ehLider && (
-                            <button type="button" onClick={handleSalvarConfig} disabled={loading} className="a-botao a-botao-principal w-full">
-                                {loading ? <Loader2 size={20} className="animate-spin" aria-hidden /> : <Save size={20} aria-hidden />}
-                                {loading ? 'A guardar…' : 'Guardar'}
-                            </button>
-                        )}
-                    </section>
+                        </details>
+                    )}
                 </div>
             )}
 

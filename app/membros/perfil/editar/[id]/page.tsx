@@ -19,11 +19,11 @@ export default async function EditarMeuPerfilPage({
     // Segurança: só o próprio membro ou ADMIN
     const podeEditar = session.membroId === idParaEditar || isAdmin(session.role)
     if (!podeEditar) {
-        redirect('/membros/dashboard?error=Sem permissão para editar este perfil')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Sem permissão para editar este perfil')}`)
     }
 
     const tenantIdStr = await getTenantIdFromHeaders()
-    if (!tenantIdStr) redirect('/membros/login?error=Igreja não identificada.')
+    if (!tenantIdStr) redirect(`/membros/login?error=${encodeURIComponent('Igreja não identificada.')}`)
 
     const db = getTenantClient(Number(tenantIdStr))
 

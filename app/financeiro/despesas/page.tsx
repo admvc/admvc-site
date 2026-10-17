@@ -25,7 +25,7 @@ export default async function DespesasPage() {
     const db = await getDb()
     const session = await getSessionData()
     if (!session || !['FINANCE', 'ADMIN', 'LEADER'].includes(session.role)) {
-        redirect('/membros/dashboard?error=Acesso negado ao módulo financeiro')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso negado ao módulo financeiro')}`)
     }
 
     const [pendentes, recentes, fundos, categorias] = await Promise.all([

@@ -15,7 +15,7 @@ export default function WidgetAgendaIgreja({ eventos = [], isAdmin = false }: { 
     // Formatações (ajustadas para Date objetos que vêm do Prisma)
     const formatarDia = (d: Date) => new Date(d).getDate().toString().padStart(2, '0');
     const formatarMes = (d: Date) => new Intl.DateTimeFormat('pt-PT', { month: 'short' }).format(new Date(d)).replace('.', '').toUpperCase();
-    const formatarHora = (d: Date) => new Intl.DateTimeFormat('pt-PT', { hour: '2-digit', minute: '2-digit' }).format(new Date(d));
+    const formatarHora = (d: Date) => new Intl.DateTimeFormat('pt-PT', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }).format(new Date(d));
     const formatarDiaSemana = (d: Date) => new Intl.DateTimeFormat('pt-PT', { weekday: 'long' }).format(new Date(d));
 
     return (

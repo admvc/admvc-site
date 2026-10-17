@@ -11,7 +11,7 @@ interface Item {
     unidade: string
 }
 
-export default function FormMovimento({ itens }: { itens: Item[] }) {
+export default function FormMovimento({ itens, familias = [] }: { itens: Item[]; familias?: { id: number; nome: string }[] }) {
     const [loading, setLoading] = useState(false)
     const [erro, setErro] = useState('')
     const [sucesso, setSucesso] = useState(false)
@@ -100,10 +100,17 @@ export default function FormMovimento({ itens }: { itens: Item[] }) {
                         <label className="text-[13px] font-bold uppercase tracking-wide text-muted">
                             Destinatario
                         </label>
+                        {familias.length > 0 && (
+                            <select name="familia_id" defaultValue="" aria-label="Família registada"
+                                className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none">
+                                <option value="">Família registada (opcional)…</option>
+                                {familias.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}
+                            </select>
+                        )}
                         <input
                             type="text"
                             name="destinatario"
-                            placeholder="Nome da familia/entidade..."
+                            placeholder={familias.length > 0 ? 'Ou escreva o nome (família / entidade)…' : 'Nome da familia/entidade...'}
                             className="w-full bg-bg border border-soft rounded-2xl p-4 text-sm font-bold text-fg focus:border-figueira outline-none placeholder:text-muted2"
                         />
                     </div>

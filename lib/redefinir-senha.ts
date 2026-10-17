@@ -11,9 +11,12 @@ import { enviarEmailNovaSenha } from '@/lib/mail'
 
 export const VALIDADE_LINK_SEGUNDOS = 60 * 60
 
-/** Endereco publico do portal. Nunca o Host do pedido (podia ser forjado). */
+/** Endereco publico do portal. Nunca o Host do pedido (podia ser forjado).
+ *  Aceita APP_URL sem "https://" (ja aconteceu no Vercel e os links sairam relativos). */
 export function urlDoPortal() {
-    return (process.env.APP_URL || 'https://app.igrejaadmvc.org').replace(/\/+$/, '')
+    const url = (process.env.APP_URL || '').trim().replace(/\/+$/, '')
+    if (!url) return 'https://app.igrejaadmvc.org'
+    return /^https?:\/\//i.test(url) ? url : `https://${url}`
 }
 
 export async function criarLinkRedefinir(m: { id: number; password: string | null }) {

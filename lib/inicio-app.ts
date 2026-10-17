@@ -77,6 +77,17 @@ export interface MeuGrupo {
     latitude: number | null
     longitude: number | null
     area: PontoArea[] | null
+    /** Grupo de apoio (departamento sem escala): abre o módulo ou a lista de pessoas */
+    apoio?: { href: string; texto: string }
+}
+
+/** Para onde abre um grupo de apoio (pelo nome; os módulos decidem por ele). */
+function destinoDoApoio(id: number, nome: string) {
+    const n = nome.toLowerCase()
+    if (n.includes('acolhimento') || n.includes('integra')) return { href: '/departamentos/acolhimento/dashboard', texto: 'Abrir o Acolhimento' }
+    if (n.includes('cantina')) return { href: '/cantina', texto: 'Abrir a Cantina' }
+    if (n.includes('social') || n.includes('assist')) return { href: '/assistencia', texto: 'Abrir a Assistência social' }
+    return { href: `/membros/gestao/equipa/${id}`, texto: 'Ver as pessoas' }
 }
 
 /** Grupos em que participo ou que lidero, com quando e onde se juntam. */
@@ -92,7 +103,19 @@ export async function meusGrupos(sessao: SessionData): Promise<MeuGrupo[]> {
         },
         orderBy: { nome: 'asc' },
     })
-    return grupos.map((g) => {
+    // Grupos de apoio em que estou (ou que lidero)
+    const apoio = await db.departamento.findMany({
+        where: { tem_escala: false, OR: [{ lider_id: sessao.membroId }, { integrantes: { some: { membro_id: sessao.membroId } } }] },
+        select: { id: true, nome: true, lider_id: true, lider: { select: { first_name: true, last_name: true } } },
+        orderBy: { nome: 'asc' },
+    })
+    const deApoio: MeuGrupo[] = apoio.map((d) => ({
+        id: -d.id, nome: d.nome, quando: '', morada: '', mapa: null,
+        lideres: d.lider ? [`${d.lider.first_name} ${d.lider.last_name}`.trim()] : [],
+        souLider: d.lider_id === sessao.membroId, latitude: null, longitude: null, area: null,
+        apoio: destinoDoApoio(d.id, d.nome),
+    }))
+    return [...grupos.map((g) => {
         const morada = [[g.endereco, g.numero].filter(Boolean).join(', '), g.bairro, g.cidade]
             .map((p) => p?.trim()).filter(Boolean).join(' · ')
         const destino = g.latitude != null && g.longitude != null ? `${g.latitude},${g.longitude}` : morada
@@ -109,5 +132,5 @@ export async function meusGrupos(sessao: SessionData): Promise<MeuGrupo[]> {
             longitude: g.mostrar_mapa ? g.longitude : null,
             area: g.mostrar_mapa ? lerArea(g.area) : null,
         }
-    })
+    }), ...deApoio]
 }

@@ -24,7 +24,7 @@ export default async function GestaoGrupoPage(props: { params: Promise<{ id: str
         }
     });
 
-    if (!grupo) redirect('/membros/dashboard?error=Grupo não encontrado');
+    if (!grupo) redirect(`/membros/dashboard?error=${encodeURIComponent('Grupo não encontrado')}`);
 
     // VERIFICAÇÃO DE PAPÉIS
     const isLider = grupo.lideres.some((lider: any) => lider.id === session.membroId);
@@ -33,7 +33,7 @@ export default async function GestaoGrupoPage(props: { params: Promise<{ id: str
 
     // Se não for líder, nem membro, nem admin, é expulso
     if (!isLider && !isMembro && !isAdmin) {
-        redirect('/membros/dashboard?error=Acesso negado. Não pertences a este grupo.');
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso negado. Não pertences a este grupo.')}`);
     }
 
     const temPermissaoEdicao = isLider || isAdmin;

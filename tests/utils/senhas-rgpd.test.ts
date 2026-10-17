@@ -48,6 +48,11 @@ describe('link para definir a palavra-passe', () => {
         expect(await criarLinkRedefinir(membro)).toMatch(/^https:\/\/portal\.exemplo\.pt\/membros\/nova-senha\?t=/)
     })
 
+    it('acrescenta https:// quando o APP_URL vem sem ele', () => {
+        vi.stubEnv('APP_URL', 'app.igrejaadmvc.org')
+        expect(urlDoPortal()).toBe('https://app.igrejaadmvc.org')
+    })
+
     it('vale para o membro certo enquanto a senha nao muda (uso unico)', async () => {
         const token = decodeURIComponent((await criarLinkRedefinir(membro)).split('t=')[1])
         expect(await linkValidoPara(token, membro)).toBe(true)

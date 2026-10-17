@@ -3,7 +3,7 @@ import { getDb } from '@/lib/db'
 import { getSessionData, isAdmin as isAdminCheck } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { HeartHandshake, Package, ArrowDown, ArrowUp, AlertTriangle, ChevronRight } from 'lucide-react'
+import { HeartHandshake, Package, ArrowDown, ArrowUp, AlertTriangle, ChevronRight, Users } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,7 +23,7 @@ const CATEGORIAS_COR: Record<string, string> = {
 
 export default async function AssistenciaDashboardPage() {
     const session = await getSessionData()
-    if (!session) redirect('/membros/login?error=Sessao expirada')
+    if (!session) redirect(`/membros/login?error=${encodeURIComponent('Sessao expirada')}`)
 
     const db = await getDb()
 
@@ -48,7 +48,7 @@ export default async function AssistenciaDashboardPage() {
     )
 
     if (!isAdmin && !isFinance && !isEquipaSocial && !isLiderSocial) {
-        redirect('/membros/dashboard?error=Acesso restrito a equipa de Assistencia Social.')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso restrito a equipa de Assistencia Social.')}`)
     }
 
     const [itens, movimentosMes] = await Promise.all([
@@ -101,7 +101,14 @@ export default async function AssistenciaDashboardPage() {
             </div>
 
             {/* Acções rápidas */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <Link href="/assistencia/familias"
+                    className="flex flex-col items-center gap-2 bg-bg2 border border-soft rounded-2xl p-4 hover:border-figueira/30 transition-all active:scale-[0.98]">
+                    <div className="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                        <Users size={16} />
+                    </div>
+                    <h4 className="text-[13px] md:text-[14px] font-bold uppercase text-fg text-center">Famílias</h4>
+                </Link>
                 <Link href="/assistencia/stock"
                     className="flex flex-col items-center gap-2 bg-bg2 border border-soft rounded-2xl p-4 hover:border-figueira/30 transition-all active:scale-[0.98]">
                     <div className="w-9 h-9 rounded-xl bg-figueira/10 text-figueira flex items-center justify-center">

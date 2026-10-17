@@ -36,7 +36,7 @@ export default async function ObreirosRelatorio({
 
     const role = getObreirosRole(membroLogado, session.role)
     if (!podeVerRelatorio(role)) {
-        redirect('/membros/dashboard?error=Acesso restrito.')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso restrito.')}`)
     }
 
     // Encontrar departamento

@@ -153,6 +153,8 @@ model Tenant {
   movimentosBancarios      MovimentoBancario[]
   eventosInscricao         EventoInscricao[]
   inscricoes               Inscricao[]
+  familiasAssistencia FamiliaAssistencia[]
+  agendaDepartamentos AgendaDepartamento[]
 }
 
 model Congregacao {
@@ -340,6 +342,7 @@ model Departamento {
   congregacaoId    Int?
   is_global        Boolean                  @default(false)
   e_louvor         Boolean                  @default(false) // Ministerio de louvor: tem repertorio e setlist
+  tem_escala       Boolean                  @default(true) // false = grupo de apoio (Acolhimento, Cantina...): sem escala
   foto_url         String?
   tenant_id        Int
   avisoMurals      AvisoMural[]
@@ -354,6 +357,7 @@ model Departamento {
   itens_inventario ItemInventario[]
   interesses       InteresseDepartamento[] @relation("InteresseDepartamento")
   eventosInscricao EventoInscricao[]
+  agenda           AgendaDepartamento[]
 
   @@unique([nome, tenant_id, congregacaoId])
   @@index([tenant_id])
@@ -1709,9 +1713,12 @@ model MovimentoAssistencia {
 
   tenant          Tenant                 @relation(fields: [tenant_id], references: [id])
   item            ItemAssistenciaSocial  @relation(fields: [item_id], references: [id])
+  familia_id      Int?                   // família registada (opcional)
+  familia         FamiliaAssistencia?    @relation(fields: [familia_id], references: [id], onDelete: SetNull)
 
   @@index([tenant_id])
   @@index([item_id])
+  @@index([familia_id])
   @@map("assistencia_movimentos")
 }
 
@@ -1755,12 +1762,38 @@ model EntregaCesta {
   entregue_por    Int?               // Membro que entregou
   criado_em       DateTime           @default(now())
 
+  familia_id      Int?               // família registada (opcional; o nome à mão continua)
   tenant          Tenant             @relation(fields: [tenant_id], references: [id])
   tipoCesta       TipoCesta          @relation(fields: [tipo_cesta_id], references: [id])
+  familia         FamiliaAssistencia? @relation(fields: [familia_id], references: [id], onDelete: SetNull)
 
   @@index([tenant_id])
   @@index([tipo_cesta_id])
+  @@index([familia_id])
   @@map("assistencia_entregas_cesta")
+}
+
+// Ação Social: famílias apoiadas (registo simples, com autorização RGPD)
+model FamiliaAssistencia {
+  id               Int                    @id @default(autoincrement())
+  tenant_id        Int
+  nome             String                 // responsável / nome da família
+  telefone         String?
+  morada           String?
+  pessoas          Int                    @default(1)
+  notas            String?
+  ativo            Boolean                @default(true)
+  consentimento_em DateTime               // quando autorizou guardar os dados
+  criado_por       Int?
+  criado_em        DateTime               @default(now())
+  atualizado_em    DateTime               @default(now()) @updatedAt
+
+  tenant           Tenant                 @relation(fields: [tenant_id], references: [id])
+  entregas         EntregaCesta[]
+  movimentos       MovimentoAssistencia[]
+
+  @@index([tenant_id])
+  @@map("assistencia_familias")
 }
 
 // ── GESTAO FINANCEIRA — FUNDOS, DESPESAS, ORCAMENTO ──────────────────────────
@@ -2054,3 +2087,29 @@ model Inscricao {
   @@index([tenant_id])
   @@map("inscricoes")
 }
+
+// Agenda de um departamento: reuniões, orações, ensaios… (marcados pelo líder; registo depois)
+model AgendaDepartamento {
+  id              Int          @id @default(autoincrement())
+  tenant_id       Int
+  departamento_id Int
+  titulo          String
+  tipo            String       @default("REUNIAO") // REUNIAO, ORACAO, ENSAIO, FORMACAO, CONVIVIO, OUTRO
+  inicio          DateTime     // hora de Lisboa gravada em UTC
+  fim             DateTime?
+  local           String?
+  descricao       String?
+  registo         String?      // o que se fez (depois do encontro)
+  presentes       Int?
+  criado_por      Int?
+  criado_em       DateTime     @default(now())
+  atualizado_em   DateTime     @default(now()) @updatedAt
+
+  tenant          Tenant       @relation(fields: [tenant_id], references: [id])
+  departamento    Departamento @relation(fields: [departamento_id], references: [id], onDelete: Cascade)
+
+  @@index([tenant_id])
+  @@index([departamento_id, inicio])
+  @@map("agenda_departamento")
+}
+

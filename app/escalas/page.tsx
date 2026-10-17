@@ -61,9 +61,14 @@ export default async function EscalasPage(props: { searchParams: Promise<{ equip
         <div className="app-novo min-h-screen">
             <LembrarMinisterio id={atual.id} />
             <main className="mx-auto max-w-3xl px-4 pt-20 pb-28 md:pt-8 space-y-5">
-                <header>
-                    <h1 className="text-[24px] font-bold leading-tight">Escalas</h1>
-                    <p className="text-[16px] a-suave">{atual.nome}</p>
+                <header className="flex items-end justify-between gap-3">
+                    <div>
+                        <h1 className="text-[24px] font-bold leading-tight">Escalas</h1>
+                        <p className="text-[16px] a-suave">{atual.nome}</p>
+                    </div>
+                    <Link href={`/membros/gestao/equipa/${atual.id}`} className="a-foco text-[15px] font-semibold underline" style={{ color: 'var(--a-destaque)' }}>
+                        Pessoas da equipa
+                    </Link>
                 </header>
 
                 {ministerios.length > 1 && (

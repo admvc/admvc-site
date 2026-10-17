@@ -13,7 +13,7 @@ export default async function RelatorioFinanceiroPage({
     searchParams: Promise<{ de?: string; ate?: string }>
 }) {
     const session = await getSessionData()
-    if (!session) redirect('/membros/login?error=Sessao expirada')
+    if (!session) redirect(`/membros/login?error=${encodeURIComponent('Sessao expirada')}`)
 
     const admin = isAdminCheck(session.role)
     if (!admin) {
@@ -21,7 +21,7 @@ export default async function RelatorioFinanceiroPage({
         const lideraCantina = await db.departamento.findFirst({
             where: { lider_id: session.membroId, nome: { contains: 'Cantina', mode: 'insensitive' } },
         })
-        if (!lideraCantina) redirect('/membros/dashboard?error=Acesso restrito')
+        if (!lideraCantina) redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso restrito')}`)
     }
 
     const params = await searchParams

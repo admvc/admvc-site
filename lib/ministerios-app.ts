@@ -40,15 +40,17 @@ export async function meusMinisterios(sessao: SessionData): Promise<MeuMinisteri
     const db = getTenantClient(sessao.tenantId)
     const hoje = inicioDeHoje()
     const deptos = await db.departamento.findMany({
+        // Só os que têm escala; os grupos de apoio (Acolhimento, Cantina...) aparecem em "Os meus grupos"
         where: isAdmin(sessao.role)
             ? {
+                tem_escala: true,
                 OR: [
                     { funcoes: { some: {} } },
                     { lider_id: sessao.membroId },
                     { integrantes: { some: { membro_id: sessao.membroId } } },
                 ],
             }
-            : { OR: [{ lider_id: sessao.membroId }, { integrantes: { some: { membro_id: sessao.membroId } } }] },
+            : { tem_escala: true, OR: [{ lider_id: sessao.membroId }, { integrantes: { some: { membro_id: sessao.membroId } } }] },
         select: {
             id: true, nome: true, foto_url: true, e_louvor: true,
             _count: { select: { integrantes: true } },

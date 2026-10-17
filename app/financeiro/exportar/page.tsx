@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 export default async function ExportarPage() {
     const session = await getSessionData()
     if (!session || session.role !== 'ADMIN') {
-        redirect('/membros/dashboard?error=Acesso negado')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso negado')}`)
     }
 
     return (

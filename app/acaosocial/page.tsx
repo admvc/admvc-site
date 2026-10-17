@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic'
 export default async function AdminDespensaPage() {
     const db = await getDb()
     const session = await getSessionData()
-    if (!session) redirect('/membros/login?error=Sessao expirada')
+    if (!session) redirect(`/membros/login?error=${encodeURIComponent('Sessao expirada')}`)
 
     const membroLogado = await db.membro.findUnique({
         where: { id: session.membroId },
@@ -27,7 +27,7 @@ export default async function AdminDespensaPage() {
     })
 
     if (!isAdmin && !isFinance && !isEquipaSocial) {
-        redirect('/membros/dashboard?error=Acesso restrito a equipa de Acao Social.')
+        redirect(`/membros/dashboard?error=${encodeURIComponent('Acesso restrito a equipa de Acao Social.')}`)
     }
 
     // Buscar categorias de despensa/assistencia do sistema local

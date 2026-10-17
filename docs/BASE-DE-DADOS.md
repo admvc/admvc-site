@@ -45,3 +45,12 @@ produção não é tocada.
   - as mesmas em `@b.teste` (segunda igreja);
   - `senha-antiga@a.teste`, com a senha `admvc123`: deve ser recusada;
   - Super Admin: `sa@teste.teste`.
+
+## Horas dos eventos (regra)
+
+As datas/horas de cultos, eventos, escalas e compromissos estão gravadas como **hora de Lisboa
+"escrita" em UTC**: um culto às 20:00 fica `20:00Z`, no verão e no inverno. Por isso:
+- ao gravar: `new Date(\`${dia}T${hora}:00Z\`)` ou `setUTCHours` (nunca `setHours`);
+- ao mostrar: `timeZone: 'UTC'` (nunca o fuso do browser nem `Europe/Lisbon`);
+- carimbos de "quando aconteceu" (`criado_em`, pagamentos, logs) são instantes reais:
+  mostram-se com `timeZone: 'Europe/Lisbon'`.

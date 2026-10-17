@@ -30,7 +30,7 @@ export default function FormBoasVindas({ congregacao }: { congregacao: { id: num
             const res = await fetch('/api/public/visitante', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nome: nome.trim(), telefone: telefone.trim(), pedido_oracao: pedido.trim() || null, consentimento, congregacao: congregacao?.id })
+                body: JSON.stringify({ nome: nome.trim(), telefone: telefone.trim(), pedido_oracao: pedido.trim() || null, consentimento, congregacao: congregacao?.id, origem: 'QR', empresa: (document.getElementById('bv-empresa') as HTMLInputElement | null)?.value ?? '' })
             })
             const data = await res.json()
             if (!res.ok) {
@@ -101,6 +101,9 @@ export default function FormBoasVindas({ congregacao }: { congregacao: { id: num
                 </div>
 
                 <form onSubmit={handleSubmit} noValidate className="space-y-5">
+                    {/* Armadilha para robôs: escondida das pessoas (e dos leitores de ecrã) */}
+                    <input id="bv-empresa" name="empresa" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true"
+                        className="absolute -left-[9999px] h-px w-px opacity-0" />
                     <div className="space-y-2">
                         <label htmlFor="bv-nome" className="block text-[16px] font-semibold">Nome completo</label>
                         <input id="bv-nome" type="text" autoComplete="name" value={nome} onChange={e => { setNome(e.target.value); setFalta(null) }}

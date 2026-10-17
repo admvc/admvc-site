@@ -88,6 +88,7 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
     if (temModulo(MODULOS.ACOLHIMENTO) && (permissoes.isAcolhimento || permissoes.isAdmin)) itensMais.push({ chave: 'acolhimento', texto: 'Acolhimento', href: '/departamentos/acolhimento/dashboard' })
     if (temModulo(MODULOS.HOLYRICS) && (permissoes.isMidia || permissoes.isLouvor || permissoes.isAdmin)) itensMais.push({ chave: 'culto-holyrics', texto: 'Culto no Holyrics', href: '/midia/culto', detalhe: 'Enviar as músicas do culto de hoje' })
     if (temModulo(MODULOS.HOLYRICS) && (permissoes.isMidia || permissoes.isAdmin)) itensMais.push({ chave: 'midia', texto: 'Mídia', href: '/midia/holyrics', detalhe: 'Holyrics' })
+    if (permissoes.isMidia || permissoes.isAdmin) itensMais.push({ chave: 'divulgar', texto: 'Agenda para divulgar', href: '/midia/agenda', detalhe: 'Telão, redes, impressão' })
     if (temModulo(MODULOS.MESA_SOM) && (permissoes.isMidia || permissoes.isLouvor || permissoes.isAdmin)) itensMais.push({ chave: 'mesa', texto: 'Mesa de som', href: '/midia/mesax32' })
     if (temModulo(MODULOS.LUMIKIT) && (permissoes.isMidia || permissoes.isAdmin)) itensMais.push({ chave: 'luz', texto: 'Iluminação', href: '/midia/lumikit' })
     // Modulos que so aparecem se estiverem ligados no Cloud (e para quem tem acesso)
@@ -96,7 +97,7 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
     if (temModulo(MODULOS.FINANCEIRO) && permissoes.isFinance) itensMais.push({ chave: 'tesouraria', texto: 'Tesouraria', href: '/tesouraria' })
     if (temModulo(MODULOS.ASSISTENCIA) && (permissoes.isSocial || permissoes.isAdmin || role === 'FINANCE')) itensMais.push({ chave: 'social', texto: 'Assistência social', href: '/assistencia' })
     if (temModulo(MODULOS.PREGACAO)) itensMais.push({ chave: 'pregacao', texto: 'Pregações', href: '/pregacao' })
-    if (permissoes.isDiaconia || permissoes.isAdmin) itensMais.push({ chave: 'obreiros', texto: 'Obreiros', href: '/departamentos/obreiros/dashboard' })
+    if (permissoes.isAdmin) itensMais.push({ chave: 'obreiros', texto: 'Obreiros', href: '/departamentos/obreiros/dashboard' })
     if (temModulo(MODULOS.EBD)) itensMais.push({ chave: 'cursos', texto: 'Cursos', href: '/ensino' })
     if (temModulo(MODULOS.BOLEIA)) itensMais.push({ chave: 'boleias', texto: 'Boleias', href: '/boleia', detalhe: 'Oferecer ou pedir boleia para o culto' })
     if (temModulo(MODULOS.GABINETE)) {
