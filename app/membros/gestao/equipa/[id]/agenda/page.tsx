@@ -1,5 +1,5 @@
 // Agenda de uma equipa: os próximos encontros (reuniões, orações, ensaios…) e o relatório do mês
-// (o que se fez e quantos estiveram). Vê a equipa e a administração; marca quem gere a equipa.
+// (o que se fez, quem esteve e a foto). Vê a equipa e a administração; marca quem gere a equipa.
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { ArrowLeft, ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
@@ -8,7 +8,7 @@ import { getTenantClient } from '@/lib/prisma'
 import { podeGerirEscalasDoDepartamento } from '@/lib/escalas-permissoes'
 import { lerMes, limitesDoMes, mesVizinho, nomeDoMes, TIPOS_AGENDA_DEPTO, type TipoAgendaDepto } from '@/lib/agenda'
 import { diaPorExtenso, hora } from '@/components/app/datas'
-import { AcoesEncontro, FormEncontro, type Encontro } from '@/components/app/AgendaEquipaClient'
+import { AcoesEncontro, FormEncontro, type Encontro, type PessoaEquipa } from '@/components/app/AgendaEquipaClient'
 import Imprimir from '@/components/app/Imprimir'
 
 export const dynamic = 'force-dynamic'
@@ -21,11 +21,15 @@ export default async function AgendaEquipa({ params, searchParams }: { params: P
     const db = getTenantClient(sessao.tenantId)
     const depto = await db.departamento.findUnique({
         where: { id: deptoId },
-        select: { id: true, nome: true, lider_id: true, integrantes: { where: { membro_id: sessao.membroId }, select: { id: true } } },
+        select: {
+            id: true, nome: true, lider_id: true,
+            lider: { select: { id: true, first_name: true, last_name: true } },
+            integrantes: { select: { membro_id: true, membro: { select: { id: true, first_name: true, last_name: true } } } },
+        },
     })
     if (!depto) redirect('/membros/dashboard')
     const gere = await podeGerirEscalasDoDepartamento(sessao, deptoId)
-    if (!gere && !isAdmin(sessao.role) && depto.lider_id !== sessao.membroId && depto.integrantes.length === 0) {
+    if (!gere && !isAdmin(sessao.role) && depto.lider_id !== sessao.membroId && !depto.integrantes.some((i) => i.membro_id === sessao.membroId)) {
         redirect(`/membros/dashboard?error=${encodeURIComponent('Só quem é desta equipa vê a agenda dela.')}`)
     }
 
@@ -34,15 +38,30 @@ export default async function AgendaEquipa({ params, searchParams }: { params: P
     const agoraLisboa = new Date(new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Lisbon', dateStyle: 'short', timeStyle: 'short' }).format(new Date()).replace(' ', 'T') + ':00Z')
     const mes = lerMes((await searchParams).mes, hojeTxt)
     const { inicio, fim } = limitesDoMes(mes)
-    const campos = { id: true, titulo: true, tipo: true, inicio: true, fim: true, local: true, descricao: true, registo: true, presentes: true } as const
+    const campos = {
+        id: true, titulo: true, tipo: true, inicio: true, fim: true, local: true, descricao: true, registo: true, presentes: true, foto_url: true,
+        presentes_membros: { select: { id: true, first_name: true, last_name: true } },
+    } as const
     const [proximos, doMes] = await Promise.all([
         db.agendaDepartamento.findMany({ where: { departamento_id: deptoId, inicio: { gte: agoraLisboa } }, orderBy: { inicio: 'asc' }, take: 30, select: campos }),
         db.agendaDepartamento.findMany({ where: { departamento_id: deptoId, inicio: { gte: inicio, lt: fim } }, orderBy: { inicio: 'asc' }, select: campos }),
     ])
-    const paraCliente = (e: (typeof proximos)[number]): Encontro => ({ ...e, inicio: e.inicio.toISOString(), fim: e.fim?.toISOString() ?? null })
+    const nomeDe = (m: { first_name: string; last_name: string }) => `${m.first_name} ${m.last_name}`.replace(/\s+/g, ' ').trim()
+    // A equipa (integrantes + líder), por ordem alfabética: é a lista para marcar quem esteve
+    const pessoas = new Map<number, string>()
+    for (const i of depto.integrantes) if (i.membro) pessoas.set(i.membro.id, nomeDe(i.membro))
+    if (depto.lider) pessoas.set(depto.lider.id, nomeDe(depto.lider))
+    const equipa: PessoaEquipa[] = [...pessoas].map(([id, nome]) => ({ id, nome })).sort((a, b) => a.nome.localeCompare(b.nome, 'pt'))
+    const paraCliente = ({ presentes_membros, ...e }: (typeof proximos)[number]): Encontro => ({
+        ...e, inicio: e.inicio.toISOString(), fim: e.fim?.toISOString() ?? null, presentesIds: presentes_membros.map((m) => m.id),
+    })
     const tipo = (t: string) => TIPOS_AGENDA_DEPTO[t as TipoAgendaDepto] ?? t
     const passados = doMes.filter((e) => e.inicio < agoraLisboa)
     const totalPresentes = passados.reduce((s, e) => s + (e.presentes ?? 0), 0)
+    // Presenças de cada pessoa nos encontros do mês em que se marcou quem esteve
+    const comLista = passados.filter((e) => e.presentes_membros.length > 0)
+    const presencas = equipa.map((p) => ({ ...p, n: comLista.filter((e) => e.presentes_membros.some((m) => m.id === p.id)).length }))
+        .sort((a, b) => b.n - a.n || a.nome.localeCompare(b.nome, 'pt'))
 
     return (
         <div className="app-novo min-h-screen">
@@ -95,11 +114,31 @@ export default async function AgendaEquipa({ params, searchParams }: { params: P
                                         <p className="text-[15px] a-suave">{tipo(e.tipo)} · {hora(e.inicio.toISOString())}{e.presentes != null ? ` · ${e.presentes} presentes` : ''}</p>
                                         {e.registo ? <p className="whitespace-pre-wrap text-[15px]">{e.registo}</p>
                                             : passou && <p className="text-[15px] a-suave">Ainda sem registo.</p>}
-                                        {gere && passou && <div className="print:hidden"><AcoesEncontro deptoId={deptoId} e={paraCliente(e)} passado /></div>}
+                                        {e.presentes_membros.length > 0 && (
+                                            <p className="text-[15px]"><span className="font-semibold">Estiveram:</span> {e.presentes_membros.map(nomeDe).sort((a, b) => a.localeCompare(b, 'pt')).join(', ')}</p>
+                                        )}
+                                        {e.foto_url && (
+                                            /* eslint-disable-next-line @next/next/no-img-element */
+                                            <a href={e.foto_url} target="_blank" rel="noreferrer" className="block pt-1"><img src={e.foto_url} alt={`Foto: ${e.titulo}`} loading="lazy" className="max-h-64 w-full rounded-[14px] object-cover print:max-h-48" /></a>
+                                        )}
+                                        {gere && passou && <div className="print:hidden"><AcoesEncontro deptoId={deptoId} e={paraCliente(e)} passado equipa={equipa} /></div>}
                                     </li>
                                 )
                             })}
                         </ul>
+                    )}
+                    {comLista.length > 0 && (
+                        <div className="a-card space-y-2 px-4 py-3 break-inside-avoid">
+                            <h3 className="text-[17px] font-bold">Presenças no mês · {comLista.length} {comLista.length === 1 ? 'encontro com lista' : 'encontros com lista'}</h3>
+                            <ul className="grid gap-x-6 gap-y-1 text-[15px] sm:grid-cols-2">
+                                {presencas.map((p) => (
+                                    <li key={p.id} className="flex items-center justify-between gap-3 border-b py-1" style={{ borderColor: 'var(--a-borda)' }}>
+                                        <span className="min-w-0 truncate">{p.nome}</span>
+                                        <span className="shrink-0 tabular-nums" style={p.n === 0 ? { color: 'var(--a-erro)' } : undefined}>{p.n}/{comLista.length}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     )}
                 </section>
             </main>

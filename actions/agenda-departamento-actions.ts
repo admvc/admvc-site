@@ -1,11 +1,13 @@
 'use server'
 
 // Agenda de um departamento: o líder (ou quem ele nomeou) e a administração marcam, mudam e apagam
-// encontros; depois do encontro registam o que se fez e quantos estiveram (para o relatório).
+// encontros; depois do encontro registam o que se fez, quem esteve e uma foto (para o relatório).
 // Horas como hora de Lisboa gravada em UTC (docs/BASE-DE-DADOS.md).
 
 import { revalidatePath } from 'next/cache'
 import { after } from 'next/server'
+import { put } from '@vercel/blob'
+import { comprimirImagem } from '@/lib/image-utils'
 import { requireAuth } from '@/lib/auth-utils'
 import { getTenantClient } from '@/lib/prisma'
 import { podeGerirEscalasDoDepartamento } from '@/lib/escalas-permissoes'
@@ -63,16 +65,49 @@ export async function guardarEncontro(formData: FormData): Promise<R> {
     }
 }
 
+/** Depois do encontro: o que se fez, quem esteve (pessoas da equipa) e uma foto (como nos Grupos e PGs). */
 export async function registarEncontro(formData: FormData): Promise<R> {
     try {
         const deptoId = Number(formData.get('departamento_id'))
+        const id = Number(formData.get('id'))
         const { db } = await gestor(deptoId)
-        const presentes = formData.get('presentes') ? Math.max(0, Math.min(999, Number(formData.get('presentes')) || 0)) : null
-        const n = await db.agendaDepartamento.updateMany({
-            where: { id: Number(formData.get('id')), departamento_id: deptoId },
-            data: { registo: texto(formData.get('registo'), 3000), presentes },
+        const encontro = await db.agendaDepartamento.findFirst({ where: { id, departamento_id: deptoId }, select: { id: true } })
+        if (!encontro) return { ok: false, error: 'Encontro não encontrado.' }
+
+        // Só pessoas desta equipa (integrantes ou o líder)
+        const pedidos = [...new Set(formData.getAll('presentes_ids').map(Number).filter((n) => Number.isInteger(n) && n > 0))]
+        const depto = await db.departamento.findUnique({ where: { id: deptoId }, select: { lider_id: true, integrantes: { select: { membro_id: true } } } })
+        const daEquipa = new Set([...(depto?.integrantes.map((i) => i.membro_id) ?? []), ...(depto?.lider_id ? [depto.lider_id] : [])])
+        const ids = pedidos.filter((m) => daEquipa.has(m))
+        const usaLista = formData.get('com_lista') === '1'
+        const numero = formData.get('presentes') ? Math.max(0, Math.min(999, Number(formData.get('presentes')) || 0)) : null
+
+        let foto_url: string | undefined
+        const foto = formData.get('foto')
+        if (foto instanceof File && foto.size > 0) {
+            if (!/^image\/(jpeg|png|webp)$/.test(foto.type)) return { ok: false, error: 'A foto tem de ser JPG, PNG ou WEBP.' }
+            if (foto.size > 4 * 1024 * 1024) return { ok: false, error: 'A foto é demasiado grande (máx. 4 MB).' }
+            try {
+                const webp = await comprimirImagem(Buffer.from(await foto.arrayBuffer()))
+                foto_url = (await put(`agenda/depto-${deptoId}/${id}-${Date.now()}.webp`, webp, { access: 'public', contentType: 'image/webp' })).url
+            } catch (e) {
+                const m = String((e as Error)?.message || '')
+                return { ok: false, error: /token|unauthori|forbidden|private store|401|403/i.test(m)
+                    ? 'A foto não foi enviada: o armazenamento de imagens recusou o acesso (chave do Blob na Vercel). Nada foi gravado.'
+                    : 'A foto não foi enviada. Tente outra vez ou sem foto.' }
+            }
+        }
+
+        await db.agendaDepartamento.update({
+            where: { id },
+            data: {
+                registo: texto(formData.get('registo'), 3000),
+                presentes: usaLista ? ids.length : numero,
+                ...(usaLista ? { presentes_membros: { set: ids.map((m) => ({ id: m })) } } : {}),
+                ...(foto_url ? { foto_url } : {}),
+                ...(formData.get('tirar_foto') === '1' && !foto_url ? { foto_url: null } : {}),
+            },
         })
-        if (!n.count) return { ok: false, error: 'Encontro não encontrado.' }
         refrescar(deptoId)
         return { ok: true }
     } catch (e) {
