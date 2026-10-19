@@ -385,8 +385,8 @@ export async function pedirAgendamentoAction(dados: {
     try {
         await requireAuth()
 
-        const data_inicio = new Date(`${dados.data}T${dados.hora_inicio}:00`)
-        const data_fim = new Date(`${dados.data}T${dados.hora_fim}:00`)
+        const data_inicio = new Date(`${dados.data}T${dados.hora_inicio}:00Z`)
+        const data_fim = new Date(`${dados.data}T${dados.hora_fim}:00Z`)
 
         if (data_inicio < new Date()) {
             return { ok: false, error: 'Não e possível agendar para uma data/hora já passada.' }

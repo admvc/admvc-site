@@ -7,10 +7,11 @@ import { getSessionData } from '@/lib/auth-utils'
 import { getTenantClient } from '@/lib/prisma'
 import { podeFazerAgenda } from '@/lib/agenda-midia'
 import { lerMes, nomeDoMes, segundaDaSemana } from '@/lib/agenda'
+import { TEMAS_AGENDA, lerTema } from '@/lib/agenda-temas'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AgendaMidia({ searchParams }: { searchParams: Promise<{ semana?: string; mes?: string; c?: string }> }) {
+export default async function AgendaMidia({ searchParams }: { searchParams: Promise<{ semana?: string; mes?: string; c?: string; tema?: string; disposicao?: string }> }) {
     const sessao = await getSessionData()
     if (!sessao) redirect('/membros/login')
     if (!(await podeFazerAgenda(sessao))) redirect(`/membros/dashboard?error=${encodeURIComponent('Só a Mídia e a administração fazem a agenda.')}`)
@@ -20,9 +21,11 @@ export default async function AgendaMidia({ searchParams }: { searchParams: Prom
     const mes = lerMes(q.mes, hoje)
     const c = Number(q.c) || null
     const congregacoes = await getTenantClient(sessao.tenantId).congregacao.findMany({ select: { id: true, nome: true }, orderBy: { nome: 'asc' } })
-    const casa = c ? `&c=${c}` : ''
+    const tema = lerTema(q.tema)
+    const cartoes = q.disposicao === 'cartoes'
+    const casa = (c ? `&c=${c}` : '') + `&tema=${tema.id}`
     const telao = `/api/agenda/imagem?formato=telao&semana=${semana}${casa}`
-    const redes = `/api/agenda/imagem?formato=redes&mes=${mes}${casa}`
+    const redes = `/api/agenda/imagem?formato=redes&mes=${mes}${casa}${cartoes ? '&disposicao=cartoes' : ''}`
     const campo = 'a-foco min-h-[48px] rounded-[14px] border px-3 text-[16px]'
     const estilo = { background: 'var(--a-card)', borderColor: 'var(--a-borda)', color: 'var(--a-texto)' }
 
@@ -46,6 +49,25 @@ export default async function AgendaMidia({ searchParams }: { searchParams: Prom
                                 {congregacoes.map((x) => <option key={x.id} value={x.id}>{x.nome}</option>)}
                             </select></label>
                     )}
+                    <label className="space-y-1"><span className="block text-[15px] font-semibold">Redes</span>
+                        <select name="disposicao" defaultValue={cartoes ? 'cartoes' : ''} className={campo} style={estilo}>
+                            <option value="">Calendário do mês</option>
+                            <option value="cartoes">Cartões (só os dias com eventos)</option>
+                        </select></label>
+                    <fieldset className="w-full space-y-1">
+                        <legend className="text-[15px] font-semibold">Modelo</legend>
+                        <div className="flex flex-wrap gap-2">
+                            {TEMAS_AGENDA.map((t) => (
+                                <label key={t.id} className="flex min-h-[48px] cursor-pointer items-center gap-2 rounded-[14px] border px-3 has-[:checked]:ring-2 has-[:checked]:ring-[var(--a-acento,#f5a524)]" style={estilo}>
+                                    <input type="radio" name="tema" value={t.id} defaultChecked={t.id === tema.id} className="sr-only" />
+                                    <span aria-hidden className="flex h-7 w-10 overflow-hidden rounded-md border" style={{ borderColor: 'var(--a-borda)' }}>
+                                        <span className="flex-1" style={{ background: t.amostra[0] }} /><span className="w-3" style={{ background: t.amostra[1] }} />
+                                    </span>
+                                    <span className="text-[15px]">{t.nome}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </fieldset>
                     <button className="a-botao a-botao-principal">Atualizar</button>
                 </form>
 

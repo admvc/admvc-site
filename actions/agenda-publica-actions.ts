@@ -40,7 +40,7 @@ export async function submeterMarcacaoPublica(formData: FormData) {
         const tenant_id = agenda.tenant_id;
 
         // 1. Calcula a Data de Fim (vamos assumir reuniões de 1 hora por padrão)
-        const data_inicio_completa = new Date(`${data_str}T${hora_inicio}:00`);
+        const data_inicio_completa = new Date(`${data_str}T${hora_inicio}:00Z`); // hora de Lisboa gravada em UTC
         const data_fim_completa = new Date(data_inicio_completa.getTime() + 60 * 60 * 1000);
 
         // 2. Verificar se esse horário não foi ocupado entretanto
