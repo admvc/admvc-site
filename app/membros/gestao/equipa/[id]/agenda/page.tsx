@@ -58,10 +58,6 @@ export default async function AgendaEquipa({ params, searchParams }: { params: P
     const tipo = (t: string) => TIPOS_AGENDA_DEPTO[t as TipoAgendaDepto] ?? t
     const passados = doMes.filter((e) => e.inicio < agoraLisboa)
     const totalPresentes = passados.reduce((s, e) => s + (e.presentes ?? 0), 0)
-    // Presenças de cada pessoa nos encontros do mês em que se marcou quem esteve
-    const comLista = passados.filter((e) => e.presentes_membros.length > 0)
-    const presencas = equipa.map((p) => ({ ...p, n: comLista.filter((e) => e.presentes_membros.some((m) => m.id === p.id)).length }))
-        .sort((a, b) => b.n - a.n || a.nome.localeCompare(b.nome, 'pt'))
 
     return (
         <div className="app-novo min-h-screen">
@@ -126,19 +122,6 @@ export default async function AgendaEquipa({ params, searchParams }: { params: P
                                 )
                             })}
                         </ul>
-                    )}
-                    {comLista.length > 0 && (
-                        <div className="a-card space-y-2 px-4 py-3 break-inside-avoid">
-                            <h3 className="text-[17px] font-bold">Presenças no mês · {comLista.length} {comLista.length === 1 ? 'encontro com lista' : 'encontros com lista'}</h3>
-                            <ul className="grid gap-x-6 gap-y-1 text-[15px] sm:grid-cols-2">
-                                {presencas.map((p) => (
-                                    <li key={p.id} className="flex items-center justify-between gap-3 border-b py-1" style={{ borderColor: 'var(--a-borda)' }}>
-                                        <span className="min-w-0 truncate">{p.nome}</span>
-                                        <span className="shrink-0 tabular-nums" style={p.n === 0 ? { color: 'var(--a-erro)' } : undefined}>{p.n}/{comLista.length}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
                     )}
                 </section>
             </main>
