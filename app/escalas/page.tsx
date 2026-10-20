@@ -9,6 +9,7 @@ import { podeGerirEscalasDoDepartamento } from '@/lib/escalas-permissoes'
 import { cultosDoMinisterio, meusMinisterios } from '@/lib/ministerios-app'
 import CartaoCulto from '@/components/app/CartaoCulto'
 import CalendarioEscalas from '@/components/app/CalendarioEscalas'
+import AbasEquipa from '@/components/app/AbasEquipa'
 import LembrarMinisterio from '@/components/app/LembrarMinisterio'
 import ModalRelatorioEscalas from '@/components/membros/ModalRelatorioEscalas'
 import ModalRelatorioLouvor from '@/components/louvor/ModalRelatorioLouvor'
@@ -66,10 +67,8 @@ export default async function EscalasPage(props: { searchParams: Promise<{ equip
                         <h1 className="text-[24px] font-bold leading-tight">Escalas</h1>
                         <p className="text-[16px] a-suave">{atual.nome}</p>
                     </div>
-                    <Link href={`/membros/gestao/equipa/${atual.id}`} className="a-foco text-[15px] font-semibold underline" style={{ color: 'var(--a-destaque)' }}>
-                        Pessoas da equipa
-                    </Link>
                 </header>
+                <AbasEquipa deptoId={atual.id} ativa="escalas" />
 
                 {ministerios.length > 1 && (
                     <nav aria-label="Ministério" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-hide">

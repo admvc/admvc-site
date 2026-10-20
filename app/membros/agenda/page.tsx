@@ -1,7 +1,7 @@
 // Agenda: os proximos cultos e eventos, por semana (lista) ou mes a mes (calendario), com a minha
 // escala em cada um e os encontros das minhas equipas (reunioes, oracoes, ensaios...).
 import { redirect } from 'next/navigation'
-import { CalendarDays, ChevronDown, List, MapPin, UserCheck, Users } from 'lucide-react'
+import { CalendarDays, CalendarPlus, ChevronDown, List, MapPin, Repeat, Target, UserCheck, Users } from 'lucide-react'
 import { getSessionData } from '@/lib/auth-utils'
 import { getTenantClient } from '@/lib/prisma'
 import { estadoDaEscala } from '@/lib/escalas-app'
@@ -17,6 +17,8 @@ import { isAdmin } from '@/lib/auth-utils'
 import { lerMes, limitesDoMes, TIPOS_AGENDA_DEPTO, type TipoAgendaDepto } from '@/lib/agenda'
 import CalendarioMes from '@/components/CalendarioMes'
 import { getTipoEvento } from '@/lib/evento-tipos'
+import { gereDepartamento } from '@/lib/escalas-permissoes'
+import { geralNaAgenda, grupoOndeEstou, grupoQueLidero, meusGruposIds } from '@/lib/agenda-grupos'
 
 export const dynamic = 'force-dynamic'
 
@@ -50,21 +52,32 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
         ? { gte: limitesDoMes(mes).inicio, lt: limitesDoMes(mes).fim }
         : { gte: hoje, lte: new Date(hoje.getTime() + 56 * 86400000) }
 
+    // Equipas onde posso marcar ensaios e reuniões (o botão "+ Marcar encontro" fica aqui, não no Início)
+    const veTudo = await geralNaAgenda(sessao)   // administração ou Pastor
+    const [deptosQueGero, gruposQueGero, meusGrupos] = await Promise.all([
+        db.departamento.findMany({ where: gereDepartamento(sessao.membroId), select: { id: true, nome: true }, orderBy: { nome: 'asc' } }).catch(() => []),
+        db.grupo.findMany({ where: veTudo ? {} : grupoQueLidero(sessao.membroId), select: { id: true, nome: true }, orderBy: { nome: 'asc' } }).catch(() => []),
+        meusGruposIds(sessao).catch(() => [] as number[]),
+    ])
+    const equipasQueGero = [...deptosQueGero.map((d) => ({ chave: `d${d.id}`, nome: d.nome, href: `/membros/gestao/equipa/${d.id}/agenda?novo=1` })), ...gruposQueGero.map((g) => ({ chave: `g${g.id}`, nome: g.nome, href: `/membros/grupo/${g.id}/agenda?novo=1` }))]
+    const gereAlgo = equipasQueGero.length > 0
+
     // Encontros das minhas equipas (o administrador vê todos)
     const encontros = await db.agendaDepartamento.findMany({
         where: {
             inicio: periodo,
-            ...(isAdmin(sessao.role) ? {} : { departamento: { OR: [{ lider_id: sessao.membroId }, { integrantes: { some: { membro_id: sessao.membroId } } }] } }),
+            ...(veTudo ? {} : { OR: [{ departamento: { OR: [{ lider_id: sessao.membroId }, { integrantes: { some: { membro_id: sessao.membroId } } }] } }, { grupo: grupoOndeEstou(sessao.membroId) }] }),
         },
         orderBy: { inicio: 'asc' },
-        select: { id: true, titulo: true, tipo: true, inicio: true, local: true, departamento_id: true, departamento: { select: { nome: true } } },
+        select: { id: true, titulo: true, tipo: true, inicio: true, local: true, cancelado_em: true, departamento_id: true, grupo_id: true, departamento: { select: { nome: true } }, grupo: { select: { nome: true } } },
     })
 
     const eventos = await db.evento.findMany({
         where: { data: periodo },
         orderBy: { data: 'asc' },
         select: {
-            id: true, nome: true, data: true, descricao: true, tipo: true,
+            id: true, nome: true, data: true, descricao: true, tipo: true, grupo_id: true,
+            grupo: { select: { nome: true } },
             rotina: { select: { itens: true } },
             escalas: {
                 where: { motivo_recusa: null },
@@ -109,14 +122,21 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
     }
     const diaDe = (d: Date) => d.toISOString().slice(0, 10)
 
+    // Culto direcionado a um grupo: "Direcionado: Grupo de Homens" (e "o teu grupo" para quem é desse grupo)
+    const Direcionado = ({ ev }: { ev: { grupo_id: number | null; grupo: { nome: string } | null } }) => ev.grupo_id ? (
+        <span className="mt-1 flex items-center gap-1.5 text-[14px] font-semibold" style={{ color: 'var(--a-destaque)' }}>
+            <Target size={15} aria-hidden /> Direcionado: {ev.grupo?.nome}{meusGrupos.includes(ev.grupo_id) ? ' · o teu grupo' : ''}
+        </span>
+    ) : null
+
     const CartaoEncontro = ({ e }: { e: (typeof encontros)[number] }) => (
         <li>
-            <Link href={`/membros/gestao/equipa/${e.departamento_id}/agenda`} className="a-card a-foco flex items-center gap-3 px-4 py-3">
+            <Link href={e.grupo_id ? `/membros/grupo/${e.grupo_id}/agenda` : `/membros/gestao/equipa/${e.departamento_id}/agenda`} className="a-card a-foco flex items-center gap-3 px-4 py-3">
                 <Users size={20} className="shrink-0 a-suave" aria-hidden />
                 <span className="min-w-0 flex-1">
-                    <span className="block text-[16px] font-semibold">{e.titulo}</span>
+                    <span className="block text-[16px] font-semibold" style={e.cancelado_em ? { textDecoration: 'line-through' } : undefined}>{e.titulo}{e.cancelado_em ? ' (cancelado)' : ''}</span>
                     <span className="block text-[14px] a-suave">
-                        {TIPOS_AGENDA_DEPTO[e.tipo as TipoAgendaDepto] ?? e.tipo} · {e.departamento.nome} · {diaPorExtenso(e.inicio.toISOString())}, às {hora(e.inicio.toISOString())}
+                        {TIPOS_AGENDA_DEPTO[e.tipo as TipoAgendaDepto] ?? e.tipo} · {e.departamento?.nome ?? e.grupo?.nome} · {diaPorExtenso(e.inicio.toISOString())}, às {hora(e.inicio.toISOString())}
                     </span>
                     {e.local && <span className="flex items-center gap-1 text-[14px] a-suave"><MapPin size={14} aria-hidden /> {e.local}</span>}
                 </span>
@@ -136,6 +156,18 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
                             style={vista === 'calendario' ? { background: 'var(--a-card)' } : undefined}><CalendarDays size={17} aria-hidden /> Calendário</Link>
                     </div>
                 </header>
+
+                {gereAlgo && (
+                    <section className="a-card space-y-2 p-4" aria-label="Marcar encontro">
+                        <p className="flex items-center gap-2 text-[17px] font-semibold"><CalendarPlus size={20} aria-hidden /> Marcar ensaio ou reunião</p>
+                        <div className="flex flex-wrap gap-2">
+                            {equipasQueGero.map((d) => (
+                                <Link key={d.chave} href={d.href} className="a-botao a-botao-secundario !min-h-[44px]">{d.nome}</Link>
+                            ))}
+                        </div>
+                        <Link href="/membros/agenda/regras" className="a-foco inline-flex min-h-[44px] items-center gap-2 text-[16px] font-semibold underline"><Repeat size={18} aria-hidden /> Repetir todos os meses (ex.: toda a 1.ª segunda)</Link>
+                    </section>
+                )}
 
                 {vista === 'calendario' && (
                     <>
@@ -160,6 +192,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
                                             <li key={ev.id} className="a-card px-4 py-3">
                                                 <span className="block text-[17px] font-semibold">{ev.nome}</span>
                                                 <span className="block text-[15px] a-suave">{hora(ev.data.toISOString())} · {getTipoEvento(ev.tipo).label}</span>
+                                                <Direcionado ev={ev} />
                                                 {ev.escalas.filter((e) => e.membro_id === sessao.membroId).map((m, i) => (
                                                     <span key={i} className="mt-1 flex flex-wrap items-center gap-2 text-[15px] font-semibold" style={{ color: 'var(--a-destaque)' }}>
                                                         <UserCheck size={17} aria-hidden /> Sirvo: {m.funcao_ref?.nome || m.funcao} <Estado estado={estadoDaEscala(m)} />
@@ -195,6 +228,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
                                                 <span className="flex-1">
                                                     <span className="block text-[17px] font-semibold">{ev.nome}</span>
                                                     <span className="block text-[15px] a-suave">{diaPorExtenso(ev.data.toISOString())}, às {hora(ev.data.toISOString())}</span>
+                                                    <Direcionado ev={ev} />
                                                     {minhas.map((m, i) => (
                                                         <span key={i} className="mt-1 flex flex-wrap items-center gap-2 text-[15px] font-semibold" style={{ color: 'var(--a-destaque)' }}>
                                                             <UserCheck size={17} aria-hidden /> Sirvo: {m.funcao_ref?.nome || m.funcao}

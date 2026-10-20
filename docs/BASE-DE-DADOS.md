@@ -54,3 +54,18 @@ As datas/horas de cultos, eventos, escalas e compromissos estão gravadas como *
 - ao mostrar: `timeZone: 'UTC'` (nunca o fuso do browser nem `Europe/Lisbon`);
 - carimbos de "quando aconteceu" (`criado_em`, pagamentos, logs) são instantes reais:
   mostram-se com `timeZone: 'Europe/Lisbon'`.
+
+## Agenda por grupo e regras repetidas (21/10/2026)
+
+- `agenda_departamento` guarda os encontros de uma **equipa (departamento) OU de um grupo**: `departamento_id` e
+  `grupo_id` são opcionais, mas um dos dois é obrigatório (CHECK). Quem filtra encontros por `departamento_id`
+  (páginas/ações da equipa) nunca vê os de grupo; as páginas pessoais (Início, Agenda, alertas) juntam os dois.
+- `agenda_regras`: "toda a 1.ª segunda, 20h00, Grupo de Homens" (`alvo = ENCONTRO`) ou "toda a 3.ª quarta, culto
+  direcionado aos Jovens" (`alvo = CULTO`). Gera até 3 meses à frente (`lib/agenda-regras.ts`), uma linha por regra e dia
+  (`regra_id` nos encontros e nos `Evento`); o cron diário `/api/cron/agenda-regras` mantém. Não mexe no que já existe;
+  um culto só se cria se não houver outro culto nessa noite (18h–22h).
+- `Evento.grupo_id` = culto direcionado a um grupo (todos o veem; o grupo recebe lembrete na véspera). Em produção os
+  "departamentos" da Mídia/Louvor/Obreiros/Acolhimento são departamentos do sistema; Homens, Mulheres, Casais, Jovens e
+  Adolescentes, Evangelismo e Missões… são **Grupos & PGs** (mesmo que o nome comece por "Departamento de").
+- Quem cria (reuniões do grupo e cultos direcionados): administração, o Pastor (cargo na ficha: `church_role` ou cargos)
+  e o líder do próprio grupo; o líder só mexe no seu (`lib/agenda-grupos.ts`).

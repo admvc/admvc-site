@@ -138,7 +138,8 @@ export default function MeuPerfilClient({ membro, escolaridades = [], departamen
                 {/* TERMOS E FAMILIA (so leitura) */}
                 <div className="a-card a-divide">
                     <Linha Icone={Home} titulo={membro.familia ? `Família ${membro.familia.surname}` : 'Sem família associada'}
-                        texto={membro.familia ? undefined : 'Para associar, fale com a secretaria.'} />
+                        texto={membro.familia ? 'As pessoas da minha casa' : 'Para associar, fale com a secretaria.'}
+                        href={membro.familia ? '/membros/familia' : undefined} />
                     <Linha Icone={FileSignature} titulo="Termo Permanecer"
                         texto={permanecerOk
                             ? (membro.permanecer_validade ? `Aceite, válido até ${new Date(membro.permanecer_validade).toLocaleDateString('pt-PT')}` : 'Aceite')

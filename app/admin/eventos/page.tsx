@@ -54,7 +54,7 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
         db.agendaDepartamento.findMany({
             where: { inicio: { gte: new Date(new Date().toISOString().slice(0, 10) + 'T00:00:00Z'), lte: daqui30 } },
             orderBy: { inicio: 'asc' },
-            select: { id: true, titulo: true, tipo: true, inicio: true, local: true, departamento_id: true, departamento: { select: { nome: true } } },
+            select: { id: true, titulo: true, tipo: true, inicio: true, local: true, departamento_id: true, grupo_id: true, departamento: { select: { nome: true } }, grupo: { select: { nome: true } } },
         }),
     ])
     const comFiltros = (v: string) => {
@@ -169,10 +169,10 @@ export default async function EventosPage({ searchParams }: { searchParams: Prom
                     <ul className="grid gap-2 sm:grid-cols-2">
                         {encontros.map((e) => (
                             <li key={e.id}>
-                                <Link href={`/membros/gestao/equipa/${e.departamento_id}/agenda`} className="block rounded-xl border border-soft bg-bg2 px-4 py-3 hover:border-figueira/40">
+                                <Link href={e.grupo_id ? `/membros/grupo/${e.grupo_id}/agenda` : `/membros/gestao/equipa/${e.departamento_id}/agenda`} className="block rounded-xl border border-soft bg-bg2 px-4 py-3 hover:border-figueira/40">
                                     <span className="block text-sm font-semibold text-fg">{e.titulo}</span>
                                     <span className="block text-[13px] text-muted">
-                                        {e.departamento.nome} · {TIPOS_AGENDA_DEPTO[e.tipo as TipoAgendaDepto] ?? e.tipo} · {e.inicio.toLocaleDateString('pt-PT', { weekday: 'short', day: '2-digit', month: 'short', timeZone: 'UTC' })} às {e.inicio.toISOString().slice(11, 16)}{e.local ? ` · ${e.local}` : ''}
+                                        {e.departamento?.nome ?? e.grupo?.nome} · {TIPOS_AGENDA_DEPTO[e.tipo as TipoAgendaDepto] ?? e.tipo} · {e.inicio.toLocaleDateString('pt-PT', { weekday: 'short', day: '2-digit', month: 'short', timeZone: 'UTC' })} às {e.inicio.toISOString().slice(11, 16)}{e.local ? ` · ${e.local}` : ''}
                                     </span>
                                 </Link>
                             </li>

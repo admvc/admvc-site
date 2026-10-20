@@ -51,6 +51,8 @@ export interface CultoDaSemana {
     id: number
     nome: string
     data: string
+    /** culto direcionado a um grupo (ex.: culto de quarta dos Homens) */
+    direcionado?: { nome: string; meu: boolean }
 }
 
 /** Cultos e eventos dos proximos 7 dias. */
@@ -59,11 +61,14 @@ export async function cultosDaSemana(sessao: SessionData): Promise<CultoDaSemana
     const inicio = new Date(); inicio.setHours(0, 0, 0, 0)
     const eventos = await db.evento.findMany({
         where: { data: { gte: inicio, lt: new Date(inicio.getTime() + 7 * 86400000) } },
-        select: { id: true, nome: true, data: true },
+        select: { id: true, nome: true, data: true, grupo: { select: { nome: true, membros: { where: { id: sessao.membroId }, select: { id: true } }, lideres: { where: { id: sessao.membroId }, select: { id: true } } } } },
         orderBy: { data: 'asc' },
         take: 8,
     })
-    return eventos.map((e) => ({ id: e.id, nome: e.nome, data: e.data.toISOString() }))
+    return eventos.map((e) => ({
+        id: e.id, nome: e.nome, data: e.data.toISOString(),
+        ...(e.grupo ? { direcionado: { nome: e.grupo.nome, meu: e.grupo.membros.length + e.grupo.lideres.length > 0 } } : {}),
+    }))
 }
 
 export interface MeuGrupo {

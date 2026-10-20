@@ -18,6 +18,7 @@ export default function EstaSemana({ cultos }: { cultos: CultoDaSemana[] }) {
                         <li key={c.id} className="py-2.5">
                             <span className="block text-[16px] font-semibold">{c.nome}</span>
                             <span className="block text-[15px] a-suave">{diaCurto(c.data)} · {hora(c.data)}</span>
+                            {c.direcionado && <span className="block text-[14px] font-semibold" style={{ color: 'var(--a-destaque)' }}>Direcionado: {c.direcionado.nome}{c.direcionado.meu ? ' · o teu grupo' : ''}</span>}
                         </li>
                     ))}
                 </ul>

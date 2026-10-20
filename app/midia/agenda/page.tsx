@@ -35,6 +35,7 @@ export default async function AgendaMidia({ searchParams }: { searchParams: Prom
                 <header>
                     <h1 className="text-[24px] font-bold">Agenda para divulgar</h1>
                     <p className="text-[16px] a-suave">Os eventos vêm da Agenda da igreja. Mude lá o que estiver errado e volte aqui.</p>
+                    <Link href="/midia/divulgacao" className="a-foco mt-2 inline-flex min-h-[44px] items-center text-[16px] font-semibold underline">Artes de um culto (oração, boas-vindas, oferta, Palavra) →</Link>
                 </header>
 
                 <form className="a-card flex flex-wrap items-end gap-3 p-4">

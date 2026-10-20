@@ -4,11 +4,13 @@
 // (computador) ou logo a seguir a proxima escala (telemovel).
 import InscricoesAbertas from '@/components/app/InscricoesAbertas'
 import Link from 'next/link'
-import { CalendarHeart, FileSignature, Music2, Users } from 'lucide-react'
+import { CalendarHeart, ChevronRight, FileSignature, Music2, Users } from 'lucide-react'
 import type { SessionData } from '@/lib/auth-utils'
 import { getTenantClient } from '@/lib/prisma'
 import { minhasEscalas, minhasIndisponibilidades } from '@/lib/escalas-app'
 import { meusMinisterios } from '@/lib/ministerios-app'
+import { alertasDoMembro } from '@/lib/alertas-encontros'
+import AlertasEncontros from './AlertasEncontros'
 import { aniversariantesDoMes, cultosDaSemana, meusGrupos, termosPorAssinar } from '@/lib/inicio-app'
 import Aniversariantes from './Aniversariantes'
 import MeusGrupos from './MeusGrupos'
@@ -20,7 +22,7 @@ import { diaPorExtenso, hora } from './datas'
 
 export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: SessionData; primeiroNome: string }) {
     const db = getTenantClient(sessao.tenantId)
-    const [escalas, indisponiveis, ministerios, proximoCulto, termos, aniversariantes, semana, grupos] = await Promise.all([
+    const [escalas, indisponiveis, ministerios, proximoCulto, termos, aniversariantes, semana, grupos, alertas] = await Promise.all([
         minhasEscalas(sessao),
         minhasIndisponibilidades(sessao),
         meusMinisterios(sessao),
@@ -29,8 +31,11 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
         aniversariantesDoMes(sessao),
         cultosDaSemana(sessao),
         meusGrupos(sessao),
+        alertasDoMembro(sessao).catch(() => []),
     ])
-    const [proxima, ...seguintes] = escalas
+    // Início limpo: só a próxima escala POR CONFIRMAR; as confirmadas (e as seguintes) ficam em Escalas
+    const porConfirmar = escalas.filter((e) => e.estado === 'POR_CONFIRMAR')
+    const [proxima, ...maisPorConfirmar] = porConfirmar
     // Quem nao serve em nenhum ministerio nao precisa dos cartoes de escalas
     const sirvo = ministerios.length > 0 || escalas.length > 0
     const linkEscala = (e: (typeof escalas)[number]) => `/escalas/culto/${e.evento.id}?equipa=${e.departamento.id}`
@@ -47,6 +52,8 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
                     <Link href="/membros/termos" className="a-botao a-botao-principal !min-h-[44px]">Ler e aceitar</Link>
                 </section>
             )}
+
+            <AlertasEncontros alertas={alertas} />
 
             <InscricoesAbertas sessao={sessao} />
 
@@ -81,7 +88,7 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
 
             {proxima ? (
                 <CartaoProximaEscala escala={proxima} href={linkEscala(proxima)} />
-            ) : sirvo && (
+            ) : sirvo && escalas.length === 0 && (
                 <section className="a-card p-5 space-y-2">
                     <p className="flex items-center gap-2 text-[18px] font-semibold"><CalendarHeart size={22} aria-hidden /> Não tem escalas marcadas</p>
                     {proximoCulto && (
@@ -98,13 +105,16 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
                 <Aniversariantes lista={aniversariantes} />
             </div>
 
-            {seguintes.length > 0 && (
-                <section className="space-y-3" aria-label="Próximas escalas">
-                    <h2 className="text-[19px] font-bold">Depois</h2>
-                    {seguintes.slice(0, 4).map((e) => (
-                        <CartaoProximaEscala key={e.id} escala={e} titulo={diaPorExtenso(e.evento.data)} compacto href={linkEscala(e)} />
-                    ))}
-                </section>
+            {escalas.length > 0 && (
+                <Link href="/escalas" className="a-card a-foco flex min-h-[56px] items-center justify-between gap-3 p-4">
+                    <span className="min-w-0">
+                        <span className="block text-[17px] font-semibold">As minhas escalas ({escalas.length})</span>
+                        <span className="block text-[14px] a-suave">
+                            {maisPorConfirmar.length > 0 ? `Mais ${maisPorConfirmar.length} por confirmar` : porConfirmar.length === 0 ? 'Tudo confirmado' : 'Ver todas'}
+                        </span>
+                    </span>
+                    <ChevronRight size={22} aria-hidden />
+                </Link>
             )}
 
             <MeusGrupos grupos={grupos} />

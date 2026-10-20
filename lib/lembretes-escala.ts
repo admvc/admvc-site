@@ -52,7 +52,23 @@ export async function lembretesDeHoje(agora = new Date()): Promise<Lembrete[]> {
         grupos.set(chave, g)
     }
 
-    return [...grupos.values()].map((g) => {
+    // Cultos direcionados a um grupo: lembrete aos membros e líderes do grupo (hoje e amanhã)
+    const direcionados = await prisma.evento.findMany({
+        where: { grupo_id: { not: null }, data: { gte: hoje, lt: depois } },
+        select: { id: true, nome: true, data: true, grupo: { select: { nome: true, membros: { select: { id: true } }, lideres: { select: { id: true } } } } },
+    })
+    const doGrupo: Lembrete[] = direcionados.flatMap((ev) => {
+        const eHoje = ev.data < amanha
+        const ids = [...new Set([...(ev.grupo?.membros ?? []), ...(ev.grupo?.lideres ?? [])].map((m) => m.id))]
+        return ids.map((membroId) => ({
+            membroId,
+            title: eHoje ? `Hoje: ${ev.nome}` : `Amanhã: ${ev.nome}`,
+            body: `Culto direcionado ao teu grupo (${ev.grupo?.nome}), às ${hora(ev.data)}.`,
+            url: '/membros/agenda',
+        }))
+    })
+
+    const escalaLembretes = [...grupos.values()].map((g) => {
         const eHoje = g.evento.data < amanha
         const funcoes = g.funcoes.join(', ')
         return {
@@ -64,4 +80,5 @@ export async function lembretesDeHoje(agora = new Date()): Promise<Lembrete[]> {
             url: `/escalas/culto/${g.evento.id}?equipa=${g.deptoId}`,
         }
     })
+    return [...escalaLembretes, ...doGrupo]
 }

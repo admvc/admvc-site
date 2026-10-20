@@ -36,11 +36,12 @@ export default function MeusGrupos({ grupos }: { grupos: MeuGrupo[] }) {
                         )}
                         {g.apoio ? (
                             <Link href={g.apoio.href} className="a-botao a-botao-secundario !min-h-[44px] w-full">{g.apoio.texto}</Link>
-                        ) : (
+                        ) : (<>
+                            <Link href={`/membros/grupo/${g.id}/agenda`} className="a-botao a-botao-secundario !min-h-[44px] w-full">Agenda do grupo</Link>
                             <Link href={`/grupos/gestao/${g.id}`} className="a-botao a-botao-secundario !min-h-[44px] w-full">
                                 {g.souLider ? <><Settings size={18} aria-hidden /> Gerir o grupo</> : 'Ver o grupo e as pessoas'}
                             </Link>
-                        )}
+                        </>)}
                     </li>
                 ))}
             </ul>

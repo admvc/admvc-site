@@ -3,10 +3,11 @@
 // quem gere também muda as funções de cada um (sem tirar a pessoa da equipa).
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { ArrowLeft, CalendarDays, ChevronDown, Mail, Phone, Users } from 'lucide-react'
+import { ArrowLeft, ChevronDown, Mail, Phone, Users } from 'lucide-react'
 import { getSessionData } from '@/lib/auth-utils'
 import { getTenantClient } from '@/lib/prisma'
 import { podeGerirEscalasDoDepartamento } from '@/lib/escalas-permissoes'
+import AbasEquipa from '@/components/app/AbasEquipa'
 import EditarFuncoes from '@/components/app/EditarFuncoes'
 
 export const dynamic = 'force-dynamic'
@@ -67,10 +68,8 @@ export default async function EquipaDepartamento({ params }: { params: Promise<{
                         {depto.integrantes.length} {depto.integrantes.length === 1 ? 'pessoa' : 'pessoas'}
                         {depto.lider ? ` · Líder: ${depto.lider.first_name} ${depto.lider.last_name}` : ''}
                     </p>
-                    <Link href={`/membros/gestao/equipa/${depto.id}/agenda`} className="a-botao a-botao-secundario !min-h-[44px] w-full sm:w-auto">
-                        <CalendarDays size={18} aria-hidden /> Agenda da equipa
-                    </Link>
                 </header>
+                <AbasEquipa deptoId={depto.id} ativa="pessoas" temEscala={depto.tem_escala} />
 
                 {depto.integrantes.length === 0 ? (
                     <p className="a-card flex items-center gap-3 p-5 text-[17px]"><Users size={22} className="a-suave" aria-hidden /> Ainda não há pessoas nesta equipa.</p>

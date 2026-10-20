@@ -72,6 +72,7 @@ const PROTECTED_MODELS = [
     'Sermao', 'EscolaBiblica', 'CursoEBD', 'TurmaEBD', 'MatriculaEBD',
     'AtividadeEBD', 'NotaEBD', 'InteresseCurso',
     'AuditLog', 'BoleiaTracking', 'DespesaCantina', 'TipoCesta', 'EntregaCesta', 'FamiliaAssistencia', 'AgendaDepartamento',
+    'AgendaResposta', 'AgendaAlertaFechado', 'KitDivulgacao', 'RegraAgenda',
     'EventoInscricao', 'Inscricao',
     // Fora de proposito: AvisoPlataforma e PlanoHistorico (da plataforma, nao de uma igreja)
 ]

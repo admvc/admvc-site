@@ -9,6 +9,7 @@ import CabecalhoApp from '@/components/app/CabecalhoApp'
 import BarraBaixo, { type ItemMais } from '@/components/app/BarraBaixo'
 import MenuLateral from '@/components/app/MenuLateral'
 import Moldura from '@/components/app/Moldura'
+import { alertasDoMembro } from '@/lib/alertas-encontros'
 import { modulosAtivosDaIgreja } from '@/lib/modulos'
 import { MODULOS, type Modulo } from '@/lib/planos'
 import PullToRefresh from '@/components/ui/PullToRefresh'
@@ -22,10 +23,11 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
     let ativos: string[] = []
     let gruposQueLidera: { id: number; nome: string }[] = []
     let eventosQueGere = 0
+    let nAlertas = 0
     try {
         const db = getTenantClient(session.tenantId)
         // Tudo em paralelo (a moldura corre em cada pagina)
-        ;[membro, tenantData, ativos, gruposQueLidera, eventosQueGere] = await Promise.all([
+        ;[membro, tenantData, ativos, gruposQueLidera, eventosQueGere, nAlertas] = await Promise.all([
             db.membro.findUnique({
                 where: { id: session.membroId },
                 select: {
@@ -49,6 +51,7 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
                     ],
                 },
             }).catch(() => 0),
+            alertasDoMembro(session).then((a) => a.length).catch(() => 0),
         ])
     } catch (err) {
         console.error('[MEMBRO LAYOUT] Erro ao carregar dados:', err)
@@ -89,6 +92,7 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
     if (temModulo(MODULOS.HOLYRICS) && (permissoes.isMidia || permissoes.isLouvor || permissoes.isAdmin)) itensMais.push({ chave: 'culto-holyrics', texto: 'Culto no Holyrics', href: '/midia/culto', detalhe: 'Enviar as músicas do culto de hoje' })
     if (temModulo(MODULOS.HOLYRICS) && (permissoes.isMidia || permissoes.isAdmin)) itensMais.push({ chave: 'midia', texto: 'Mídia', href: '/midia/holyrics', detalhe: 'Holyrics' })
     if (permissoes.isMidia || permissoes.isAdmin) itensMais.push({ chave: 'divulgar', texto: 'Agenda para divulgar', href: '/midia/agenda', detalhe: 'Telão, redes, impressão' })
+    if (permissoes.isMidia || permissoes.isAdmin) itensMais.push({ chave: 'divulgacao-culto', texto: 'Divulgação do culto', href: '/midia/divulgacao', detalhe: 'Artes do telão: oração, boas-vindas, oferta, Palavra' })
     if (temModulo(MODULOS.MESA_SOM) && (permissoes.isMidia || permissoes.isLouvor || permissoes.isAdmin)) itensMais.push({ chave: 'mesa', texto: 'Mesa de som', href: '/midia/mesax32' })
     if (temModulo(MODULOS.LUMIKIT) && (permissoes.isMidia || permissoes.isAdmin)) itensMais.push({ chave: 'luz', texto: 'Iluminação', href: '/midia/lumikit' })
     // Modulos que so aparecem se estiverem ligados no Cloud (e para quem tem acesso)
@@ -119,7 +123,7 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
             menu={<MenuLateral igreja={igrejaName} nome={nome} avatar={membro.avatar_file || null} perfilHref={perfilHref}
                 itensMais={itensMais} repertorio={repertorio} />}
             // Telemovel: cabecalho simples e barra Inicio, Escalas, Repertorio (louvor) e Mais
-            cabecalho={<CabecalhoApp igreja={igrejaName} nome={nome} avatar={membro.avatar_file || null} perfilHref={perfilHref} adminHref={permissoes.isAdmin ? '/admin/dashboard' : undefined} />}
+            cabecalho={<CabecalhoApp igreja={igrejaName} nome={nome} avatar={membro.avatar_file || null} perfilHref={perfilHref} adminHref={permissoes.isAdmin ? '/admin/dashboard' : undefined} alertas={nAlertas} />}
             barra={<BarraBaixo itensMais={itensMais} repertorio={repertorio} />}
         >
             <PullToRefresh><div className="bg-bg min-h-screen"><FaixaImpersonacao />{children}</div></PullToRefresh>

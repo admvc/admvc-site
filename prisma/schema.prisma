@@ -155,6 +155,10 @@ model Tenant {
   inscricoes               Inscricao[]
   familiasAssistencia FamiliaAssistencia[]
   agendaDepartamentos AgendaDepartamento[]
+  agendaRespostas     AgendaResposta[]
+  agendaAlertasFechados AgendaAlertaFechado[]
+  kitsDivulgacao      KitDivulgacao[]
+  regrasAgenda        RegraAgenda[]
 }
 
 model Congregacao {
@@ -290,6 +294,8 @@ model Membro {
   grupos                     Grupo[]                   @relation("MembrosGrupo")
   encontros_assistidos       EncontroGrupo[]           @relation("MembrosPresentes")
   agenda_presencas           AgendaDepartamento[]      @relation("PresentesAgendaDepto")
+  agenda_respostas           AgendaResposta[]
+  agenda_alertas_fechados    AgendaAlertaFechado[]
   indisponibilidadeMembros   IndisponibilidadeMembro[]
   mensagemEventos            MensagemEvento[]
   itemInventarios            ItemInventario[]
@@ -362,6 +368,7 @@ model Departamento {
 
   @@unique([nome, tenant_id, congregacaoId])
   @@index([tenant_id])
+  regrasAgenda    RegraAgenda[]
 }
 
 model IntegranteDepartamento {
@@ -440,6 +447,9 @@ model Grupo {
   tenant          Tenant           @relation(fields: [tenant_id], references: [id])
   compromissos    Compromisso[]    @relation("CompromissoGrupos")
   lideres         Membro[]         @relation("LideresGrupo")
+  agendaEncontros AgendaDepartamento[]
+  eventosDirecionados Evento[]
+  regrasAgenda    RegraAgenda[]
   membros         Membro[]         @relation("MembrosGrupo")
   eventosInscricao EventoInscricao[]
   itemInventarios ItemInventario[]
@@ -486,6 +496,11 @@ model Evento {
   preEncomendas  PreEncomendaCantina[]
   cardapio       CardapioCantina?
   rotina         RotinaCulto?
+  kitDivulgacao  KitDivulgacao?
+  grupo_id       Int?               // culto direcionado a este grupo (ex.: culto de quarta dos Homens)
+  regra_id       Int?
+  grupo          Grupo?             @relation(fields: [grupo_id], references: [id], onDelete: SetNull)
+  regra          RegraAgenda?       @relation(fields: [regra_id], references: [id], onDelete: SetNull)
 
   @@index([tenant_id])
 }
@@ -2093,7 +2108,9 @@ model Inscricao {
 model AgendaDepartamento {
   id              Int          @id @default(autoincrement())
   tenant_id       Int
-  departamento_id Int
+  departamento_id Int?         // um encontro é de um departamento OU de um grupo (CHECK na base)
+  grupo_id        Int?
+  regra_id        Int?         // criado por uma regra repetida (ex.: toda a 1.ª segunda)
   titulo          String
   tipo            String       @default("REUNIAO") // REUNIAO, ORACAO, ENSAIO, FORMACAO, CONVIVIO, OUTRO
   inicio          DateTime     // hora de Lisboa gravada em UTC
@@ -2104,15 +2121,101 @@ model AgendaDepartamento {
   presentes       Int?         // quantos (os antigos só têm o número; os novos contam a lista abaixo)
   foto_url        String?      // foto do encontro (loja pública do Blob)
   presentes_membros Membro[]   @relation("PresentesAgendaDepto")
+  cancelado_em    DateTime?    // cancelado: o encontro não se apaga (quem já o viu recebe o aviso "Cancelado")
+  respostas       AgendaResposta[]
+  alertas_fechados AgendaAlertaFechado[]
   criado_por      Int?
   criado_em       DateTime     @default(now())
   atualizado_em   DateTime     @default(now()) @updatedAt
 
   tenant          Tenant       @relation(fields: [tenant_id], references: [id])
-  departamento    Departamento @relation(fields: [departamento_id], references: [id], onDelete: Cascade)
+  departamento    Departamento? @relation(fields: [departamento_id], references: [id], onDelete: Cascade)
+  grupo           Grupo?       @relation(fields: [grupo_id], references: [id], onDelete: Cascade)
+  regra           RegraAgenda? @relation(fields: [regra_id], references: [id], onDelete: SetNull)
 
   @@index([tenant_id])
   @@index([departamento_id, inicio])
+  @@index([grupo_id, inicio])
+  @@index([regra_id])
   @@map("agenda_departamento")
 }
 
+// "Vou" / "Não posso" de cada pessoa da equipa a um encontro (o líder vê os nomes; os outros só os números)
+model AgendaResposta {
+  id            Int                @id @default(autoincrement())
+  tenant_id     Int
+  agenda_id     Int
+  membro_id     Int
+  resposta      String             // VOU | NAO_POSSO
+  motivo        String?
+  respondido_em DateTime           @default(now())
+  tenant        Tenant             @relation(fields: [tenant_id], references: [id])
+  agenda        AgendaDepartamento @relation(fields: [agenda_id], references: [id], onDelete: Cascade)
+  membro        Membro             @relation(fields: [membro_id], references: [id], onDelete: Cascade)
+
+  @@unique([agenda_id, membro_id])
+  @@index([tenant_id])
+  @@map("agenda_respostas")
+}
+
+// Alertas de encontro que a pessoa já fechou (vale em todos os aparelhos; volta a aparecer se o encontro mudar ou for cancelado)
+model AgendaAlertaFechado {
+  id         Int                @id @default(autoincrement())
+  tenant_id  Int
+  agenda_id  Int
+  membro_id  Int
+  fechado_em DateTime           @default(now())
+  tenant     Tenant             @relation(fields: [tenant_id], references: [id])
+  agenda     AgendaDepartamento @relation(fields: [agenda_id], references: [id], onDelete: Cascade)
+  membro     Membro             @relation(fields: [membro_id], references: [id], onDelete: Cascade)
+
+  @@unique([agenda_id, membro_id])
+  @@index([tenant_id])
+  @@map("agenda_alertas_fechados")
+}
+
+
+// Kit de artes de divulgação de um culto/evento (Mídia → Divulgação). Guarda só a "receita" (estilo, paleta,
+// peças, textos); as imagens geram-se na hora, iguais, por /api/divulgacao/imagem.
+model KitDivulgacao {
+  id            Int      @id @default(autoincrement())
+  tenant_id     Int
+  evento_id     Int      @unique
+  receita       Json
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+  tenant        Tenant   @relation(fields: [tenant_id], references: [id])
+  evento        Evento   @relation(fields: [evento_id], references: [id], onDelete: Cascade)
+
+  @@index([tenant_id])
+  @@map("divulgacao_kits")
+}
+
+// Regra repetida da agenda: "toda a 1.ª segunda, 20h00, Grupo de Homens" (reunião) ou "toda a 3.ª quarta, culto
+// direcionado aos Jovens". Gera os próximos meses (lib/agenda-regras.ts) sem mexer no que já existe.
+model RegraAgenda {
+  id              Int           @id @default(autoincrement())
+  tenant_id       Int
+  alvo            String        // ENCONTRO (agenda_departamento) | CULTO (Evento)
+  departamento_id Int?
+  grupo_id        Int?
+  titulo          String
+  tipo            String        @default("REUNIAO") // encontro: REUNIAO, ORACAO, ENSAIO, FORMACAO, CONVIVIO, OUTRO
+  dia_semana      Int           // 0 = domingo … 6 = sábado
+  semana_do_mes   Int           // 1–5, ou -1 = a última
+  hora            String        @default("20:00")
+  local           String?
+  ativo           Boolean       @default(true)
+  gerado_ate      DateTime?
+  criado_por      Int?
+  criado_em       DateTime      @default(now())
+  atualizado_em   DateTime      @updatedAt
+  tenant          Tenant        @relation(fields: [tenant_id], references: [id])
+  departamento    Departamento? @relation(fields: [departamento_id], references: [id], onDelete: Cascade)
+  grupo           Grupo?        @relation(fields: [grupo_id], references: [id], onDelete: Cascade)
+  encontros       AgendaDepartamento[]
+  eventos         Evento[]
+
+  @@index([tenant_id])
+  @@map("agenda_regras")
+}

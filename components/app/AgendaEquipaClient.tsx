@@ -1,12 +1,12 @@
 'use client'
 
-// Formulários da agenda de uma equipa: marcar / mudar um encontro, registar o que se fez (quem esteve e
-// uma foto, como nos Grupos e PGs), apagar.
+// Formulários da agenda de uma equipa (departamento) ou de um grupo: marcar / mudar um encontro, registar o que se fez (quem esteve e
+// uma foto, como nos Grupos e PGs), cancelar.
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Camera, Check, Loader2, Pencil, Plus } from 'lucide-react'
-import { apagarEncontro, guardarEncontro, registarEncontro } from '@/actions/agenda-departamento-actions'
+import { cancelarEncontro, guardarEncontro, reativarEncontro, registarEncontro, type AlvoAgenda } from '@/actions/agenda-departamento-actions'
 import { reduzirImagensDoForm } from '@/lib/reduzir-imagem'
 import { TIPOS_AGENDA_DEPTO } from '@/lib/agenda'
 import { useConfirm } from '@/components/ui/ConfirmDialog'
@@ -15,8 +15,13 @@ export type Encontro = {
     id: number; titulo: string; tipo: string; inicio: string; fim: string | null
     local: string | null; descricao: string | null; registo: string | null; presentes: number | null
     foto_url: string | null; presentesIds: number[]
+    cancelado: boolean; vouIds: number[]
 }
 export type PessoaEquipa = { id: number; nome: string }
+/** A equipa (departamento) ou o grupo dono do encontro. */
+export type AlvoProps = { deptoId?: number; grupoId?: number }
+const campoAlvo = (a: AlvoProps) => (a.grupoId ? { name: 'grupo_id', value: a.grupoId } : { name: 'departamento_id', value: a.deptoId })
+const alvoDe = (a: AlvoProps): AlvoAgenda => ({ deptoId: a.deptoId ?? null, grupoId: a.grupoId ?? null })
 
 const campo = 'a-foco min-h-[48px] w-full rounded-[14px] border px-3 text-[16px]'
 const estilo = { background: 'var(--a-card)', borderColor: 'var(--a-borda)', color: 'var(--a-texto)' }
@@ -34,8 +39,8 @@ function useAcao() {
     return { erro, pendente, correr }
 }
 
-export function FormEncontro({ deptoId, e, onFim }: { deptoId: number; e?: Encontro; onFim?: () => void }) {
-    const [aberto, setAberto] = useState(!!e)
+export function FormEncontro({ deptoId, grupoId, e, onFim, abertoInicial = false }: AlvoProps & { e?: Encontro; onFim?: () => void; abertoInicial?: boolean }) {
+    const [aberto, setAberto] = useState(!!e || abertoInicial)
     const { erro, pendente, correr } = useAcao()
     if (!aberto) {
         return (
@@ -45,7 +50,7 @@ export function FormEncontro({ deptoId, e, onFim }: { deptoId: number; e?: Encon
     const fechar = () => { setAberto(false); onFim?.() }
     return (
         <form className="a-card space-y-3 p-4" action={(fd) => correr(() => guardarEncontro(fd), fechar)}>
-            <input type="hidden" name="departamento_id" value={deptoId} />
+            <input type="hidden" {...campoAlvo({ deptoId, grupoId })} />
             {e && <input type="hidden" name="id" value={e.id} />}
             <label className="block space-y-1"><span className="text-[15px] font-semibold">O quê</span>
                 <input name="titulo" required defaultValue={e?.titulo} placeholder="Ex.: Ensaio geral" className={campo} style={estilo} /></label>
@@ -70,22 +75,22 @@ export function FormEncontro({ deptoId, e, onFim }: { deptoId: number; e?: Encon
                 <button disabled={pendente} className="a-botao a-botao-principal flex-1">{pendente && <Loader2 size={18} className="animate-spin" aria-hidden />} Guardar</button>
                 <button type="button" onClick={fechar} className="a-botao a-botao-secundario">Cancelar</button>
             </div>
-            {!e && <p className="text-[14px] a-suave">A equipa recebe um aviso no telemóvel.</p>}
+            {!e && <p className="text-[14px] a-suave">{grupoId ? 'O grupo' : 'A equipa'} recebe um aviso no telemóvel.</p>}
         </form>
     )
 }
 
 /** Registo depois do encontro: o que se fez, quem esteve (tocar nas pessoas) e uma foto. */
-function FormRegisto({ deptoId, e, equipa, onFim }: { deptoId: number; e: Encontro; equipa: PessoaEquipa[]; onFim: () => void }) {
+function FormRegisto({ deptoId, grupoId, e, equipa, onFim }: AlvoProps & { e: Encontro; equipa: PessoaEquipa[]; onFim: () => void }) {
     const { erro, pendente, correr } = useAcao()
-    const [marcados, setMarcados] = useState<Set<number>>(() => new Set(e.presentesIds))
+    const [marcados, setMarcados] = useState<Set<number>>(() => new Set(e.presentesIds.length ? e.presentesIds : e.vouIds))
     const [previa, setPrevia] = useState<string | null>(null)
     const [tirarFoto, setTirarFoto] = useState(false)
     const alternar = (id: number) => setMarcados((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n })
     const todos = marcados.size === equipa.length
     return (
         <form className="space-y-3 pt-2" action={(fd) => correr(async () => registarEncontro(await reduzirImagensDoForm(fd)), onFim)}>
-            <input type="hidden" name="departamento_id" value={deptoId} /><input type="hidden" name="id" value={e.id} />
+            <input type="hidden" {...campoAlvo({ deptoId, grupoId })} /><input type="hidden" name="id" value={e.id} />
             <label className="block space-y-1"><span className="text-[15px] font-semibold">O que se fez</span>
                 <textarea name="registo" rows={3} defaultValue={e.registo ?? ''} placeholder="Ex.: ensaiámos 4 músicas novas; decidimos…" className={`${campo} py-2`} style={estilo} /></label>
 
@@ -146,18 +151,22 @@ function FormRegisto({ deptoId, e, equipa, onFim }: { deptoId: number; e: Encont
     )
 }
 
-export function AcoesEncontro({ deptoId, e, passado, equipa = [] }: { deptoId: number; e: Encontro; passado: boolean; equipa?: PessoaEquipa[] }) {
+export function AcoesEncontro({ deptoId, grupoId, e, passado, equipa = [] }: AlvoProps & { e: Encontro; passado: boolean; equipa?: PessoaEquipa[] }) {
     const [modo, setModo] = useState<'nada' | 'editar' | 'registo'>('nada')
     const { erro, pendente, correr } = useAcao()
     const confirmar = useConfirm()
-    if (modo === 'editar') return <FormEncontro deptoId={deptoId} e={e} onFim={() => setModo('nada')} />
-    if (modo === 'registo') return <FormRegisto deptoId={deptoId} e={e} equipa={equipa} onFim={() => setModo('nada')} />
+    if (modo === 'editar') return <FormEncontro deptoId={deptoId} grupoId={grupoId} e={e} onFim={() => setModo('nada')} />
+    if (modo === 'registo') return <FormRegisto deptoId={deptoId} grupoId={grupoId} e={e} equipa={equipa} onFim={() => setModo('nada')} />
     return (
         <div className="flex flex-wrap gap-4 pt-1 text-[15px] font-semibold" style={{ color: 'var(--a-destaque)' }}>
             {passado && <button type="button" onClick={() => setModo('registo')} className="a-foco min-h-[40px]">{e.registo ? 'Mudar o registo' : 'Registar o que se fez'}</button>}
             <button type="button" onClick={() => setModo('editar')} className="a-foco inline-flex min-h-[40px] items-center gap-1"><Pencil size={15} aria-hidden /> Mudar</button>
-            <button type="button" disabled={pendente} className="a-foco min-h-[40px]" style={{ color: 'var(--a-erro)' }}
-                onClick={async () => { if (await confirmar({ mensagem: `Apagar "${e.titulo}"?`, tipo: 'perigo' })) correr(() => apagarEncontro(e.id, deptoId)) }}>Apagar</button>
+            {e.cancelado ? (
+                <button type="button" disabled={pendente} onClick={() => correr(() => reativarEncontro(e.id, alvoDe({ deptoId, grupoId })))} className="a-foco min-h-[40px]">Voltar a marcar</button>
+            ) : (
+                <button type="button" disabled={pendente} className="a-foco min-h-[40px]" style={{ color: 'var(--a-erro)' }}
+                    onClick={async () => { if (await confirmar({ mensagem: `Cancelar "${e.titulo}"? Quem o viu recebe um aviso e o encontro fica riscado.`, tipo: 'perigo' })) correr(() => cancelarEncontro(e.id, alvoDe({ deptoId, grupoId }))) }}>Cancelar o encontro</button>
+            )}
             {erro && <p role="alert" style={{ color: 'var(--a-erro)' }}>{erro}</p>}
         </div>
     )
