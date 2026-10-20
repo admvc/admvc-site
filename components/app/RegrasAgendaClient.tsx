@@ -22,7 +22,7 @@ const dd = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`
 function Resumo({ r }: { r: Extract<ResultadoRegra, { ok: true }> }) {
     return (
         <div role="status" className="space-y-1 rounded-[14px] border p-3 text-[15px]" style={{ borderColor: 'var(--a-ok, #16a34a)' }}>
-            <p className="font-semibold">{r.criados > 0 ? `Criei ${r.criados} ${r.criados === 1 ? 'data' : 'datas'}: ${r.datas.slice(0, 6).map(dd).join(', ')}${r.datas.length > 6 ? '…' : ''}` : 'Guardado. Não havia datas novas para criar.'}</p>
+            <p className="font-semibold">{r.criados > 0 ? `Marquei ${r.criados} ${r.criados === 1 ? 'data' : 'datas'} (cultos que já existiam nessa noite passam a direcionados): ${r.datas.slice(0, 6).map(dd).join(', ')}${r.datas.length > 6 ? '…' : ''}` : 'Guardado. Não havia datas novas para criar.'}</p>
             {r.ficaram ? <p className="a-suave">{r.ficaram} {r.ficaram === 1 ? 'ficou' : 'ficaram'} como estava (já alterado ou com escala).</p> : null}
             {r.avisos.map((a) => <p key={a} style={{ color: 'var(--a-aviso, #b45309)' }}>{a}</p>)}
         </div>

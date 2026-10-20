@@ -5,7 +5,7 @@ import { entrarComo, sair, membroPorEmail, prisma } from './ajuda'
 import { apagarRegra, atualizarRegra, criarRegra, desativarRegra } from '@/actions/agenda-regras-actions'
 import { guardarEncontro, cancelarEncontro } from '@/actions/agenda-departamento-actions'
 import { alertasDoMembro } from '@/lib/alertas-encontros'
-import { gerarRegra, type RegraGerar } from '@/lib/agenda-regras'
+import { datasDaRegra, gerarRegra, somarMeses, type RegraGerar } from '@/lib/agenda-regras'
 import { getTenantClient } from '@/lib/prisma'
 
 // `after()` só existe dentro de um pedido real; nos testes não envia avisos
@@ -100,6 +100,30 @@ describe('quem cria regras', () => {
         expect(cultos.length).toBeGreaterThan(0)
         for (const c of cultos) { expect(c.tipo).toBe('CULTO_REGULAR'); expect(c.data.getUTCDay()).toBe(3) }
         regras.push(cultos[0].regra_id!)
+    })
+})
+
+describe('culto que já existe nessa noite (ex.: Quarta profética)', () => {
+    it('a regra direciona o culto existente ao grupo (sem criar outro) e, ao parar, tira a marca sem o apagar', async () => {
+        const hoje = hojeISO()
+        const dia = datasDaRegra({ dia_semana: 2, semana_do_mes: 3 }, hoje, somarMeses(hoje, 3))[0]   // 3.ª terça
+        const existente = await prisma.evento.create({ data: { nome: 'Terça profética (teste)', tipo: 'CULTO_REGULAR', data: new Date(`${dia}T20:00:00Z`), tenant_id: ctx.tenant } })
+        try {
+            await entrarComo('admin@a.teste')
+            const r = await criarRegra(form({ alvo: 'CULTO', grupo_id: ctx.jovens, titulo: 'Culto — Jovens (terças)', dia_semana: 2, semana_do_mes: 3, hora: '20:00' }))
+            expect(r.ok).toBe(true)
+            const naNoite = await prisma.evento.findMany({ where: { data: { gte: new Date(`${dia}T18:00:00Z`), lte: new Date(`${dia}T22:00:00Z`) } }, select: { id: true, grupo_id: true } })
+            expect(naNoite).toHaveLength(1)                              // não criou outro
+            expect(naNoite[0]).toMatchObject({ id: existente.id, grupo_id: ctx.jovens })
+            const regra = await prisma.regraAgenda.findFirstOrThrow({ where: { titulo: 'Culto — Jovens (terças)' } })
+            const parou = await desativarRegra(regra.id)
+            expect(parou.ok).toBe(true)
+            const depois = await prisma.evento.findUnique({ where: { id: existente.id }, select: { grupo_id: true } })
+            expect(depois).not.toBeNull()                                // o culto continua
+            expect(depois!.grupo_id).toBeNull()                          // já não está direcionado
+        } finally {
+            await prisma.evento.deleteMany({ where: { id: existente.id } })
+        }
     })
 })
 

@@ -1,6 +1,7 @@
 // Regras repetidas da agenda: "toda a 1.ª segunda, 20h00, Grupo de Homens" (reunião) ou "toda a 3.ª quarta, culto
 // direcionado aos Jovens" (culto da igreja). `datasDaRegra` é só contas de calendário; `gerarRegra` cria o que falta
-// nos próximos meses, sem mexer no que já existe. Horas = hora de Lisboa ESCRITA em UTC (`${dia}T${hora}:00Z`).
+// nos próximos meses, sem mexer no que já existe. Culto: se já há um culto nessa noite (ex.: a "Quarta profética"
+// recorrente), a regra DIRECIONA esse culto ao grupo em vez de criar outro (sem `regra_id`: nunca é apagado pela regra). Horas = hora de Lisboa ESCRITA em UTC (`${dia}T${hora}:00Z`).
 import type { getTenantClient } from '@/lib/prisma'
 
 export const DIAS_DA_SEMANA = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'] as const
@@ -42,7 +43,7 @@ export type RegraGerar = {
     id: number; alvo: string; departamento_id: number | null; grupo_id: number | null; titulo: string; tipo: string
     dia_semana: number; semana_do_mes: number; hora: string; local: string | null; ativo: boolean
 }
-export type ResultadoGerar = { criados: number; avisos: string[]; datas: string[] }
+export type ResultadoGerar = { criados: number; avisos: string[]; datas: string[] }   // criados = criados ou direcionados
 
 /** "Hoje" como AAAA-MM-DD na convenção das horas (Lisboa escrita em UTC). */
 export function hojeLisboaISO(): string {
@@ -56,8 +57,9 @@ export function somarMeses(dia: string, meses: number): string {
 }
 
 /**
- * Cria o que falta desta regra desde hoje até daqui a `meses` meses. Não repete (uma linha por regra e dia) e não
- * mexe em nada que já exista. Culto: se já há outro culto nessa noite (18h–22h), não cria e devolve um aviso.
+ * Cria o que falta desta regra desde hoje até daqui a `meses` meses. Não repete (uma linha por regra e dia).
+ * Culto: se já há um culto nessa noite (18h–22h) sem grupo, passa a ser direcionado a este grupo (não se cria outro);
+ * se já está direcionado a outro grupo, não mexe e avisa.
  */
 export async function gerarRegra(db: Db, tenantId: number, r: RegraGerar, meses = 3, hoje = hojeLisboaISO()): Promise<ResultadoGerar> {
     const resultado: ResultadoGerar = { criados: 0, avisos: [], datas: [] }
@@ -78,9 +80,17 @@ export async function gerarRegra(db: Db, tenantId: number, r: RegraGerar, meses 
             // outro culto nessa noite (marcado à mão ou por outra regra) → não duplicar
             const noite = await db.evento.findFirst({
                 where: { data: { gte: new Date(`${dia}T18:00:00Z`), lte: new Date(`${dia}T22:00:00Z`) } },
-                select: { nome: true },
+                orderBy: { data: 'asc' },
+                select: { id: true, nome: true, grupo_id: true },
             })
-            if (noite) { resultado.avisos.push(`${dia}: já existe "${noite.nome}" nessa noite; não criei outro.`); continue }
+            if (noite) {
+                if (noite.grupo_id === r.grupo_id) continue                       // já está direcionado a este grupo
+                if (noite.grupo_id) { resultado.avisos.push(`${dia}: "${noite.nome}" já está direcionado a outro grupo; não mexi.`); continue }
+                await db.evento.update({ where: { id: noite.id }, data: { grupo_id: r.grupo_id } })
+                resultado.criados++
+                resultado.datas.push(dia)
+                continue
+            }
             await db.evento.create({ data: { nome: r.titulo, data: inicio, tipo: 'CULTO_REGULAR', grupo_id: r.grupo_id, regra_id: r.id, tenant_id: tenantId } as never })
         } else {
             await db.agendaDepartamento.create({
@@ -98,9 +108,21 @@ export async function gerarRegra(db: Db, tenantId: number, r: RegraGerar, meses 
  * Tira o que a regra ainda tem no futuro e ninguém mexeu: encontros por mexer ficam cancelados (não se apagam);
  * cultos sem escalas nem repertório são apagados. Devolve quantos ficaram por terem sido alterados.
  */
-export async function desfazerRegraFutura(db: Db, r: { id: number; alvo: string }, hoje = hojeLisboaISO()): Promise<{ removidos: number; ficaram: number }> {
+export async function desfazerRegraFutura(
+    db: Db, r: { id: number; alvo: string; grupo_id?: number | null; dia_semana?: number; semana_do_mes?: number }, hoje = hojeLisboaISO(),
+): Promise<{ removidos: number; ficaram: number }> {
     const desde = new Date(`${hoje}T00:00:00Z`)
     let removidos = 0, ficaram = 0
+    if (r.alvo === 'CULTO' && r.grupo_id && r.dia_semana != null && r.semana_do_mes != null) {
+        // cultos que já existiam e esta regra direcionou: deixam de estar direcionados (o culto fica)
+        for (const dia of datasDaRegra({ dia_semana: r.dia_semana, semana_do_mes: r.semana_do_mes }, hoje, somarMeses(hoje, 24))) {
+            const n = await db.evento.updateMany({
+                where: { grupo_id: r.grupo_id, regra_id: null, data: { gte: new Date(`${dia}T18:00:00Z`), lte: new Date(`${dia}T22:00:00Z`) } },
+                data: { grupo_id: null },
+            })
+            removidos += n.count
+        }
+    }
     if (r.alvo === 'CULTO') {
         const cultos = await db.evento.findMany({
             where: { regra_id: r.id, data: { gte: desde } },
