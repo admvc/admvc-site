@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<!--
+  Slide de foto do culto (1920×1080) para o slide-show do Holyrics.
+  Parâmetros no endereço: ?estilo=direita|inclinada|diagonal&foto=&titulo=&data=&link=&verso=&ref=&n=
+  link = endereço do álbum (o QR é feito aqui, com a pomba ao centro); sem verso, usa um da lista (muda com n = n.º da foto).
+  O programa FotosCulto.exe abre este modelo no Edge sem janela e guarda a imagem (slide-01.png, …).
+-->
+<style>
+@font-face { font-family: Cinzel; src: url(fontes/Cinzel-700.ttf); font-weight: 700; }
+@font-face { font-family: Montserrat; src: url(fontes/Montserrat-500.ttf); font-weight: 500; }
+@font-face { font-family: Montserrat; src: url(fontes/Montserrat-700.ttf); font-weight: 700; }
+@font-face { font-family: Montserrat; src: url(fontes/Montserrat-900.ttf); font-weight: 900; }
+@font-face { font-family: Playfair; src: url(fontes/Playfair-400i.ttf); font-style: italic; }
+
+:root { --base: #0b1224; --dourado: #E9B949; --papel: #ffffff; --texto: #f6f2ea; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--base); }
+body { position: relative; font-family: Montserrat, 'Segoe UI', sans-serif; color: var(--texto); }
+
+/* fundo: a própria foto, desfocada e escura (combina sempre com a foto) */
+.fundo { position: absolute; inset: -60px; background: center / cover no-repeat; filter: blur(38px) brightness(.40) saturate(1.15); }
+.veu { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(8,12,24,.10) 0%, rgba(8,12,24,.45) 62%, rgba(8,12,24,.82) 100%); }
+
+/* coluna da direita: marca, título, data, versículo, QR */
+.painel { position: absolute; top: 84px; bottom: 84px; right: 96px; width: 470px; display: flex; flex-direction: column; justify-content: space-between; }
+.marca { display: flex; align-items: center; gap: 14px; font-size: 19px; letter-spacing: .32em; text-transform: uppercase; }
+.marca img { height: 46px; }
+.marca b { font-weight: 900; }
+.titulo { font-family: Cinzel, serif; font-weight: 700; font-size: 60px; line-height: 1.04; text-transform: uppercase; text-shadow: 0 4px 24px rgba(0,0,0,.4); }
+.data { margin-top: 18px; font-weight: 700; font-size: 21px; letter-spacing: .08em; white-space: nowrap; text-transform: uppercase; color: var(--dourado); }
+.linha { width: 64px; height: 3px; background: var(--dourado); margin: 34px 0 30px; border-radius: 2px; }
+.verso { font-family: Playfair, Georgia, serif; font-style: italic; font-size: 31px; line-height: 1.38; color: var(--texto); }
+.ref { margin-top: 14px; font-weight: 700; font-size: 17px; letter-spacing: .22em; text-transform: uppercase; color: var(--dourado); opacity: .9; }
+.cartao { display: flex; align-items: center; gap: 20px; background: var(--papel); border-radius: 20px; padding: 18px 22px 18px 18px; box-shadow: 0 24px 48px rgba(0,0,0,.35); }
+.cartao svg, .cartao img { width: 220px; height: 220px; flex-shrink: 0; }
+.cartao p { color: #1D2D50; font-weight: 900; font-size: 24px; line-height: 1.15; }
+.cartao small { display: block; margin-top: 8px; color: #5b6475; font-weight: 500; font-size: 17px; line-height: 1.3; }
+
+/* a foto em destaque, na área da esquerda */
+.area { position: absolute; left: 96px; top: 84px; bottom: 84px; right: 662px; display: flex; align-items: center; justify-content: center; }
+.foto { max-width: 100%; max-height: 100%; border: 16px solid var(--papel); border-radius: 4px; box-shadow: 0 40px 80px rgba(0,0,0,.55); background: var(--papel); }
+.inclinada .area .foto { transform: rotate(-2.4deg); border-width: 18px; border-bottom-width: 18px; }
+.inclinada .area .atras { position: absolute; background: rgba(255,255,255,.18); border-radius: 4px; transform: rotate(3.2deg); box-shadow: 0 30px 60px rgba(0,0,0,.35); }
+
+/* diagonal: a foto inteira à esquerda com corte em diagonal e um filete dourado */
+.diagonal .area { display: none; }
+.corte { position: absolute; left: 0; top: 0; width: 1330px; height: 1080px; background: center 22% / cover no-repeat; clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%); }
+.filete { position: absolute; left: 0; top: 0; width: 1352px; height: 1080px; background: var(--dourado); clip-path: polygon(1330px 0, 1352px 0, 1086px 1080px, 1064px 1080px); }
+.diagonal .veu { background: linear-gradient(90deg, rgba(8,12,24,0) 0%, rgba(11,18,36,.90) 60%, rgba(11,18,36,.94) 100%); }
+</style>
+</head>
+<body>
+<div class="fundo" id="fundo"></div>
+<div class="veu"></div>
+<div class="corte" id="corte" hidden></div>
+<div class="filete" id="filete" hidden></div>
+<div class="area"><div class="atras" id="atras" hidden></div><img class="foto" id="foto" alt=""></div>
+
+<div class="painel">
+  <div class="marca"><img src="pomba.png" alt=""><span>Igreja <b>ADMVC</b></span></div>
+  <div>
+    <div class="titulo" id="titulo"></div>
+    <div class="data" id="data"></div>
+    <div class="linha"></div>
+    <div class="verso" id="verso"></div>
+    <div class="ref" id="ref"></div>
+  </div>
+  <div class="cartao"><div id="qr"></div><p>Veja todas as fotos<small>Aponte a câmara do telemóvel</small></p></div>
+</div>
+
+<script src="qrcodegen.js"></script>
+<script>
+// Versículos de comunhão, alegria e gratidão (Almeida Revista e Corrigida); um por foto quando não vem nenhum
+const VERSOS = [
+  ['Oh! Quão bom e quão suave é que os irmãos vivam em união!', 'Salmos 133:1'],
+  ['Alegrei-me quando me disseram: Vamos à Casa do Senhor.', 'Salmos 122:1'],
+  ['Entrai pelas portas dele com louvor e em seus átrios com hino; louvai-o e bendizei o seu nome.', 'Salmos 100:4'],
+  ['Este é o dia que fez o Senhor; regozijemo-nos e alegremo-nos nele.', 'Salmos 118:24'],
+  ['Partindo o pão em casa, comiam juntos com alegria e singeleza de coração, louvando a Deus.', 'Atos 2:46-47'],
+  ['Consideremo-nos uns aos outros, para nos estimularmos à caridade e às boas obras.', 'Hebreus 10:24'],
+  ['Dou graças ao meu Deus todas as vezes que me lembro de vós.', 'Filipenses 1:3'],
+  ['Servi ao Senhor com alegria e apresentai-vos a ele com canto.', 'Salmos 100:2'],
+  ['Onde estiverem dois ou três reunidos em meu nome, aí estou eu no meio deles.', 'Mateus 18:20'],
+  ['Em tudo dai graças, porque esta é a vontade de Deus em Cristo Jesus para convosco.', '1 Tessalonicenses 5:18'],
+]
+
+// QR do álbum (correção alta, aguenta a pomba ao centro), em SVG
+function qrSvg(texto) {
+  const qr = qrcodegen.QrCode.encodeText(texto, qrcodegen.QrCode.Ecc.HIGH)
+  const n = qr.size, m = 2, lado = n + m * 2
+  let d = ''
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (qr.getModule(x, y)) d += `M${x + m} ${y + m}h1v1h-1z`
+  const r = lado * 0.11
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${lado} ${lado}" shape-rendering="crispEdges">
+    <rect width="${lado}" height="${lado}" fill="#fff"/><path d="${d}" fill="#1D2D50"/>
+    <circle cx="${lado / 2}" cy="${lado / 2}" r="${r}" fill="#1D2D50" stroke="#fff" stroke-width="${lado * 0.012}" shape-rendering="geometricPrecision"/>
+    <image href="pomba.png" x="${lado / 2 - r * 0.62}" y="${lado / 2 - r * 0.62}" width="${r * 1.24}" height="${r * 1.24}" preserveAspectRatio="xMidYMid meet"/>
+  </svg>`
+}
+</script>
+<script>
+const q = new URLSearchParams(location.search)
+const estilo = ['direita', 'inclinada', 'diagonal'].includes(q.get('estilo')) ? q.get('estilo') : 'direita'
+document.body.className = estilo
+const foto = q.get('foto') || ''
+const css = `url("${foto.replace(/"/g, '%22')}")`
+document.getElementById('fundo').style.backgroundImage = css
+document.getElementById('foto').src = foto
+document.getElementById('qr').innerHTML = q.get('link') ? qrSvg(q.get('link')) : ''
+for (const k of ['titulo', 'data', 'ref']) document.getElementById(k).textContent = q.get(k) || ''
+const n = Math.max(1, Number(q.get('n')) || 1)
+const [vTexto, vRef] = q.get('verso') ? [q.get('verso'), q.get('ref') || ''] : VERSOS[(n - 1) % VERSOS.length]
+document.getElementById('verso').textContent = `“${vTexto}”`
+document.getElementById('ref').textContent = vRef
+if (estilo === 'diagonal') {
+  for (const id of ['corte', 'filete']) document.getElementById(id).hidden = false
+  document.getElementById('corte').style.backgroundImage = css
+}
+// título longo: encolhe para caber em 3 linhas
+const t = document.getElementById('titulo')
+let tam = 60
+while (t.scrollHeight > tam * 1.04 * 3 + 4 && tam > 34) { tam -= 2; t.style.fontSize = tam + 'px' }
+// "postal" atrás da foto inclinada, com o tamanho da foto
+document.getElementById('foto').addEventListener('load', () => {
+  if (estilo !== 'inclinada') return
+  const f = document.getElementById('foto'), a = document.getElementById('atras')
+  a.hidden = false; a.style.width = f.offsetWidth + 'px'; a.style.height = f.offsetHeight + 'px'
+})
+</script>
+</body>
+</html>
