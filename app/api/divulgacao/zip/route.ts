@@ -38,7 +38,7 @@ export async function GET(request: Request) {
         ficheiros.push({ nome: nomeDaRede(formato), dados: new Uint8Array(await img.arrayBuffer()) })
     }
 
-    return new NextResponse(new Uint8Array(criarZip(ficheiros)), {
+    return new NextResponse(criarZip(ficheiros) as BodyInit, {
         headers: {
             'Content-Type': 'application/zip',
             'Content-Disposition': `attachment; filename="artes-culto-${dia}.zip"`,

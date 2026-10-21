@@ -16,7 +16,7 @@ copiar esta pasta (ou descarregá-la do repositório).
    - confirmar a pasta (`FOTOS-CULTO`) e o link do álbum;
    - opcional: "Começar o slide-show no fim" e os segundos por foto.
 
-O PC precisa só do Windows e do Microsoft Edge (já vêm instalados). Não precisa de internet.
+O PC precisa só do Windows e do Microsoft Edge (já vêm instalados). As fotos não precisam de internet; trazer as artes precisa.
 
 ## Usar em cada culto
 1. Pôr as fotos (7 a 10) na pasta **FOTOS-CULTO**.
@@ -26,6 +26,36 @@ O PC precisa só do Windows e do Microsoft Edge (já vêm instalados). Não prec
    (fica guardado para a próxima vez). O versículo pode ficar vazio: cada foto leva um diferente.
 4. Esperar o aviso "10 fotos prontas" (cerca de 3 segundos por foto).
 5. Soltar a apresentação como de costume (ou ela começa sozinha, se estiver ligado nas definições).
+
+## Receber o culto do portal (músicas, artes, escala e rotina)
+Faz numa só vez o que o plugin do LouveApp faz: o culto que a equipa preparou no portal passa para a lista do Holyrics.
+1. **Abra no Holyrics o culto que quer preencher** (a lista de mídia do culto aberto é onde se escreve).
+2. **Ação "Receber o culto do portal"** (botão do módulo ou clique direito numa pasta de imagens) → escolhe o culto do portal
+   (hoje, senão o próximo). Se o culto aberto no Holyrics tiver outra data, avisa e pergunta antes de escrever.
+3. Aparece a lista com caixas para marcar: cada **música** do repertório, cada **arte do telão** (com a secção onde entra) e
+   **"Escala e rotina em texto"**. Opções: *Adicionar também à lista de Letras* e *Lista já preenchida*: **Mesclar** (não duplica;
+   põe cada coisa debaixo do seu título) ou **Substituir** (limpa a lista e as letras, depois de pedir confirmação).
+4. Onde fica cada coisa: músicas → **LOUVOR**; artes → ABERTURA (oração, boas-vindas), ORACOES (oração por…), OFERTORIO (oferta),
+   MENSAGEM (palavra), ENCERRAMENTO (fundo sem texto); escala e rotina → título **ESCALA E ROTINA (NAO PROJETAR)** com um texto.
+   Os títulos que já existirem no culto (ABERTURA, LOUVOR…) são usados; os que faltarem são criados com cores.
+5. Resumo no fim: o que entrou e o que falhou (ex.: música que não está no Holyrics: ligue-a no portal ou acrescente-a).
+- **Permissões do módulo:** em *Definições do módulo* ligue as permissões avançadas **Arquivos permitidos** (já usada) e
+  **Criar, editar e remover dados importantes** (para criar o texto da escala; sem ela a escala entra como linhas de título).
+- As artes são descarregadas para a pasta ARTES-CULTO (as da mesma ação substituem as anteriores com o mesmo nome).
+- A API do Holyrics só LÊ as Anotações e a aba Escala (não há como escrever lá), por isso a escala vai como texto na lista.
+- No computador do telão copie outra vez a pasta (FotosCulto.exe e FotosCultoADMVC.js novos).
+
+## Trazer as artes do culto (do portal)
+A Mídia faz as artes em **Divulgação** (portal) e carrega em **Publicar para a igreja**. O Holyrics traz só as do **telão**.
+1. Uma vez: no portal, **Mídia → Holyrics: artes do culto → Gerar a chave** (aparece uma só vez: copiar). No Holyrics,
+   nas definições do módulo, colar a **chave** e confirmar o **portal** (`https://app.igrejaadmvc.org`) e a **pasta das artes** (`ARTES-CULTO`).
+   Os PCs têm de ter o `FotosCulto.exe` e o módulo **novos** (copiar a pasta outra vez).
+2. Em cada culto: clique direito numa pasta de imagens → **Trazer as artes do culto** (ou o botão do módulo).
+   Aparece o culto de hoje (senão o próximo): confirmar. As artes que lá estavam são substituídas (`01-oracao.png`, `02-…`).
+3. Mostrar a pasta **ARTES-CULTO** no Holyrics como de costume (ou ligar "Começar o slide-show no fim").
+- Trocar a chave no portal desliga a antiga: colar a nova no módulo.
+- À mão (teste): `FotosCulto.exe --listar --portal https://app.igrejaadmvc.org --chave …` e
+  `FotosCulto.exe --trazer --portal … --chave … --evento 12 --pasta "C:\...\ARTES-CULTO"`.
 
 ## Bom saber
 - Os **slides do culto anterior são apagados** quando se preparam fotos novas.

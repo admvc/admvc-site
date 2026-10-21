@@ -1,5 +1,6 @@
 // Escalas de um ministerio (como no LouveApp): os cultos por dia, com a equipa
 // de cada um. Vista de lista ou calendario. Botoes no topo para trocar de ministerio.
+import SeletorMinisterio, { nomeCurto } from '@/components/app/SeletorMinisterio'
 import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
@@ -56,37 +57,19 @@ export default async function EscalasPage(props: { searchParams: Promise<{ equip
     }
 
     const separador = (ativo: boolean) =>
-        `a-foco flex-1 rounded-[12px] py-2.5 text-center text-[16px] font-semibold ${ativo ? '' : 'a-suave'}`
+        `a-foco flex-1 rounded-[12px] py-2 text-center text-[15px] font-semibold ${ativo ? '' : 'a-suave'}`
 
     return (
         <div className="app-novo min-h-screen">
             <LembrarMinisterio id={atual.id} />
             <main className="mx-auto max-w-3xl px-4 pt-20 pb-28 md:pt-8 space-y-5">
-                <header className="flex items-end justify-between gap-3">
-                    <div>
-                        <h1 className="text-[24px] font-bold leading-tight">Escalas</h1>
-                        <p className="text-[16px] a-suave">{atual.nome}</p>
-                    </div>
+                <header className="flex items-center justify-between gap-3">
+                    <h1 className="text-[24px] font-bold leading-tight">Escalas</h1>
+                    {ministerios.length > 1
+                        ? <SeletorMinisterio ministerios={ministerios.map((m) => ({ id: m.id, nome: m.nome }))} atual={atual.id} quando={quando} />
+                        : <p className="truncate text-[16px] a-suave">{nomeCurto(atual.nome)}</p>}
                 </header>
                 <AbasEquipa deptoId={atual.id} ativa="escalas" />
-
-                {ministerios.length > 1 && (
-                    <nav aria-label="Ministério" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-hide">
-                        {ministerios.map((m) => {
-                            const ativo = m.id === atual.id
-                            return (
-                                <Link key={m.id} href={`/escalas?equipa=${m.id}${quando === 'anteriores' ? '&quando=anteriores' : ''}`}
-                                    aria-current={ativo ? 'page' : undefined}
-                                    className="a-foco shrink-0 rounded-full border px-4 py-2 text-[15px] font-semibold"
-                                    style={ativo
-                                        ? { background: 'var(--a-destaque)', color: 'var(--a-sobre-destaque)', borderColor: 'var(--a-destaque)' }
-                                        : { background: 'var(--a-card)', borderColor: 'var(--a-borda)' }}>
-                                    {m.nome}
-                                </Link>
-                            )
-                        })}
-                    </nav>
-                )}
 
                 <div className="flex items-center gap-2">
                     <div className="flex flex-1 gap-1 rounded-[14px] p-1" style={{ background: 'var(--a-borda)' }} role="tablist">

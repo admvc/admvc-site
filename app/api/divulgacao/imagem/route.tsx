@@ -1,10 +1,12 @@
 // Uma arte de um culto: do telão (PNG 1920×1080; parâmetros em lib/divulgacao-imagem.tsx) ou, com formato=post|story|youtube,
-// das redes sociais (lib/divulgacao-redes.tsx). &download=1 descarrega.
+// das redes sociais (lib/divulgacao-redes.tsx). &download=1 descarrega; &previa=1 devolve uma versão pequena (JPEG ~640 px).
+// A imagem só depende dos parâmetros, por isso a pré-visualização pode ficar em cache (1 dia).
 import { NextResponse } from 'next/server'
 import { sessaoDaApi } from '@/lib/api-auth'
 import { podeFazerAgenda } from '@/lib/agenda-midia'
 import { desenharArte } from '@/lib/divulgacao-imagem'
 import { desenharRede } from '@/lib/divulgacao-redes'
+import { comoPrevia } from '@/lib/imagem-previa'
 
 export const runtime = 'nodejs'
 
@@ -15,6 +17,7 @@ export async function GET(request: Request) {
 
     const q = new URL(request.url).searchParams
     const img = q.get('formato') ? await desenharRede(q) : await desenharArte(q)
+    if (q.get('previa')) return comoPrevia(img, 'private, max-age=86400')
     if (q.get('download')) img.headers.set('Content-Disposition', `attachment; filename="${nomeFicheiro(q)}"`)
     img.headers.set('Cache-Control', 'private, no-store')
     return img

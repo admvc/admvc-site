@@ -1,5 +1,6 @@
 // A "receita" de um kit de divulgação (o que fica guardado na base por evento) e como vira o pedido de cada peça.
 import { ALVOS, FUNDOS_PRONTOS, PECAS, REDES, lerEstilo, lerPaleta, type EstiloId, type PecaId, type RedeId } from '@/lib/divulgacao'
+import { ajusteEmTexto, lerAjustesKit, type AjustesKit } from '@/lib/divulgacao-enquadrar'
 
 export const QR_BOAS_VINDAS = 'https://www.igrejaadmvc.org/boasvindas?c=sede'
 
@@ -17,6 +18,7 @@ export type Receita = {
     fotoH: FotoKit | null; fotoV: FotoKit | null; tinta: number
     fundo: string                                    // '' = só cores; id de FUNDOS_PRONTOS ou imagem do Blob público
     palavraComFoto: boolean                          // Palavra no telão com o recorte do preletor ao lado
+    ajustes: AjustesKit                              // "Ajustar foto" por formato (mover/aproximar); só vale para a foto com que foi feito
 }
 
 export const PECAS_POR_OMISSAO: PecaId[] = ['oracao', 'oracao-dirigida', 'neutro', 'boas-vindas', 'oferta', 'palavra']
@@ -28,7 +30,7 @@ export function receitaVazia(): Receita {
         alvo: 'familia', alvoTexto: '', tema: '', ref: '', preletor: '', iban: '', qr: QR_BOAS_VINDAS,
         verso: '', versoRef: '', semVersiculo: false,
         redes: [...REDES_POR_OMISSAO], titulo: '', subtitulo: '', fotoH: null, fotoV: null, tinta: 0.25,
-        fundo: '', palavraComFoto: true,
+        fundo: '', palavraComFoto: true, ajustes: {},
     }
 }
 
@@ -66,6 +68,7 @@ export function normalizarReceita(x: unknown): Receita {
         fotoH: lerFoto(o.fotoH), fotoV: lerFoto(o.fotoV), tinta,
         fundo: typeof o.fundo === 'string' && (FUNDOS_PRONTOS.some((f) => f.id === o.fundo) || (URL_FOTO.test(o.fundo) && o.fundo.length <= 400)) ? o.fundo : '',
         palavraComFoto: o.palavraComFoto !== false,
+        ajustes: lerAjustesKit(o.ajustes),
     }
 }
 
@@ -113,6 +116,8 @@ export function paramsDaRede(r: Receita, formato: RedeId, ev: { nome: string; da
         q.set('foto', foto.url); q.set('foco', foto.foco)
         if (foto.w && foto.h) { q.set('fw', String(foto.w)); q.set('fh', String(foto.h)) }
         if (foto.recorte) q.set('recorte', '1')
+        const aj = r.ajustes[formato]
+        if (aj && aj.url === foto.url) q.set('aj', ajusteEmTexto(aj))
     }
     if (r.fundo) q.set('fundo', r.fundo)
     return q

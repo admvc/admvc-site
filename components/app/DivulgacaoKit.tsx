@@ -2,14 +2,19 @@
 
 // Kit de artes de um culto: escolher estilo + cores, marcar as artes do telão e das redes, pôr a foto do preletor,
 // ver, guardar e descarregar, e copiar a legenda e a mensagem de WhatsApp.
-// As imagens vêm de /api/divulgacao/imagem (geradas na hora); o que fica guardado é só a receita.
+// As imagens vêm de /api/divulgacao/imagem (geradas na hora; a pré-visualização é uma versão pequena); o que fica guardado é só a receita.
 import { useEffect, useMemo, useState, useTransition } from 'react'
-import { Check, Copy, Download, ImagePlus, Save, Trash2 } from 'lucide-react'
-import { guardarKitDivulgacao } from '@/actions/divulgacao-actions'
+import { Check, ChevronDown, Copy, Download, ImagePlus, Megaphone, Save, Share2, Trash2, Send } from 'lucide-react'
+import { concluirPublicacao, guardarKitDivulgacao, guardarPadraoDivulgacao, retirarPublicacao } from '@/actions/divulgacao-actions'
 import { ALVOS, ESTILOS, FUNDOS_PRONTOS, PALETAS, PECAS, REDES, type PecaId, type RedeId } from '@/lib/divulgacao'
 import { nomeDaPeca, nomeDaRede, paramsDaPeca, paramsDaRede, type FotoKit, type Receita } from '@/lib/divulgacao-kit'
 import { textosDoCulto } from '@/lib/divulgacao-textos'
+import { linkWhatsApp } from '@/lib/whatsapp'
 import { reduzirImagem } from '@/lib/reduzir-imagem'
+import { AVISO_PARTILHA, partilharArte } from '@/lib/partilhar-arte'
+import { criarZip } from '@/lib/zip'
+import AjustarFoto from './AjustarFoto'
+import { limitarAjuste, type Ajuste } from '@/lib/divulgacao-enquadrar'
 
 type Props = {
     eventoId: number
@@ -20,10 +25,14 @@ type Props = {
     receitaInicial: Receita
     guardado: boolean
     contas: { nome: string; iban: string }[]
+    publicadoEm: string | null                    // quando foi publicado para a igreja (ISO) ou null
+    publicadoJson: string                         // a receita desse momento (para saber se mudou depois)
+    padrao: string                                // a receita-padrão da igreja (JSON) ou ''
 }
 
 const campo = 'a-foco min-h-[48px] w-full rounded-[14px] border px-3 text-[16px]'
 const estiloCampo = { background: 'var(--a-card)', borderColor: 'var(--a-borda)', color: 'var(--a-texto)' }
+const miniatura = 'block cursor-pointer overflow-hidden rounded-[14px] border text-left'
 const chip = 'flex min-h-[48px] cursor-pointer items-center gap-2 rounded-[14px] border px-3 text-[15px] has-[:checked]:ring-2 has-[:checked]:ring-[var(--a-acento,#f5a524)]'
 
 // Texto que só conta quando se sai do campo (cada mudança volta a desenhar as imagens)
@@ -154,7 +163,7 @@ function EscolherFundo({ valor, onChange }: { valor: string; onChange: (v: strin
     )
 }
 
-function CaixaTexto({ titulo, valor, onChange, onRefazer }: { titulo: string; valor: string; onChange: (v: string) => void; onRefazer: () => void }) {
+function CaixaTexto({ titulo, valor, onChange, onRefazer, whatsapp }: { titulo: string; valor: string; onChange: (v: string) => void; onRefazer: () => void; whatsapp?: boolean }) {
     const [copiado, setCopiado] = useState(false)
     return (
         <div className="space-y-2">
@@ -165,6 +174,7 @@ function CaixaTexto({ titulo, valor, onChange, onRefazer }: { titulo: string; va
                     <button type="button" onClick={async () => { await navigator.clipboard?.writeText(valor); setCopiado(true); setTimeout(() => setCopiado(false), 2000) }} className="a-botao a-botao-secundario !min-h-[40px] !px-3 text-[14px]">
                         <Copy size={16} aria-hidden /> {copiado ? 'Copiado' : 'Copiar'}
                     </button>
+                    {whatsapp && <a href={linkWhatsApp(valor)} target="_blank" rel="noopener noreferrer" className="a-botao a-botao-principal !min-h-[40px] !px-3 text-[14px]"><Send size={16} aria-hidden /> Enviar no WhatsApp</a>}
                 </span>
             </div>
             <textarea value={valor} onChange={(e) => onChange(e.target.value)} rows={12} aria-label={titulo} className="a-foco w-full rounded-[14px] border p-3 text-[16px] leading-relaxed" style={estiloCampo} />
@@ -172,13 +182,100 @@ function CaixaTexto({ titulo, valor, onChange, onRefazer }: { titulo: string; va
     )
 }
 
-export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, local, receitaInicial, guardado, contas }: Props) {
+const PADRAO_CAMPOS = ['estilo', 'paleta', 'redes', 'fundo', 'tinta'] as const
+const doPadrao = (x: Partial<Receita>) => JSON.stringify(PADRAO_CAMPOS.map((k) => x[k]))
+
+// O padrão de publicação da ADMVC: as cores e as letras das artes, as regras de desenho, e o botão para o fixar como início de cada kit
+function PadraoAdmvc({ r, padraoJson, onGuardar, aGuardar }: { r: Receita; padraoJson: string; onGuardar: () => void; aGuardar: boolean }) {
+    const p = PALETAS.find((x) => x.id === r.paleta) ?? PALETAS[0]
+    const [copiada, setCopiada] = useState('')
+    const eOPadrao = !!padraoJson && doPadrao(JSON.parse(padraoJson)) === doPadrao(r)
+    const cores: [string, string][] = [['Fundo', p.fundo], ['Cor 1', p.c1], ['Cor 2', p.c2], ['Texto', p.texto], ['Destaque', p.acento]]
+    return (
+        <details className="rounded-[14px] border" style={{ borderColor: 'var(--a-borda)' }}>
+            <summary className="a-foco flex min-h-[52px] cursor-pointer list-none items-center justify-between gap-2 px-3 py-2">
+                <span className="min-w-0"><span className="block text-[16px] font-bold">Padrão da ADMVC</span><span className="block truncate text-[14px] a-suave">Cores, letras e regras das artes</span></span>
+                <ChevronDown size={20} className="shrink-0 a-suave" aria-hidden />
+            </summary>
+            <div className="space-y-3 border-t p-3" style={{ borderColor: 'var(--a-borda)' }}>
+                <div>
+                    <p className="mb-1 text-[15px] font-semibold">Cores · {p.nome} <span className="font-normal a-suave">(toque para copiar o código)</span></p>
+                    <div className="flex flex-wrap gap-2">
+                        {cores.map(([nome, hex]) => (
+                            <button key={nome} type="button" onClick={async () => { try { await navigator.clipboard.writeText(hex); setCopiada(hex); setTimeout(() => setCopiada(''), 1500) } catch { /* copiar à mão */ } }}
+                                className="a-foco flex items-center gap-2 rounded-[12px] border py-1 pl-1 pr-3 text-left" style={{ borderColor: 'var(--a-borda)' }}>
+                                <span aria-hidden className="h-9 w-9 shrink-0 rounded-[8px] border" style={{ background: hex, borderColor: 'var(--a-borda)' }} />
+                                <span className="text-[13px] leading-tight"><span className="block font-semibold">{nome}</span><span className="block a-suave">{copiada === hex ? 'Copiado' : hex}</span></span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+                <div className="space-y-1 text-[15px]">
+                    <p><strong>Letras:</strong> títulos em <span style={{ fontFamily: 'Cinzel, serif', fontWeight: 700 }}>CINZEL</span>, textos e datas em <strong style={{ fontFamily: 'Montserrat, sans-serif' }}>Montserrat</strong>; nos estilos claros, <em style={{ fontFamily: 'Playfair Display, serif' }}>Playfair</em> e escrita à mão para a Palavra.</p>
+                    <p><a href="/images/pomba_admvc.png" download="logotipo-admvc.png" className="a-foco underline" style={{ color: 'var(--a-destaque)' }}>Descarregar o logótipo (pomba, PNG)</a></p>
+                </div>
+                <ul className="list-disc space-y-0.5 pl-5 text-[15px]">
+                    <li>Logótipo ADMVC sempre no topo, pequeno.</li>
+                    <li>A data e a hora vão na faixa de cor de destaque.</li>
+                    <li>O preletor fica em baixo, com a foto de pé e fundo recortado, sem nada encostado às margens.</li>
+                    <li>Uma ideia por arte: título grande e pouco texto.</li>
+                </ul>
+                <div className="flex flex-wrap items-center gap-2">
+                    <button type="button" onClick={onGuardar} disabled={aGuardar || eOPadrao} className="a-botao a-botao-secundario !min-h-[44px]">
+                        {aGuardar ? 'A guardar…' : eOPadrao ? '✓ É o padrão da igreja' : 'Usar como padrão da igreja'}
+                    </button>
+                    <span className="text-[14px] a-suave">Os kits novos começam com este estilo, estas cores, as redes e o fundo.</span>
+                </div>
+            </div>
+        </details>
+    )
+}
+
+type BlocoId = 'estilo' | 'artes' | 'fotos' | 'textos'
+type Escopo = 'tudo' | 'telao' | 'redes'
+
+// Bloco que abre e fecha (só um aberto de cada vez); o conteúdo fica montado para não perder o que se escreveu
+function Bloco({ id, titulo, resumo, aberto, abrir, children }: { id: BlocoId; titulo: string; resumo: string; aberto: BlocoId | null; abrir: (id: BlocoId | null) => void; children: React.ReactNode }) {
+    const ligado = aberto === id
+    return (
+        <section className="a-card overflow-hidden">
+            <button type="button" onClick={() => abrir(ligado ? null : id)} aria-expanded={ligado} aria-controls={`bloco-${id}`} className="a-foco flex min-h-[60px] w-full items-center gap-3 px-4 py-2 text-left">
+                <span className="min-w-0 flex-1">
+                    <span className="block text-[18px] font-bold">{titulo}</span>
+                    <span className="block truncate text-[14px] a-suave">{resumo}</span>
+                </span>
+                <ChevronDown size={22} className={`shrink-0 a-suave transition-transform ${ligado ? 'rotate-180' : ''}`} aria-hidden />
+            </button>
+            <div id={`bloco-${id}`} hidden={!ligado} className="space-y-4 border-t p-4" style={{ borderColor: 'var(--a-borda)' }}>{children}</div>
+        </section>
+    )
+}
+
+// Faixa que desliza de lado (uma arte por ecrã no telemóvel)
+function Carrossel({ children }: { children: React.ReactNode }) {
+    return <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-4 px-4 pb-2 md:mx-0 md:px-0">{children}</div>
+}
+
+// O valor só "assenta" depois de uns instantes sem mudar (evita desenhar 9 imagens a cada clique)
+function useAssente<T>(valor: T, ms = 600): T {
+    const [v, setV] = useState(valor)
+    useEffect(() => { const t = setTimeout(() => setV(valor), ms); return () => clearTimeout(t) }, [valor, ms])
+    return v
+}
+
+export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, local, receitaInicial, guardado, contas, publicadoEm: publicadoEmInicial, publicadoJson: publicadoJsonInicial, padrao: padraoInicial }: Props) {
     const [r, setR] = useState<Receita>(receitaInicial)
     const [guardadoJson, setGuardadoJson] = useState(guardado ? JSON.stringify(receitaInicial) : '')
     const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null)
     const [meuVerso, setMeuVerso] = useState(!!receitaInicial.verso)   // "Escolher eu": os campos aparecem antes de haver texto
     const [aGuardar, iniciar] = useTransition()
     const [editado, setEditado] = useState<{ legenda?: string; whatsapp?: string }>({})
+    const [aberto, setAberto] = useState<BlocoId | null>(guardado ? null : 'estilo')
+    const [aPreparar, setAPreparar] = useState(false)
+    const [progresso, setProgresso] = useState('')
+    const [publicadoEm, setPublicadoEm] = useState(publicadoEmInicial)
+    const [publicadoJson, setPublicadoJson] = useState(publicadoJsonInicial)
+    const [aPublicar, setAPublicar] = useState(false)
 
     const atual = JSON.stringify(r)
     const alterado = atual !== guardadoJson
@@ -187,32 +284,133 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
     const alternarPeca = (id: PecaId) => mudar({ pecas: PECAS.map((p) => p.id).filter((x) => (x === id ? !r.pecas.includes(x) : r.pecas.includes(x))) })
     const alternarRede = (id: RedeId) => mudar({ redes: REDES.map((p) => p.id).filter((x) => (x === id ? !r.redes.includes(x) : r.redes.includes(x))) })
 
-    const guardar = () => iniciar(async () => {
+    const gravar = async (): Promise<boolean> => {
         const res = await guardarKitDivulgacao(eventoId, r)
-        if (res.ok) { setGuardadoJson(atual); setMsg({ ok: true, texto: 'Artes guardadas. Ficam aqui para descarregar quando quiser.' }) }
-        else setMsg({ ok: false, texto: 'error' in res ? res.error : 'Não foi possível guardar.' })
-    })
+        if (res.ok) { setGuardadoJson(atual); setMsg({ ok: true, texto: 'Artes guardadas.' }); return true }
+        setMsg({ ok: false, texto: 'error' in res ? res.error : 'Não foi possível guardar.' })
+        return false
+    }
+    const guardar = () => iniciar(async () => { await gravar() })
+    const semArtes = r.pecas.length === 0 && r.redes.length === 0
 
     const paleta = PALETAS.find((p) => p.id === r.paleta) ?? PALETAS[0]
     const dia = dataISO.slice(0, 10)
-    const lista = r.pecas.map((id, i) => ({ id, n: i + 1, q: paramsDaPeca(r, id, dia) }))
+    const rv = useAssente(r)   // as pré-visualizações seguem a receita só depois de um instante sem mexer
+    const lista = rv.pecas.map((id, i) => ({ id, n: i + 1, q: paramsDaPeca(rv, id, dia) }))
     const ev = { nome: eventoNome, data }
     const nomeRede = (id: RedeId) => REDES.find((x) => x.id === id)?.nome ?? id
+
+    // Publicar para a igreja: grava se preciso, desenha cada arte inteira no servidor (uma de cada vez) e junta a lista
+    async function publicar() {
+        setMsg(null)
+        if (alterado && !(await gravar())) return
+        setAPublicar(true)
+        try {
+            const lote = String(Date.now())
+            const itens = [...r.pecas.map((id) => ({ tipo: 'peca', id })), ...r.redes.map((id) => ({ tipo: 'rede', id }))]
+            const feitos: { tipo: string; id: string; url: string }[] = []
+            for (const [i, it] of itens.entries()) {
+                setProgresso(`A publicar ${i + 1} de ${itens.length}…`)
+                const res = await fetch('/api/divulgacao/publicar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ evento: eventoId, item: `${it.tipo}:${it.id}`, lote }) })
+                const j = await res.json().catch(() => ({}))
+                if (!res.ok || !j.url) throw new Error(j.error ?? 'Não foi possível publicar uma das artes.')
+                feitos.push({ ...it, url: j.url })
+            }
+            // textos sem "Hoje/Amanhã" (ficam certos nos dias seguintes), a não ser que tenham sido editados
+            const neutros = textosDoCulto({ nome: r.titulo || eventoNome, data, preletor: r.preletor, local, hoje: new Date(data.getTime() - 3 * 86400000) })
+            const fim = await concluirPublicacao(eventoId, lote, feitos, { legenda: editado.legenda ?? neutros.legenda, whatsapp: editado.whatsapp ?? neutros.whatsapp })
+            if ('error' in fim) throw new Error(fim.error)
+            setPublicadoEm(new Date().toISOString()); setPublicadoJson(atual)
+            setMsg(null)   // o cartão "Página Divulgar e Holyrics" já diz "Publicado a …"
+        } catch (e) {
+            setMsg({ ok: false, texto: e instanceof Error ? e.message : 'Não foi possível publicar.' })
+        } finally {
+            setAPublicar(false); setProgresso('')
+        }
+    }
+    async function retirar() {
+        setMsg(null); setAPublicar(true)
+        const res = await retirarPublicacao(eventoId)
+        setAPublicar(false)
+        if (res.ok) { setPublicadoEm(null); setPublicadoJson(''); setMsg({ ok: true, texto: 'Retirado da página Divulgar.' }) }
+        else setMsg({ ok: false, texto: 'error' in res ? res.error : 'Não foi possível retirar.' })
+    }
+    const publicadoEmDia = !!publicadoEm && publicadoJson === atual
+    const ocupado = aGuardar || aPreparar || aPublicar
+    const [aPartilhar, setAPartilhar] = useState('')
+    const [ajustando, setAjustando] = useState<RedeId | null>(null)
+    // a foto que cada formato usa (a deitada na capa, a ao alto no resto), como em paramsDaRede
+    const fotoDa = (id: RedeId) => { const x = id === 'youtube' ? r.fotoH ?? r.fotoV : r.fotoV ?? r.fotoH; return x && x.w && x.h ? x : null }
+    function guardarAjuste(id: RedeId, a: Ajuste | null) {
+        const foto = fotoDa(id)
+        const resto = { ...r.ajustes }; delete resto[id]
+        mudar({ ajustes: a && foto ? { ...resto, [id]: { url: foto.url, ...limitarAjuste(a, !!foto.recorte) } } : resto })
+        setAjustando(null)
+    }
+    const [padraoJson, setPadraoJson] = useState(padraoInicial)
+    const [aGuardarPadrao, setAGuardarPadrao] = useState(false)
+    async function usarComoPadrao() {
+        setAGuardarPadrao(true); setMsg(null)
+        const res = await guardarPadraoDivulgacao(r)
+        setAGuardarPadrao(false)
+        if (res.ok) { setPadraoJson(JSON.stringify(r)); setMsg({ ok: true, texto: 'Padrão da igreja guardado: os kits novos começam assim.' }) }
+        else setMsg({ ok: false, texto: 'error' in res ? res.error : 'Não foi possível guardar o padrão.' })
+    }
+    async function partilharRede(id: RedeId, q: URLSearchParams) {
+        setMsg(null); setAPartilhar(id)
+        const texto = editado.whatsapp ?? textosDoCulto({ nome: r.titulo || eventoNome, data, preletor: r.preletor, local, hoje: new Date(hojeISO) }).whatsapp
+        const res = await partilharArte(`/api/divulgacao/imagem?${q}`, nomeDaRede(id), texto)
+        if (res !== 'cancelada') setMsg({ ok: res === 'partilhada', texto: AVISO_PARTILHA[res] })
+        setAPartilhar('')
+    }
+
+    // Descarregar tudo: grava se preciso, pede cada imagem inteira (uma de cada vez, sem limite de tempo) e monta o ZIP aqui
+    async function descarregarTudo(escopo: Escopo = 'tudo') {
+        setMsg(null)
+        if (alterado && !(await gravar())) return
+        setAPreparar(true)
+        try {
+            const itens = [
+                ...(escopo !== 'redes' ? r.pecas.map((id, i) => ({ nome: nomeDaPeca(r, id, i + 1), q: paramsDaPeca(r, id, dia) })) : []),
+                ...(escopo !== 'telao' ? r.redes.map((id) => ({ nome: nomeDaRede(id), q: paramsDaRede(r, id, ev) })) : []),
+            ]
+            const ficheiros: { nome: string; dados: Uint8Array }[] = []
+            for (const [i, it] of itens.entries()) {
+                setProgresso(`A preparar ${i + 1} de ${itens.length}…`)
+                const res = await fetch(`/api/divulgacao/imagem?${it.q}`)
+                if (!res.ok) throw new Error('Não foi possível preparar uma das artes.')
+                ficheiros.push({ nome: it.nome, dados: new Uint8Array(await res.arrayBuffer()) })
+            }
+            setProgresso('A juntar…')
+            const url = URL.createObjectURL(new Blob([criarZip(ficheiros) as BlobPart], { type: 'application/zip' }))
+            const a = document.createElement('a')
+            a.href = url; a.download = `artes-culto-${dia}${escopo === 'tudo' ? '' : `-${escopo}`}.zip`; document.body.appendChild(a); a.click(); a.remove()
+            setTimeout(() => URL.revokeObjectURL(url), 10000)
+            setMsg({ ok: true, texto: `${itens.length} artes descarregadas.` })
+        } catch (e) {
+            setMsg({ ok: false, texto: e instanceof Error ? e.message : 'Não foi possível descarregar.' })
+        } finally {
+            setAPreparar(false); setProgresso('')
+        }
+    }
 
     // Legenda e WhatsApp: saem do culto e do preletor; podem editar-se (a edição fica até carregar em "Refazer")
     const gerados = useMemo(() => textosDoCulto({ nome: r.titulo || eventoNome, data, preletor: r.preletor, local, hoje: new Date(hojeISO) }), [r.titulo, r.preletor, eventoNome, data, local, hojeISO])
     const mostrarPreletor = r.pecas.includes('palavra') || r.redes.length > 0
 
     return (
-        <div className="space-y-6">
-            <section className="a-card space-y-4 p-4">
+        <div className="space-y-4 pb-24 md:pb-0">
+            <Bloco id="estilo" titulo="Estilo e cores" resumo={`${ESTILOS.find((e) => e.id === r.estilo)?.nome} · ${paleta.nome}`} aberto={aberto} abrir={setAberto}>
+                <PadraoAdmvc r={r} padraoJson={padraoJson} onGuardar={usarComoPadrao} aGuardar={aGuardarPadrao} />
                 <fieldset className="space-y-2">
                     <legend className="text-[17px] font-bold">Estilo do telão</legend>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                         {ESTILOS.map((e) => (
-                            <label key={e.id} className={`${chip} px-4`} style={estiloCampo}>
+                            <label key={e.id} className={`${miniatura} ${r.estilo === e.id ? 'ring-2 ring-[var(--a-acento,#f5a524)]' : ''}`} style={estiloCampo}>
                                 <input type="radio" name="estilo" checked={r.estilo === e.id} onChange={() => mudar({ estilo: e.id })} className="sr-only" />
-                                {e.nome}
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={`/images/divulgacao/amostras/${e.id}-${r.paleta}.jpg`} alt="" loading="lazy" className="block w-full" style={{ aspectRatio: '16 / 9', background: 'var(--a-borda)' }} />
+                                <span className="block px-2 py-1.5 text-[14px] font-semibold">{e.nome}</span>
                             </label>
                         ))}
                     </div>
@@ -220,21 +418,22 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
 
                 <fieldset className="space-y-2">
                     <legend className="text-[17px] font-bold">Cores · {paleta.nome}</legend>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="grid grid-cols-3 gap-2 md:grid-cols-6">
                         {PALETAS.map((p) => (
-                            <label key={p.id} title={p.nome} className={`${chip} text-[14px]`} style={estiloCampo}>
+                            <label key={p.id} title={p.nome} className={`${miniatura} ${r.paleta === p.id ? 'ring-2 ring-[var(--a-acento,#f5a524)]' : ''}`} style={estiloCampo}>
                                 <input type="radio" name="paleta" checked={r.paleta === p.id} onChange={() => mudar({ paleta: p.id })} className="sr-only" />
-                                <span aria-hidden className="flex h-7 w-12 overflow-hidden rounded-md border" style={{ borderColor: 'var(--a-borda)' }}>
-                                    <span className="flex-1" style={{ background: p.fundo }} /><span className="w-3" style={{ background: p.c1 }} /><span className="w-3" style={{ background: p.c2 }} />
-                                </span>
-                                {p.nome}
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={`/images/divulgacao/amostras/${r.estilo}-${p.id}.jpg`} alt="" loading="lazy" className="block w-full" style={{ aspectRatio: '16 / 9', background: p.fundo }} />
+                                <span className="block truncate px-1.5 py-1 text-[12px] font-semibold">{p.nome}</span>
                             </label>
                         ))}
                     </div>
                 </fieldset>
 
                 <EscolherFundo valor={r.fundo} onChange={(v) => mudar(v ? { fundo: v, estilo: 'foto' } : { fundo: '' })} />
+            </Bloco>
 
+            <Bloco id="artes" titulo="Artes" resumo={`${r.pecas.length} no telão · ${r.redes.length} nas redes`} aberto={aberto} abrir={setAberto}>
                 <fieldset className="space-y-2">
                     <legend className="text-[17px] font-bold">Artes para o telão</legend>
                     <div className="flex flex-wrap gap-2">
@@ -268,6 +467,7 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
                 </fieldset>
 
                 <div className="grid gap-3 md:grid-cols-2">
+                    {r.redes.length === 0 && r.pecas.length === 0 && <p className="a-suave md:col-span-2">Marque pelo menos uma arte.</p>}
                     {mostrarPreletor && (
                         <div className="space-y-1">
                             <span className="block text-[15px] font-semibold">Preletor (Palavra e redes; deixe vazio se ainda não sabe)</span>
@@ -343,10 +543,10 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
                         )}
                     </div>
                 </div>
+            </Bloco>
 
-                {r.redes.length > 0 && (
-                    <div className="space-y-3 border-t pt-4" style={{ borderColor: 'var(--a-borda)' }}>
-                        <h3 className="text-[17px] font-bold">Foto do preletor</h3>
+            {r.redes.length > 0 && (
+                <Bloco id="fotos" titulo="Foto do preletor" resumo={r.fotoV || r.fotoH ? "Com foto" : "Sem foto"} aberto={aberto} abrir={setAberto}>
                         <p className="text-[14px] a-suave">Uma foto recortada (PNG com fundo transparente, do remove.bg ou do Canva) fica muito melhor: o preletor aparece de pé sobre o fundo, e também na Palavra do telão.</p>
                         <div className="grid gap-4 md:grid-cols-2">
                             <CampoFoto titulo="Foto ao alto (post e story)" ajuda="Uma foto em pé, do preletor da cintura para cima, funciona melhor." foto={r.fotoV} onChange={(f) => mudar({ fotoV: f })} />
@@ -360,66 +560,106 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
                                 </select>
                             </label>
                         )}
-                    </div>
-                )}
+                </Bloco>
+            )}
 
-                <div className="flex flex-wrap items-center gap-3">
-                    <button type="button" onClick={guardar} disabled={aGuardar || !alterado || (r.pecas.length === 0 && r.redes.length === 0)} className="a-botao a-botao-principal">
-                        <Save size={18} aria-hidden /> {aGuardar ? 'A guardar…' : guardadoJson ? 'Guardar alterações' : 'Guardar kit'}
-                    </button>
-                    {guardadoJson && !alterado
-                        ? <a href={`/api/divulgacao/zip?evento=${eventoId}`} className="a-botao a-botao-secundario"><Download size={18} aria-hidden /> Descarregar tudo (ZIP)</a>
-                        : guardadoJson && <span className="text-[15px] a-suave">Guarde as alterações para descarregar o ZIP.</span>}
-                    {msg && <span role="status" className="text-[15px]" style={{ color: msg.ok ? 'var(--a-ok, #16a34a)' : 'var(--a-erro, #dc2626)' }}>{msg.texto}</span>}
+            <section className="a-card flex items-start gap-3 p-4" aria-labelledby="h-publicar">
+                <Megaphone size={22} className="mt-0.5 shrink-0" aria-hidden style={{ color: 'var(--a-destaque)' }} />
+                <div className="min-w-0 flex-1 space-y-0.5">
+                    <h2 id="h-publicar" className="text-[17px] font-bold">Página Divulgar e Holyrics</h2>
+                    <p className="text-[15px]" role="status">
+                        {!publicadoEm ? <span className="a-suave">Ainda não publicado. &quot;Publicar&quot; põe as artes das redes na página Divulgar (para os irmãos partilharem) e as do telão no Holyrics.</span>
+                            : publicadoEmDia
+                                ? <span suppressHydrationWarning>✓ Publicado a {new Date(publicadoEm).toLocaleString('pt-PT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}, em dia.</span>
+                                : <strong style={{ color: 'var(--a-aviso, #b45309)' }}>Mudou depois de publicar: carregue em &quot;Publicar&quot; outra vez.</strong>}
+                    </p>
+                    {publicadoEm && (
+                        <p className="flex flex-wrap gap-x-4 text-[14px]">
+                            <a href="/divulgar" target="_blank" rel="noopener noreferrer" className="a-foco underline" style={{ color: 'var(--a-destaque)' }}>Ver a página Divulgar</a>
+                            <button type="button" onClick={retirar} disabled={ocupado} className="a-foco underline a-suave">Retirar</button>
+                        </p>
+                    )}
                 </div>
             </section>
 
-            {r.redes.length > 0 && (
-                <section className="space-y-3">
-                    <h2 className="text-[19px] font-bold">Redes sociais</h2>
-                    <div className="grid items-start gap-4 md:grid-cols-3">
-                        {r.redes.map((id) => {
-                            const q = paramsDaRede(r, id, ev)
+            {msg && <p role="status" className="text-[15px]" style={{ color: msg.ok ? 'var(--a-ok, #16a34a)' : 'var(--a-erro, #dc2626)' }}>{msg.texto}</p>}
+
+            {lista.length > 0 && (
+                <section className="space-y-2" aria-labelledby="h-telao">
+                    <div className="flex items-center justify-between gap-2">
+                        <h2 id="h-telao" className="text-[19px] font-bold">Telão <span className="text-[15px] font-normal a-suave">· {lista.length} {lista.length === 1 ? 'arte' : 'artes'}</span></h2>
+                        <button type="button" onClick={() => descarregarTudo('telao')} disabled={ocupado} className="a-foco inline-flex min-h-[40px] shrink-0 items-center gap-1 rounded-full px-3 text-[14px] font-semibold disabled:opacity-50" style={{ background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }}><Download size={16} aria-hidden /> ZIP</button>
+                    </div>
+                    <Carrossel>
+                        {lista.map(({ id, n, q }) => (
+                            <figure key={id} className="w-[85%] shrink-0 snap-center space-y-2 md:w-[calc(50%-8px)]">
+                                <figcaption className="text-[16px] font-semibold">{PECAS.find((p) => p.id === id)?.nome}</figcaption>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={`/api/divulgacao/imagem?${q}&previa=1`} alt={PECAS.find((p) => p.id === id)?.nome} loading="lazy" className="w-full rounded-xl border" style={{ borderColor: 'var(--a-borda)', aspectRatio: '16 / 9', background: 'var(--a-card)' }} />
+                                <a href={`/api/divulgacao/imagem?${q}&download=1`} download={nomeDaPeca(rv, id, n)} className="a-botao a-botao-secundario !min-h-[44px]"><Download size={18} aria-hidden /> Descarregar (1920×1080)</a>
+                            </figure>
+                        ))}
+                    </Carrossel>
+                </section>
+            )}
+
+            {rv.redes.length > 0 && (
+                <section className="space-y-2" aria-labelledby="h-redes">
+                    <div className="flex items-center justify-between gap-2">
+                        <h2 id="h-redes" className="text-[19px] font-bold">Redes sociais</h2>
+                        <button type="button" onClick={() => descarregarTudo('redes')} disabled={ocupado} className="a-foco inline-flex min-h-[40px] shrink-0 items-center gap-1 rounded-full px-3 text-[14px] font-semibold disabled:opacity-50" style={{ background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }}><Download size={16} aria-hidden /> ZIP</button>
+                    </div>
+                    <Carrossel>
+                        {rv.redes.map((id) => {
+                            const q = paramsDaRede(rv, id, ev)
                             return (
-                                <figure key={id} className={`space-y-2 ${id === 'youtube' ? 'md:col-span-3' : ''}`}>
+                                <figure key={id} className={`shrink-0 snap-center space-y-2 ${id === 'youtube' ? 'w-[85%] md:w-[calc(50%-8px)]' : 'w-[62%] md:w-[calc(25%-10px)]'}`}>
                                     <figcaption className="text-[16px] font-semibold">{nomeRede(id)}</figcaption>
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={`/api/divulgacao/imagem?${q}`} alt={nomeRede(id)} loading="lazy" className={`w-full rounded-xl border ${id === 'youtube' ? 'max-w-xl' : ''}`}
+                                    <img src={`/api/divulgacao/imagem?${q}&previa=1`} alt={nomeRede(id)} loading="lazy" className="w-full rounded-xl border"
                                         style={{ borderColor: 'var(--a-borda)', aspectRatio: id === 'post' ? '4 / 5' : id === 'story' ? '9 / 16' : '16 / 9', background: 'var(--a-card)' }} />
-                                    <a href={`/api/divulgacao/imagem?${q}&download=1`} download={nomeDaRede(id)} className="a-botao a-botao-secundario !min-h-[44px]"><Download size={18} aria-hidden /> Descarregar</a>
+                                    <div className="flex gap-2">
+                                        {fotoDa(id) && <button type="button" onClick={() => setAjustando(id)} className="a-botao a-botao-secundario !min-h-[44px] !px-3 text-[14px]">{r.ajustes[id] && r.ajustes[id]!.url === fotoDa(id)!.url ? 'Foto ✓' : 'Foto'}</button>}
+                                        <button type="button" onClick={() => partilharRede(id, q)} disabled={aPartilhar === id} className="a-botao a-botao-principal !min-h-[44px] min-w-0 flex-1 !px-3"><Share2 size={18} className="shrink-0" aria-hidden /> {aPartilhar === id ? 'A abrir…' : 'WhatsApp'}</button>
+                                        <a href={`/api/divulgacao/imagem?${q}&download=1`} download={nomeDaRede(id)} aria-label={`Descarregar ${nomeRede(id)}`} className="a-botao a-botao-secundario !min-h-[44px] !px-3"><Download size={18} aria-hidden /></a>
+                                    </div>
                                 </figure>
                             )
                         })}
-                    </div>
+                    </Carrossel>
                 </section>
             )}
 
             {r.redes.length > 0 && (
-                <section className="a-card space-y-4 p-4">
-                    <h2 className="text-[19px] font-bold">Textos para publicar</h2>
+                <Bloco id="textos" titulo="Textos para publicar" resumo="Legenda e WhatsApp" aberto={aberto} abrir={setAberto}>
                     <div className="grid gap-4 md:grid-cols-2">
                         <CaixaTexto titulo="Legenda Instagram / Facebook" valor={editado.legenda ?? gerados.legenda} onChange={(v) => setEditado((x) => ({ ...x, legenda: v }))} onRefazer={() => setEditado((x) => ({ ...x, legenda: undefined }))} />
-                        <CaixaTexto titulo="Mensagem de WhatsApp" valor={editado.whatsapp ?? gerados.whatsapp} onChange={(v) => setEditado((x) => ({ ...x, whatsapp: v }))} onRefazer={() => setEditado((x) => ({ ...x, whatsapp: undefined }))} />
+                        <CaixaTexto whatsapp titulo="Mensagem de WhatsApp" valor={editado.whatsapp ?? gerados.whatsapp} onChange={(v) => setEditado((x) => ({ ...x, whatsapp: v }))} onRefazer={() => setEditado((x) => ({ ...x, whatsapp: undefined }))} />
                     </div>
-                </section>
+                </Bloco>
             )}
 
-            {lista.length > 0 && (
-                <section className="space-y-3">
-                    <h2 className="text-[19px] font-bold">Telão</h2>
-                    <div className="grid gap-4 md:grid-cols-2">
-                        {lista.map(({ id, n, q }) => (
-                            <figure key={id} className="space-y-2">
-                                <figcaption className="text-[16px] font-semibold">{PECAS.find((p) => p.id === id)?.nome}</figcaption>
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={`/api/divulgacao/imagem?${q}`} alt={PECAS.find((p) => p.id === id)?.nome} loading="lazy" className="w-full rounded-xl border" style={{ borderColor: 'var(--a-borda)', aspectRatio: '16 / 9', background: 'var(--a-card)' }} />
-                                <a href={`/api/divulgacao/imagem?${q}&download=1`} download={nomeDaPeca(r, id, n)} className="a-botao a-botao-secundario !min-h-[44px]"><Download size={18} aria-hidden /> Descarregar (1920×1080)</a>
-                            </figure>
-                        ))}
-                    </div>
-                </section>
+            {ajustando && fotoDa(ajustando) && (
+                <AjustarFoto formato={ajustando} foto={fotoDa(ajustando)!} paleta={paleta}
+                    inicial={r.ajustes[ajustando] && r.ajustes[ajustando]!.url === fotoDa(ajustando)!.url ? r.ajustes[ajustando]! : null}
+                    onFeito={(a) => guardarAjuste(ajustando, a)} onFechar={() => setAjustando(null)} />
             )}
-            {lista.length === 0 && r.redes.length === 0 && <p className="a-suave">Marque pelo menos uma arte para a ver aqui.</p>}
+
+            {/* BARRA: fixa em baixo no telemóvel (por cima da barra do menu), no fim da página no computador */}
+            <div className="fixed inset-x-0 z-40 px-3 bottom-[calc(72px+env(safe-area-inset-bottom))] md:static md:px-0">
+                <div className="a-card flex items-center gap-2 p-2 shadow-lg md:shadow-none">
+                    <button type="button" onClick={guardar} disabled={ocupado || !alterado || semArtes} className="a-botao a-botao-secundario !min-h-[48px] !px-3 shrink-0">
+                        <Save size={18} aria-hidden /> {aGuardar ? 'A guardar…' : alterado ? 'Guardar' : 'Guardado'}
+                    </button>
+                    <button type="button" onClick={() => descarregarTudo()} disabled={ocupado || semArtes} aria-label="Descarregar todas as artes (ZIP)" className="a-botao a-botao-secundario !min-h-[48px] !px-3 shrink-0">
+                        <Download size={18} aria-hidden /> ZIP
+                    </button>
+                    <button type="button" onClick={publicar} disabled={ocupado || semArtes || publicadoEmDia} className="a-botao a-botao-principal !min-h-[48px] !px-3 min-w-0 flex-1">
+                        <Megaphone size={18} className="shrink-0" aria-hidden />
+                        <span className="truncate">{progresso || (publicadoEmDia ? 'Publicado' : publicadoEm ? 'Publicar outra vez' : 'Publicar')}</span>
+                    </button>
+                </div>
+            </div>
         </div>
     )
 }

@@ -2,12 +2,14 @@
 // preletor. Mesmo desenho da skill divulgacao-admvc: foto + degradê da cor de fundo, título em Cinzel, faixa da data.
 // Parâmetros (URLSearchParams): formato=post|story|youtube · paleta · titulo (| = quebra) · subtitulo · quando · hora ·
 // preletor · foto=<Blob público> · fw/fh (tamanho da foto) · recorte=1 (PNG transparente) · fundo=palco|<Blob> · foco="x% y%" · tinta=0..0.6 (véu da cor de apoio sobre a foto)
+// · aj=x,y,zoom ("Ajustar foto" deste formato; contas em lib/divulgacao-enquadrar.ts)
 import { ImageResponse } from 'next/og'
 import type { CSSProperties } from 'react'
 import { REDES, lerPaleta, type Paleta, type RedeId } from '@/lib/divulgacao'
 import { carregarFontes, carregarPomba, fotoPermitida, lerFundo, rgba } from '@/lib/divulgacao-imagem'
+import { CAIXA_FOTO, ajustePorOmissao, enquadrarFoto, enquadrarRecorte, lerAjuste, type Ajuste } from '@/lib/divulgacao-enquadrar'
 
-type Dados = { titulo: string; subtitulo: string; quando: string; hora: string; preletor: string; foto: string | null; fw: number; fh: number; foco: string; tinta: number; recorte: boolean; fundo: string | null }
+type Dados = { titulo: string; subtitulo: string; quando: string; hora: string; preletor: string; foto: string | null; fw: number; fh: number; foco: string; tinta: number; recorte: boolean; fundo: string | null; ajuste: Ajuste | null }
 
 // Maiúsculas em Cinzel são largas (~0.8 em): o título cabe em até 2 linhas no espaço dado
 function tamanhoTitulo(titulo: string, max: number, largura: number) {
@@ -25,28 +27,19 @@ const mistura = (cor: string, pct: number) => rgba(cor, pct / 100)
 function corte(d: Dados, caixa: { width: number; height: number }) {
     if (!d.foto) return null
     if (!d.fw || !d.fh) return <img alt="" src={d.foto} width={caixa.width} height={caixa.height} style={{ objectFit: 'cover' }} />
-    const [fx, fy] = d.foco.split(' ').map((n) => parseInt(n, 10) / 100)
-    const escala = Math.max(caixa.width / d.fw, caixa.height / d.fh)
-    const w = Math.round(d.fw * escala), h = Math.round(d.fh * escala)
-    const prender = (v: number, min: number) => Math.round(Math.min(0, Math.max(min, v)))
-    const left = prender(caixa.width * 0.5 - fx * w, caixa.width - w)
-    const top = prender(caixa.height * 0.3 - fy * h, caixa.height - h)
-    return <img alt="" src={d.foto} width={w} height={h} style={{ position: 'absolute', left, top }} />
+    const { left, top, width, height } = enquadrarFoto(d.fw, d.fh, caixa, d.ajuste ?? ajustePorOmissao(false, d.foco))
+    return <img alt="" src={d.foto} width={width} height={height} style={{ position: 'absolute', left, top }} />
 }
 
 // Recorte (PNG transparente): a pessoa inteira, de pé, assente no fundo da caixa, com uma luz da cor da paleta atrás.
 // A parte de baixo desaparece no degradê, onde fica o texto.
 function recortado(d: Dados, caixa: { width: number; height: number }, p: Paleta) {
     if (!d.foto || !d.fw || !d.fh) return null
-    let h = Math.round(caixa.height * 0.94), w = Math.round(d.fw * h / d.fh)
-    // nas artes ao alto, um recorte largo (braços abertos) pode passar das margens: corta-se nos cotovelos, não se encolhe a pessoa
-    const maxLarg = caixa.height > caixa.width ? caixa.width * 1.35 : caixa.width * 0.95
-    if (w > maxLarg) { w = Math.round(maxLarg); h = Math.round(d.fh * w / d.fw) }
-    const left = Math.round((caixa.width - w) / 2), top = caixa.height - h
+    const { left, top, width: w, height: h } = enquadrarRecorte(d.fw, d.fh, caixa, d.ajuste ?? ajustePorOmissao(true))
     const luz = Math.round(Math.max(w, h) * 1.1)
     return (
         <>
-            <div style={{ position: 'absolute', left: Math.round(caixa.width / 2 - luz / 2), top: Math.round(top + h * 0.35 - luz / 2), width: luz, height: luz, borderRadius: luz / 2, display: 'flex', backgroundImage: `radial-gradient(circle, ${rgba(p.c1, 0.6)} 0%, ${rgba(p.c1, 0)} 62%)` }} />
+            <div style={{ position: 'absolute', left: Math.round(left + w / 2 - luz / 2), top: Math.round(top + h * 0.35 - luz / 2), width: luz, height: luz, borderRadius: luz / 2, display: 'flex', backgroundImage: `radial-gradient(circle, ${rgba(p.c1, 0.6)} 0%, ${rgba(p.c1, 0)} 62%)` }} />
             <img alt="" src={d.foto} width={w} height={h} style={{ position: 'absolute', left, top }} />
         </>
     )
@@ -61,9 +54,7 @@ function Rede({ formato, p, d, marca }: { formato: RedeId; p: Paleta; d: Dados; 
     const titulo = d.titulo.replace(/\|/g, ' ')
 
     // Caixa da foto e degradê (o texto fica sobre a cor de fundo, nunca sobre o rosto)
-    const caixa = horizontal ? { left: 380, top: 0, width: 900, height: 720 }
-        : story ? { left: 0, top: 200, width: 1080, height: 1440 }
-        : { left: 0, top: 0, width: 1080, height: 1000 }
+    const caixa = CAIXA_FOTO[formato]
     const degrade = horizontal
         ? `linear-gradient(90deg, ${base} 0%, ${base} 40%, ${mistura(base, 65)} 55%, ${rgba(base, 0)} 78%)`
         : `linear-gradient(0deg, ${base} 0%, ${base} ${story ? 36 : 32}%, ${mistura(base, 70)} ${story ? 48 : 44}%, ${rgba(base, 0)} ${story ? 64 : 62}%)`
@@ -150,7 +141,7 @@ export async function desenharRede(q: URLSearchParams): Promise<ImageResponse> {
     const d: Dados = {
         titulo: corta('titulo', 60) || 'Culto', subtitulo: corta('subtitulo', 40), quando: corta('quando', 30), hora: corta('hora', 10),
         preletor: corta('preletor', 60), foto: fotoPermitida(q.get('foto')), fw: Number(q.get('fw')) || 0, fh: Number(q.get('fh')) || 0, foco, tinta,
-        recorte: q.get('recorte') === '1', fundo: null,
+        recorte: q.get('recorte') === '1', fundo: null, ajuste: lerAjuste(q.get('aj')),
     }
     const [fonts, marca, fundo] = await Promise.all([carregarFontes(), carregarPomba(), lerFundo(q.get('fundo'))])
     d.fundo = fundo

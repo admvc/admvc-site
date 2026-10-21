@@ -1,4 +1,13 @@
-// FotosCulto.exe — põe moldura, título, data, versículo e o QR do álbum nas fotos do culto, para o slide-show do Holyrics.
+﻿// FotosCulto.exe — põe moldura, título, data, versículo e o QR do álbum nas fotos do culto, para o slide-show do Holyrics.
+//
+//   Artes do culto (do portal, só as do telão):
+//   FotosCulto.exe --listar --portal https://app.igrejaadmvc.org --chave <chave>      (uma linha por culto: id|AAAA-MM-DDTHH:MM|nome|artes)
+//   FotosCulto.exe --trazer --portal … --chave … --evento 12 --pasta "C:\…\image\ARTES-CULTO"   (descarrega e SUBSTITUI o conteúdo da pasta)
+//
+//   Culto do app (músicas, artes, escala e rotina; uma linha curta por item, para o módulo do Holyrics):
+//   FotosCulto.exe --cultos --portal … --chave …                    → C|id|AAAA-MM-DDTHH:MM|nome|músicas|artes
+//   FotosCulto.exe --culto  --portal … --chave … --evento N        → N|nome|data  M|título|artista|idHolyrics|tom  A|secção|ficheiro|nome  E|linha  R|linha
+//   FotosCulto.exe --trazer … [--so 01-oracao.png,03-oferta.png]   → só descarrega esses ficheiros
 //
 //   FotosCulto.exe --pasta "C:\Holyrics\Holyrics\files\media\image\FOTOS-CULTO" --titulo "Culto de Jovens"
 //                  --data "Quarta-feira, 21 de outubro" --estilo direita|inclinada|diagonal --link "https://…"
@@ -13,7 +22,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Web.Script.Serialization;
 using System.Threading;
 
 static class FotosCulto
@@ -23,7 +34,15 @@ static class FotosCulto
     static int Main(string[] args)
     {
         Console.OutputEncoding = Encoding.UTF8;
-        try { return Correr(LerArgumentos(args)); }
+        try
+        {
+            var a = LerArgumentos(args);
+            if (a.ContainsKey("cultos")) return CultosDoApp(a);
+            if (a.ContainsKey("culto")) return CultoDoApp(a);
+            if (a.ContainsKey("listar")) return Listar(a);
+            if (a.ContainsKey("trazer")) return Trazer(a);
+            return Correr(a);
+        }
         catch (Exception e) { Console.WriteLine("Erro: " + e.Message); return 1; }
     }
 
@@ -44,6 +63,138 @@ static class FotosCulto
     {
         string v;
         return a.TryGetValue(chave, out v) ? v.Trim() : omissao;
+    }
+
+    // ---- artes do culto, vindas do portal -------------------------------------------------------------------------------
+
+    static string PedirJson(Dictionary<string, string> a, string extra, out object json, string caminho = "/api/public/divulgacao/holyrics")
+    {
+        json = null;
+        string portal = Valor(a, "portal").TrimEnd('/');
+        string chave = Valor(a, "chave");
+        if (portal == "" || chave == "") return "Falta o endereço do portal ou a chave (definições do módulo).";
+        ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;   // TLS 1.2 (o .NET 4.8 antigo não o usa sozinho)
+        try
+        {
+            using (var c = new WebClient { Encoding = Encoding.UTF8 })
+            {
+                string texto = c.DownloadString(portal + caminho + "?chave=" + Uri.EscapeDataString(chave) + extra);
+                json = new JavaScriptSerializer().DeserializeObject(texto);
+                return null;
+            }
+        }
+        catch (WebException e)
+        {
+            var r = e.Response as HttpWebResponse;
+            if (r != null && (int)r.StatusCode == 401) return "A chave não é válida (veja em Mídia, no portal).";
+            if (r != null && (int)r.StatusCode == 404) return "Este culto não tem artes do telão publicadas.";
+            if (r != null && (int)r.StatusCode == 429) return "Pedidos a mais: tente daqui a um minuto.";
+            return "Não consegui falar com o portal: " + e.Message;
+        }
+    }
+
+    // Uma linha curta e só em ASCII: os acentos vão como \uXXXX (o módulo do Holyrics converte de volta), sem depender da codificação.
+    static string Linha(object o)
+    {
+        var sb = new StringBuilder();
+        foreach (char ch in Convert.ToString(o ?? ""))
+        {
+            if (ch == '|') sb.Append('/');
+            else if (ch == '\r' || ch == '\n') sb.Append(' ');
+            else if (ch < 32 || ch > 126) sb.Append("\\u" + ((int)ch).ToString("x4"));
+            else sb.Append(ch);
+        }
+        return sb.ToString();
+    }
+
+    /// <summary>Os cultos do app (de hoje a +14 dias), um por linha: C|id|data|nome|músicas|artes.</summary>
+    static int CultosDoApp(Dictionary<string, string> a)
+    {
+        object json;
+        string erro = PedirJson(a, "", out json, "/api/public/holyrics/culto");
+        if (erro != null) { Console.WriteLine(erro); return 1; }
+        var cultos = ((Dictionary<string, object>)json)["cultos"] as object[];
+        if (cultos == null || cultos.Length == 0) { Console.WriteLine("Não há cultos no app para os próximos dias."); return 2; }
+        foreach (Dictionary<string, object> c in cultos)
+        {
+            string data = Convert.ToString(c["data"]);
+            if (data.Length >= 16) data = data.Substring(0, 16);   // a hora já vem em hora de Lisboa
+            Console.WriteLine("C|" + Linha(c["id"]) + "|" + data + "|" + Linha(c["nome"]) + "|" + Linha(c["musicas"]) + "|" + Linha(c["artes"]));
+        }
+        return 0;
+    }
+
+    /// <summary>Um culto do app: N (nome e data), M (música), A (arte do telão e a secção), E (escala), R (rotina).</summary>
+    static int CultoDoApp(Dictionary<string, string> a)
+    {
+        object json;
+        string erro = PedirJson(a, "&evento=" + Uri.EscapeDataString(Valor(a, "evento")), out json, "/api/public/holyrics/culto");
+        if (erro != null) { Console.WriteLine(erro); return 1; }
+        var r = (Dictionary<string, object>)json;
+        var culto = (Dictionary<string, object>)r["culto"];
+        string data = Convert.ToString(culto["data"]); if (data.Length >= 16) data = data.Substring(0, 16);
+        Console.WriteLine("N|" + Linha(culto["nome"]) + "|" + data);
+        foreach (Dictionary<string, object> m in (object[])r["musicas"])
+            Console.WriteLine("M|" + Linha(m["titulo"]) + "|" + Linha(m["artista"]) + "|" + Linha(m["holyricsId"]) + "|" + Linha(m["tom"]));
+        foreach (Dictionary<string, object> x in (object[])r["artes"])
+            Console.WriteLine("A|" + Linha(x["secao"]) + "|" + Linha(x["ficheiro"]) + "|" + Linha(x["nome"]));
+        foreach (object l in (object[])r["escala"]) Console.WriteLine("E|" + Linha(l));
+        foreach (object l in (object[])r["rotina"]) Console.WriteLine("R|" + Linha(l));
+        return 0;
+    }
+
+    static int Listar(Dictionary<string, string> a)
+    {
+        object json;
+        string erro = PedirJson(a, "", out json);
+        if (erro != null) { Console.WriteLine(erro); return 1; }
+        var cultos = ((Dictionary<string, object>)json)["cultos"] as object[];
+        if (cultos == null || cultos.Length == 0) { Console.WriteLine("Não há artes do telão publicadas para os próximos dias."); return 2; }
+        foreach (Dictionary<string, object> c in cultos)
+        {
+            string data = Convert.ToString(c["data"]);
+            if (data.Length >= 16) data = data.Substring(0, 16);   // a hora já vem em hora de Lisboa
+            Console.WriteLine(string.Format("{0}|{1}|{2}|{3}", c["id"], data, Convert.ToString(c["nome"]).Replace("|", "/"), c["artes"]));
+        }
+        return 0;
+    }
+
+    static int Trazer(Dictionary<string, string> a)
+    {
+        string pasta = Valor(a, "pasta");
+        if (pasta == "") { Console.WriteLine("Falta a pasta das artes."); return 1; }
+        object json;
+        string erro = PedirJson(a, "&evento=" + Uri.EscapeDataString(Valor(a, "evento")), out json);
+        if (erro != null) { Console.WriteLine(erro); return 1; }
+        var culto = (Dictionary<string, object>)((Dictionary<string, object>)json)["culto"];
+        var artes = (object[])culto["artes"];
+
+        // primeiro tudo para uma pasta temporária; só se correr bem é que a pasta do Holyrics é substituída
+        string temp = Path.Combine(Path.GetTempPath(), "ArtesCulto-" + Guid.NewGuid().ToString("N").Substring(0, 8));
+        Directory.CreateDirectory(temp);
+        try
+        {
+            using (var c = new WebClient())
+            {
+                string so = Valor(a, "so");
+                var escolhidas = so == "" ? null : new HashSet<string>(so.Split(','), StringComparer.OrdinalIgnoreCase);
+                foreach (Dictionary<string, object> x in artes)
+                {
+                    string ficheiro = Path.GetFileName(Convert.ToString(x["ficheiro"]));
+                    if (escolhidas != null && !escolhidas.Contains(ficheiro)) continue;
+                    c.DownloadFile(Convert.ToString(x["url"]), Path.Combine(temp, ficheiro));
+                }
+            }
+            Directory.CreateDirectory(pasta);
+            foreach (var antigo in Directory.GetFiles(pasta).Where(f => Extensoes.Contains(Path.GetExtension(f).ToLowerInvariant()))) TentarApagar(antigo);
+            foreach (var nova in Directory.GetFiles(temp)) File.Copy(nova, Path.Combine(pasta, Path.GetFileName(nova)), true);
+        }
+        catch (Exception e) { Console.WriteLine("Não consegui trazer as artes: " + e.Message); return 1; }
+        finally { try { Directory.Delete(temp, true); } catch { } }
+
+        int n = Directory.GetFiles(pasta).Count(f => Extensoes.Contains(Path.GetExtension(f).ToLowerInvariant()));
+        Console.WriteLine(string.Format("{0} {1} de \"{2}\" na pasta {3}", n, n == 1 ? "arte" : "artes", Convert.ToString(culto["nome"]), Path.GetFileName(pasta)));
+        return 0;
     }
 
     static int Correr(Dictionary<string, string> a)

@@ -5,6 +5,8 @@
 import { getTenantClient } from '@/lib/prisma'
 import type { SessionData } from '@/lib/auth-utils'
 import { lerArea, type PontoArea } from '@/lib/area-grupo'
+import { agoraLisboa } from '@/lib/alertas-encontros'
+import { normalizarReceita } from '@/lib/divulgacao-kit'
 
 /** O membro tem de aceitar (ou renovar) os termos de protecao de dados. */
 export async function termosPorAssinar(sessao: SessionData): Promise<boolean> {
@@ -71,6 +73,18 @@ export async function cultosDaSemana(sessao: SessionData): Promise<CultoDaSemana
     }))
 }
 
+/** O próximo culto (nos 7 dias seguintes) com artes publicadas para partilhar: o cartão "Ajuda a divulgar". */
+export async function divulgacaoDaSemana(sessao: SessionData): Promise<{ nome: string; data: string } | null> {
+    const db = getTenantClient(sessao.tenantId)
+    const hoje = new Date(agoraLisboa().toISOString().slice(0, 10) + 'T00:00:00Z')
+    const kit = await db.kitDivulgacao.findFirst({
+        where: { publicado_em: { not: null }, evento: { data: { gte: hoje, lt: new Date(hoje.getTime() + 8 * 86400000) } } },
+        orderBy: { evento: { data: 'asc' } },
+        select: { receita: true, evento: { select: { nome: true, data: true } } },
+    })
+    return kit ? { nome: normalizarReceita(kit.receita).titulo || kit.evento.nome, data: kit.evento.data.toISOString() } : null
+}
+
 export interface MeuGrupo {
     id: number
     nome: string
@@ -82,6 +96,8 @@ export interface MeuGrupo {
     latitude: number | null
     longitude: number | null
     area: PontoArea[] | null
+    /** O próximo encontro marcado na agenda do grupo (ISO; hora de Lisboa escrita em UTC) */
+    proximo?: string | null
     /** Grupo de apoio (departamento sem escala): abre o módulo ou a lista de pessoas */
     apoio?: { href: string; texto: string }
 }
@@ -120,6 +136,14 @@ export async function meusGrupos(sessao: SessionData): Promise<MeuGrupo[]> {
         souLider: d.lider_id === sessao.membroId, latitude: null, longitude: null, area: null,
         apoio: destinoDoApoio(d.id, d.nome),
     }))
+    // O próximo encontro de cada grupo (da agenda do grupo), numa só consulta
+    const agora = new Date(new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Lisbon', dateStyle: 'short', timeStyle: 'medium' }).format(new Date()).replace(' ', 'T') + 'Z')
+    const encontros = grupos.length === 0 ? [] : await db.agendaDepartamento.findMany({
+        where: { grupo_id: { in: grupos.map((g) => g.id) }, inicio: { gte: agora }, cancelado_em: null },
+        orderBy: { inicio: 'asc' }, select: { grupo_id: true, inicio: true },
+    })
+    const proximoDe = new Map<number, string>()
+    for (const e of encontros) if (e.grupo_id && !proximoDe.has(e.grupo_id)) proximoDe.set(e.grupo_id, e.inicio.toISOString())
     return [...grupos.map((g) => {
         const morada = [[g.endereco, g.numero].filter(Boolean).join(', '), g.bairro, g.cidade]
             .map((p) => p?.trim()).filter(Boolean).join(' · ')
@@ -127,6 +151,7 @@ export async function meusGrupos(sessao: SessionData): Promise<MeuGrupo[]> {
         return {
             id: g.id,
             nome: g.nome,
+            proximo: proximoDe.get(g.id) ?? null,
             quando: [g.dia_semana, g.horario].map((p) => p?.trim()).filter(Boolean).join(', às '),
             morada,
             mapa: destino ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destino)}` : null,

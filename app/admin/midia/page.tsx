@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { Music2, Lightbulb, MonitorPlay, Download, Terminal, ArrowRight, Settings, ChevronDown } from 'lucide-react'
 import type { LumikitConfig, X32CenasConfig } from '@/actions/midia-actions'
 import Breadcrumbs from '@/components/Breadcrumbs'
+import ChaveHolyrics from '@/components/admin/ChaveHolyrics'
 
 export default async function MidiaConfigPage() {
     const session = await getSessionData()
@@ -25,6 +26,7 @@ export default async function MidiaConfigPage() {
             modulos_custom: true,
             holyrics_url: true,
             holyrics_token: true,
+            holyrics_chave_hash: true,
             x32_ip: true,
             x32_port: true,
             lumikit_url: true,
@@ -99,6 +101,21 @@ export default async function MidiaConfigPage() {
                 </summary>
                 <div className="border-t border-soft">
                     <MidiaConfigClient config={tenant} />
+                </div>
+            </details>
+
+            {/* HOLYRICS: ARTES DO CULTO — colapsavel */}
+            <details className="group bg-bg2 border border-soft rounded-2xl overflow-hidden">
+                <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between px-5 py-4 hover:bg-soft/10 transition-colors">
+                    <div className="flex items-center gap-2">
+                        <MonitorPlay size={14} className="text-figueira" />
+                        <h2 className="text-sm font-bold text-fg">Holyrics: artes do culto</h2>
+                        <span className="text-[13px] bg-soft/50 px-2 py-0.5 rounded text-muted font-bold">{tenant?.holyrics_chave_hash ? 'Chave criada' : 'Sem chave'}</span>
+                    </div>
+                    <ChevronDown size={14} className="text-muted group-open:rotate-180 transition-transform" />
+                </summary>
+                <div className="border-t border-soft p-5">
+                    <ChaveHolyrics temChave={!!tenant?.holyrics_chave_hash} />
                 </div>
             </details>
 

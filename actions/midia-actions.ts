@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { requireRole } from '@/lib/auth-utils'
 import { audit } from '@/lib/audit'
 import { getTenantIdFromHeaders } from '@/lib/db'
+import { gerarChave, hashDaChave } from '@/lib/holyrics-chave'
 
 export async function salvarConfigMidia(formData: FormData) {
     try {
@@ -146,5 +147,21 @@ export async function salvarLumikitCenas(config: LumikitConfig) {
         return { ok: true }
     } catch (error: any) {
         return { ok: false, error: 'Erro ao guardar cenas Lumikit.' }
+    }
+}
+
+/** Gera (ou troca) a chave do módulo Holyrics "Trazer as artes do culto". Só se vê agora; fica guardado o SHA-256. */
+export async function gerarChaveHolyrics(): Promise<{ ok: true; chave: string } | { ok: false; error: string }> {
+    try {
+        await requireRole(['ADMIN'])
+        const tenantId = await getTenantIdFromHeaders()
+        if (!tenantId) return { ok: false, error: 'Tenant não identificado.' }
+        const chave = gerarChave()
+        await prisma.tenant.update({ where: { id: tenantId }, data: { holyrics_chave_hash: hashDaChave(chave) } })
+        audit({ tenant_id: tenantId, categoria: 'CONFIGURACAO', acao: 'CONFIG', alvo_tipo: 'CONFIG', descricao: 'Chave do Holyrics (artes do culto) gerada' }).catch(() => {})
+        revalidatePath('/admin/midia')
+        return { ok: true, chave }
+    } catch {
+        return { ok: false, error: 'Não foi possível gerar a chave.' }
     }
 }

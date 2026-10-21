@@ -11,7 +11,8 @@ import { minhasEscalas, minhasIndisponibilidades } from '@/lib/escalas-app'
 import { meusMinisterios } from '@/lib/ministerios-app'
 import { alertasDoMembro } from '@/lib/alertas-encontros'
 import AlertasEncontros from './AlertasEncontros'
-import { aniversariantesDoMes, cultosDaSemana, meusGrupos, termosPorAssinar } from '@/lib/inicio-app'
+import { aniversariantesDoMes, cultosDaSemana, divulgacaoDaSemana, meusGrupos, termosPorAssinar } from '@/lib/inicio-app'
+import AjudaDivulgar from './AjudaDivulgar'
 import Aniversariantes from './Aniversariantes'
 import MeusGrupos from './MeusGrupos'
 import AtivarNotificacoes from './AtivarNotificacoes'
@@ -22,7 +23,7 @@ import { diaPorExtenso, hora } from './datas'
 
 export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: SessionData; primeiroNome: string }) {
     const db = getTenantClient(sessao.tenantId)
-    const [escalas, indisponiveis, ministerios, proximoCulto, termos, aniversariantes, semana, grupos, alertas] = await Promise.all([
+    const [escalas, indisponiveis, ministerios, proximoCulto, termos, aniversariantes, semana, grupos, alertas, divulgar] = await Promise.all([
         minhasEscalas(sessao),
         minhasIndisponibilidades(sessao),
         meusMinisterios(sessao),
@@ -32,6 +33,7 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
         cultosDaSemana(sessao),
         meusGrupos(sessao),
         alertasDoMembro(sessao).catch(() => []),
+        divulgacaoDaSemana(sessao).catch(() => null),
     ])
     // Início limpo: só a próxima escala POR CONFIRMAR; as confirmadas (e as seguintes) ficam em Escalas
     const porConfirmar = escalas.filter((e) => e.estado === 'POR_CONFIRMAR')
@@ -58,6 +60,8 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
             <InscricoesAbertas sessao={sessao} />
 
             <AtivarNotificacoes />
+
+            <AjudaDivulgar culto={divulgar} />
 
             {ministerios.length > 0 && (
                 <section className="space-y-2" aria-labelledby="ministerios">
