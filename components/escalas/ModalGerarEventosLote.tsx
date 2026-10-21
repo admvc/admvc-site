@@ -19,7 +19,7 @@ export default function ModalGerarEventosLote() {
 
         if (res.ok) {
             setIsOpen(false)
-            toast(`Sucesso! Foram gerados ${res.totalCriado} eventos na sua agenda.`, 'sucesso')
+            toast(`Sucesso! Foram gerados ${res.totalCriado} eventos na sua agenda.${res.saltadas ? ` ${res.saltadas} ${res.saltadas === 1 ? 'noite foi saltada' : 'noites foram saltadas'} (já tinham culto).` : ''}`, 'sucesso')
         } else {
             toast(res.error || "Erro ao gerar eventos.", 'erro')
         }

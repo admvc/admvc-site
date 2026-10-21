@@ -74,13 +74,13 @@ export default async function AgendaMidia({ searchParams }: { searchParams: Prom
 
                 <section className="space-y-2">
                     <h2 className="flex items-center gap-2 text-[19px] font-bold"><MonitorPlay size={22} aria-hidden /> Telão · semana de {semana.slice(8)}/{semana.slice(5, 7)}</h2>
-                    <img src={telao} alt="Programação da semana para o telão" className="w-full rounded-xl border" style={{ borderColor: 'var(--a-borda)', aspectRatio: '16 / 9' }} />
+                    <img src={`${telao}&previa=1`} alt="Programação da semana para o telão" className="w-full rounded-xl border" style={{ borderColor: 'var(--a-borda)', aspectRatio: '16 / 9' }} />
                     <a href={`${telao}&download=1`} className="a-botao a-botao-secundario !min-h-[44px]"><Download size={18} aria-hidden /> Descarregar (1920×1080)</a>
                 </section>
 
                 <section className="space-y-2">
                     <h2 className="flex items-center gap-2 text-[19px] font-bold first-letter:uppercase"><Smartphone size={22} aria-hidden /> Redes sociais · {nomeDoMes(mes)}</h2>
-                    <img src={redes} alt="Programação mensal para as redes sociais" className="w-full max-w-md rounded-xl border" style={{ borderColor: 'var(--a-borda)', aspectRatio: '4 / 5' }} />
+                    <img src={`${redes}&previa=1`} alt="Programação mensal para as redes sociais" className="w-full max-w-md rounded-xl border" style={{ borderColor: 'var(--a-borda)', aspectRatio: '4 / 5' }} />
                     <a href={`${redes}&download=1`} className="a-botao a-botao-secundario !min-h-[44px]"><Download size={18} aria-hidden /> Descarregar (1080×1350)</a>
                 </section>
 

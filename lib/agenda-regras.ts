@@ -1,7 +1,8 @@
 // Regras repetidas da agenda: "toda a 1.ª segunda, 20h00, Grupo de Homens" (reunião) ou "toda a 3.ª quarta, culto
 // direcionado aos Jovens" (culto da igreja). `datasDaRegra` é só contas de calendário; `gerarRegra` cria o que falta
-// nos próximos meses, sem mexer no que já existe. Culto: se já há um culto nessa noite (ex.: a "Quarta profética"
-// recorrente), a regra DIRECIONA esse culto ao grupo em vez de criar outro (sem `regra_id`: nunca é apagado pela regra). Horas = hora de Lisboa ESCRITA em UTC (`${dia}T${hora}:00Z`).
+// nos próximos meses, sem mexer no que já existe. Culto direcionado = culto normal com o TÍTULO da regra (ex.: "Culto na
+// Direção de Homens"): se já há um culto nessa noite (ex.: a "Quarta profética"), muda-lhe o título e marca o grupo
+// (guarda o nome antigo em `nome_original`; sem `regra_id`, por isso nunca é apagado pela regra); se não há, cria-o. Horas = hora de Lisboa ESCRITA em UTC (`${dia}T${hora}:00Z`).
 import type { getTenantClient } from '@/lib/prisma'
 
 export const DIAS_DA_SEMANA = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'] as const
@@ -50,6 +51,13 @@ export function hojeLisboaISO(): string {
     return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Lisbon' }).format(new Date())
 }
 
+/** Tira as datas candidatas que já têm um culto nessa noite (18h–22h do mesmo dia, hora de Lisboa escrita em UTC). */
+export function semNoitesComCulto<T extends { data: Date }>(candidatos: T[], existentes: Date[]): { ficam: T[]; saltadas: number } {
+    const noites = new Set(existentes.filter((d) => d.getUTCHours() >= 18 && d.getUTCHours() <= 22).map((d) => d.toISOString().slice(0, 10)))
+    const ficam = candidatos.filter((c) => !(c.data.getUTCHours() >= 18 && c.data.getUTCHours() <= 22 && noites.has(c.data.toISOString().slice(0, 10))))
+    return { ficam, saltadas: candidatos.length - ficam.length }
+}
+
 export function somarMeses(dia: string, meses: number): string {
     const [a, m, d] = dia.split('-').map(Number)
     const x = new Date(Date.UTC(a, m - 1 + meses, d))
@@ -58,8 +66,8 @@ export function somarMeses(dia: string, meses: number): string {
 
 /**
  * Cria o que falta desta regra desde hoje até daqui a `meses` meses. Não repete (uma linha por regra e dia).
- * Culto: se já há um culto nessa noite (18h–22h) sem grupo, passa a ser direcionado a este grupo (não se cria outro);
- * se já está direcionado a outro grupo, não mexe e avisa.
+ * Culto: se já há um culto nessa noite (18h–22h) sem grupo, muda-lhe o título para o da regra e marca o grupo (guarda o
+ * nome antigo; não se cria outro); se já está direcionado a outro grupo, não mexe e avisa.
  */
 export async function gerarRegra(db: Db, tenantId: number, r: RegraGerar, meses = 3, hoje = hojeLisboaISO()): Promise<ResultadoGerar> {
     const resultado: ResultadoGerar = { criados: 0, avisos: [], datas: [] }
@@ -81,12 +89,14 @@ export async function gerarRegra(db: Db, tenantId: number, r: RegraGerar, meses 
             const noite = await db.evento.findFirst({
                 where: { data: { gte: new Date(`${dia}T18:00:00Z`), lte: new Date(`${dia}T22:00:00Z`) } },
                 orderBy: { data: 'asc' },
-                select: { id: true, nome: true, grupo_id: true },
+                select: { id: true, nome: true, grupo_id: true, regra_id: true, nome_original: true },
             })
             if (noite) {
-                if (noite.grupo_id === r.grupo_id) continue                       // já está direcionado a este grupo
-                if (noite.grupo_id) { resultado.avisos.push(`${dia}: "${noite.nome}" já está direcionado a outro grupo; não mexi.`); continue }
-                await db.evento.update({ where: { id: noite.id }, data: { grupo_id: r.grupo_id } })
+                if (noite.grupo_id && noite.grupo_id !== r.grupo_id) { resultado.avisos.push(`${dia}: "${noite.nome}" já está direcionado a outro grupo; não mexi.`); continue }
+                if (noite.grupo_id === r.grupo_id && noite.nome === r.titulo) continue    // já está certo
+                // culto criado por esta regra: só muda o título; culto que já existia: guarda o nome para o poder repor
+                const original = noite.regra_id === r.id ? null : (noite.nome_original ?? noite.nome)
+                await db.evento.update({ where: { id: noite.id }, data: { nome: r.titulo, grupo_id: r.grupo_id, nome_original: original } })
                 resultado.criados++
                 resultado.datas.push(dia)
                 continue
@@ -114,13 +124,13 @@ export async function desfazerRegraFutura(
     const desde = new Date(`${hoje}T00:00:00Z`)
     let removidos = 0, ficaram = 0
     if (r.alvo === 'CULTO' && r.grupo_id && r.dia_semana != null && r.semana_do_mes != null) {
-        // cultos que já existiam e esta regra direcionou: deixam de estar direcionados (o culto fica)
-        for (const dia of datasDaRegra({ dia_semana: r.dia_semana, semana_do_mes: r.semana_do_mes }, hoje, somarMeses(hoje, 24))) {
-            const n = await db.evento.updateMany({
-                where: { grupo_id: r.grupo_id, regra_id: null, data: { gte: new Date(`${dia}T18:00:00Z`), lte: new Date(`${dia}T22:00:00Z`) } },
-                data: { grupo_id: null },
-            })
-            removidos += n.count
+        // cultos que já existiam e esta regra direcionou: deixam de estar direcionados e voltam ao nome de antes (o culto fica)
+        const dias = new Set(datasDaRegra({ dia_semana: r.dia_semana, semana_do_mes: r.semana_do_mes }, hoje, somarMeses(hoje, 24)))
+        const direcionados = await db.evento.findMany({ where: { grupo_id: r.grupo_id, regra_id: null, data: { gte: desde } }, select: { id: true, nome: true, nome_original: true, data: true } })
+        for (const e of direcionados) {
+            if (!dias.has(e.data.toISOString().slice(0, 10))) continue
+            await db.evento.update({ where: { id: e.id }, data: { grupo_id: null, nome: e.nome_original ?? e.nome, nome_original: null } })
+            removidos++
         }
     }
     if (r.alvo === 'CULTO') {

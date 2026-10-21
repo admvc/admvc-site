@@ -16,6 +16,7 @@ import { getTenantIdFromHeaders } from '@/lib/db'
 import { Prisma } from '@prisma/client'
 import { lerArea } from '@/lib/area-grupo'
 import { serieDoEvento, apagarEventoComDependencias, minutosDe, deslocar } from '@/lib/eventos-serie'
+import { semNoitesComCulto } from '@/lib/agenda-regras'
 
 async function getDb() {
     const tenantId = await getTenantIdFromHeaders()
@@ -515,9 +516,12 @@ export async function gerarEventosLoteAction(formData: FormData) {
             dataAtual.setUTCDate(dataAtual.getUTCDate() + 1);
         }
 
-        await db.evento.createMany({ data: eventosParaCriar });
+        // não repetir cultos nas noites que já têm um (ex.: as que as regras da agenda já criaram)
+        const jaExistem = await db.evento.findMany({ where: { data: { gte: new Date(hoje.getTime() - 86400000), lte: new Date(dataFim.getTime() + 86400000) } }, select: { data: true } });
+        const { ficam, saltadas } = semNoitesComCulto(eventosParaCriar, jaExistem.map((e: { data: Date }) => e.data));
+        await db.evento.createMany({ data: ficam });
         revalidatePath('/escalas/admin');
-        return { ok: true, totalCriado: eventosParaCriar.length };
+        return { ok: true, totalCriado: ficam.length, saltadas };
     } catch (error: any) {
         return { ok: false, error: error.message };
     }
@@ -576,9 +580,12 @@ export async function criarEventoUnificadoAction(formData: FormData) {
                 dataAtual.setUTCDate(dataAtual.getUTCDate() + 1);
             }
 
-            await db.evento.createMany({ data: eventosParaCriar });
+            // não repetir cultos nas noites que já têm um (ex.: as que as regras da agenda já criaram)
+            const jaExistem = await db.evento.findMany({ where: { data: { gte: new Date(hoje.getTime() - 86400000), lte: new Date(dataFim.getTime() + 86400000) } }, select: { data: true } });
+            const { ficam, saltadas } = semNoitesComCulto(eventosParaCriar, jaExistem.map((e: { data: Date }) => e.data));
+            await db.evento.createMany({ data: ficam });
             revalidatePath('/escalas/admin');
-            return { ok: true, totalCriado: eventosParaCriar.length };
+            return { ok: true, totalCriado: ficam.length, saltadas };
         }
         return { ok: false, error: "Tipo de evento inválido." };
     } catch (error: any) {

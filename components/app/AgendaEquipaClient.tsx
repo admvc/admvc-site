@@ -5,10 +5,11 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Camera, Check, Loader2, Pencil, Plus } from 'lucide-react'
+import { Camera, Check, Loader2, Pencil, Plus, Send } from 'lucide-react'
 import { cancelarEncontro, guardarEncontro, reativarEncontro, registarEncontro, type AlvoAgenda } from '@/actions/agenda-departamento-actions'
 import { reduzirImagensDoForm } from '@/lib/reduzir-imagem'
 import { TIPOS_AGENDA_DEPTO } from '@/lib/agenda'
+import { linkWhatsApp, mensagemDoEncontro } from '@/lib/whatsapp'
 import { useConfirm } from '@/components/ui/ConfirmDialog'
 
 export type Encontro = {
@@ -161,6 +162,7 @@ export function AcoesEncontro({ deptoId, grupoId, e, passado, equipa = [] }: Alv
         <div className="flex flex-wrap gap-4 pt-1 text-[15px] font-semibold" style={{ color: 'var(--a-destaque)' }}>
             {passado && <button type="button" onClick={() => setModo('registo')} className="a-foco min-h-[40px]">{e.registo ? 'Mudar o registo' : 'Registar o que se fez'}</button>}
             <button type="button" onClick={() => setModo('editar')} className="a-foco inline-flex min-h-[40px] items-center gap-1"><Pencil size={15} aria-hidden /> Mudar</button>
+            {!passado && <a href={linkWhatsApp(mensagemDoEncontro(e, TIPOS_AGENDA_DEPTO[e.tipo as keyof typeof TIPOS_AGENDA_DEPTO] ?? e.tipo))} target="_blank" rel="noopener noreferrer" className="a-foco inline-flex min-h-[40px] items-center gap-1"><Send size={15} aria-hidden /> WhatsApp</a>}
             {e.cancelado ? (
                 <button type="button" disabled={pendente} onClick={() => correr(() => reativarEncontro(e.id, alvoDe({ deptoId, grupoId })))} className="a-foco min-h-[40px]">Voltar a marcar</button>
             ) : (

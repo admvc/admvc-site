@@ -8,8 +8,7 @@ import { useState, useEffect, useRef } from 'react'
 import { atualizarDadosMembro, submeterInteresseDepartamento } from '@/actions/membro-actions'
 import {
     User, MapPin, Users2, Save, Church, Check, ChevronDown, Camera, Loader2, Lock, Home,
-    CheckCircle2, HeartHandshake, Send, Download, FileSignature,
-} from 'lucide-react'
+    CheckCircle2, HeartHandshake, Send, Download, FileSignature, ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useToast } from '@/components/ui/ConfirmDialog'
@@ -25,10 +24,17 @@ interface Props {
 const CAMPO = 'a-foco min-h-[52px] w-full rounded-[14px] border px-4 text-[17px]'
 const ESTILO_CAMPO = { background: 'var(--a-bg)', borderColor: 'var(--a-borda)', color: 'var(--a-texto)' }
 
+// O perfil em passos curtos (telemóvel): todos os campos ficam no mesmo formulário (os passos só mostram/escondem), por isso
+// "Guardar e continuar" grava tudo e nada se perde ao andar para trás ou para a frente.
+const PASSOS = ['Contactos', 'Morada', 'Dados pessoais', 'Família e mais'] as const
+
 export default function MeuPerfilClient({ membro, escolaridades = [], departamentos = [], interessesExistentes = [] }: Props) {
     const toast = useToast()
     const [isPending, setIsPending] = useState(false)
     const [mostrarSucesso, setMostrarSucesso] = useState(false)
+    const [passo, setPasso] = useState(0)
+    const avancar = useRef(false)   // o botão "Guardar e continuar" foi o que gravou (passa ao passo seguinte)
+    const irPara = (i: number) => { setPasso(i); if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' }) }
 
     const [previewFoto, setPreviewFoto] = useState(membro.avatar_file || null)
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -102,7 +108,10 @@ export default function MeuPerfilClient({ membro, escolaridades = [], departamen
         if (res.sucesso) {
             setMostrarSucesso(true)
             toast('Dados guardados.', 'sucesso')
+            if (avancar.current && passo < PASSOS.length - 1) irPara(passo + 1)
+            avancar.current = false
         } else {
+            avancar.current = false
             // A senha recusada vem em `error`; o resto em `erro`
             toast(res.erro || res.error || 'Erro ao atualizar.', 'erro')
         }
@@ -114,7 +123,8 @@ export default function MeuPerfilClient({ membro, escolaridades = [], departamen
 
     return (
         <div className="app-novo mx-auto max-w-2xl space-y-5 px-4 pb-40 pt-4 md:pb-24" style={{ background: 'transparent' }}>
-            <form action={handleAction} className="space-y-4">
+            <form action={handleAction} className="space-y-4"
+                onInvalidCapture={(e) => { const n = Number((e.target as HTMLElement).closest('[data-passo]')?.getAttribute('data-passo')); if (!Number.isNaN(n)) setPasso(n) }}>
                 <h1 className="text-[28px] font-bold leading-tight">O meu perfil</h1>
 
                 {/* FOTO E NOME */}
@@ -149,22 +159,32 @@ export default function MeuPerfilClient({ membro, escolaridades = [], departamen
                         texto={gdprOk ? 'Aceite' : 'Por aceitar'} ok={gdprOk} href={gdprOk ? undefined : '/membros/termos'} />
                 </div>
 
-                <Secao Icone={User} titulo="Dados pessoais" aberta>
+                {/* PASSOS */}
+                <nav aria-label="Passos do perfil" className="space-y-2">
+                    <ol className="flex gap-1.5">
+                        {PASSOS.map((nome, n) => (
+                            <li key={nome} className="min-w-0 flex-1">
+                                <button type="button" onClick={() => irPara(n)} aria-current={n === passo ? 'step' : undefined} className="a-foco block w-full space-y-1 rounded-md text-left">
+                                    <span className="block h-2 rounded-full" style={{ background: n <= passo ? 'var(--a-destaque)' : 'var(--a-borda)' }} />
+                                    <span className={`block truncate text-[13px] ${n === passo ? 'font-bold' : 'a-suave'}`}>{nome}</span>
+                                </button>
+                            </li>
+                        ))}
+                    </ol>
+                    <p className="text-[15px] a-suave">Passo {passo + 1} de {PASSOS.length} · {PASSOS[passo]}</p>
+                </nav>
+
+                {/* 1 · CONTACTOS */}
+                <div hidden={passo !== 0} data-passo={0} className="a-card space-y-4 p-4">
                     <Campo label="Primeiro nome" name="first_name" defaultValue={membro.first_name} required autoComplete="given-name" />
                     <Campo label="Apelido" name="last_name" defaultValue={membro.last_name} required autoComplete="family-name" />
+                    <Campo label="Telemóvel" name="phone_1" type="tel" defaultValue={membro.phone_1} autoComplete="tel" />
                     <Campo label="Email" name="email" type="email" defaultValue={membro.email} readOnly
                         ajuda="Para mudar o email, fale com a secretaria." />
-                    <Campo label="Telemóvel" name="phone_1" type="tel" defaultValue={membro.phone_1} autoComplete="tel" />
-                    <Campo label="Data de nascimento" name="birthdate" type="date" defaultValue={formatDate(membro.birthdate)} />
-                    <Escolha label="Género" name="gender" defaultValue={membro.gender} options={['Masculino', 'Feminino']} />
-                    <Campo label="Profissão" name="profession" defaultValue={membro.profession} />
-                    <Escolha label="Escolaridade" name="escolaridade_id" defaultValue={membro?.escolaridade_id || ''}
-                        options={escolaridades.map((e: any) => ({ label: e.nome, value: e.id }))} />
-                    <Campo label="Nome do pai" name="father_name" defaultValue={membro.father_name} />
-                    <Campo label="Nome da mãe" name="mother_name" defaultValue={membro.mother_name} />
-                </Secao>
+                </div>
 
-                <Secao Icone={MapPin} titulo="Morada">
+                {/* 2 · MORADA */}
+                <div hidden={passo !== 1} data-passo={1} className="a-card space-y-4 p-4">
                     <div className="relative">
                         <Campo label="Código postal" name="postal_code" value={endereco.postal_code} onChange={handleCodigoPostalChange}
                             maxLength={8} inputMode="numeric" ajuda="Ao escrever o código postal, a rua e a cidade preenchem-se sozinhas." />
@@ -177,48 +197,67 @@ export default function MeuPerfilClient({ membro, escolaridades = [], departamen
                     <Campo label="Cidade" name="id_city" value={endereco.city} onChange={(e: any) => setEndereco({ ...endereco, city: e.target.value })} />
                     <Campo label="Distrito" name="state" value={endereco.state} onChange={(e: any) => setEndereco({ ...endereco, state: e.target.value })} />
                     <Campo label="País" name="country" value={endereco.country} onChange={(e: any) => setEndereco({ ...endereco, country: e.target.value })} />
-                </Secao>
+                </div>
 
-                <Secao Icone={Users2} titulo="Família e documentos">
-                    <Escolha label="Estado civil" name="marital_status" defaultValue={membro.marital_status}
-                        options={['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viúvo(a)', 'União de Facto']} />
-                    <Campo label="Nome do cônjuge" name="spouse_name" defaultValue={membro.spouse_name} />
-                    <Escolha label="O cônjuge é cristão?" name="spouse_christian" defaultValue={membro.spouse_christian ? 'true' : 'false'}
-                        options={[{ label: 'Sim', value: 'true' }, { label: 'Não', value: 'false' }]} />
-                    <Campo label="Data de casamento" name="wedding_date" type="date" defaultValue={formatDate(membro.wedding_date)} />
-                    <Escolha label="Tem filhos?" name="has_children" defaultValue={membro.has_children ? 'true' : 'false'}
-                        options={[{ label: 'Sim', value: 'true' }, { label: 'Não', value: 'false' }]} />
-                    <Campo label="Número de filhos" name="children_number" type="number" min="0" inputMode="numeric" defaultValue={membro.children_number || 0} />
+                {/* 3 · DADOS PESSOAIS */}
+                <div hidden={passo !== 2} data-passo={2} className="a-card space-y-4 p-4">
+                    <Campo label="Data de nascimento" name="birthdate" type="date" defaultValue={formatDate(membro.birthdate)} />
+                    <Escolha label="Género" name="gender" defaultValue={membro.gender} options={['Masculino', 'Feminino']} />
+                    <Campo label="Profissão" name="profession" defaultValue={membro.profession} />
+                    <Escolha label="Escolaridade" name="escolaridade_id" defaultValue={membro?.escolaridade_id || ''}
+                        options={escolaridades.map((e: any) => ({ label: e.nome, value: e.id }))} />
                     <Campo label="Nacionalidade" name="nationality" defaultValue={membro.nationality} />
-                    <Campo label="NIF / CPF" name="tax_id" defaultValue={membro.tax_id} inputMode="numeric" />
-                    <Campo label="Cartão de Cidadão / RG" name="id_card_number" defaultValue={membro.id_card_number} />
-                    <input type="hidden" name="lang" value={membro.lang || 'pt'} />
-                </Secao>
+                    <Campo label="Nome do pai" name="father_name" defaultValue={membro.father_name} />
+                    <Campo label="Nome da mãe" name="mother_name" defaultValue={membro.mother_name} />
+                </div>
 
-                <Secao Icone={Church} titulo="Vida na igreja">
-                    <Campo label="Entrada na igreja" name="entry_date" type="date" defaultValue={formatDate(membro.entry_date)} />
-                    <Campo label="Data de batismo" name="baptism_date" type="date" defaultValue={formatDate(membro.baptism_date)} />
-                    <Campo label="Data de conversão" name="conversion_date" type="date" defaultValue={formatDate(membro.conversion_date)} />
-                    <div className="space-y-2">
-                        <label htmlFor="perfil-notes" className="block text-[16px] font-semibold">Testemunho</label>
-                        <textarea id="perfil-notes" name="notes" rows={4} defaultValue={membro.notes}
-                            className={`${CAMPO} resize-none py-3`} style={ESTILO_CAMPO} />
+                {/* 4 · FAMÍLIA E MAIS */}
+                <div hidden={passo !== 3} data-passo={3} className="space-y-4">
+                    <div className="a-card space-y-4 p-4">
+                        <Escolha label="Estado civil" name="marital_status" defaultValue={membro.marital_status}
+                            options={['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viúvo(a)', 'União de Facto']} />
+                        <Campo label="Nome do cônjuge" name="spouse_name" defaultValue={membro.spouse_name} />
+                        <Escolha label="O cônjuge é cristão?" name="spouse_christian" defaultValue={membro.spouse_christian ? 'true' : 'false'}
+                            options={[{ label: 'Sim', value: 'true' }, { label: 'Não', value: 'false' }]} />
+                        <Campo label="Data de casamento" name="wedding_date" type="date" defaultValue={formatDate(membro.wedding_date)} />
+                        <Escolha label="Tem filhos?" name="has_children" defaultValue={membro.has_children ? 'true' : 'false'}
+                            options={[{ label: 'Sim', value: 'true' }, { label: 'Não', value: 'false' }]} />
+                        <Campo label="Número de filhos" name="children_number" type="number" min="0" inputMode="numeric" defaultValue={membro.children_number || 0} />
+                        <Campo label="NIF / CPF" name="tax_id" defaultValue={membro.tax_id} inputMode="numeric" />
+                        <Campo label="Cartão de Cidadão / RG" name="id_card_number" defaultValue={membro.id_card_number} />
+                        <input type="hidden" name="lang" value={membro.lang || 'pt'} />
                     </div>
-                    <Campo label="Igreja anterior" name="previous_church" defaultValue={membro.previous_church} />
-                    <Campo label="Cargo que tinha" name="church_role" defaultValue={membro.church_role} />
-                    <Campo label="Ministério onde servia" name="ministry" defaultValue={membro.ministry} />
-                </Secao>
 
-                <Secao Icone={Lock} titulo="Palavra-passe">
-                    <Campo label="Nova palavra-passe" name="nova_senha" type="password" autoComplete="new-password"
-                        ajuda="Deixe em branco para manter a atual. Mínimo 10 caracteres: uma frase curta é fácil de lembrar e difícil de adivinhar." />
-                </Secao>
+                    <Secao Icone={Church} titulo="Vida na igreja">
+                        <Campo label="Entrada na igreja" name="entry_date" type="date" defaultValue={formatDate(membro.entry_date)} />
+                        <Campo label="Data de batismo" name="baptism_date" type="date" defaultValue={formatDate(membro.baptism_date)} />
+                        <Campo label="Data de conversão" name="conversion_date" type="date" defaultValue={formatDate(membro.conversion_date)} />
+                        <div className="space-y-2">
+                            <label htmlFor="perfil-notes" className="block text-[16px] font-semibold">Testemunho</label>
+                            <textarea id="perfil-notes" name="notes" rows={4} defaultValue={membro.notes}
+                                className={`${CAMPO} resize-none py-3`} style={ESTILO_CAMPO} />
+                        </div>
+                        <Campo label="Igreja anterior" name="previous_church" defaultValue={membro.previous_church} />
+                        <Campo label="Cargo que tinha" name="church_role" defaultValue={membro.church_role} />
+                        <Campo label="Ministério onde servia" name="ministry" defaultValue={membro.ministry} />
+                    </Secao>
 
-                {/* GUARDAR: sempre a vista, por cima da barra de baixo */}
-                <div className="fixed inset-x-0 z-40 px-4 bottom-[calc(72px+env(safe-area-inset-bottom))] md:bottom-4 md:left-auto md:right-6 md:w-80 md:px-0">
-                    <button type="submit" disabled={isPending} className="a-botao a-botao-principal w-full !min-h-[56px] shadow-lg">
+                    <Secao Icone={Lock} titulo="Palavra-passe">
+                        <Campo label="Nova palavra-passe" name="nova_senha" type="password" autoComplete="new-password"
+                            ajuda="Deixe em branco para manter a atual. Mínimo 10 caracteres: uma frase curta é fácil de lembrar e difícil de adivinhar." />
+                    </Secao>
+                </div>
+
+                {/* VOLTAR / GUARDAR E CONTINUAR: sempre à vista, por cima da barra de baixo */}
+                <div className="fixed inset-x-0 z-40 flex gap-2 px-4 bottom-[calc(72px+env(safe-area-inset-bottom))] md:bottom-4 md:left-auto md:right-6 md:w-96 md:px-0">
+                    {passo > 0 && (
+                        <button type="button" onClick={() => irPara(passo - 1)} className="a-botao a-botao-secundario !min-h-[56px] shadow-lg" aria-label="Voltar ao passo anterior">
+                            <ChevronLeft size={20} aria-hidden /> Voltar
+                        </button>
+                    )}
+                    <button type="submit" disabled={isPending} onClick={() => { avancar.current = passo < PASSOS.length - 1 }} className="a-botao a-botao-principal min-w-0 flex-1 !min-h-[56px] shadow-lg">
                         {isPending ? <Loader2 className="animate-spin" size={20} aria-hidden /> : mostrarSucesso ? <Check size={20} aria-hidden /> : <Save size={20} aria-hidden />}
-                        {isPending ? 'A guardar…' : mostrarSucesso ? 'Guardado' : 'Guardar alterações'}
+                        {isPending ? 'A guardar…' : passo < PASSOS.length - 1 ? 'Guardar e continuar' : mostrarSucesso ? 'Guardado' : 'Guardar'}
                     </button>
                 </div>
             </form>

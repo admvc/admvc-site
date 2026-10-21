@@ -1,6 +1,9 @@
+'use client'
+
 // Aniversariantes do mes. So aparece quando ha alguem (pedido do dono).
-// Mostra os 2 primeiros (hoje e os proximos); o resto abre em "Ver todos".
-import { Cake, ChevronDown } from 'lucide-react'
+// Mostra os 2 primeiros (hoje e os proximos); o resto abre no botao pequeno ao lado do titulo ("Todos (N)").
+import { useState } from 'react'
+import { Cake } from 'lucide-react'
 import type { Aniversariante } from '@/lib/inicio-app'
 import { Avatar } from './Avatares'
 
@@ -19,31 +22,27 @@ function Linha({ a }: { a: Aniversariante }) {
 }
 
 export default function Aniversariantes({ lista }: { lista: Aniversariante[] }) {
+    const [todos, setTodos] = useState(false)
     if (lista.length === 0) return null
     const mes = new Date().toLocaleDateString('pt-PT', { month: 'long' })
-    const primeiros = lista.slice(0, VISIVEIS)
-    const resto = lista.slice(VISIVEIS)
+    const visiveis = todos ? lista : lista.slice(0, VISIVEIS)
     return (
-        <section className="a-card p-4 space-y-3" aria-labelledby="aniversarios">
-            <h2 id="aniversarios" className="flex items-center gap-2 text-[19px] font-bold">
-                <Cake size={20} aria-hidden /> Aniversários de {mes}
-            </h2>
+        <section className="a-card p-4 space-y-2" aria-labelledby="aniversarios">
+            <div className="flex items-center justify-between gap-2">
+                <h2 id="aniversarios" className="flex min-w-0 items-center gap-2 text-[19px] font-bold">
+                    <Cake size={20} className="shrink-0" aria-hidden /> <span className="truncate">Aniversários de {mes}</span>
+                </h2>
+                {lista.length > VISIVEIS && (
+                    <button type="button" onClick={() => setTodos((v) => !v)} aria-expanded={todos}
+                        className="a-foco inline-flex min-h-[40px] shrink-0 items-center rounded-full px-3 text-[14px] font-semibold"
+                        style={{ background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }}>
+                        {todos ? 'Menos' : `Todos (${lista.length})`}
+                    </button>
+                )}
+            </div>
             <ul className="a-divide">
-                {primeiros.map((a) => <Linha key={a.id} a={a} />)}
+                {visiveis.map((a) => <Linha key={a.id} a={a} />)}
             </ul>
-            {resto.length > 0 && (
-                <details className="group">
-                    <summary className="a-foco flex min-h-[44px] cursor-pointer list-none items-center justify-between border-t pt-2 text-[16px] font-semibold"
-                        style={{ borderColor: 'var(--a-borda)', color: 'var(--a-destaque)' }}>
-                        <span className="group-open:hidden">Ver todos ({lista.length})</span>
-                        <span className="hidden group-open:inline">Mostrar menos</span>
-                        <ChevronDown size={20} className="transition-transform group-open:rotate-180" aria-hidden />
-                    </summary>
-                    <ul className="a-divide">
-                        {resto.map((a) => <Linha key={a.id} a={a} />)}
-                    </ul>
-                </details>
-            )}
         </section>
     )
 }

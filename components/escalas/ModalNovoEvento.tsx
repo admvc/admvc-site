@@ -20,7 +20,7 @@ export default function ModalNovoEvento({ congregacoes = [] }: { congregacoes?: 
 
         if (res.ok) {
             setIsOpen(false)
-            toast(`Sucesso! ${res.totalCriado} evento(s) agendado(s).`, 'sucesso')
+            toast(`Sucesso! ${res.totalCriado} evento(s) agendado(s).${res.saltadas ? ` ${res.saltadas} ${res.saltadas === 1 ? 'noite foi saltada' : 'noites foram saltadas'} (já tinham culto).` : ''}`, 'sucesso')
             // Opcional: window.location.reload() para atualizar a tabela por trás se necessário
         } else {
             toast(res.error || "Erro ao gerar eventos.", 'erro')

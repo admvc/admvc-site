@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { datasDaRegra, descreverRegra, somarMeses } from '@/lib/agenda-regras'
+import { datasDaRegra, descreverRegra, semNoitesComCulto, somarMeses } from '@/lib/agenda-regras'
 
 describe('regras repetidas da agenda', () => {
     it('1.ª, 2.ª e 3.ª segunda de novembro de 2026', () => {
@@ -30,5 +30,16 @@ describe('regras repetidas da agenda', () => {
     it('soma meses sem estourar o fim do mês', () => {
         expect(somarMeses('2026-10-21', 3)).toBe('2027-01-21')
         expect(somarMeses('2026-11-30', 3)).toBe('2027-03-02') // 30 de fevereiro não existe: o JS passa a março
+    })
+    it('o gerador em lote salta as noites que já têm culto (18h–22h) e não as outras horas', () => {
+        const cand = [
+            { nome: 'Quarta profética', data: new Date('2026-11-04T20:00:00Z') },   // já tem culto nessa noite → salta
+            { nome: 'Quarta profética', data: new Date('2026-11-11T20:00:00Z') },
+            { nome: 'Manhã', data: new Date('2026-11-04T09:00:00Z') },               // outra hora do mesmo dia → fica
+        ]
+        const r = semNoitesComCulto(cand, [new Date('2026-11-04T19:30:00Z'), new Date('2026-12-02T20:00:00Z')])
+        expect(r.saltadas).toBe(1)
+        expect(r.ficam.map((c) => c.nome + c.data.toISOString().slice(5, 10))).toEqual(['Quarta profética11-11', 'Manhã11-04'])
+        expect(semNoitesComCulto(cand, []).saltadas).toBe(0)
     })
 })

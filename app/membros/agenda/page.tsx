@@ -122,10 +122,10 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
     }
     const diaDe = (d: Date) => d.toISOString().slice(0, 10)
 
-    // Culto direcionado a um grupo: "Direcionado: Grupo de Homens" (e "o teu grupo" para quem é desse grupo)
-    const Direcionado = ({ ev }: { ev: { grupo_id: number | null; grupo: { nome: string } | null } }) => ev.grupo_id ? (
+    // Culto direcionado a um grupo: o título já diz ("Culto na Direção de Homens"); para quem é do grupo, "o teu grupo"
+    const Direcionado = ({ ev }: { ev: { grupo_id: number | null; grupo: { nome: string } | null } }) => ev.grupo_id && meusGrupos.includes(ev.grupo_id) ? (
         <span className="mt-1 flex items-center gap-1.5 text-[14px] font-semibold" style={{ color: 'var(--a-destaque)' }}>
-            <Target size={15} aria-hidden /> Direcionado: {ev.grupo?.nome}{meusGrupos.includes(ev.grupo_id) ? ' · o teu grupo' : ''}
+            <Target size={15} aria-hidden /> o teu grupo
         </span>
     ) : null
 

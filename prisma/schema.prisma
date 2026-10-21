@@ -70,6 +70,8 @@ model Tenant {
   // Configuracoes de midia
   holyrics_url             String?                   // Ex: http://192.168.1.100:8090
   holyrics_token           String?
+  holyrics_chave_hash      String?                   // SHA-256 da chave do módulo "Trazer as artes do culto" (a chave só se vê ao gerar)
+  divulgacao_padrao        Json?                     // padrão da Divulgação: { estilo, paleta, redes, fundo, tinta } para os kits novos
   x32_ip                   String?                   // Ex: 192.168.1.50
   x32_port                 Int?                      @default(10023)
   lumikit_url              String?                   // Ex: http://192.168.1.60:5000
@@ -498,6 +500,7 @@ model Evento {
   rotina         RotinaCulto?
   kitDivulgacao  KitDivulgacao?
   grupo_id       Int?               // culto direcionado a este grupo (ex.: culto de quarta dos Homens)
+  nome_original  String?            // o nome antes de uma regra o mudar ("Quarta profética"); volta se a regra parar
   regra_id       Int?
   grupo          Grupo?             @relation(fields: [grupo_id], references: [id], onDelete: SetNull)
   regra          RegraAgenda?       @relation(fields: [regra_id], references: [id], onDelete: SetNull)
@@ -2182,6 +2185,10 @@ model KitDivulgacao {
   tenant_id     Int
   evento_id     Int      @unique
   receita       Json
+  // "Publicar para a igreja": lista {tipo, id, nome, url} + textos, quando, e a receita desse momento (para saber se mudou)
+  publicado         Json?
+  publicado_em      DateTime?
+  publicado_receita Json?
   criado_em     DateTime @default(now())
   atualizado_em DateTime @updatedAt
   tenant        Tenant   @relation(fields: [tenant_id], references: [id])

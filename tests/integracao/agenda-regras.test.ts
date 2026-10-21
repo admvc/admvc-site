@@ -104,23 +104,29 @@ describe('quem cria regras', () => {
 })
 
 describe('culto que já existe nessa noite (ex.: Quarta profética)', () => {
-    it('a regra direciona o culto existente ao grupo (sem criar outro) e, ao parar, tira a marca sem o apagar', async () => {
+    it('a regra muda só o título e marca o grupo (sem criar outro); ao parar, o nome antigo volta', async () => {
         const hoje = hojeISO()
         const dia = datasDaRegra({ dia_semana: 2, semana_do_mes: 3 }, hoje, somarMeses(hoje, 3))[0]   // 3.ª terça
         const existente = await prisma.evento.create({ data: { nome: 'Terça profética (teste)', tipo: 'CULTO_REGULAR', data: new Date(`${dia}T20:00:00Z`), tenant_id: ctx.tenant } })
         try {
             await entrarComo('admin@a.teste')
-            const r = await criarRegra(form({ alvo: 'CULTO', grupo_id: ctx.jovens, titulo: 'Culto — Jovens (terças)', dia_semana: 2, semana_do_mes: 3, hora: '20:00' }))
+            const r = await criarRegra(form({ alvo: 'CULTO', grupo_id: ctx.jovens, titulo: 'Culto na Direção de Jovens (teste)', dia_semana: 2, semana_do_mes: 3, hora: '20:00' }))
             expect(r.ok).toBe(true)
-            const naNoite = await prisma.evento.findMany({ where: { data: { gte: new Date(`${dia}T18:00:00Z`), lte: new Date(`${dia}T22:00:00Z`) } }, select: { id: true, grupo_id: true } })
+            const naNoite = await prisma.evento.findMany({ where: { data: { gte: new Date(`${dia}T18:00:00Z`), lte: new Date(`${dia}T22:00:00Z`) } }, select: { id: true, nome: true, grupo_id: true, nome_original: true } })
             expect(naNoite).toHaveLength(1)                              // não criou outro
-            expect(naNoite[0]).toMatchObject({ id: existente.id, grupo_id: ctx.jovens })
-            const regra = await prisma.regraAgenda.findFirstOrThrow({ where: { titulo: 'Culto — Jovens (terças)' } })
+            expect(naNoite[0]).toMatchObject({ id: existente.id, nome: 'Culto na Direção de Jovens (teste)', grupo_id: ctx.jovens, nome_original: 'Terça profética (teste)' })
+
+            // mudar o título da regra → o culto acompanha, e o nome ORIGINAL continua o primeiro
+            const regra = await prisma.regraAgenda.findFirstOrThrow({ where: { titulo: 'Culto na Direção de Jovens (teste)' } })
+            const mudou = await atualizarRegra(regra.id, form({ alvo: 'CULTO', grupo_id: ctx.jovens, titulo: 'Culto de Jovens (teste)', dia_semana: 2, semana_do_mes: 3, hora: '20:00' }))
+            expect(mudou.ok).toBe(true)
+            expect(await prisma.evento.findUniqueOrThrow({ where: { id: existente.id }, select: { nome: true, nome_original: true } }))
+                .toMatchObject({ nome: 'Culto de Jovens (teste)', nome_original: 'Terça profética (teste)' })
+
             const parou = await desativarRegra(regra.id)
             expect(parou.ok).toBe(true)
-            const depois = await prisma.evento.findUnique({ where: { id: existente.id }, select: { grupo_id: true } })
-            expect(depois).not.toBeNull()                                // o culto continua
-            expect(depois!.grupo_id).toBeNull()                          // já não está direcionado
+            const depois = await prisma.evento.findUnique({ where: { id: existente.id }, select: { nome: true, grupo_id: true, nome_original: true } })
+            expect(depois).toMatchObject({ nome: 'Terça profética (teste)', grupo_id: null, nome_original: null })   // o culto continua, com o nome de antes
         } finally {
             await prisma.evento.deleteMany({ where: { id: existente.id } })
         }

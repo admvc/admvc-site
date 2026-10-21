@@ -6,6 +6,7 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { ImageResponse } from 'next/og'
 import { NextResponse } from 'next/server'
+import { comoPrevia } from '@/lib/imagem-previa'
 import { sessaoDaApi } from '@/lib/api-auth'
 import { getTenantClient } from '@/lib/prisma'
 import { DIAS_SEMANA, eventosDaAgenda, podeFazerAgenda, porDia } from '@/lib/agenda-midia'
@@ -167,6 +168,8 @@ export async function GET(request: Request) {
         }
         if (url.searchParams.get('download')) img.headers.set('Content-Disposition', `attachment; filename="${nomeFicheiro(`${mes}-${t.id}`)}"`)
     }
+    // &previa=1: versão pequena (JPEG ~640 px); curta no cache porque a agenda muda
+    if (url.searchParams.get('previa')) return comoPrevia(img, 'private, max-age=120')
     img.headers.set('Cache-Control', 'private, no-store')
     return img
 }
