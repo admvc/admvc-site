@@ -39,6 +39,11 @@ Faz numa só vez o que o plugin do LouveApp faz: o culto que a equipa preparou n
    MENSAGEM (palavra), ENCERRAMENTO (fundo sem texto); escala e rotina → título **ESCALA E ROTINA (NAO PROJETAR)** com um texto.
    Os títulos que já existirem no culto (ABERTURA, LOUVOR…) são usados; os que faltarem são criados com cores.
 5. Resumo no fim: o que entrou e o que falhou (ex.: música que não está no Holyrics: ligue-a no portal ou acrescente-a).
+- **Músicas que não estão ligadas:** o módulo procura na biblioteca do Holyrics a mais parecida (sem "(Ao vivo)", acentos, maiúsculas);
+  se houver uma só muito parecida usa-a; senão abre uma janela com as parecidas, **Procurar no Holyrics…** (a janela de escolher música
+  do Holyrics), **Criar letra nova…** (abre o editor com o título e o artista; depois de guardar, carregar outra vez em "Receber o culto"
+  com Mesclar) ou **Saltar**. A escolha fica lembrada neste PC e **ligada no portal** (ficha da música no repertório), por isso da
+  próxima vez é encontrada logo — também nos outros PCs.
 - **Permissões do módulo:** em *Definições do módulo* ligue as permissões avançadas **Arquivos permitidos** (já usada) e
   **Criar, editar e remover dados importantes** (para criar o texto da escala; sem ela a escala entra como linhas de título).
 - As artes são descarregadas para a pasta ARTES-CULTO (as da mesma ação substituem as anteriores com o mesmo nome).

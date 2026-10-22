@@ -242,3 +242,40 @@ export async function atualizarHorarioGrupo(formData: FormData) {
         return { sucesso: false, error: 'Erro interno do servidor.' }
     }
 }
+/**
+ * Imagem (ícone) do grupo: só os líderes do grupo ou a administração. PNG com transparência fica PNG (os ícones redondos);
+ * o resto passa a WEBP. Até 1024 px. tirar=1 tira a imagem.
+ */
+export async function guardarFotoGrupoAction(formData: FormData): Promise<{ ok: true; url: string | null } | { ok: false; error: string }> {
+    try {
+        const grupoId = Number(formData.get('grupo_id'))
+        if (!Number.isInteger(grupoId) || grupoId <= 0) return { ok: false, error: 'Grupo inválido.' }
+        const sessao = await exigirGestorDoGrupo(grupoId)
+        const db = getTenantClient(sessao.tenantId)
+        if (formData.get('tirar') === '1') {
+            await db.grupo.update({ where: { id: grupoId }, data: { foto_url: null } })
+            revalidatePath(`/grupos/gestao/${grupoId}`); revalidatePath('/membros/dashboard')
+            return { ok: true, url: null }
+        }
+        const file = formData.get('foto')
+        if (!(file instanceof File) || file.size === 0) return { ok: false, error: 'Escolha uma imagem.' }
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return { ok: false, error: 'Use uma imagem JPG, PNG ou WEBP.' }
+        if (file.size > 8 * 1024 * 1024) return { ok: false, error: 'Imagem demasiado grande (máx. 8 MB).' }
+        if (!process.env.BLOB_READ_WRITE_TOKEN) return { ok: false, error: 'Armazenamento de imagens por configurar.' }
+
+        const sharp = (await import('sharp')).default
+        const { put } = await import('@vercel/blob')
+        const original = Buffer.from(await file.arrayBuffer())
+        const transparente = file.type === 'image/png' && !(await sharp(original).stats()).isOpaque
+        let img = sharp(original).rotate().resize({ width: 1024, height: 1024, fit: 'inside', withoutEnlargement: true })
+        img = transparente ? img.png({ compressionLevel: 9 }) : img.webp({ quality: 85 })
+        const blob = await put(`grupos/${sessao.tenantId}/grupo_${grupoId}_${Date.now()}.${transparente ? 'png' : 'webp'}`, await img.toBuffer(), {
+            access: 'public', contentType: transparente ? 'image/png' : 'image/webp',
+        })
+        await db.grupo.update({ where: { id: grupoId }, data: { foto_url: blob.url } })
+        revalidatePath(`/grupos/gestao/${grupoId}`); revalidatePath('/membros/dashboard')
+        return { ok: true, url: blob.url }
+    } catch (err) {
+        return { ok: false, error: err instanceof Error ? err.message : 'Não foi possível guardar a imagem.' }
+    }
+}

@@ -36,6 +36,16 @@ export const REDES = [
 ] as const
 export type RedeId = (typeof REDES)[number]['id']
 
+/** Estilos das artes das redes (post, story, capa da live). "classico" = lib/divulgacao-redes.tsx; os outros em lib/divulgacao-redes-modelos.tsx. */
+export const MODELOS_REDES = [
+    { id: 'classico', nome: 'Clássico' },
+    { id: 'arcos', nome: 'Escuro com arcos' },
+    { id: 'arco-claro', nome: 'Claro com arco' },
+    { id: 'elegante', nome: 'Escuro elegante' },
+] as const
+export type ModeloRedesId = (typeof MODELOS_REDES)[number]['id']
+export const lerModeloRedes = (v: unknown): ModeloRedesId => (MODELOS_REDES.find((m) => m.id === v)?.id ?? 'classico')
+
 export const ESTILOS = [
     { id: 'manchas', nome: 'Escuro com luzes' },
     { id: 'foto', nome: 'Foto de fundo' },

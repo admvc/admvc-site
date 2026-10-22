@@ -1,5 +1,5 @@
 // A "receita" de um kit de divulgação (o que fica guardado na base por evento) e como vira o pedido de cada peça.
-import { ALVOS, FUNDOS_PRONTOS, PECAS, REDES, lerEstilo, lerPaleta, type EstiloId, type PecaId, type RedeId } from '@/lib/divulgacao'
+import { ALVOS, FUNDOS_PRONTOS, PECAS, REDES, lerEstilo, lerModeloRedes, lerPaleta, type EstiloId, type ModeloRedesId, type PecaId, type RedeId } from '@/lib/divulgacao'
 import { ajusteEmTexto, lerAjustesKit, type AjustesKit } from '@/lib/divulgacao-enquadrar'
 
 export const QR_BOAS_VINDAS = 'https://www.igrejaadmvc.org/boasvindas?c=sede'
@@ -19,6 +19,7 @@ export type Receita = {
     fundo: string                                    // '' = só cores; id de FUNDOS_PRONTOS ou imagem do Blob público
     palavraComFoto: boolean                          // Palavra no telão com o recorte do preletor ao lado
     ajustes: AjustesKit                              // "Ajustar foto" por formato (mover/aproximar); só vale para a foto com que foi feito
+    modeloRedes: ModeloRedesId                       // estilo das artes das redes (clássico, arcos, claro com arco, elegante)
 }
 
 export const PECAS_POR_OMISSAO: PecaId[] = ['oracao', 'oracao-dirigida', 'neutro', 'boas-vindas', 'oferta', 'palavra']
@@ -30,7 +31,7 @@ export function receitaVazia(): Receita {
         alvo: 'familia', alvoTexto: '', tema: '', ref: '', preletor: '', iban: '', qr: QR_BOAS_VINDAS,
         verso: '', versoRef: '', semVersiculo: false,
         redes: [...REDES_POR_OMISSAO], titulo: '', subtitulo: '', fotoH: null, fotoV: null, tinta: 0.25,
-        fundo: '', palavraComFoto: true, ajustes: {},
+        fundo: '', palavraComFoto: true, ajustes: {}, modeloRedes: 'classico',
     }
 }
 
@@ -69,6 +70,7 @@ export function normalizarReceita(x: unknown): Receita {
         fundo: typeof o.fundo === 'string' && (FUNDOS_PRONTOS.some((f) => f.id === o.fundo) || (URL_FOTO.test(o.fundo) && o.fundo.length <= 400)) ? o.fundo : '',
         palavraComFoto: o.palavraComFoto !== false,
         ajustes: lerAjustesKit(o.ajustes),
+        modeloRedes: lerModeloRedes(o.modeloRedes),
     }
 }
 
@@ -83,7 +85,7 @@ export function paramsDaPeca(r: Receita, peca: PecaId, dia: string): URLSearchPa
     if (peca === 'palavra') {
         const v = r.fotoV ?? r.fotoH
         if (r.palavraComFoto && v?.recorte && v.w && v.h) { q.set('retrato', v.url); q.set('rw', String(v.w)); q.set('rh', String(v.h)) }
-        if (r.tema) q.set('tema', r.tema)
+        if (r.tema) q.set('tema', semDestaque(r.tema))   // os *asteriscos* do destaque são só para as redes
         if (r.ref) q.set('ref', r.ref)
         if (r.preletor) q.set('preletor', r.preletor)
     }
@@ -108,6 +110,7 @@ export function quandoDoEvento(data: Date): { quando: string; hora: string } {
 export function paramsDaRede(r: Receita, formato: RedeId, ev: { nome: string; data: Date }): URLSearchParams {
     const { quando, hora } = quandoDoEvento(ev.data)
     const q = new URLSearchParams({ formato, paleta: r.paleta, titulo: r.titulo || ev.nome, quando, hora, tinta: String(r.tinta) })
+    if (r.modeloRedes !== 'classico') { q.set('modelo', r.modeloRedes); if (r.tema) q.set('tema', r.tema) }
     if (r.subtitulo) q.set('subtitulo', r.subtitulo)
     if (r.preletor) q.set('preletor', r.preletor)
     // Fotos: a horizontal serve a capa 16:9, a vertical o post e o story; se só há uma, serve a todos
@@ -130,3 +133,6 @@ export function nomeDaPeca(r: Receita, peca: PecaId, n: number): string {
 }
 
 export const nomeDaRede = (formato: RedeId) => `redes-${formato}.png`
+
+/** O título sem os asteriscos do destaque ("*fruto do Espírito*" → "fruto do Espírito"), para textos e estilos sem destaque. */
+export const semDestaque = (t: string) => t.replace(/\*/g, '')

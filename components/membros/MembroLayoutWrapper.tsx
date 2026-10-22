@@ -89,7 +89,6 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
         else if (permissoes.isAdmin) itensMais.push({ chave: 'grupo', texto: 'Grupos', href: '/grupos/admin', detalhe: 'Pequenos grupos e células' })
     }
     if (temModulo(MODULOS.ACOLHIMENTO) && (permissoes.isAcolhimento || permissoes.isAdmin)) itensMais.push({ chave: 'acolhimento', texto: 'Acolhimento', href: '/departamentos/acolhimento/dashboard' })
-    if (temModulo(MODULOS.HOLYRICS) && (permissoes.isMidia || permissoes.isLouvor || permissoes.isAdmin)) itensMais.push({ chave: 'culto-holyrics', texto: 'Culto no Holyrics', href: '/midia/culto', detalhe: 'Enviar as músicas do culto de hoje' })
     if (temModulo(MODULOS.HOLYRICS) && (permissoes.isMidia || permissoes.isAdmin)) itensMais.push({ chave: 'midia', texto: 'Mídia', href: '/midia/holyrics', detalhe: 'Holyrics' })
     if (permissoes.isMidia || permissoes.isAdmin) itensMais.push({ chave: 'divulgar', texto: 'Agenda para divulgar', href: '/midia/agenda', detalhe: 'Telão, redes, impressão' })
     if (permissoes.isMidia || permissoes.isAdmin) itensMais.push({ chave: 'divulgacao-culto', texto: 'Divulgação do culto', href: '/midia/divulgacao', detalhe: 'Artes do telão: oração, boas-vindas, oferta, Palavra' })

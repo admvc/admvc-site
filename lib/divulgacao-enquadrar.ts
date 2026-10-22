@@ -20,6 +20,28 @@ export const CAIXA_FOTO: Record<RedeId, Caixa> = {
     youtube: { left: 380, top: 0, width: 900, height: 720 },
 }
 
+/** A caixa da foto nos estilos novos das redes (lib/divulgacao-redes-modelos.tsx); "classico" usa CAIXA_FOTO. */
+export const CAIXA_FOTO_MODELO: Record<string, Record<RedeId, Caixa>> = {
+    arcos: {
+        youtube: { left: 560, top: 30, width: 720, height: 690 },
+        post: { left: 150, top: 90, width: 930, height: 820 },
+        story: { left: 60, top: 230, width: 1020, height: 1050 },
+    },
+    'arco-claro': {
+        youtube: { left: 760, top: 50, width: 460, height: 620 },
+        post: { left: 300, top: 60, width: 480, height: 580 },
+        story: { left: 180, top: 180, width: 720, height: 900 },
+    },
+    elegante: {
+        youtube: { left: 420, top: 0, width: 860, height: 720 },
+        post: { left: 0, top: 0, width: 1080, height: 1050 },
+        story: { left: 0, top: 0, width: 1080, height: 1400 },
+    },
+}
+
+/** A caixa da foto de um formato, no estilo das redes escolhido. */
+export const caixaFoto = (formato: RedeId, modelo = 'classico'): Caixa => CAIXA_FOTO_MODELO[modelo]?.[formato] ?? CAIXA_FOTO[formato]
+
 export const LIMITES = {
     foto: { zoom: [1, 3] as const },
     recorte: { x: [0.1, 0.9] as const, y: [0.7, 1.6] as const, zoom: [0.5, 1.8] as const },

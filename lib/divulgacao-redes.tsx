@@ -7,9 +7,13 @@ import { ImageResponse } from 'next/og'
 import type { CSSProperties } from 'react'
 import { REDES, lerPaleta, type Paleta, type RedeId } from '@/lib/divulgacao'
 import { carregarFontes, carregarPomba, fotoPermitida, lerFundo, rgba } from '@/lib/divulgacao-imagem'
-import { CAIXA_FOTO, ajustePorOmissao, enquadrarFoto, enquadrarRecorte, lerAjuste, type Ajuste } from '@/lib/divulgacao-enquadrar'
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
+import { ajustePorOmissao, caixaFoto, enquadrarFoto, enquadrarRecorte, lerAjuste, type Ajuste } from '@/lib/divulgacao-enquadrar'
+import { ModeloRede } from '@/lib/divulgacao-redes-modelos'
+import { lerModeloRedes } from '@/lib/divulgacao'
 
-type Dados = { titulo: string; subtitulo: string; quando: string; hora: string; preletor: string; foto: string | null; fw: number; fh: number; foco: string; tinta: number; recorte: boolean; fundo: string | null; ajuste: Ajuste | null }
+type Dados = { titulo: string; subtitulo: string; quando: string; hora: string; preletor: string; foto: string | null; fw: number; fh: number; foco: string; tinta: number; recorte: boolean; fundo: string | null; ajuste: Ajuste | null; modelo: string; tema: string }
 
 // Maiúsculas em Cinzel são largas (~0.8 em): o título cabe em até 2 linhas no espaço dado
 function tamanhoTitulo(titulo: string, max: number, largura: number) {
@@ -45,16 +49,25 @@ function recortado(d: Dados, caixa: { width: number; height: number }, p: Paleta
     )
 }
 
-function Rede({ formato, p, d, marca }: { formato: RedeId; p: Paleta; d: Dados; marca: string | null }) {
+function Rede({ formato, p, d, marca, letras }: { formato: RedeId; p: Paleta; d: Dados; marca: string | null; letras: { claras: string; escuras: string } }) {
     const f = REDES.find((r) => r.id === formato)!
     const W = f.largura, H = f.altura
     const base = p.fundo
     const horizontal = formato === 'youtube'
     const story = formato === 'story'
-    const titulo = d.titulo.replace(/\|/g, ' ')
+    const titulo = d.titulo.replace(/\|/g, ' ').replace(/\*/g, '')
 
     // Caixa da foto e degradê (o texto fica sobre a cor de fundo, nunca sobre o rosto)
-    const caixa = CAIXA_FOTO[formato]
+    const caixa = caixaFoto(formato, d.modelo)
+
+    // estilos novos: o tema da mensagem é o texto grande (o nome do culto passa a linha pequena)
+    if (d.modelo !== 'classico') {
+        const foto = d.foto ? (d.recorte ? recortado(d, caixa, p) : corte(d, caixa)) : null
+        return (
+            <ModeloRede modelo={d.modelo} formato={formato} W={W} H={H} p={p} marca={marca} letras={letras.claras} letrasEscuras={letras.escuras} foto={foto} caixa={caixa}
+                d={{ grande: d.tema || d.titulo, pequeno: d.tema ? d.titulo.replace(/[*|]/g, ' ').replace(/\s+/g, ' ').trim() : d.subtitulo, quando: d.quando, hora: d.hora, preletor: d.preletor }} />
+        )
+    }
     const degrade = horizontal
         ? `linear-gradient(90deg, ${base} 0%, ${base} 40%, ${mistura(base, 65)} 55%, ${rgba(base, 0)} 78%)`
         : `linear-gradient(0deg, ${base} 0%, ${base} ${story ? 36 : 32}%, ${mistura(base, 70)} ${story ? 48 : 44}%, ${rgba(base, 0)} ${story ? 64 : 62}%)`
@@ -131,6 +144,13 @@ function Rede({ formato, p, d, marca }: { formato: RedeId; p: Paleta; d: Dados; 
     )
 }
 
+// As letras "ADMVC" do logótipo (vetor), em branco e em escuro, como imagens para o satori
+let letrasLidas: Promise<{ claras: string; escuras: string }> | null = null
+const letrasAdmvc = () => (letrasLidas ??= readFile(path.join(process.cwd(), 'public', 'images', 'marca', 'admvc-letras.svg'), 'utf8').then((svg) => ({
+    claras: `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`,
+    escuras: `data:image/svg+xml;base64,${Buffer.from(svg.replace('fill="#fff"', 'fill="#1b1b1b"')).toString('base64')}`,
+})))
+
 export async function desenharRede(q: URLSearchParams): Promise<ImageResponse> {
     const formato = (REDES.find((r) => r.id === q.get('formato'))?.id ?? 'post') as RedeId
     const f = REDES.find((r) => r.id === formato)!
@@ -141,9 +161,9 @@ export async function desenharRede(q: URLSearchParams): Promise<ImageResponse> {
     const d: Dados = {
         titulo: corta('titulo', 60) || 'Culto', subtitulo: corta('subtitulo', 40), quando: corta('quando', 30), hora: corta('hora', 10),
         preletor: corta('preletor', 60), foto: fotoPermitida(q.get('foto')), fw: Number(q.get('fw')) || 0, fh: Number(q.get('fh')) || 0, foco, tinta,
-        recorte: q.get('recorte') === '1', fundo: null, ajuste: lerAjuste(q.get('aj')),
+        recorte: q.get('recorte') === '1', fundo: null, ajuste: lerAjuste(q.get('aj')), modelo: lerModeloRedes(q.get('modelo')), tema: corta('tema', 120),
     }
     const [fonts, marca, fundo] = await Promise.all([carregarFontes(), carregarPomba(), lerFundo(q.get('fundo'))])
     d.fundo = fundo
-    return new ImageResponse(<Rede formato={formato} p={p} d={d} marca={marca} />, { width: f.largura, height: f.altura, fonts })
+    return new ImageResponse(<Rede formato={formato} p={p} d={d} marca={marca} letras={await letrasAdmvc()} />, { width: f.largura, height: f.altura, fonts })
 }

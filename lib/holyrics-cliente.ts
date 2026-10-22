@@ -1,6 +1,6 @@
 // Falar com o Holyrics a partir do navegador. O Holyrics corre no computador da
 // midia, na rede da igreja: o servidor da app nao chega la, o navegador sim.
-// Usado pelo "Culto no Holyrics" (/midia/culto) e pelo "Alterar músicas".
+// Usado pelo "Alterar músicas".
 
 export type MusicaParaHolyrics = { musicaId: string; titulo: string; artista: string | null; holyricsId: string | null }
 export type EstadoNoHolyrics = 'enviada' | 'ja-estava' | 'nao-encontrada'

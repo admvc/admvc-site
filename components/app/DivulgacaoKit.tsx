@@ -6,8 +6,8 @@
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { Check, ChevronDown, Copy, Download, ImagePlus, Megaphone, Save, Share2, Trash2, Send } from 'lucide-react'
 import { concluirPublicacao, guardarKitDivulgacao, guardarPadraoDivulgacao, retirarPublicacao } from '@/actions/divulgacao-actions'
-import { ALVOS, ESTILOS, FUNDOS_PRONTOS, PALETAS, PECAS, REDES, type PecaId, type RedeId } from '@/lib/divulgacao'
-import { nomeDaPeca, nomeDaRede, paramsDaPeca, paramsDaRede, type FotoKit, type Receita } from '@/lib/divulgacao-kit'
+import { ALVOS, ESTILOS, FUNDOS_PRONTOS, MODELOS_REDES, PALETAS, PECAS, REDES, type PecaId, type RedeId } from '@/lib/divulgacao'
+import { nomeDaPeca, nomeDaRede, paramsDaPeca, paramsDaRede, semDestaque, type FotoKit, type Receita } from '@/lib/divulgacao-kit'
 import { textosDoCulto } from '@/lib/divulgacao-textos'
 import { linkWhatsApp } from '@/lib/whatsapp'
 import { reduzirImagem } from '@/lib/reduzir-imagem'
@@ -182,7 +182,7 @@ function CaixaTexto({ titulo, valor, onChange, onRefazer, whatsapp }: { titulo: 
     )
 }
 
-const PADRAO_CAMPOS = ['estilo', 'paleta', 'redes', 'fundo', 'tinta'] as const
+const PADRAO_CAMPOS = ['estilo', 'paleta', 'redes', 'fundo', 'tinta', 'modeloRedes'] as const
 const doPadrao = (x: Partial<Receita>) => JSON.stringify(PADRAO_CAMPOS.map((k) => x[k]))
 
 // O padrão de publicação da ADMVC: as cores e as letras das artes, as regras de desenho, e o botão para o fixar como início de cada kit
@@ -317,7 +317,7 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
                 feitos.push({ ...it, url: j.url })
             }
             // textos sem "Hoje/Amanhã" (ficam certos nos dias seguintes), a não ser que tenham sido editados
-            const neutros = textosDoCulto({ nome: r.titulo || eventoNome, data, preletor: r.preletor, local, hoje: new Date(data.getTime() - 3 * 86400000) })
+            const neutros = textosDoCulto({ nome: semDestaque(r.titulo) || eventoNome, data, preletor: r.preletor, local, hoje: new Date(data.getTime() - 3 * 86400000) })
             const fim = await concluirPublicacao(eventoId, lote, feitos, { legenda: editado.legenda ?? neutros.legenda, whatsapp: editado.whatsapp ?? neutros.whatsapp })
             if ('error' in fim) throw new Error(fim.error)
             setPublicadoEm(new Date().toISOString()); setPublicadoJson(atual)
@@ -358,7 +358,7 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
     }
     async function partilharRede(id: RedeId, q: URLSearchParams) {
         setMsg(null); setAPartilhar(id)
-        const texto = editado.whatsapp ?? textosDoCulto({ nome: r.titulo || eventoNome, data, preletor: r.preletor, local, hoje: new Date(hojeISO) }).whatsapp
+        const texto = editado.whatsapp ?? textosDoCulto({ nome: semDestaque(r.titulo) || eventoNome, data, preletor: r.preletor, local, hoje: new Date(hojeISO) }).whatsapp
         const res = await partilharArte(`/api/divulgacao/imagem?${q}`, nomeDaRede(id), texto)
         if (res !== 'cancelada') setMsg({ ok: res === 'partilhada', texto: AVISO_PARTILHA[res] })
         setAPartilhar('')
@@ -395,7 +395,7 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
     }
 
     // Legenda e WhatsApp: saem do culto e do preletor; podem editar-se (a edição fica até carregar em "Refazer")
-    const gerados = useMemo(() => textosDoCulto({ nome: r.titulo || eventoNome, data, preletor: r.preletor, local, hoje: new Date(hojeISO) }), [r.titulo, r.preletor, eventoNome, data, local, hojeISO])
+    const gerados = useMemo(() => textosDoCulto({ nome: semDestaque(r.titulo) || eventoNome, data, preletor: r.preletor, local, hoje: new Date(hojeISO) }), [r.titulo, r.preletor, eventoNome, data, local, hojeISO])
     const mostrarPreletor = r.pecas.includes('palavra') || r.redes.length > 0
 
     return (
@@ -466,6 +466,22 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
                     </div>
                 </fieldset>
 
+                {r.redes.length > 0 && (
+                    <fieldset className="space-y-2">
+                        <legend className="text-[17px] font-bold">Estilo das redes</legend>
+                        <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+                            {MODELOS_REDES.map((m) => (
+                                <label key={m.id} className={`${miniatura} ${r.modeloRedes === m.id ? 'ring-2 ring-[var(--a-acento,#f5a524)]' : ''}`} style={estiloCampo}>
+                                    <input type="radio" name="modeloRedes" checked={r.modeloRedes === m.id} onChange={() => mudar({ modeloRedes: m.id })} className="sr-only" />
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={`/images/divulgacao/amostras/redes-${m.id}.jpg`} alt="" loading="lazy" className="block w-full" style={{ aspectRatio: '16 / 9', background: 'var(--a-borda)', objectFit: 'cover' }} />
+                                    <span className="block px-2 py-1.5 text-[14px] font-semibold">{m.nome}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </fieldset>
+                )}
+
                 <div className="grid gap-3 md:grid-cols-2">
                     {r.redes.length === 0 && r.pecas.length === 0 && <p className="a-suave md:col-span-2">Marque pelo menos uma arte.</p>}
                     {mostrarPreletor && (
@@ -479,6 +495,12 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
                             <span className="block text-[15px] font-semibold">Título e linha de cima nas redes</span>
                             <CampoTexto valor={r.titulo} onCommit={(v) => mudar({ titulo: v })} placeholder={`Título (vazio = ${eventoNome}). Use | para mudar de linha`} maxLength={60} />
                             <CampoTexto valor={r.subtitulo} onCommit={(v) => mudar({ subtitulo: v })} placeholder="Linha de cima (ex.: Jovens & Gerações)" maxLength={40} />
+                            {r.modeloRedes !== 'classico' && (
+                                <>
+                                    <CampoTexto valor={r.tema} onCommit={(v) => mudar({ tema: v })} placeholder="Tema da mensagem (o texto grande da arte)" maxLength={80} />
+                                    <p className="text-[13px] a-suave">Ponha entre *asteriscos* a parte a destacar: As obras da carne X o *fruto do Espírito*. Sem tema, o texto grande é o título.</p>
+                                </>
+                            )}
                         </div>
                     )}
                     {r.pecas.includes('oracao-dirigida') && (
@@ -640,7 +662,7 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
             )}
 
             {ajustando && fotoDa(ajustando) && (
-                <AjustarFoto formato={ajustando} foto={fotoDa(ajustando)!} paleta={paleta}
+                <AjustarFoto formato={ajustando} modelo={r.modeloRedes} foto={fotoDa(ajustando)!} paleta={paleta}
                     inicial={r.ajustes[ajustando] && r.ajustes[ajustando]!.url === fotoDa(ajustando)!.url ? r.ajustes[ajustando]! : null}
                     onFeito={(a) => guardarAjuste(ajustando, a)} onFechar={() => setAjustando(null)} />
             )}

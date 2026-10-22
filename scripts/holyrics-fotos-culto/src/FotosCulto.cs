@@ -39,6 +39,7 @@ static class FotosCulto
             var a = LerArgumentos(args);
             if (a.ContainsKey("cultos")) return CultosDoApp(a);
             if (a.ContainsKey("culto")) return CultoDoApp(a);
+            if (a.ContainsKey("ligar")) return LigarMusica(a);
             if (a.ContainsKey("listar")) return Listar(a);
             if (a.ContainsKey("trazer")) return Trazer(a);
             return Correr(a);
@@ -135,12 +136,38 @@ static class FotosCulto
         string data = Convert.ToString(culto["data"]); if (data.Length >= 16) data = data.Substring(0, 16);
         Console.WriteLine("N|" + Linha(culto["nome"]) + "|" + data);
         foreach (Dictionary<string, object> m in (object[])r["musicas"])
-            Console.WriteLine("M|" + Linha(m["titulo"]) + "|" + Linha(m["artista"]) + "|" + Linha(m["holyricsId"]) + "|" + Linha(m["tom"]));
+            Console.WriteLine("M|" + Linha(m["titulo"]) + "|" + Linha(m["artista"]) + "|" + Linha(m["holyricsId"]) + "|" + Linha(m["tom"]) + "|" + Linha(m.ContainsKey("id") ? m["id"] : ""));
         foreach (Dictionary<string, object> x in (object[])r["artes"])
             Console.WriteLine("A|" + Linha(x["secao"]) + "|" + Linha(x["ficheiro"]) + "|" + Linha(x["nome"]));
         foreach (object l in (object[])r["escala"]) Console.WriteLine("E|" + Linha(l));
         foreach (object l in (object[])r["rotina"]) Console.WriteLine("R|" + Linha(l));
         return 0;
+    }
+
+    /// <summary>Liga uma música do repertório à música do Holyrics (para a próxima vez ser encontrada logo): --ligar --musica ID --holyrics ID.</summary>
+    static int LigarMusica(Dictionary<string, string> a)
+    {
+        string portal = Valor(a, "portal").TrimEnd('/');
+        string chave = Valor(a, "chave");
+        if (portal == "" || chave == "") { Console.WriteLine("Falta o endereço do portal ou a chave (definições do módulo)."); return 1; }
+        ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
+        try
+        {
+            using (var c = new WebClient { Encoding = Encoding.UTF8 })
+            {
+                c.UploadString(portal + "/api/public/holyrics/ligar?chave=" + Uri.EscapeDataString(chave) + "&musica=" + Uri.EscapeDataString(Valor(a, "musica")) + "&holyrics=" + Uri.EscapeDataString(Valor(a, "holyrics")), "POST", "");
+            }
+            Console.WriteLine("Ligada no portal.");
+            return 0;
+        }
+        catch (WebException e)
+        {
+            var r = e.Response as HttpWebResponse;
+            if (r != null && (int)r.StatusCode == 409) { Console.WriteLine("Essa música do Holyrics já está ligada a outra do repertório."); return 1; }
+            if (r != null && (int)r.StatusCode == 401) { Console.WriteLine("A chave não é válida (veja em Mídia, no portal)."); return 1; }
+            Console.WriteLine("Não consegui ligar no portal: " + e.Message);
+            return 1;
+        }
     }
 
     static int Listar(Dictionary<string, string> a)

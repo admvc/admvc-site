@@ -378,14 +378,99 @@ function cultoAberto(module) {
     return null
 }
 
-/** A música no Holyrics: o id ligado no portal, senão a 1.ª procura pelo título (confirma que o título é igual). */
-function acharMusica(module, m) {
-    if (m.holyricsId) return { id: m.holyricsId, via: 'id' }
-    var r = module.hly('SearchLyrics', { text: m.titulo })
-    var lista = r && r.status === 'ok' && r.data ? r.data : []
-    var alvo = semAcentos(m.titulo)
-    for (var i = 0; i < lista.length; i++) {
-        if (semAcentos(lista[i].title || lista[i].name) === alvo) return { id: String(lista[i].id), via: 'título' }
+// ---- Encontrar a música na biblioteca do Holyrics
+
+var PALAVRAS_FORA = /\b(ao vivo|live|playback|versao|acustico|acustica|remix|feat|part|oficial)\b/g
+
+/** Título para comparar: sem acentos, sem "(Ao vivo)", "[Live]", "Playback"… */
+function tituloLimpo(t) {
+    return semAcentos(String(t || '').replace(/\([^)]*\)|\[[^\]]*\]/g, ' ')).replace(PALAVRAS_FORA, ' ').replace(/\s+/g, ' ').replace(/^ | $/g, '')
+}
+
+/** Parecença entre dois títulos limpos (0 a 1), pelas palavras em comum. */
+function parecenca(a, b) {
+    if (!a || !b) return 0
+    if (a === b) return 1
+    var A = a.split(' '), B = b.split(' '), comum = 0, usadas = {}
+    for (var i = 0; i < A.length; i++) {
+        for (var j = 0; j < B.length; j++) { if (!usadas[j] && A[i] === B[j]) { comum++; usadas[j] = true; break } }
+    }
+    return 2 * comum / (A.length + B.length)
+}
+
+/** As músicas da biblioteca mais parecidas (até 5), da mais para a menos parecida. */
+function candidatos(module, m) {
+    var limpo = tituloLimpo(m.titulo)
+    var buscas = [limpo], palavras = limpo.split(' ')
+    if (palavras.length > 3) buscas.push(palavras.slice(0, 3).join(' '))
+    var vistas = {}, lista = []
+    var artista = semAcentos(m.artista)
+    for (var b = 0; b < buscas.length; b++) {
+        if (!buscas[b]) continue
+        var r = module.hly('SearchLyrics', { text: buscas[b] })
+        var achadas = r && r.status === 'ok' && r.data ? r.data : []
+        for (var i = 0; i < achadas.length; i++) {
+            var id = String(achadas[i].id)
+            if (vistas[id]) continue
+            vistas[id] = true
+            var titulo = String(achadas[i].title || achadas[i].name || '')
+            var art = achadas[i].artist ? String(achadas[i].artist) : ''
+            var nota = parecenca(limpo, tituloLimpo(titulo))
+            var a2 = semAcentos(art)
+            if (artista && a2 && (a2.indexOf(artista) >= 0 || artista.indexOf(a2) >= 0)) nota = Math.min(1, nota + 0.1)
+            lista.push({ id: id, titulo: titulo, artista: art, nota: nota })
+        }
+    }
+    lista.sort(function (x, y) { return y.nota - x.nota })
+    return lista.slice(0, 5)
+}
+
+function mapaLocal() { try { return JSON.parse(h.restore('admvc_mapa_musicas') || '{}') } catch (e) { return {} } }
+function guardarMapa(mapa) { h.store('admvc_mapa_musicas', JSON.stringify(mapa)) }
+function chaveMusica(m) { return tituloLimpo(m.titulo) + '|' + semAcentos(m.artista) }
+
+/**
+ * A música no Holyrics: { id, via, titulo } ou null.
+ * Ordem: a ligada no portal → a escolhida antes neste PC → uma só muito parecida na biblioteca → perguntar.
+ */
+function acharMusica(module, m, mapa) {
+    if (m.holyricsId) return { id: m.holyricsId, via: 'portal' }
+    if (mapa[chaveMusica(m)]) return { id: mapa[chaveMusica(m)], via: 'guardada' }
+    var cand = candidatos(module, m)
+    if (cand.length && (cand[0].nota >= 0.99 || (cand[0].nota >= 0.85 && (cand.length === 1 || cand[0].nota - cand[1].nota >= 0.15)))) {
+        return { id: cand[0].id, via: 'parecida', titulo: cand[0].titulo }
+    }
+    return escolherMusica(module, m, cand)
+}
+
+/** Janela: as parecidas, "Procurar no Holyrics…" (janela de escolher música do Holyrics), "Criar letra nova…" ou "Saltar". */
+function escolherMusica(module, m, cand) {
+    var valores = []
+    for (var i = 0; i < cand.length; i++) valores.push({ value: 'id:' + cand[i].id, label: cand[i].titulo + (cand[i].artista ? ' — ' + cand[i].artista : '') + ' (' + Math.round(cand[i].nota * 100) + '% parecida)' })
+    valores.push({ value: 'procurar', label: 'Procurar no Holyrics…' })
+    valores.push({ value: 'criar', label: 'Criar letra nova…' })
+    valores.push({ value: 'saltar', label: 'Saltar esta música' })
+    var r = h.input([
+        { type: 'title', label: 'Não encontrei esta música no Holyrics: ' + m.titulo + (m.artista ? ' — ' + m.artista : '') },
+        { type: 'separator' },
+        { id: 'escolha', key: 'escolha', type: 'string', label: 'Usar', default_value: valores[0].value, allowed_values: valores }
+    ])
+    if (r == null) return null
+    // com UM só campo, o Holyrics devolve o próprio valor; pode vir o texto da opção em vez do valor
+    var v = (r.escolha !== undefined && r.escolha !== null) ? String(r.escolha) : String(r)
+    for (var k = 0; k < valores.length; k++) if (valores[k].label === v) v = valores[k].value
+    if (v.indexOf('id:') === 0) return { id: v.substring(3), via: 'escolhida' }
+    if (v === 'procurar') {
+        try {
+            var x = h.lyricsChooser()
+            if (x) return { id: String(x.id), via: 'escolhida', titulo: String(x.title || '') }
+        } catch (e) { h.log(mID, 'lyricsChooser: {}', [e]) }
+        return null
+    }
+    if (v === 'criar') {
+        try { h.popupCreateSong({ title: m.titulo, artist: m.artista || '' }) }
+        catch (e) { h.notificationError('Não consegui abrir o editor de letras: ' + e, 8) }
+        return { id: '', via: 'criar' }
     }
     return null
 }
@@ -408,7 +493,7 @@ function receberCulto(module) {
     for (var i = 0; i < res.linhas.length; i++) {
         var p = res.linhas[i].split('|')
         if (p[0] === 'N') { nome = p[1]; data = p[2] }
-        else if (p[0] === 'M') musicas.push({ titulo: p[1], artista: p[2], holyricsId: p[3], tom: p[4] })
+        else if (p[0] === 'M') musicas.push({ titulo: p[1], artista: p[2], holyricsId: p[3], tom: p[4], id: p[5] || '' })
         else if (p[0] === 'A') artes.push({ secao: p[1], ficheiro: p[2], nome: p[3] })
         else if (p[0] === 'E') escala.push(res.linhas[i].substring(2))
         else if (p[0] === 'R') rotina.push(res.linhas[i].substring(2))
@@ -480,10 +565,17 @@ function receberCulto(module) {
     var porSecao = {}
     function colocar(secao, item) { (porSecao[secao] = porSecao[secao] || []).push(item) }
 
+    var mapa = mapaLocal(), ligacoes = []
     for (var c = 0; c < musicas.length; c++) {
         if (!ligado(r['m' + c])) continue
-        var achada = acharMusica(module, musicas[c])
-        if (!achada) { falhas.push('♪ ' + musicas[c].titulo + ' (não está no Holyrics)'); continue }
+        var achada = acharMusica(module, musicas[c], mapa)
+        if (achada && achada.via === 'criar') { avisos.push('Música: ' + musicas[c].titulo + ' — depois de guardar a letra nova, carregue outra vez em "Receber o culto" (Mesclar).'); continue }
+        if (!achada) { falhas.push('Música: ' + musicas[c].titulo + ' (não está no Holyrics; ficou de fora)'); continue }
+        if (achada.via === 'parecida' && tituloLimpo(achada.titulo) !== tituloLimpo(musicas[c].titulo)) avisos.push('Música: ' + musicas[c].titulo + ' → usei «' + achada.titulo + '» (a mais parecida)')
+        if (achada.via !== 'portal') {
+            mapa[chaveMusica(musicas[c])] = achada.id   // fica lembrada neste PC
+            if (musicas[c].id) ligacoes.push({ musica: musicas[c].id, holyrics: achada.id, titulo: musicas[c].titulo })
+        }
         escolhidas.push({ titulo: musicas[c].titulo, id: achada.id })
         colocar('LOUVOR', { type: 'song', id: achada.id, chave: 'song:' + achada.id, rotulo: musicas[c].titulo, titulo: musicas[c].titulo })
     }
@@ -583,13 +675,23 @@ function receberCulto(module) {
         }
     }
 
+    // 6b) lembrar as escolhas: neste PC e na ficha da música no portal (para a próxima vez e para os outros PCs)
+    guardarMapa(mapa)
+    var ligadas = 0
+    for (var lg = 0; lg < ligacoes.length; lg++) {
+        var rlg = rodarExe(module, exe, ['--ligar', '--portal', k.portal, '--chave', k.chave, '--musica', ligacoes[lg].musica, '--holyrics', ligacoes[lg].holyrics], 30000)
+        if (rlg.ok) ligadas++
+        else avisos.push('Música: ' + ligacoes[lg].titulo + ' — não liguei no portal (' + ultimaLinha(rlg, 'erro') + ')')
+    }
+
     // 7) resumo
     var linhasFim = [
         { type: 'title', label: 'Culto recebido: ' + nome + ' · ' + dataCurta(data) },
         { type: 'separator' },
         { type: 'title', label: 'Músicas na lista: ' + feito.musicas + ' · letras: ' + feito.letras + ' · artes: ' + feito.artes + ' · escala/rotina: ' + (feito.texto ? 'sim' : 'não') }
     ]
-    for (var g = 0; g < avisos.length; g++) linhasFim.push({ type: 'title', label: '⚠ ' + avisos[g].substring(0, 150) })
-    for (var g2 = 0; g2 < falhas.length && g2 < 12; g2++) linhasFim.push({ type: 'title', label: '✗ ' + falhas[g2].substring(0, 150) })
+    if (ligadas) linhasFim.push({ type: 'title', label: 'Músicas ligadas no portal (da próxima vez são encontradas logo): ' + ligadas })
+    for (var g = 0; g < avisos.length; g++) linhasFim.push({ type: 'title', label: 'Aviso: ' + avisos[g].substring(0, 150) })
+    for (var g2 = 0; g2 < falhas.length && g2 < 12; g2++) linhasFim.push({ type: 'title', label: 'Falhou: ' + falhas[g2].substring(0, 150) })
     h.input(linhasFim)
 }

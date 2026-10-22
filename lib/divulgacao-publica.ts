@@ -2,7 +2,7 @@
 // Holyrics. Sem login: só sai o que a Mídia publicou (redes para toda a gente; telão só para o Holyrics) e o nome do culto.
 import prisma from '@/lib/prisma'
 import { agoraLisboa } from '@/lib/alertas-encontros'
-import { normalizarReceita } from '@/lib/divulgacao-kit'
+import { normalizarReceita, semDestaque } from '@/lib/divulgacao-kit'
 import { lerPublicado, type ItemPublicado } from '@/lib/divulgacao-publicacao'
 
 export type CultoPublicado = {
@@ -40,7 +40,7 @@ export async function cultosPublicados(tenantId: number, dias = 14, soEvento?: n
         if (!pub) continue
         saida.push({
             id: k.evento.id,
-            nome: normalizarReceita(k.receita).titulo || k.evento.nome,
+            nome: semDestaque(normalizarReceita(k.receita).titulo) || k.evento.nome,
             data: k.evento.data.toISOString(),
             artes: pub.itens.filter((i) => i.tipo === 'redes'),
             telao: pub.itens.filter((i) => i.tipo === 'telao'),

@@ -6,7 +6,7 @@ import { getTenantClient } from '@/lib/prisma'
 import type { SessionData } from '@/lib/auth-utils'
 import { lerArea, type PontoArea } from '@/lib/area-grupo'
 import { agoraLisboa } from '@/lib/alertas-encontros'
-import { normalizarReceita } from '@/lib/divulgacao-kit'
+import { normalizarReceita, semDestaque } from '@/lib/divulgacao-kit'
 
 /** O membro tem de aceitar (ou renovar) os termos de protecao de dados. */
 export async function termosPorAssinar(sessao: SessionData): Promise<boolean> {
@@ -82,7 +82,7 @@ export async function divulgacaoDaSemana(sessao: SessionData): Promise<{ nome: s
         orderBy: { evento: { data: 'asc' } },
         select: { receita: true, evento: { select: { nome: true, data: true } } },
     })
-    return kit ? { nome: normalizarReceita(kit.receita).titulo || kit.evento.nome, data: kit.evento.data.toISOString() } : null
+    return kit ? { nome: semDestaque(normalizarReceita(kit.receita).titulo) || kit.evento.nome, data: kit.evento.data.toISOString() } : null
 }
 
 export interface MeuGrupo {
@@ -98,6 +98,8 @@ export interface MeuGrupo {
     area: PontoArea[] | null
     /** O próximo encontro marcado na agenda do grupo (ISO; hora de Lisboa escrita em UTC) */
     proximo?: string | null
+    /** Imagem (ícone) do grupo ou do departamento de apoio */
+    foto?: string | null
     /** Grupo de apoio (departamento sem escala): abre o módulo ou a lista de pessoas */
     apoio?: { href: string; texto: string }
 }
@@ -119,7 +121,7 @@ export async function meusGrupos(sessao: SessionData): Promise<MeuGrupo[]> {
         where: { OR: [{ membros: eu }, { lideres: eu }] },
         select: {
             id: true, nome: true, dia_semana: true, horario: true, endereco: true, numero: true,
-            bairro: true, cidade: true, latitude: true, longitude: true, area: true, mostrar_mapa: true,
+            bairro: true, cidade: true, latitude: true, longitude: true, area: true, mostrar_mapa: true, foto_url: true,
             lideres: { select: { id: true, first_name: true, last_name: true } },
         },
         orderBy: { nome: 'asc' },
@@ -127,14 +129,14 @@ export async function meusGrupos(sessao: SessionData): Promise<MeuGrupo[]> {
     // Grupos de apoio em que estou (ou que lidero)
     const apoio = await db.departamento.findMany({
         where: { tem_escala: false, OR: [{ lider_id: sessao.membroId }, { integrantes: { some: { membro_id: sessao.membroId } } }] },
-        select: { id: true, nome: true, lider_id: true, lider: { select: { first_name: true, last_name: true } } },
+        select: { id: true, nome: true, lider_id: true, foto_url: true, lider: { select: { first_name: true, last_name: true } } },
         orderBy: { nome: 'asc' },
     })
     const deApoio: MeuGrupo[] = apoio.map((d) => ({
         id: -d.id, nome: d.nome, quando: '', morada: '', mapa: null,
         lideres: d.lider ? [`${d.lider.first_name} ${d.lider.last_name}`.trim()] : [],
         souLider: d.lider_id === sessao.membroId, latitude: null, longitude: null, area: null,
-        apoio: destinoDoApoio(d.id, d.nome),
+        apoio: destinoDoApoio(d.id, d.nome), foto: d.foto_url,
     }))
     // O próximo encontro de cada grupo (da agenda do grupo), numa só consulta
     const agora = new Date(new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Lisbon', dateStyle: 'short', timeStyle: 'medium' }).format(new Date()).replace(' ', 'T') + 'Z')
@@ -161,6 +163,7 @@ export async function meusGrupos(sessao: SessionData): Promise<MeuGrupo[]> {
             latitude: g.mostrar_mapa ? g.latitude : null,
             longitude: g.mostrar_mapa ? g.longitude : null,
             area: g.mostrar_mapa ? lerArea(g.area) : null,
+            foto: g.foto_url,
         }
     }), ...deApoio]
 }

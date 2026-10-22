@@ -17,7 +17,10 @@ export default function MeusGrupos({ grupos }: { grupos: MeuGrupo[] }) {
                     <li key={g.id}>
                         <details className="group">
                             <summary className="a-foco flex min-h-[60px] cursor-pointer list-none items-center gap-3 py-2">
-                                <Users size={20} className="shrink-0" style={{ color: 'var(--a-destaque)' }} aria-hidden />
+                                {g.foto
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    ? <img src={g.foto} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover" />
+                                    : <Users size={20} className="shrink-0" style={{ color: 'var(--a-destaque)' }} aria-hidden />}
                                 <span className="min-w-0 flex-1">
                                     <span className="block truncate text-[17px] font-semibold">{g.nome}</span>
                                     <span className="block truncate text-[14px] a-suave">

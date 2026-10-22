@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { membroPorEmail, prisma } from './ajuda'
 import { chaveCerta, gerarChave, hashDaChave } from '@/lib/holyrics-chave'
-import { cultoCompleto, cultosDoApp } from '@/lib/holyrics-culto'
+import { cultoCompleto, cultosDoApp, ligarMusica } from '@/lib/holyrics-culto'
 
 let ctx: { tenant: number; evento: number; musica: string; departamento: number }
 const url = (n: string) => `https://abc123.public.blob.vercel-storage.com/divulgacao/1/kits/9/1700000000010-${n}.png`
@@ -53,7 +53,7 @@ describe('o culto para o Holyrics', () => {
     })
     it('entrega músicas, artes do telão com a secção, escala e rotina com horas', async () => {
         const c = (await cultoCompleto(ctx.tenant, ctx.evento))!
-        expect(c.musicas).toEqual([{ titulo: 'Grande é o Senhor (teste)', artista: 'Adhemar', holyricsId: '1752153870720', tom: 'A' }])
+        expect(c.musicas).toEqual([{ id: ctx.musica, titulo: 'Grande é o Senhor (teste)', artista: 'Adhemar', holyricsId: '1752153870720', tom: 'A' }])
         expect(c.artes.map((a) => `${a.ficheiro}:${a.secao}`)).toEqual(['01-oracao.png:ABERTURA', '02-oferta.png:OFERTORIO'])   // nunca as das redes
         expect(c.escala.length).toBe(1)
         expect(c.escala[0]).toMatch(/: Vocalista .* \(por confirmar\)$/)
@@ -63,5 +63,18 @@ describe('o culto para o Holyrics', () => {
     it('culto de outra igreja ou inexistente não sai', async () => {
         expect(await cultoCompleto(ctx.tenant, 999999999)).toBeNull()
         expect(await cultoCompleto(ctx.tenant + 1000, ctx.evento)).toBeNull()
+    })
+})
+
+describe('ligar a música à biblioteca do Holyrics', () => {
+    it('grava o id do Holyrics na ficha; recusa se já estiver noutra música; não mexe noutra igreja', async () => {
+        expect(await ligarMusica(ctx.tenant, ctx.musica, '999000111')).toBe('ok')
+        expect((await prisma.musica.findUnique({ where: { id: ctx.musica } }))!.holyrics_id).toBe('999000111')
+        const outra = await prisma.musica.create({ data: { titulo: 'Outra (teste Holyrics)', tenant_id: ctx.tenant } as never })
+        try {
+            expect(await ligarMusica(ctx.tenant, outra.id, '999000111')).toBe('em-uso')
+            expect(await ligarMusica(ctx.tenant + 1000, ctx.musica, '123')).toBe('nao-encontrada')
+            expect(await ligarMusica(ctx.tenant, ctx.musica, '1752153870720')).toBe('ok')   // voltar ao de antes
+        } finally { await prisma.musica.delete({ where: { id: outra.id } }) }
     })
 })

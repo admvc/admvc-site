@@ -14,7 +14,7 @@ export const SECAO_DA_PECA: Record<string, string> = {
 export type CultoDoApp = { id: number; data: string; nome: string; musicas: number; artes: number }
 export type CultoCompleto = {
     culto: { id: number; nome: string; data: string }
-    musicas: { titulo: string; artista: string; holyricsId: string; tom: string }[]
+    musicas: { id: string; titulo: string; artista: string; holyricsId: string; tom: string }[]
     artes: { nome: string; ficheiro: string; url: string; secao: string }[]
     escala: string[]
     rotina: string[]
@@ -42,7 +42,7 @@ export async function cultoCompleto(tenantId: number, eventoId: number): Promise
         where: { id: eventoId, tenant_id: tenantId },
         select: {
             id: true, nome: true, data: true,
-            repertorio: { orderBy: { ordem: 'asc' }, select: { tom_tocado: true, musica: { select: { titulo: true, artista: true, tom: true, holyrics_id: true } } } },
+            repertorio: { orderBy: { ordem: 'asc' }, select: { tom_tocado: true, musica: { select: { id: true, titulo: true, artista: true, tom: true, holyrics_id: true } } } },
             kitDivulgacao: { select: { publicado: true } },
             rotina: { select: { itens: true } },
             escalas: {
@@ -85,7 +85,18 @@ export async function cultoCompleto(tenantId: number, eventoId: number): Promise
 
     return {
         culto: { id: e.id, nome: e.nome, data },
-        musicas: e.repertorio.map((r) => ({ titulo: r.musica.titulo, artista: r.musica.artista ?? '', holyricsId: r.musica.holyrics_id ?? '', tom: r.tom_tocado || r.musica.tom || '' })),
+        musicas: e.repertorio.map((r) => ({ id: r.musica.id, titulo: r.musica.titulo, artista: r.musica.artista ?? '', holyricsId: r.musica.holyrics_id ?? '', tom: r.tom_tocado || r.musica.tom || '' })),
         artes, escala, rotina,
     }
+}
+
+/**
+ * O módulo do Holyrics encontrou (ou alguém escolheu) a música certa na biblioteca do Holyrics: fica ligada na ficha do repertório,
+ * para a próxima vez ser encontrada logo (e para o "Alterar músicas" do Louvor). Não tira a ligação de outra música.
+ */
+export async function ligarMusica(tenantId: number, musicaId: string, holyricsId: string): Promise<'ok' | 'nao-encontrada' | 'em-uso'> {
+    const outra = await prisma.musica.findFirst({ where: { tenant_id: tenantId, holyrics_id: holyricsId, NOT: { id: musicaId } }, select: { id: true } })
+    if (outra) return 'em-uso'
+    const r = await prisma.musica.updateMany({ where: { id: musicaId, tenant_id: tenantId }, data: { holyrics_id: holyricsId } })
+    return r.count === 1 ? 'ok' : 'nao-encontrada'
 }

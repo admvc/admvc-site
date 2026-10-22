@@ -7,14 +7,14 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { X } from 'lucide-react'
 import { REDES, type Paleta, type RedeId } from '@/lib/divulgacao'
 import type { FotoKit } from '@/lib/divulgacao-kit'
-import { CAIXA_FOTO, LIMITES, ajustePorOmissao, enquadrarFoto, enquadrarRecorte, limitarAjuste, type Ajuste } from '@/lib/divulgacao-enquadrar'
+import { caixaFoto, LIMITES, ajustePorOmissao, enquadrarFoto, enquadrarRecorte, limitarAjuste, type Ajuste } from '@/lib/divulgacao-enquadrar'
 
-type Props = { formato: RedeId; foto: FotoKit; paleta: Paleta; inicial: Ajuste | null; onFeito: (a: Ajuste | null) => void; onFechar: () => void }
+type Props = { formato: RedeId; modelo?: string; foto: FotoKit; paleta: Paleta; inicial: Ajuste | null; onFeito: (a: Ajuste | null) => void; onFechar: () => void }
 
-export default function AjustarFoto({ formato, foto, paleta, inicial, onFeito, onFechar }: Props) {
+export default function AjustarFoto({ formato, modelo = 'classico', foto, paleta, inicial, onFeito, onFechar }: Props) {
     const f = REDES.find((r) => r.id === formato)!
     const W = f.largura, H = f.altura
-    const caixa = CAIXA_FOTO[formato]
+    const caixa = caixaFoto(formato, modelo)
     const recorte = !!foto.recorte
     const [a, setA] = useState<Ajuste>(() => limitarAjuste(inicial ?? ajustePorOmissao(recorte, foto.foco), recorte))
     const [escala, setEscala] = useState(0.3)
@@ -68,13 +68,13 @@ export default function AjustarFoto({ formato, foto, paleta, inicial, onFeito, o
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={foto.url} alt="" draggable={false} style={{ position: 'absolute', left: pos.left * escala, top: pos.top * escala, width: pos.width * escala, height: pos.height * escala, maxWidth: 'none', pointerEvents: 'none' }} />
                     </div>
-                    {/* onde o texto vai ficar (por cima da foto, com a cor de fundo) */}
-                    <div aria-hidden style={{ position: 'absolute', pointerEvents: 'none', display: 'flex', alignItems: horizontal ? 'center' : 'flex-end', justifyContent: horizontal ? 'flex-start' : 'center', padding: 8,
+                    {/* onde o texto vai ficar (por cima da foto, com a cor de fundo) — no estilo clássico */}
+                    {modelo === 'classico' && <div aria-hidden style={{ position: 'absolute', pointerEvents: 'none', display: 'flex', alignItems: horizontal ? 'center' : 'flex-end', justifyContent: horizontal ? 'flex-start' : 'center', padding: 8,
                         ...(horizontal
                             ? { left: 0, top: 0, bottom: 0, width: '52%', backgroundImage: `linear-gradient(90deg, ${paleta.fundo} 0%, ${paleta.fundo} 55%, transparent 100%)` }
                             : { left: 0, right: 0, bottom: 0, height: formato === 'story' ? '34%' : '36%', backgroundImage: `linear-gradient(0deg, ${paleta.fundo} 0%, ${paleta.fundo} 65%, transparent 100%)` }) }}>
                         <span className="rounded px-2 py-0.5 text-[12px] font-semibold" style={{ background: 'rgba(255,255,255,.18)', color: paleta.texto }}>Zona do texto</span>
-                    </div>
+                    </div>}
                 </div>
 
                 <label className="block space-y-1">

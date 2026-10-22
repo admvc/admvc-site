@@ -13,6 +13,7 @@ import dynamic from 'next/dynamic'
 import type { PontoArea } from '@/lib/area-grupo'
 import { useToast } from '@/components/ui/ConfirmDialog'
 import { reduzirImagensDoForm } from '@/lib/reduzir-imagem'
+import FotoDoGrupo from './FotoDoGrupo'
 
 const EditorAreaGrupo = dynamic(() => import('@/components/grupos/EditorAreaGrupo'), {
     ssr: false,
@@ -123,9 +124,12 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
 
     return (
         <main className="app-novo mx-auto max-w-2xl space-y-4 px-4 pb-28 pt-20 md:pb-10 md:pt-8" style={{ background: 'transparent' }}>
-            <div className="space-y-1">
-                <h1 className="text-[28px] font-bold leading-tight">{grupo.nome}</h1>
-                <p className="text-[17px] a-suave">{grupo.categoria || 'Grupo familiar'}</p>
+            <div className="space-y-3">
+                <div className="space-y-1">
+                    <h1 className="text-[28px] font-bold leading-tight">{grupo.nome}</h1>
+                    <p className="text-[17px] a-suave">{grupo.categoria || 'Grupo familiar'}</p>
+                </div>
+                <FotoDoGrupo grupoId={grupo.id} nome={grupo.nome} url={grupo.foto_url ?? null} podeMudar={ehLider} />
             </div>
 
             <div role="tablist" aria-label="Partes do grupo" className="flex gap-2">
