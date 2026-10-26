@@ -83,6 +83,30 @@ export function inscricoesAbertas(e: { estado: string; inscricoes_ate: Date | nu
     return e.estado === 'ABERTO' && (!e.inscricoes_ate || agora.getTime() <= new Date(e.inscricoes_ate).getTime())
 }
 
+/** "Agora" na convenção das horas da app (hora de Lisboa escrita como se fosse UTC). */
+export function agoraDeParede(agora = new Date()): Date {
+    return new Date(new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Lisbon', dateStyle: 'short', timeStyle: 'medium' }).format(agora).replace(' ', 'T') + 'Z')
+}
+
+/**
+ * O convite está divulgado? Só se a organização o deixou visível e, havendo data de divulgação, já passou.
+ * Sem divulgação, o convite não aparece no Início da app, no site nem na página pública (só a organização a vê).
+ */
+export function conviteDivulgado(e: { convite_visivel: boolean; divulgar_em: Date | null }, agora = new Date()): boolean {
+    if (!e.convite_visivel) return false
+    return !e.divulgar_em || agoraDeParede(agora).getTime() >= new Date(e.divulgar_em).getTime()
+}
+
+/** Para a organização: porque é que o convite ainda não aparece (null = aparece). */
+export function motivoConviteEscondido(e: { convite_visivel: boolean; divulgar_em: Date | null }, agora = new Date()): string | null {
+    if (!e.convite_visivel) return 'O convite está escondido.'
+    if (e.divulgar_em && !conviteDivulgado(e, agora)) {
+        const d = new Date(e.divulgar_em)
+        return `O convite aparece a partir de ${d.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', timeZone: 'UTC' })}, às ${d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}.`
+    }
+    return null
+}
+
 /** Data e hora do evento como estão gravadas (hora "de parede", como na agenda). */
 export function dataDoEvento(d: Date | string): { dia: string; hora: string } {
     const data = new Date(d)

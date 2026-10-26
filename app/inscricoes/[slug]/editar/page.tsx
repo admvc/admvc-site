@@ -27,6 +27,7 @@ export default async function EditarEventoPage({ params }: { params: Promise<{ s
     }
     const inicio = paraFormulario(e.inicio)
     const ate = paraFormulario(e.inscricoes_ate)
+    const divulgar = paraFormulario(e.divulgar_em)
 
     return (
         <main className="app-novo max-w-2xl mx-auto px-4 pt-20 md:pt-8 pb-24 space-y-5">
@@ -39,6 +40,7 @@ export default async function EditarEventoPage({ params }: { params: Promise<{ s
                 precisa_confirmacao: e.precisa_confirmacao, aberto_visitantes: e.aberto_visitantes,
                 campos: camposParaLinhas(lerCampos(e.campos)), cor_principal: e.cor_principal, cor_fundo: e.cor_fundo,
                 estado: e.estado, organizador: atual, imagem_url: e.imagem_url,
+                convite_visivel: e.convite_visivel, divulgar_data: divulgar.data, divulgar_hora: divulgar.hora, mostrar_preco: e.mostrar_preco,
             }} />
         </main>
     )

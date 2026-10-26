@@ -1147,6 +1147,29 @@ model SuperAdminLog {
   @@map("super_admin_logs")
 }
 
+// Erros que os membros encontram na app (ecra "Algo correu mal") e erros do
+// servidor. Vistos no Cloud em /super-admin/erros. Guardados 90 dias.
+model ErroApp {
+  id          Int      @id @default(autoincrement())
+  codigo      String   // codigo curto mostrado ao membro (ex.: "K7Q2MX")
+  origem      String   // 'CLIENTE' | 'SERVIDOR'
+  tipo        String   // 'VERSAO' | 'REDE' | 'SERVIDOR' | 'APP'
+  mensagem    String
+  stack       String?
+  digest      String?  // liga o ecra do membro ao erro do servidor
+  url         String?
+  user_agent  String?
+  tenant_id   Int?
+  membro_id   Int?
+  membro_nome String?
+  criado_em   DateTime @default(now())
+
+  @@index([criado_em])
+  @@index([digest])
+  @@index([membro_id])
+  @@map("erros_app")
+}
+
 model AvisoPlataforma {
   id          Int      @id @default(autoincrement())
   titulo      String
@@ -2067,6 +2090,9 @@ model EventoInscricao {
   grupo_id            Int?
   departamento_id     Int?
   estado              String        @default("RASCUNHO") // RASCUNHO, ABERTO, FECHADO
+  convite_visivel     Boolean       @default(true)  // false = o convite não aparece (app, site, página pública); só a organização o vê
+  divulgar_em         DateTime?     // convite só aparece a partir daqui (hora "de parede", como o início)
+  mostrar_preco       Boolean       @default(true)  // false = "preço a combinar": sem preço nem forma de pagamento nas páginas públicas
   criado_em           DateTime      @default(now())
   tenant              Tenant        @relation(fields: [tenant_id], references: [id])
   grupo               Grupo?        @relation(fields: [grupo_id], references: [id], onDelete: SetNull)

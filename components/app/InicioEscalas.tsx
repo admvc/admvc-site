@@ -14,12 +14,11 @@ import AlertasEncontros from './AlertasEncontros'
 import { aniversariantesDoMes, cultosDaSemana, divulgacaoDaSemana, meusGrupos, termosPorAssinar } from '@/lib/inicio-app'
 import AjudaDivulgar from './AjudaDivulgar'
 import Aniversariantes from './Aniversariantes'
-import MeusGrupos from './MeusGrupos'
 import AtivarNotificacoes from './AtivarNotificacoes'
 import EstaSemana from './EstaSemana'
 import CartaoProximaEscala from './CartaoProximaEscala'
 import Indisponibilidades from './Indisponibilidades'
-import { diaPorExtenso, hora } from './datas'
+import { diaCurto, diaPorExtenso, hora } from './datas'
 
 export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: SessionData; primeiroNome: string }) {
     const db = getTenantClient(sessao.tenantId)
@@ -45,7 +44,7 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
     return (
         <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_340px] md:items-start">
         <div className="min-w-0 space-y-6">
-            <h1 className="text-[24px] font-bold leading-tight">Olá, {primeiroNome}</h1>
+            <h1 className="text-[24px] font-bold leading-tight">A paz, {primeiroNome}</h1>
 
             {termos && (
                 <section className="a-card flex flex-wrap items-center gap-3 p-4" style={{ borderColor: 'var(--a-aviso)', background: 'var(--a-aviso-suave)' }}>
@@ -63,9 +62,11 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
 
             <AjudaDivulgar culto={divulgar} />
 
-            {ministerios.length > 0 && (
+            {(ministerios.length > 0 || grupos.length > 0) && (
                 <section className="space-y-2" aria-labelledby="ministerios">
-                    <h2 id="ministerios" className="text-[19px] font-bold">Os meus ministérios</h2>
+                    <h2 id="ministerios" className="text-[19px] font-bold">
+                        {ministerios.length > 0 && grupos.length > 0 ? 'Os meus ministérios e grupos' : ministerios.length > 0 ? 'Os meus ministérios' : grupos.length === 1 ? 'O meu grupo' : 'Os meus grupos'}
+                    </h2>
                     <ul className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1 scrollbar-hide">
                         {ministerios.map((m) => (
                             <li key={m.id} className="shrink-0">
@@ -82,6 +83,25 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
                                         <span className="block text-[14px] a-suave">
                                             {m.pessoas} pessoas{m.eLouvor ? ` · ${m.musicas} músicas` : ''}
                                         </span>
+                                    </span>
+                                </Link>
+                            </li>
+                        ))}
+                        {/* Os grupos na mesma fila, a seguir aos ministérios */}
+                        {grupos.map((g) => (
+                            <li key={`g${g.id}`} className="shrink-0">
+                                <Link href={g.apoio ? g.apoio.href : `/membros/grupo/${g.id}/agenda`} className="a-card a-foco flex w-[250px] items-center gap-3 p-3">
+                                    <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-[12px]"
+                                        style={{ background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }} aria-hidden>
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        {g.foto ? <img src={g.foto} alt="" className="h-full w-full object-cover" /> : <Users size={22} />}
+                                    </span>
+                                    <span className="min-w-0">
+                                        <span className="block truncate text-[16px] font-bold">{g.nome}</span>
+                                        <span className="block truncate text-[14px] a-suave">
+                                            {g.apoio ? 'Grupo de apoio' : g.proximo ? `Próximo: ${diaCurto(g.proximo)} · ${hora(g.proximo)}` : (g.quando || 'Sem encontro marcado')}
+                                        </span>
+                                        <span className="block truncate text-[14px] a-suave">{g.souLider ? 'Lidero este grupo' : 'Grupo'}</span>
                                     </span>
                                 </Link>
                             </li>
@@ -120,8 +140,6 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
                     <ChevronRight size={22} aria-hidden />
                 </Link>
             )}
-
-            <MeusGrupos grupos={grupos} />
 
             {sirvo && <Indisponibilidades lista={indisponiveis} />}
         </div>

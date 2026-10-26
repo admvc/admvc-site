@@ -19,7 +19,7 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
     if (!session) return <>{children}</>
 
     let membro: any = null
-    let tenantData: { nome: string } | null = null
+    let tenantData: { nome: string; logo_url: string | null } | null = null
     let ativos: string[] = []
     let gruposQueLidera: { id: number; nome: string }[] = []
     let eventosQueGere = 0
@@ -36,7 +36,7 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
                     departamentos_liderados: { select: { nome: true, e_louvor: true } },
                 },
             }),
-            db.tenant.findFirst({ where: { id: session.tenantId }, select: { nome: true } }),
+            db.tenant.findFirst({ where: { id: session.tenantId }, select: { nome: true, logo_url: true } }),
             modulosAtivosDaIgreja(),
             db.grupo.findMany({
                 where: { lideres: { some: { id: session.membroId } } }, select: { id: true, nome: true }, take: 1,
@@ -122,7 +122,7 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
             menu={<MenuLateral igreja={igrejaName} nome={nome} avatar={membro.avatar_file || null} perfilHref={perfilHref}
                 itensMais={itensMais} repertorio={repertorio} />}
             // Telemovel: cabecalho simples e barra Inicio, Escalas, Repertorio (louvor) e Mais
-            cabecalho={<CabecalhoApp igreja={igrejaName} nome={nome} avatar={membro.avatar_file || null} perfilHref={perfilHref} adminHref={permissoes.isAdmin ? '/admin/dashboard' : undefined} alertas={nAlertas} />}
+            cabecalho={<CabecalhoApp igreja={igrejaName} logo={tenantData?.logo_url ?? null} nome={nome} avatar={membro.avatar_file || null} perfilHref={perfilHref} adminHref={permissoes.isAdmin ? '/admin/dashboard' : undefined} alertas={nAlertas} />}
             barra={<BarraBaixo itensMais={itensMais} repertorio={repertorio} />}
         >
             <PullToRefresh><div className="bg-bg min-h-screen"><FaixaImpersonacao />{children}</div></PullToRefresh>

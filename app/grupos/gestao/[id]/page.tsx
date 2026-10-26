@@ -1,6 +1,7 @@
 import { getDb } from '@/lib/db'
 import { redirect } from 'next/navigation'
 import { getSessionData, isAdmin as isAdminCheck } from '@/lib/auth-utils'
+import { getTenantClient } from '@/lib/prisma'
 import GestaoGrupoClient from '@/components/membros/GestaoGrupoClient'
 
 export default async function GestaoGrupoPage(props: { params: Promise<{ id: string }> }) {
@@ -38,5 +39,14 @@ export default async function GestaoGrupoPage(props: { params: Promise<{ id: str
 
     const temPermissaoEdicao = isLider || isAdmin;
 
-    return <GestaoGrupoClient grupo={grupo} ehLider={temPermissaoEdicao} />
+    // Reuniões da agenda do grupo até ao fim de hoje (horas de parede: Lisboa escrita em UTC)
+    const hoje = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Lisbon' }).format(new Date())
+    const fimDeHoje = new Date(new Date(`${hoje}T00:00:00Z`).getTime() + 86400000)
+    const reunioes = (await getTenantClient(session.tenantId).agendaDepartamento.findMany({
+        where: { grupo_id: grupoId, inicio: { lt: fimDeHoje }, cancelado_em: null },
+        orderBy: { inicio: 'desc' }, take: 40,
+        select: { id: true, titulo: true, inicio: true, registo: true, presentes: true, foto_url: true, presentes_membros: { select: { id: true, first_name: true, last_name: true } } },
+    })).map((r) => ({ ...r, inicio: r.inicio.toISOString() }))
+
+    return <GestaoGrupoClient grupo={grupo} ehLider={temPermissaoEdicao} reunioes={reunioes} />
 }

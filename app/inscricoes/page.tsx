@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getSessionData } from '@/lib/auth-utils'
 import { eventosQueGere, organizadoresPossiveis } from '@/lib/inscricoes-acesso'
-import { dataDoEvento } from '@/lib/inscricoes'
+import { dataDoEvento, motivoConviteEscondido } from '@/lib/inscricoes'
 import { ClipboardList, ChevronRight, Plus } from 'lucide-react'
 
 const ESTADO: Record<string, string> = { RASCUNHO: 'Rascunho', ABERTO: 'Inscrições abertas', FECHADO: 'Fechado' }
@@ -28,6 +28,7 @@ export default async function InscricoesPage() {
                 <ul className="space-y-3">
                     {eventos.map(e => {
                         const { dia, hora } = dataDoEvento(e.inicio)
+                        const escondido = e.estado === 'ABERTO' ? motivoConviteEscondido(e) : null
                         return (
                             <li key={e.id}>
                                 <Link href={`/inscricoes/${e.slug}`} className="a-card flex items-center gap-3 p-4 hover:opacity-90">
@@ -36,6 +37,7 @@ export default async function InscricoesPage() {
                                         <span className="block text-[18px] font-semibold truncate">{e.titulo}</span>
                                         <span className="block text-[15px] a-suave first-letter:uppercase">{dia} · {hora}</span>
                                         <span className="block text-[14px] a-suave">{ESTADO[e.estado] ?? e.estado} · {e._count.inscricoes} inscrição(ões)</span>
+                                        {escondido && <span className="block text-[14px] font-semibold" style={{ color: 'var(--a-aviso)' }}>{escondido}</span>}
                                     </span>
                                     <ChevronRight size={20} aria-hidden />
                                 </Link>

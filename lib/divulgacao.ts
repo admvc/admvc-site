@@ -55,11 +55,13 @@ export const ESTILOS = [
 export type EstiloId = (typeof ESTILOS)[number]['id']
 
 export const PECAS = [
+    { id: 'capa', nome: 'Capa do culto' },
     { id: 'oracao', nome: 'Oração (antes do culto)' },
     { id: 'oracao-dirigida', nome: 'Oração por…' },
     { id: 'neutro', nome: 'Fundo sem texto' },
     { id: 'boas-vindas', nome: 'Boas-vindas + QR' },
     { id: 'oferta', nome: 'Oferta (IBAN)' },
+    { id: 'cantina', nome: 'Cantina' },
     { id: 'palavra', nome: 'Palavra (preletor)' },
 ] as const
 export type PecaId = (typeof PECAS)[number]['id']
@@ -126,7 +128,10 @@ export function versiculoDoDia(lista: Versiculo[] | undefined, semente: string):
 export type OpcoesPeca = {
     alvo?: string; alvoTexto?: string          // oração dirigida (alvo da lista ou texto livre)
     tema?: string; ref?: string; preletor?: string // palavra
+    capa?: string; quando?: string                // capa do culto: o título (ex.: "Culto da Família") e "Quarta, 21 out · 20h00"
+    cantina?: { titulo?: string; subtitulo?: string; textos?: string[] } // capa da Cantina (a foto vai à parte)
     iban?: string; qr?: string                    // oferta / boas-vindas
+    mbway?: string; qrOferta?: string             // oferta: o número do MB WAY e o que o QR leva (transferência ou página)
     versiculo?: Versiculo | null                  // escrito à mão (null = sem versículo); undefined = roda pela lista
     semente: string
 }
@@ -134,12 +139,20 @@ export type OpcoesPeca = {
 /** O que vai escrito em cada peça. linhaPequena = a linha de cima (manuscrita ou pequena), titulo = a palavra grande. */
 export type ConteudoArte = {
     linhaPequena?: string; titulo?: string; subtitulo?: string; destaque?: string
-    preletor?: string; qr?: string; versiculo?: Versiculo | null
+    preletor?: string; qr?: string; qrLegenda?: string; destaque2?: string; versiculo?: Versiculo | null
+    moldura?: 'comida'; textosLegais?: string[]   // Cantina: moldura de ícones de comida e as linhas pequenas em baixo
 }
 
 export function conteudoDaPeca(peca: PecaId, o: OpcoesPeca): ConteudoArte {
     const rodar = (chave: string) => (o.versiculo !== undefined ? o.versiculo : versiculoDoDia(VERSICULOS[chave], o.semente))
     switch (peca) {
+        case 'cantina':
+            return {
+                titulo: o.cantina?.titulo || 'Cantina', subtitulo: o.cantina?.subtitulo || undefined,
+                moldura: 'comida', textosLegais: (o.cantina?.textos ?? []).filter(Boolean).slice(0, 4), versiculo: null,
+            }
+        case 'capa':
+            return { titulo: o.capa || 'Culto', subtitulo: o.quando, preletor: o.preletor, versiculo: null }
         case 'oracao':
             return { linhaPequena: 'Momento de', titulo: 'Oração', versiculo: rodar('oracao') }
         case 'oracao-dirigida': {
@@ -151,7 +164,10 @@ export function conteudoDaPeca(peca: PecaId, o: OpcoesPeca): ConteudoArte {
         case 'boas-vindas':
             return { titulo: 'Bem-vindo!', subtitulo: 'Estamos muito felizes em ter você aqui!', qr: o.qr, versiculo: rodar('boas-vindas') }
         case 'oferta':
-            return { titulo: 'Contribua', destaque: o.iban ? `IBAN: ${o.iban}` : undefined, versiculo: rodar('oferta') }
+            return {
+                titulo: 'Contribua', destaque: o.iban ? `IBAN: ${o.iban}` : undefined, destaque2: o.mbway ? `MB WAY: ${o.mbway}` : undefined,
+                qr: o.qrOferta, qrLegenda: 'Aponte a câmara do banco', versiculo: rodar('oferta'),
+            }
         case 'palavra':
             return o.tema
                 ? { linhaPequena: 'Palavra', titulo: o.tema, subtitulo: o.ref, preletor: o.preletor, versiculo: null }

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
 import type { SessionData } from '@/lib/auth-utils'
-import { inscricoesAbertas, dataDoEvento } from '@/lib/inscricoes'
+import { inscricoesAbertas, conviteDivulgado, dataDoEvento } from '@/lib/inscricoes'
 import { mesmoTelefone } from '@/lib/visitante-registo'
 import { ClipboardList } from 'lucide-react'
 import QRCode from 'react-qr-code'
@@ -16,13 +16,13 @@ export default async function InscricoesAbertas({ sessao }: { sessao: SessionDat
             orderBy: { inicio: 'asc' },
             select: {
                 id: true, slug: true, titulo: true, inicio: true, inscricoes_ate: true, estado: true, local: true,
-                preco_eur: true, pagamento: true, cor_principal: true,
+                preco_eur: true, pagamento: true, cor_principal: true, convite_visivel: true, divulgar_em: true, mostrar_preco: true,
                 inscricoes: { where: { estado: { not: 'CANCELADA' } }, select: { membro_id: true, telefone: true, estado: true, pago: true, codigo: true } },
             },
         }),
         prisma.membro.findUnique({ where: { id: sessao.membroId }, select: { phone_1: true, phone_2: true } }),
     ])
-    const abertos = eventos.filter(e => inscricoesAbertas(e))
+    const abertos = eventos.filter(e => inscricoesAbertas(e) && conviteDivulgado(e))
     if (abertos.length === 0) return null
 
     return (
@@ -31,7 +31,7 @@ export default async function InscricoesAbertas({ sessao }: { sessao: SessionDat
                 const minha = e.inscricoes.find(i => i.membro_id === sessao.membroId
                     || mesmoTelefone(i.telefone, membro?.phone_1) || mesmoTelefone(i.telefone, membro?.phone_2))
                 const { dia, hora } = dataDoEvento(e.inicio)
-                const cobra = !!e.preco_eur && e.preco_eur > 0
+                const cobra = e.mostrar_preco && !!e.preco_eur && e.preco_eur > 0
                 return (
                     <CartaoFechavel key={e.id} id={`inscricao-${e.slug}`} titulo={e.titulo}>
                     <article className="a-card p-4 space-y-3" style={{ borderColor: e.cor_principal, borderWidth: 2 }}>

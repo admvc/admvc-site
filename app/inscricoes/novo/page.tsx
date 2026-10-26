@@ -21,6 +21,7 @@ export default async function NovoEventoPage() {
                 titulo: '', subtitulo: '', descricao: '', local: '', data: '', hora: '', ate_data: '', ate_hora: '',
                 preco: '', pagamento: '', precisa_confirmacao: true, aberto_visitantes: true, campos: '',
                 cor_principal: '#3F6B4F', cor_fundo: '#F5F1EA', estado: 'RASCUNHO',
+                convite_visivel: true, divulgar_data: '', divulgar_hora: '', mostrar_preco: true,
                 organizador: organizadores.length === 1 ? organizadores[0].valor : '', imagem_url: null,
             }} />
         </main>

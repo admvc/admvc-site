@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import prisma from '@/lib/prisma'
 import { getSessionData } from '@/lib/auth-utils'
-import { lerCampos, lerDescricao, inscricoesAbertas, dataDoEvento } from '@/lib/inscricoes'
+import { lerCampos, lerDescricao, inscricoesAbertas, conviteDivulgado, motivoConviteEscondido, dataDoEvento } from '@/lib/inscricoes'
 import { podeGerirEvento, igrejaPublica } from '@/lib/inscricoes-acesso'
 import FormInscricao from './FormInscricao'
 
@@ -34,7 +34,9 @@ export default async function PaginaInscricao({ params }: { params: Promise<{ sl
 
     const sessao = await getSessionData()
     const gestor = await podeGerirEvento(sessao, e)
-    if (e.estado === 'RASCUNHO' && !gestor) notFound()
+    const divulgado = conviteDivulgado(e)
+    if ((e.estado === 'RASCUNHO' || !divulgado) && !gestor) notFound()
+    const escondido = motivoConviteEscondido(e)
 
     // Quem já entrou na app: formulário preenchido (a sessão prova quem é)
     let prefill: { nome: string; telefone: string; email: string } | null = null
@@ -49,7 +51,8 @@ export default async function PaginaInscricao({ params }: { params: Promise<{ sl
 
     const { dia, hora } = dataDoEvento(e.inicio)
     const blocos = lerDescricao(e.descricao)
-    const abertas = inscricoesAbertas(e)
+    const abertas = inscricoesAbertas(e) && divulgado
+    const verPreco = e.mostrar_preco
     const cor = e.cor_principal
     const texto = '#3B2A22'
 
@@ -58,6 +61,11 @@ export default async function PaginaInscricao({ params }: { params: Promise<{ sl
             {e.estado === 'RASCUNHO' && (
                 <div className="bg-amber-400 text-black text-center text-sm font-semibold px-4 py-2">
                     Pré-visualização: as inscrições ainda não estão abertas (só a organização vê esta página).
+                </div>
+            )}
+            {e.estado !== 'RASCUNHO' && escondido && (
+                <div className="bg-amber-400 text-black text-center text-sm font-semibold px-4 py-2">
+                    Pré-visualização: {escondido} Até lá, só a organização vê esta página.
                 </div>
             )}
             <div className="mx-auto max-w-xl px-4 pt-10 space-y-8">
@@ -70,8 +78,11 @@ export default async function PaginaInscricao({ params }: { params: Promise<{ sl
                             <span className="first-letter:uppercase inline-block">{dia}</span> · {hora}
                         </span>
                         {e.local && <span className="rounded-full px-3 py-1.5" style={{ background: `${cor}1a` }}>{e.local}</span>}
-                        {e.preco_eur != null && e.preco_eur > 0 && (
+                        {verPreco && e.preco_eur != null && e.preco_eur > 0 && (
                             <span className="rounded-full px-3 py-1.5" style={{ background: `${cor}1a` }}>{e.preco_eur.toLocaleString('pt-PT')} €</span>
+                        )}
+                        {!verPreco && (
+                            <span className="rounded-full px-3 py-1.5" style={{ background: `${cor}1a` }}>Preço a combinar</span>
                         )}
                     </div>
                 </header>
@@ -84,8 +95,9 @@ export default async function PaginaInscricao({ params }: { params: Promise<{ sl
                             campos={lerCampos(e.campos)}
                             prefill={prefill}
                             visitantes={e.aberto_visitantes}
-                            preco={e.preco_eur}
-                            pagamento={e.pagamento}
+                            preco={verPreco ? e.preco_eur : null}
+                            pagamento={verPreco ? e.pagamento : null}
+                            precoACombinar={!verPreco}
                             precisaConfirmacao={e.precisa_confirmacao}
                         />
                     ) : (

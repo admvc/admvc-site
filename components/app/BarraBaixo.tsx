@@ -15,6 +15,7 @@ import {
     ClipboardList,
 } from 'lucide-react'
 import ModalAjuda from '@/components/membros/ModalAjuda'
+import EscolhaTema from '@/components/app/EscolhaTema'
 import { logoutMembro } from '@/actions/auth-actions'
 
 export type ItemMais = {
@@ -93,6 +94,7 @@ export default function BarraBaixo({ itensMais, repertorio = false }: { itensMai
                                 </li>
                             )
                         })}
+                        <li><EscolhaTema /></li>
                         <li>
                             <ModalAjuda itens={itensMais.map((i) => i.chave)} repertorio={repertorio} trigger={
                                 <span className="a-card a-foco flex min-h-[60px] w-full items-center gap-4 px-4 py-3">

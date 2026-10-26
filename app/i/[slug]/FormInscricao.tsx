@@ -17,9 +17,10 @@ interface Props {
     preco: number | null
     pagamento: string | null
     precisaConfirmacao: boolean
+    precoACombinar?: boolean
 }
 
-export default function FormInscricao({ slug, cor, campos, prefill, visitantes, preco, pagamento, precisaConfirmacao }: Props) {
+export default function FormInscricao({ slug, cor, campos, prefill, visitantes, preco, pagamento, precisaConfirmacao, precoACombinar }: Props) {
     const [aEnviar, setAEnviar] = useState(false)
     const [erro, setErro] = useState<string | null>(null)
     const [resultado, setResultado] = useState<Extract<ResultadoInscricao, { ok: true }> | null>(null)
@@ -72,6 +73,9 @@ export default function FormInscricao({ slug, cor, campos, prefill, visitantes, 
                         {pagamento && <p>{pagamento}</p>}
                         <p>Na descrição, escreve o código <strong>{resultado.codigo}</strong>.</p>
                     </div>
+                )}
+                {precoACombinar && (
+                    <p className="rounded-2xl p-4" style={{ border: `1px solid ${cor}40` }}>O valor e a forma de pagamento combinamos contigo quando entrarmos em contacto.</p>
                 )}
                 <p className="text-sm text-center opacity-70">Tira uma captura de ecrã para guardares o código.</p>
             </div>

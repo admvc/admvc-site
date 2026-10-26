@@ -7,7 +7,8 @@ const NivelErro = require('qr.js/lib/ErrorCorrectLevel')
 
 export function qrSvg(texto: string, cor = '#000000', fundo = '#ffffff'): string {
     const qr = new QRCode(-1, NivelErro.M)
-    qr.addData(texto)
+    // O QR guarda bytes: com acentos (ex.: o titular "Associação") têm de ser os bytes UTF-8, que o qr.js lê como caracteres de 1 byte
+    qr.addData(Buffer.from(texto, 'utf8').toString('latin1'))
     qr.make()
     const n: number = qr.getModuleCount()
     let d = ''

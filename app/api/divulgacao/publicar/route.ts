@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     if (tipo === 'peca') {
         const peca = receita.pecas.find((p) => p === id)
         if (!peca) return NextResponse.json({ error: 'Esta arte não está no kit guardado.' }, { status: 400 })
-        img = await desenharArte(paramsDaPeca(receita, peca, dia))
+        img = await desenharArte(paramsDaPeca(receita, peca, dia, kit.evento))
     } else {
         const rede = receita.redes.find((p) => p === id)
         if (!rede) return NextResponse.json({ error: 'Esta arte não está no kit guardado.' }, { status: 400 })

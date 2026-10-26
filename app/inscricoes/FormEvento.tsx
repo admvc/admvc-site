@@ -13,6 +13,7 @@ export interface ValoresEvento {
     data: string; hora: string; ate_data: string; ate_hora: string
     preco: string; pagamento: string; precisa_confirmacao: boolean; aberto_visitantes: boolean
     campos: string; cor_principal: string; cor_fundo: string; estado: string; organizador: string
+    convite_visivel: boolean; divulgar_data: string; divulgar_hora: string; mostrar_preco: boolean
     imagem_url: string | null
 }
 
@@ -86,12 +87,23 @@ export default function FormEvento({ id, slug, valores, organizadores }: {
                     <label className="block space-y-1"><span className={rotulo}>Hora</span>
                         <input type="time" name="ate_hora" defaultValue={valores.ate_hora} className={campo} style={estilo} /></label>
                 </div>
+                <label className="flex items-center gap-3 text-[16px]"><input type="checkbox" name="convite_visivel" defaultChecked={valores.convite_visivel} className="h-5 w-5" />
+                    Mostrar o convite (no Início da app, no site e na página do evento)</label>
+                <div className="grid grid-cols-2 gap-3">
+                    <label className="block space-y-1"><span className={rotulo}>Divulgar a partir de <span className="font-normal a-suave">(opcional)</span></span>
+                        <input type="date" name="divulgar_data" defaultValue={valores.divulgar_data} className={campo} style={estilo} /></label>
+                    <label className="block space-y-1"><span className={rotulo}>Hora</span>
+                        <input type="time" name="divulgar_hora" defaultValue={valores.divulgar_hora} className={campo} style={estilo} /></label>
+                </div>
+                <p className="text-[13px] a-suave -mt-2">Sem o convite visível, ou antes da data, só a organização vê a página e ninguém se pode inscrever.</p>
                 <div className="grid grid-cols-[120px_1fr] gap-3">
                     <label className="block space-y-1"><span className={rotulo}>Preço (€)</span>
                         <input name="preco" inputMode="decimal" defaultValue={valores.preco} placeholder="0" className={campo} style={estilo} /></label>
                     <label className="block space-y-1"><span className={rotulo}>Como pagar</span>
                         <input name="pagamento" defaultValue={valores.pagamento} placeholder="MB WAY para o +351 9…" className={campo} style={estilo} /></label>
                 </div>
+                <label className="flex items-center gap-3 text-[16px]"><input type="checkbox" name="mostrar_preco" defaultChecked={valores.mostrar_preco} className="h-5 w-5" />
+                    Mostrar o preço (desmarcar = "preço a combinar": só se diz quando entrarem em contacto)</label>
                 <label className="block space-y-1"><span className={rotulo}>Caixas a marcar <span className="font-normal a-suave">(uma por linha; * no fim = obrigatória)</span></span>
                     <textarea name="campos" rows={3} defaultValue={valores.campos} placeholder="Levo 1 prato de salgados e 1 sumo *" className={campo} style={estilo} /></label>
                 <label className="flex items-center gap-3 text-[16px]"><input type="checkbox" name="precisa_confirmacao" defaultChecked={valores.precisa_confirmacao} className="h-5 w-5" />

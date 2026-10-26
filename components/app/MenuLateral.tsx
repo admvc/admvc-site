@@ -7,6 +7,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ArrowLeft, CalendarCheck2, HelpCircle, Home, ListMusic, LogOut } from 'lucide-react'
+import { EscolhaTemaMenu } from '@/components/app/EscolhaTema'
 import ModalAjuda from '@/components/membros/ModalAjuda'
 import { logoutMembro } from '@/actions/auth-actions'
 import { ICONES, type ItemMais } from './BarraBaixo'
@@ -83,6 +84,7 @@ export default function MenuLateral({ igreja, nome, avatar, perfilHref, itensMai
             </div>
 
             <ul className="space-y-1 border-t p-3" style={{ borderColor: 'var(--a-borda)' }}>
+                <li><EscolhaTemaMenu className={`${item} w-full`} /></li>
                 <li>
                     <ModalAjuda itens={itensMais.map((i) => i.chave)} repertorio={repertorio} trigger={
                         <span className={`${item} w-full cursor-pointer`} title="Ajuda">

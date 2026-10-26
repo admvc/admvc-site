@@ -1,18 +1,17 @@
 'use client'
 
-// O meu grupo, no telemovel: tres partes com nome (Grupo, Novo encontro, Encontros),
+// O meu grupo, no telemovel: tres partes com nome (Grupo, Registar, Encontros),
 // letra grande. Quem nao e lider ve os dados como texto, sem campos apagados.
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import {
-    ChevronDown, Users, Save, Loader2, Check, MapPin, CalendarDays, User,
-    History, Image as ImageIcon, Camera,
+    ChevronDown, Users, Save, Loader2, MapPin, CalendarDays, User,
+    History, Image as ImageIcon,
 } from 'lucide-react'
-import { registrarEncontroAction, atualizarDadosGrupoAction } from '@/actions/grupo-actions'
+import { atualizarDadosGrupoAction } from '@/actions/grupo-actions'
 import dynamic from 'next/dynamic'
 import type { PontoArea } from '@/lib/area-grupo'
 import { useToast } from '@/components/ui/ConfirmDialog'
-import { reduzirImagensDoForm } from '@/lib/reduzir-imagem'
 import FotoDoGrupo from './FotoDoGrupo'
 
 const EditorAreaGrupo = dynamic(() => import('@/components/grupos/EditorAreaGrupo'), {
@@ -28,7 +27,10 @@ const PAISES = ['Portugal', 'Brasil', 'Angola', 'Moçambique', 'Cabo Verde', 'S�
 
 type Aba = 'grupo' | 'encontro' | 'historico'
 
-export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLider: boolean }) {
+type Reuniao = { id: number; titulo: string; inicio: string; registo: string | null; presentes: number | null; foto_url: string | null; presentes_membros: { id: number; first_name: string; last_name: string }[] }
+const dataReuniao = (iso: string) => new Date(iso).toLocaleDateString('pt-PT', { weekday: 'short', day: 'numeric', month: 'long', timeZone: 'UTC' })
+
+export default function GestaoGrupoClient({ grupo, ehLider, reunioes = [] }: { grupo: any, ehLider: boolean, reunioes?: Reuniao[] }) {
     const toast = useToast()
     const [aba, setAba] = useState<Aba>('grupo')
     const [loading, setLoading] = useState(false)
@@ -48,10 +50,6 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
     const [area, setArea] = useState<PontoArea[] | null>(grupo.area ?? null)
     const [verMapa, setVerMapa] = useState(false)
 
-    const [presentes, setPresentes] = useState<number[]>([])
-    const [previewFoto, setPreviewFoto] = useState<string | null>(null)
-    const fileInputRef = useRef<HTMLInputElement>(null)
-
     // Lideres primeiro, sem repetir quem e lider e membro
     const participantesMap = new Map()
     grupo.lideres?.forEach((l: any) => participantesMap.set(l.id, { ...l, isLider: true }))
@@ -61,19 +59,6 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
     const handleInputChange = (e: any) => {
         if (!ehLider) return
         setDadosForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
-    }
-
-    const togglePresenca = (membroId: number) => {
-        setPresentes(prev => prev.includes(membroId) ? prev.filter(id => id !== membroId) : [...prev, membroId])
-    }
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (file) {
-            const reader = new FileReader()
-            reader.onloadend = () => setPreviewFoto(reader.result as string)
-            reader.readAsDataURL(file)
-        }
     }
 
     async function handleSalvarConfig() {
@@ -91,31 +76,17 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
         else toast(res.erro, 'erro')
     }
 
-    async function handleRegistrarEncontro(formData: FormData) {
-        if (!ehLider) return
-        await reduzirImagensDoForm(formData)
-        if (!formData.get('data') || !formData.get('tema')) {
-            toast('Escreva a data e o resumo do encontro.', 'aviso')
-            return
-        }
-        setLoading(true)
-        formData.append('grupo_id', grupo.id.toString())
-        const res = await registrarEncontroAction(formData, presentes)
-        setLoading(false)
-        if (res.sucesso) {
-            toast('Encontro registado.', 'sucesso')
-            setPresentes([])
-            setPreviewFoto(null)
-            setAba('historico')
-            window.scrollTo({ top: 0, behavior: 'smooth' })
-        } else {
-            toast(res.erro, 'erro')
-        }
-    }
+    // Histórico: os encontros antigos + as reuniões da agenda já registadas, do mais recente para o mais antigo
+    const historico: any[] = [
+        ...(grupo.encontros ?? []).map((e: any) => ({ ...e, quando: new Date(e.data).getTime() })),
+        ...reunioes.filter((r) => r.registo || r.foto_url || r.presentes_membros.length).map((r) => ({
+            id: `a${r.id}`, data: r.inicio, tema: r.registo || r.titulo, foto_url: r.foto_url, presentes: r.presentes_membros, quando: new Date(r.inicio).getTime(),
+        })),
+    ].sort((a, b) => b.quando - a.quando)
 
     const abas: { valor: Aba; texto: string }[] = [
         { valor: 'grupo', texto: 'Grupo' },
-        ...(ehLider ? [{ valor: 'encontro' as Aba, texto: 'Novo encontro' }] : []),
+        ...(ehLider ? [{ valor: 'encontro' as Aba, texto: 'Registar' }] : []),
         { valor: 'historico', texto: 'Encontros' },
     ]
 
@@ -235,64 +206,41 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
             )}
 
             {aba === 'encontro' && ehLider && (
-                <form action={handleRegistrarEncontro} className="space-y-4">
-                    <section className="a-card space-y-4 p-4">
-                        <Campo label="Data do encontro" name="data" type="date" required defaultValue={new Date().toISOString().split('T')[0]} />
-                        <div className="space-y-2">
-                            <label htmlFor="grupo-tema" className="block text-[16px] font-semibold">O que foi falado</label>
-                            <textarea id="grupo-tema" name="tema" required rows={4} className={`${CAMPO} resize-none py-3`} style={ESTILO_CAMPO} />
+                <div className="space-y-3">
+                    <p className="text-[16px] a-suave">O registo de cada encontro (o que se fez, quem esteve, a foto) faz-se no dia da agenda do grupo.</p>
+                    {reunioes.length === 0 ? (
+                        <div className="a-card space-y-3 p-5 text-center">
+                            <p className="text-[17px] font-semibold">Ainda não há reuniões na agenda</p>
+                            <a href={`/membros/grupo/${grupo.id}/agenda?novo=1`} className="a-botao a-botao-principal w-full">Criar na agenda</a>
                         </div>
-                        <div className="space-y-2">
-                            <p className="text-[16px] font-semibold">Fotografia <span className="font-normal a-suave">(se quiser)</span></p>
-                            {previewFoto && (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={previewFoto} className="aspect-video w-full rounded-[14px] object-cover" alt="Fotografia escolhida" />
-                            )}
-                            <button type="button" onClick={() => fileInputRef.current?.click()} className="a-botao a-botao-secundario w-full">
-                                <Camera size={20} aria-hidden /> {previewFoto ? 'Trocar a fotografia' : 'Escolher fotografia'}
-                            </button>
-                            <input type="file" name="foto" ref={fileInputRef} accept="image/*" onChange={handleImageChange} className="hidden" />
-                        </div>
-                    </section>
-
-                    <section className="a-card">
-                        <h2 className="flex items-center gap-3 px-4 pt-4 text-[18px] font-semibold">
-                            <span className="flex-1">Quem esteve</span>
-                            <span className="text-[16px] font-normal a-suave">{presentes.length} de {todosParticipantes.length}</span>
-                        </h2>
-                        <ul className="a-divide mt-2">
-                            {todosParticipantes.map((membro: any) => {
-                                const presente = presentes.includes(membro.id)
-                                return (
-                                    <li key={membro.id}>
-                                        <button type="button" role="checkbox" aria-checked={presente} onClick={() => togglePresenca(membro.id)}
-                                            className="a-foco flex min-h-[60px] w-full items-center gap-3 px-4 py-2 text-left">
-                                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2"
-                                                style={presente
-                                                    ? { background: 'var(--a-destaque)', borderColor: 'var(--a-destaque)', color: 'var(--a-sobre-destaque)' }
-                                                    : { borderColor: 'var(--a-borda)' }}>
-                                                {presente && <Check size={20} strokeWidth={3} aria-hidden />}
+                    ) : (
+                        <>
+                            <ul className="space-y-2">
+                                {reunioes.map((r) => {
+                                    const feito = !!(r.registo || r.foto_url || r.presentes_membros.length)
+                                    return (
+                                        <li key={r.id} className="a-card flex items-center gap-3 p-4">
+                                            <span className="min-w-0 flex-1">
+                                                <span className="block truncate text-[17px] font-semibold">{r.titulo}</span>
+                                                <span className="block text-[15px] a-suave">{dataReuniao(r.inicio)} · {feito ? 'Registado' : 'Por registar'}</span>
                                             </span>
-                                            <span className="min-w-0 flex-1 truncate text-[17px]">{membro.first_name} {membro.last_name}</span>
-                                            {membro.isLider && <span className="shrink-0 text-[15px] a-suave">Líder</span>}
-                                        </button>
-                                    </li>
-                                )
-                            })}
-                        </ul>
-                    </section>
-
-                    <button type="submit" disabled={loading} className="a-botao a-botao-principal w-full !min-h-[56px]">
-                        {loading ? <Loader2 size={20} className="animate-spin" aria-hidden /> : <Save size={20} aria-hidden />}
-                        {loading ? 'A guardar…' : 'Guardar o encontro'}
-                    </button>
-                </form>
+                                            <a href={`/membros/grupo/${grupo.id}/agenda?mes=${r.inicio.slice(0, 7)}`} className={`a-botao !min-h-[44px] ${feito ? 'a-botao-secundario' : 'a-botao-principal'}`}>
+                                                {feito ? 'Ver' : 'Registar'}
+                                            </a>
+                                        </li>
+                                    )
+                                })}
+                            </ul>
+                            <a href={`/membros/grupo/${grupo.id}/agenda?novo=1`} className="a-botao a-botao-secundario w-full">Criar na agenda</a>
+                        </>
+                    )}
+                </div>
             )}
 
             {aba === 'historico' && (
-                grupo.encontros && grupo.encontros.length > 0 ? (
+                historico.length > 0 ? (
                     <ul className="space-y-3">
-                        {grupo.encontros.map((encontro: any) => (
+                        {historico.map((encontro: any) => (
                             <li key={encontro.id}>
                                 <details className="a-card group">
                                     <summary className="a-foco flex min-h-[64px] cursor-pointer list-none items-center gap-3 px-4 py-3">
@@ -332,7 +280,7 @@ export default function GestaoGrupoClient({ grupo, ehLider }: { grupo: any, ehLi
                     <div className="a-card space-y-2 p-6 text-center">
                         <History size={36} className="mx-auto a-suave" aria-hidden />
                         <p className="text-[18px] font-semibold">Ainda sem encontros</p>
-                        <p className="text-[16px] a-suave">{ehLider ? 'Registe o primeiro em "Novo encontro".' : 'Os encontros aparecem aqui.'}</p>
+                        <p className="text-[16px] a-suave">{ehLider ? 'Registe o primeiro em "Registar".' : 'Os encontros aparecem aqui.'}</p>
                     </div>
                 )
             )}

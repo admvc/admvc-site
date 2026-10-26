@@ -17,6 +17,9 @@ export interface DadosEvento {
     cor_principal: string
     cor_fundo: string
     estado: 'RASCUNHO' | 'ABERTO' | 'FECHADO'
+    convite_visivel: boolean
+    divulgar_em: Date | null
+    mostrar_preco: boolean
     organizador: { tipo: 'grupo' | 'departamento'; id: number }
 }
 
@@ -73,6 +76,13 @@ export function lerFormularioEvento(f: FormData): { ok: true; dados: DadosEvento
         if (!inscricoes_ate) return { ok: false, error: 'O prazo das inscrições não é uma data válida.' }
     }
 
+    let divulgar_em: Date | null = null
+    const divData = String(f.get('divulgar_data') ?? '')
+    if (divData) {
+        divulgar_em = horaDeParede(divData, String(f.get('divulgar_hora') ?? '') || '09:00')
+        if (!divulgar_em) return { ok: false, error: 'A data de divulgação não é válida.' }
+    }
+
     const precoTxt = String(f.get('preco') ?? '').trim().replace(',', '.')
     const preco = precoTxt ? Number(precoTxt) : null
     if (preco != null && (!Number.isFinite(preco) || preco < 0 || preco > 10000)) return { ok: false, error: 'Preço inválido.' }
@@ -103,6 +113,9 @@ export function lerFormularioEvento(f: FormData): { ok: true; dados: DadosEvento
             cor_principal: COR.test(cor_principal) ? cor_principal : '#3F6B4F',
             cor_fundo: COR.test(cor_fundo) ? cor_fundo : '#F5F1EA',
             estado: estado as DadosEvento['estado'],
+            convite_visivel: f.get('convite_visivel') === 'on',
+            divulgar_em,
+            mostrar_preco: f.get('mostrar_preco') === 'on',
             organizador: { tipo: org[1] as 'grupo' | 'departamento', id: Number(org[2]) },
         },
     }

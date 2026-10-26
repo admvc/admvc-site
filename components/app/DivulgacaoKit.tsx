@@ -7,10 +7,11 @@ import { useEffect, useMemo, useState, useTransition } from 'react'
 import { Check, ChevronDown, Copy, Download, ImagePlus, Megaphone, Save, Share2, Trash2, Send } from 'lucide-react'
 import { concluirPublicacao, guardarKitDivulgacao, guardarPadraoDivulgacao, retirarPublicacao } from '@/actions/divulgacao-actions'
 import { ALVOS, ESTILOS, FUNDOS_PRONTOS, MODELOS_REDES, PALETAS, PECAS, REDES, type PecaId, type RedeId } from '@/lib/divulgacao'
+import { ibanValido } from '@/lib/oferta'
 import { nomeDaPeca, nomeDaRede, paramsDaPeca, paramsDaRede, semDestaque, type FotoKit, type Receita } from '@/lib/divulgacao-kit'
 import { textosDoCulto } from '@/lib/divulgacao-textos'
 import { linkWhatsApp } from '@/lib/whatsapp'
-import { reduzirImagem } from '@/lib/reduzir-imagem'
+import { enviarImagem } from './enviar-imagem'
 import { AVISO_PARTILHA, partilharArte } from '@/lib/partilhar-arte'
 import { criarZip } from '@/lib/zip'
 import AjustarFoto from './AjustarFoto'
@@ -44,20 +45,6 @@ function CampoTexto({ valor, onCommit, ...resto }: { valor: string; onCommit: (v
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (v !== valor) onCommit(v) } }}
             className={campo} style={estiloCampo} />
     )
-}
-
-type Enviada = { url: string; largura: number; altura: number; recorte: boolean; fundoClaro?: boolean }
-
-// Envia uma imagem (foto do preletor ou fundo) para o Blob público. Os PNG com fundo transparente ficam PNG (recortes).
-async function enviarImagem(file: File, tipo: 'foto' | 'fundo', tirarBranco = false): Promise<Enviada> {
-    const fd = new FormData()
-    fd.set('file', await reduzirImagem(file, tipo === 'fundo' ? 2600 : 2000))
-    fd.set('tipo', tipo)
-    if (tirarBranco) fd.set('tirarBranco', '1')
-    const res = await fetch('/api/upload/divulgacao-foto', { method: 'POST', body: fd })
-    const j = await res.json().catch(() => ({}))
-    if (!res.ok || !j.url) throw new Error(j.error ?? 'Não foi possível enviar a imagem.')
-    return j
 }
 
 // Uma foto do preletor: carregar, clicar na imagem para dizer onde está o rosto (o corte segue esse ponto), tirar
@@ -182,7 +169,7 @@ function CaixaTexto({ titulo, valor, onChange, onRefazer, whatsapp }: { titulo: 
     )
 }
 
-const PADRAO_CAMPOS = ['estilo', 'paleta', 'redes', 'fundo', 'tinta', 'modeloRedes'] as const
+const PADRAO_CAMPOS = ['estilo', 'paleta', 'redes', 'fundo', 'tinta', 'modeloRedes', 'cantina'] as const
 const doPadrao = (x: Partial<Receita>) => JSON.stringify(PADRAO_CAMPOS.map((k) => x[k]))
 
 // O padrão de publicação da ADMVC: as cores e as letras das artes, as regras de desenho, e o botão para o fixar como início de cada kit
@@ -296,8 +283,8 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
     const paleta = PALETAS.find((p) => p.id === r.paleta) ?? PALETAS[0]
     const dia = dataISO.slice(0, 10)
     const rv = useAssente(r)   // as pré-visualizações seguem a receita só depois de um instante sem mexer
-    const lista = rv.pecas.map((id, i) => ({ id, n: i + 1, q: paramsDaPeca(rv, id, dia) }))
     const ev = { nome: eventoNome, data }
+    const lista = rv.pecas.map((id, i) => ({ id, n: i + 1, q: paramsDaPeca(rv, id, dia, ev) }))
     const nomeRede = (id: RedeId) => REDES.find((x) => x.id === id)?.nome ?? id
 
     // Publicar para a igreja: grava se preciso, desenha cada arte inteira no servidor (uma de cada vez) e junta a lista
@@ -371,7 +358,7 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
         setAPreparar(true)
         try {
             const itens = [
-                ...(escopo !== 'redes' ? r.pecas.map((id, i) => ({ nome: nomeDaPeca(r, id, i + 1), q: paramsDaPeca(r, id, dia) })) : []),
+                ...(escopo !== 'redes' ? r.pecas.map((id, i) => ({ nome: nomeDaPeca(r, id, i + 1), q: paramsDaPeca(r, id, dia, ev) })) : []),
                 ...(escopo !== 'telao' ? r.redes.map((id) => ({ nome: nomeDaRede(id), q: paramsDaRede(r, id, ev) })) : []),
             ]
             const ficheiros: { nome: string; dados: Uint8Array }[] = []
@@ -396,7 +383,7 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
 
     // Legenda e WhatsApp: saem do culto e do preletor; podem editar-se (a edição fica até carregar em "Refazer")
     const gerados = useMemo(() => textosDoCulto({ nome: semDestaque(r.titulo) || eventoNome, data, preletor: r.preletor, local, hoje: new Date(hojeISO) }), [r.titulo, r.preletor, eventoNome, data, local, hojeISO])
-    const mostrarPreletor = r.pecas.includes('palavra') || r.redes.length > 0
+    const mostrarPreletor = r.pecas.includes('palavra') || r.pecas.includes('capa') || r.redes.length > 0
 
     return (
         <div className="space-y-4 pb-24 md:pb-0">
@@ -490,12 +477,12 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
                             <CampoTexto valor={r.preletor} onCommit={(v) => mudar({ preletor: v })} placeholder="Ex.: Irmão Genesis" maxLength={60} />
                         </div>
                     )}
-                    {r.redes.length > 0 && (
+                    {(r.redes.length > 0 || r.pecas.includes('capa')) && (
                         <div className="space-y-1">
-                            <span className="block text-[15px] font-semibold">Título e linha de cima nas redes</span>
-                            <CampoTexto valor={r.titulo} onCommit={(v) => mudar({ titulo: v })} placeholder={`Título (vazio = ${eventoNome}). Use | para mudar de linha`} maxLength={60} />
-                            <CampoTexto valor={r.subtitulo} onCommit={(v) => mudar({ subtitulo: v })} placeholder="Linha de cima (ex.: Jovens & Gerações)" maxLength={40} />
-                            {r.modeloRedes !== 'classico' && (
+                            <span className="block text-[15px] font-semibold">{r.redes.length > 0 ? 'Título (capa do telão e redes) e linha de cima nas redes' : 'Título da capa do culto'}</span>
+                            <CampoTexto valor={r.titulo} onCommit={(v) => mudar({ titulo: v })} placeholder={`Título (vazio = ${eventoNome}). Ex.: Culto da Família`} maxLength={60} />
+                            {r.redes.length > 0 && <CampoTexto valor={r.subtitulo} onCommit={(v) => mudar({ subtitulo: v })} placeholder="Linha de cima (ex.: Jovens & Gerações)" maxLength={40} />}
+                            {r.redes.length > 0 && r.modeloRedes !== 'classico' && (
                                 <>
                                     <CampoTexto valor={r.tema} onCommit={(v) => mudar({ tema: v })} placeholder="Tema da mensagem (o texto grande da arte)" maxLength={80} />
                                     <p className="text-[13px] a-suave">Ponha entre *asteriscos* a parte a destacar: As obras da carne X o *fruto do Espírito*. Sem tema, o texto grande é o título.</p>
@@ -536,6 +523,50 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
                                 </select>
                             )}
                             <CampoTexto valor={r.iban} onCommit={(v) => mudar({ iban: v })} placeholder="PT50 0000 0000 0000 0000 0000 0" maxLength={40} />
+                            {r.iban && !ibanValido(r.iban) && <p className="text-[14px] font-semibold" style={{ color: 'var(--a-erro)' }}>Este IBAN não parece certo (confira os números).</p>}
+                            <span className="block pt-1 text-[15px] font-semibold">MB WAY (só aparece escrito, não há QR para MB WAY)</span>
+                            <CampoTexto valor={r.mbway} onCommit={(v) => mudar({ mbway: v })} placeholder="+351 9xx xxx xxx" maxLength={20} inputMode="tel" />
+                            <span className="block pt-1 text-[15px] font-semibold">QR na oferta</span>
+                            <select value={r.qrOferta} onChange={(e) => mudar({ qrOferta: e.target.value as typeof r.qrOferta })} className={campo} style={estiloCampo}>
+                                <option value="nenhum">Sem QR</option>
+                                <option value="banco">QR de transferência (a app do banco preenche o IBAN)</option>
+                                <option value="pagina">QR para uma página com o IBAN e o botão Copiar</option>
+                            </select>
+                            {r.qrOferta === 'banco' && (
+                                <>
+                                    <CampoTexto valor={r.titular} onCommit={(v) => mudar({ titular: v })} placeholder="Nome do titular da conta (como no banco)" maxLength={70} />
+                                    <p className="text-[13px] a-suave">Teste com a app de 2 ou 3 bancos antes de pôr no telão: nem todas leem este QR. Se alguma falhar, use a página com o botão Copiar.</p>
+                                </>
+                            )}
+                        </div>
+                    )}
+                    {r.pecas.includes('cantina') && (
+                        <div className="space-y-2 md:col-span-2">
+                            <span className="block text-[15px] font-semibold">Capa da Cantina</span>
+                            <div className="grid gap-2 md:grid-cols-2">
+                                <CampoTexto valor={r.cantina.titulo} onCommit={(v) => mudar({ cantina: { ...r.cantina, titulo: v } })} placeholder="Título (ex.: Cantina)" maxLength={40} />
+                                <CampoTexto valor={r.cantina.subtitulo} onCommit={(v) => mudar({ cantina: { ...r.cantina, subtitulo: v } })} placeholder="Linha por baixo (ex.: Aberta depois do culto)" maxLength={60} />
+                            </div>
+                            <span className="block text-[15px] font-semibold">Textos legais (até 4, pequenos em baixo da arte)</span>
+                            {r.cantina.textos.map((t, i) => (
+                                <div key={i} className="flex items-center gap-2">
+                                    <div className="min-w-0 flex-1">
+                                        <CampoTexto valor={t} maxLength={90} placeholder="Ex.: Preços com IVA incluído"
+                                            onCommit={(v) => mudar({ cantina: { ...r.cantina, textos: r.cantina.textos.map((x, j) => (j === i ? v : x)).filter((x) => x.trim()) } })} />
+                                    </div>
+                                    <button type="button" aria-label="Tirar este texto" className="a-botao a-botao-secundario !min-h-[48px] !px-3"
+                                        onClick={() => mudar({ cantina: { ...r.cantina, textos: r.cantina.textos.filter((_, j) => j !== i) } })}>
+                                        <Trash2 size={18} aria-hidden />
+                                    </button>
+                                </div>
+                            ))}
+                            {r.cantina.textos.length < 4 && (
+                                <CampoTexto key={`novo-${r.cantina.textos.length}`} valor="" maxLength={90} placeholder="Escreva um texto e prima Enter (ex.: Contém glúten e lactose)"
+                                    onCommit={(v) => v.trim() && mudar({ cantina: { ...r.cantina, textos: [...r.cantina.textos, v.trim()] } })} />
+                            )}
+                            <CampoFoto titulo="Foto da Cantina (opcional)" ajuda="Aparece num círculo ao lado do título. Clique na parte da foto que deve ficar no centro."
+                                foto={r.cantina.foto} onChange={(f) => mudar({ cantina: { ...r.cantina, foto: f } })} />
+                            <p className="text-[13px] a-suave">Dica: carregue em &quot;Usar como padrão da igreja&quot; para a Cantina sair igual em todos os cultos.</p>
                         </div>
                     )}
                     {r.pecas.includes('boas-vindas') && (

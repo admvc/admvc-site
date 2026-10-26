@@ -45,7 +45,7 @@ export async function eventosQueGere(sessao: SessionData) {
         },
         orderBy: { inicio: 'desc' },
         select: {
-            id: true, slug: true, titulo: true, inicio: true, estado: true, cor_principal: true,
+            id: true, slug: true, titulo: true, inicio: true, estado: true, cor_principal: true, convite_visivel: true, divulgar_em: true,
             _count: { select: { inscricoes: { where: { estado: { not: 'CANCELADA' } } } } },
         },
     })

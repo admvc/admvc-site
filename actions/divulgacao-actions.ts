@@ -111,7 +111,7 @@ export async function guardarPadraoDivulgacao(receita: unknown): Promise<R> {
         const sessao = await requireAuth()
         if (!(await podeFazerAgenda(sessao))) return { ok: false, error: 'Só a Mídia e a administração.' }
         const r = normalizarReceita(receita)
-        const padrao = { estilo: r.estilo, paleta: r.paleta, redes: r.redes, fundo: r.fundo, tinta: r.tinta, modeloRedes: r.modeloRedes }
+        const padrao = { estilo: r.estilo, paleta: r.paleta, redes: r.redes, fundo: r.fundo, tinta: r.tinta, modeloRedes: r.modeloRedes, cantina: r.cantina }
         await prisma.tenant.update({ where: { id: sessao.tenantId }, data: { divulgacao_padrao: padrao } })
         revalidatePath('/midia/divulgacao')
         return { ok: true }

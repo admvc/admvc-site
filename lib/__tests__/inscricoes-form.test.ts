@@ -55,3 +55,28 @@ describe('ajudas', () => {
         expect(camposParaLinhas(c)).toBe('A *\nB')
     })
 })
+
+describe('convite e preço', () => {
+    const base = () => {
+        const f = new FormData()
+        f.set('titulo', 'Chá de Mulheres'); f.set('data', '2026-11-27'); f.set('hora', '19:30'); f.set('organizador', 'grupo:3')
+        return f
+    }
+    it('as caixas desmarcadas ficam falsas; a data de divulgação é opcional', () => {
+        const r = lerFormularioEvento(base())
+        expect(r.ok && r.dados.convite_visivel).toBe(false)
+        expect(r.ok && r.dados.mostrar_preco).toBe(false)
+        expect(r.ok && r.dados.divulgar_em).toBeNull()
+    })
+    it('marcadas e com data (hora por omissão 09:00)', () => {
+        const f = base(); f.set('convite_visivel', 'on'); f.set('mostrar_preco', 'on'); f.set('divulgar_data', '2026-11-10')
+        const r = lerFormularioEvento(f)
+        expect(r.ok && r.dados.convite_visivel).toBe(true)
+        expect(r.ok && r.dados.mostrar_preco).toBe(true)
+        expect(r.ok && r.dados.divulgar_em?.toISOString()).toBe('2026-11-10T09:00:00.000Z')
+    })
+    it('data de divulgação inválida', () => {
+        const f = base(); f.set('divulgar_data', '10/11/2026')
+        expect(lerFormularioEvento(f)).toEqual({ ok: false, error: 'A data de divulgação não é válida.' })
+    })
+})

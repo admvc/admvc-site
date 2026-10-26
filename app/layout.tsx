@@ -48,7 +48,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Tema da igreja (um so para todo o portal); claro/escuro segue o telemovel
   const { tema } = await getTenantBranding()
   return (
-    <html lang="pt-PT" data-tema={tema}>
+    <html lang="pt-PT" data-tema={tema} suppressHydrationWarning>
+      <head>
+        {/* Claro/escuro escolhido neste aparelho: aplica-se antes de desenhar, para não piscar */}
+        <script dangerouslySetInnerHTML={{ __html: "try{var m=localStorage.getItem('modo');if(m==='claro'||m==='escuro')document.documentElement.setAttribute('data-modo',m)}catch(e){}" }} />
+      </head>
       <body className="min-h-dvh bg-bg text-fg antialiased">
         <ConfirmProvider>
           <ToastProvider>

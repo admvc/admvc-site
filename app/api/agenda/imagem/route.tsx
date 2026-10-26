@@ -1,6 +1,8 @@
 // Imagens da agenda para a Mídia (PNG, prontas a usar):
 //   ?formato=telao&semana=AAAA-MM-DD  → 1920×1080, "Programação da Semana"
 //   ?formato=redes&mes=AAAA-MM        → 1080×1350, calendário do mês (D S T Q Q S S); &disposicao=cartoes = o modelo antigo
+//   ?formato=semana&tamanho=post|story|telao&variante=claro|escuro&semana=AAAA-MM-DD → cartões por dia com fotos
+//      (lib/agenda-semana.ts; mudanças à mão: t=, r=, l_<dia>=, p_<dia>=, f_<dia>=, x_<dia>=1)
 //   &tema=classico|noite|areia|aurora (lib/agenda-temas.ts) · &c=<id da congregação> · &download=1 para descarregar
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -12,6 +14,8 @@ import { getTenantClient } from '@/lib/prisma'
 import { DIAS_SEMANA, eventosDaAgenda, podeFazerAgenda, porDia } from '@/lib/agenda-midia'
 import { limitesDoMes, segundaDaSemana } from '@/lib/agenda'
 import { lerTema, semanasDomingo } from '@/lib/agenda-temas'
+import { cartoesDaSemana, editarCartoes, lerEdicao } from '@/lib/agenda-semana'
+import { desenharSemana, TAMANHOS_SEMANA, type TamanhoSemana } from '@/lib/agenda-semana-imagem'
 
 export const runtime = 'nodejs'
 
@@ -31,7 +35,8 @@ export async function GET(request: Request) {
     if (!(await podeFazerAgenda(sessao))) return NextResponse.json({ error: 'Só a Mídia e a administração.' }, { status: 403 })
 
     const url = new URL(request.url)
-    const formato = url.searchParams.get('formato') === 'redes' ? 'redes' : 'telao'
+    const pedido = url.searchParams.get('formato')
+    const formato = pedido === 'redes' ? 'redes' : pedido === 'semana' ? 'semana' : 'telao'
     const cong = Number(url.searchParams.get('c')) || null
     const casa = cong ? (await getTenantClient(sessao.tenantId).congregacao.findUnique({ where: { id: cong }, select: { nome: true } }))?.nome ?? null : null
     const marca = await logo()
@@ -40,7 +45,16 @@ export async function GET(request: Request) {
     const nomeFicheiro = (s: string) => `agenda-${s}.png`
 
     let img: ImageResponse
-    if (formato === 'telao') {
+    if (formato === 'semana') {
+        const pedida = url.searchParams.get('semana')
+        const segunda = segundaDaSemana(pedida && /^\d{4}-\d{2}-\d{2}$/.test(pedida) ? pedida : hoje)
+        const tamanho = (Object.keys(TAMANHOS_SEMANA).includes(url.searchParams.get('tamanho') ?? '') ? url.searchParams.get('tamanho') : 'post') as TamanhoSemana
+        const variante = url.searchParams.get('variante') === 'escuro' ? 'escuro' : 'claro'
+        const edicao = lerEdicao(url.searchParams)
+        const cartoes = editarCartoes(await cartoesDaSemana(sessao.tenantId, segunda, cong), edicao)
+        img = await desenharSemana({ cartoes, tamanho, variante, titulo: edicao.titulo, rodape: edicao.rodape || (casa ? `Casa: ${casa}` : '') })
+        if (url.searchParams.get('download')) img.headers.set('Content-Disposition', `attachment; filename="${nomeFicheiro(`semana-${segunda}-${tamanho}-${variante}`)}"`)
+    } else if (formato === 'telao') {
         const pedida = url.searchParams.get('semana')
         const segunda = segundaDaSemana(pedida && /^\d{4}-\d{2}-\d{2}$/.test(pedida) ? pedida : hoje)
         const de = new Date(`${segunda}T00:00:00Z`)

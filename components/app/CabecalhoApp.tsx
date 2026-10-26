@@ -2,13 +2,18 @@
 import Link from 'next/link'
 import { Bell } from 'lucide-react'
 
-export default function CabecalhoApp({ igreja, nome, avatar, perfilHref, adminHref, alertas = 0 }: { igreja: string; nome: string; avatar: string | null; perfilHref: string; adminHref?: string; alertas?: number }) {
+export default function CabecalhoApp({ igreja, logo, nome, avatar, perfilHref, adminHref, alertas = 0 }: { igreja: string; logo?: string | null; nome: string; avatar: string | null; perfilHref: string; adminHref?: string; alertas?: number }) {
     const iniciais = nome.split(' ').filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase()
     return (
         <header className="app-novo fixed inset-x-0 top-0 z-40 border-b md:hidden"
             style={{ background: 'var(--a-card)', borderColor: 'var(--a-borda)', paddingTop: 'env(safe-area-inset-top)' }}>
             <div className="mx-auto flex h-14 max-w-md items-center justify-between px-4">
                 <span className="flex min-w-0 items-center gap-2">
+                    {/* O logótipo da igreja; sem ele, o da ADMVC (branco, num quadrado da cor do tema) */}
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[10px]" style={logo ? undefined : { background: 'var(--a-destaque)' }} aria-hidden>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        {logo ? <img src={logo} alt="" className="h-full w-full object-cover" /> : <img src="/images/logo-header-96.png" alt="" className="h-8 w-8 object-contain" />}
+                    </span>
                     <span className="truncate text-[17px] font-bold">{igreja}</span>
                     {adminHref && (
                         <Link href={adminHref} className="a-foco shrink-0 rounded-full px-3 py-1 text-[13px] font-semibold"

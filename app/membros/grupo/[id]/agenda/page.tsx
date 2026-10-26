@@ -22,7 +22,7 @@ export default async function AgendaGrupo({ params, searchParams }: { params: Pr
     const grupo = await db.grupo.findUnique({
         where: { id: grupoId },
         select: {
-            id: true, nome: true,
+            id: true, nome: true, dia_semana: true, horario: true, endereco: true, numero: true, bairro: true, cidade: true, latitude: true, longitude: true,
             lideres: { select: { id: true, first_name: true, last_name: true } },
             membros: { select: { id: true, first_name: true, last_name: true } },
         },
@@ -32,6 +32,11 @@ export default async function AgendaGrupo({ params, searchParams }: { params: Pr
     if (!gere && !isAdmin(sessao.role) && !grupo.lideres.some((m) => m.id === sessao.membroId) && !grupo.membros.some((m) => m.id === sessao.membroId)) {
         redirect(`/membros/dashboard?error=${encodeURIComponent('Só quem é deste grupo vê a agenda dele.')}`)
     }
+
+    const quando = [grupo.dia_semana, grupo.horario].map((p) => p?.trim()).filter(Boolean).join(', às ')
+    const morada = [[grupo.endereco, grupo.numero].filter(Boolean).join(', '), grupo.bairro, grupo.cidade].map((p) => p?.trim()).filter(Boolean).join(' · ')
+    const destino = grupo.latitude != null && grupo.longitude != null ? `${grupo.latitude},${grupo.longitude}` : morada
+    const mapa = destino ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destino)}` : null
 
     const hojeTxt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Lisbon' }).format(new Date())
     // "Agora" na convenção das horas (hora de Lisboa escrita em UTC)
@@ -83,6 +88,17 @@ export default async function AgendaGrupo({ params, searchParams }: { params: Pr
                 <header>
                     <h1 className="text-[24px] font-bold leading-tight">Agenda · {grupo.nome}</h1>
                     <p className="text-[16px] a-suave">Reuniões do grupo. Só o grupo e a administração veem.</p>
+                    {(quando || morada || grupo.lideres.length > 0) && (
+                        <div className="a-card mt-3 space-y-1 p-4 text-[16px]">
+                            {quando && <p><span className="font-semibold">Quando:</span> {quando}</p>}
+                            {morada && (
+                                <p className="flex items-start gap-1"><MapPin size={18} className="mt-0.5 shrink-0 a-suave" aria-hidden />
+                                    {mapa ? <a href={mapa} target="_blank" rel="noopener noreferrer" className="a-foco underline" style={{ color: 'var(--a-destaque)' }}>{morada}</a> : morada}
+                                </p>
+                            )}
+                            {grupo.lideres.length > 0 && <p className="a-suave">{grupo.lideres.length === 1 ? 'Líder' : 'Líderes'}: {grupo.lideres.map(nomeDe).join(', ')}</p>}
+                        </div>
+                    )}
                 </header>
 
                 <section className="space-y-3 print:hidden" aria-labelledby="proximos">

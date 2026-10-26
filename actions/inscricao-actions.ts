@@ -11,7 +11,7 @@ import { getSessionData } from '@/lib/auth-utils'
 import { rateLimit, ipDoPedido } from '@/lib/rate-limit'
 import { audit } from '@/lib/audit'
 import { mesmoTelefone, telefoneValido, registarVisita } from '@/lib/visitante-registo'
-import { lerCampos, novoCodigo, membroPeloTelefone, inscricoesAbertas, dataDoEvento } from '@/lib/inscricoes'
+import { lerCampos, novoCodigo, membroPeloTelefone, inscricoesAbertas, conviteDivulgado, dataDoEvento } from '@/lib/inscricoes'
 import { podeGerirEvento, igrejaPublica, gestoresDoEvento } from '@/lib/inscricoes-acesso'
 import { sendPushToMembros } from '@/lib/web-push'
 import { enviarEmailInscricaoConfirmada } from '@/lib/mail'
@@ -35,7 +35,7 @@ export async function inscreverAction(slug: string, formData: FormData): Promise
         const igreja = await igrejaPublica()
         if (!igreja) return { ok: false, error: 'Configuração não encontrada.' }
         const evento = await prisma.eventoInscricao.findUnique({ where: { tenant_id_slug: { tenant_id: igreja.id, slug } } })
-        if (!evento || !inscricoesAbertas(evento)) return { ok: false, error: 'As inscrições para este evento não estão abertas.' }
+        if (!evento || !inscricoesAbertas(evento) || !conviteDivulgado(evento)) return { ok: false, error: 'As inscrições para este evento não estão abertas.' }
 
         const sessao = await getSessionData()
         const daIgreja = sessao && sessao.tenantId === evento.tenant_id ? sessao : null
@@ -274,6 +274,7 @@ export async function guardarEventoAction(id: number | null, formData: FormData)
             precisa_confirmacao: d.precisa_confirmacao, aberto_visitantes: d.aberto_visitantes,
             campos: d.campos as unknown as object[], cor_principal: d.cor_principal, cor_fundo: d.cor_fundo,
             estado: d.estado, imagem_url,
+            convite_visivel: d.convite_visivel, divulgar_em: d.divulgar_em, mostrar_preco: d.mostrar_preco,
             grupo_id: d.organizador.tipo === 'grupo' ? d.organizador.id : null,
             departamento_id: d.organizador.tipo === 'departamento' ? d.organizador.id : null,
         }

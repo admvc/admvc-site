@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { rateLimit, ipDoPedido } from '@/lib/rate-limit'
-import { inscricoesAbertas } from '@/lib/inscricoes'
+import { inscricoesAbertas, conviteDivulgado } from '@/lib/inscricoes'
 import { igrejaPublica } from '@/lib/inscricoes-acesso'
 import { urlDoPortal } from '@/lib/redefinir-senha'
 
@@ -22,11 +22,11 @@ export async function GET(request: Request) {
         const eventos = await prisma.eventoInscricao.findMany({
             where: { tenant_id: igreja.id, estado: 'ABERTO' },
             orderBy: { inicio: 'asc' },
-            select: { slug: true, titulo: true, subtitulo: true, inicio: true, inscricoes_ate: true, estado: true, local: true, preco_eur: true, cor_principal: true },
+            select: { slug: true, titulo: true, subtitulo: true, inicio: true, inscricoes_ate: true, estado: true, local: true, preco_eur: true, mostrar_preco: true, convite_visivel: true, divulgar_em: true, cor_principal: true },
         })
-        const data = eventos.filter(e => inscricoesAbertas(e)).map(e => ({
+        const data = eventos.filter(e => inscricoesAbertas(e) && conviteDivulgado(e)).map(e => ({
             slug: e.slug, titulo: e.titulo, subtitulo: e.subtitulo, inicio: e.inicio, local: e.local,
-            preco_eur: e.preco_eur, cor: e.cor_principal, url: `${origem}/i/${e.slug}`,
+            preco_eur: e.mostrar_preco ? e.preco_eur : null, preco_a_combinar: !e.mostrar_preco, cor: e.cor_principal, url: `${origem}/i/${e.slug}`,
         }))
         return NextResponse.json({ ok: true, data })
     } catch (error) {

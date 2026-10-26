@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
     Server, Building, CreditCard, Layers, ShieldCheck,
-    UserCog, Megaphone, Rocket, Palette, Menu, X, PlusCircle, DatabaseBackup, ScrollText
+    UserCog, Megaphone, Rocket, Palette, Menu, X, PlusCircle, DatabaseBackup, ScrollText, Bug
 } from 'lucide-react'
 
 const NAV_PLATAFORMA = [
@@ -22,6 +22,7 @@ const NAV_GESTAO = [
     { label: 'Comunicação', href: '/super-admin/comunicacao', icon: Megaphone },
     { label: 'Cópia de segurança', href: '/super-admin/copia', icon: DatabaseBackup },
     { label: 'Registo de ações', href: '/super-admin/registo', icon: ScrollText },
+    { label: 'Erros da app', href: '/super-admin/erros', icon: Bug },
 ]
 
 interface Props {

@@ -1,6 +1,6 @@
 // Inscrições em eventos: texto da página, membro pelo telefone, código, WhatsApp e CSV.
 import { describe, it, expect } from 'vitest'
-import { lerDescricao, lerCampos, membroPeloTelefone, novoCodigo, inscricoesAbertas, linkWhatsApp, csvInscricoes, mensagemWhatsApp } from '@/lib/inscricoes'
+import { lerDescricao, lerCampos, membroPeloTelefone, novoCodigo, inscricoesAbertas, conviteDivulgado, motivoConviteEscondido, linkWhatsApp, csvInscricoes, mensagemWhatsApp } from '@/lib/inscricoes'
 
 describe('lerDescricao', () => {
     it('títulos, listas e parágrafos (sem HTML)', () => {
@@ -68,5 +68,32 @@ describe('WhatsApp e CSV', () => {
         const csv = csvInscricoes([{ codigo: 'A', nome: 'Ana; Werly', telefone: '1', email: null, estado: 'PENDENTE', pago: false, membro: true, quer_contacto: false, criado_em: new Date('2026-10-14T10:00:00Z') }])
         expect(csv.startsWith('﻿Código;Nome')).toBe(true)
         expect(csv).toContain('A;"Ana; Werly";1;;PENDENTE;não;sim;não;')
+    })
+})
+
+describe('conviteDivulgado', () => {
+    // 15/11/2026 12:00 em Lisboa (inverno: = UTC)
+    const agora = new Date('2026-11-15T12:00:00Z')
+    it('visível e sem data: aparece', () => {
+        expect(conviteDivulgado({ convite_visivel: true, divulgar_em: null }, agora)).toBe(true)
+    })
+    it('escondido nunca aparece, mesmo com a data já passada', () => {
+        expect(conviteDivulgado({ convite_visivel: false, divulgar_em: null }, agora)).toBe(false)
+        expect(conviteDivulgado({ convite_visivel: false, divulgar_em: new Date('2026-11-01T09:00:00Z') }, agora)).toBe(false)
+    })
+    it('com data: só a partir dela (hora de Lisboa)', () => {
+        expect(conviteDivulgado({ convite_visivel: true, divulgar_em: new Date('2026-11-15T12:01:00Z') }, agora)).toBe(false)
+        expect(conviteDivulgado({ convite_visivel: true, divulgar_em: new Date('2026-11-15T12:00:00Z') }, agora)).toBe(true)
+        expect(conviteDivulgado({ convite_visivel: true, divulgar_em: new Date('2026-11-01T09:00:00Z') }, agora)).toBe(true)
+    })
+    it('no verão conta a hora de Lisboa (UTC+1), não a UTC', () => {
+        const verao = new Date('2026-07-10T08:30:00Z') // 09:30 em Lisboa
+        expect(conviteDivulgado({ convite_visivel: true, divulgar_em: new Date('2026-07-10T09:00:00Z') }, verao)).toBe(true)
+        expect(conviteDivulgado({ convite_visivel: true, divulgar_em: new Date('2026-07-10T10:00:00Z') }, verao)).toBe(false)
+    })
+    it('o motivo para a organização', () => {
+        expect(motivoConviteEscondido({ convite_visivel: true, divulgar_em: null }, agora)).toBeNull()
+        expect(motivoConviteEscondido({ convite_visivel: false, divulgar_em: null }, agora)).toMatch(/escondido/)
+        expect(motivoConviteEscondido({ convite_visivel: true, divulgar_em: new Date('2026-11-20T09:00:00Z') }, agora)).toMatch(/a partir de 20 de novembro, às 09:00/)
     })
 })

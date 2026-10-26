@@ -205,7 +205,7 @@ export async function pesquisarRepertorio(texto: string) {
         const { db } = await exigirGestor()
         const t = texto.trim()
         const lista = await db.musica.findMany({
-            where: t ? { OR: [{ titulo: { contains: t, mode: 'insensitive' } }, { artista: { contains: t, mode: 'insensitive' } }] } : {},
+            where: t ? { OR: [{ titulo: { contains: t, mode: 'insensitive' } }, { artista: { contains: t, mode: 'insensitive' } }, { cifra_interna: { contains: t, mode: 'insensitive' } }] } : {},
             select: { id: true, titulo: true, artista: true, tom: true },
             orderBy: { titulo: 'asc' },
             take: 30,

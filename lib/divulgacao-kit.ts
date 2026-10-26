@@ -12,6 +12,9 @@ export type Receita = {
     alvo: string; alvoTexto: string                  // oração por… (alvo da lista ou texto livre)
     tema: string; ref: string; preletor: string      // Palavra (sem tema = "Momento da Palavra"); o preletor também vai nas redes
     iban: string; qr: string
+    qrOferta: 'nenhum' | 'banco' | 'pagina'           // oferta: QR de transferência, página com o IBAN para copiar, ou sem QR
+    titular: string; mbway: string                   // titular da conta (vai no QR de transferência) e número do MB WAY (só texto)
+    cantina: { titulo: string; subtitulo: string; textos: string[]; foto: FotoKit | null } // capa da Cantina (fica no padrão da igreja)
     verso: string; versoRef: string; semVersiculo: boolean // verso vazio = roda pela lista
     // Redes sociais (post, story, capa da live): título do evento, fotos e véu de cor
     redes: RedeId[]; titulo: string; subtitulo: string
@@ -22,13 +25,14 @@ export type Receita = {
     modeloRedes: ModeloRedesId                       // estilo das artes das redes (clássico, arcos, claro com arco, elegante)
 }
 
-export const PECAS_POR_OMISSAO: PecaId[] = ['oracao', 'oracao-dirigida', 'neutro', 'boas-vindas', 'oferta', 'palavra']
+export const PECAS_POR_OMISSAO: PecaId[] = ['capa', 'oracao', 'oracao-dirigida', 'neutro', 'boas-vindas', 'oferta', 'palavra']
 export const REDES_POR_OMISSAO: RedeId[] = ['post', 'story', 'youtube']
 
 export function receitaVazia(): Receita {
     return {
         estilo: 'manchas', paleta: 'preto-laranja', pecas: [...PECAS_POR_OMISSAO],
-        alvo: 'familia', alvoTexto: '', tema: '', ref: '', preletor: '', iban: '', qr: QR_BOAS_VINDAS,
+        alvo: 'familia', alvoTexto: '', tema: '', ref: '', preletor: '', iban: '', qr: QR_BOAS_VINDAS, qrOferta: 'nenhum', titular: '', mbway: '',
+        cantina: { titulo: 'Cantina', subtitulo: 'Aberta depois do culto', textos: [], foto: null },
         verso: '', versoRef: '', semVersiculo: false,
         redes: [...REDES_POR_OMISSAO], titulo: '', subtitulo: '', fotoH: null, fotoV: null, tinta: 0.25,
         fundo: '', palavraComFoto: true, ajustes: {}, modeloRedes: 'classico',
@@ -64,6 +68,7 @@ export function normalizarReceita(x: unknown): Receita {
         alvo, alvoTexto: txt(o.alvoTexto, 40, ''),
         tema: txt(o.tema, 80, ''), ref: txt(o.ref, 80, ''), preletor: txt(o.preletor, 60, ''),
         iban: txt(o.iban, 40, ''), qr: /^https?:\/\//.test(qr) ? qr : base.qr,
+        qrOferta: o.qrOferta === 'banco' || o.qrOferta === 'pagina' ? o.qrOferta : 'nenhum', titular: txt(o.titular, 70, ''), mbway: txt(o.mbway, 20, ''),
         verso: txt(o.verso, 220, ''), versoRef: txt(o.versoRef, 60, ''), semVersiculo: o.semVersiculo === true,
         redes, titulo: txt(o.titulo, 60, ''), subtitulo: txt(o.subtitulo, 40, ''),
         fotoH: lerFoto(o.fotoH), fotoV: lerFoto(o.fotoV), tinta,
@@ -71,12 +76,28 @@ export function normalizarReceita(x: unknown): Receita {
         palavraComFoto: o.palavraComFoto !== false,
         ajustes: lerAjustesKit(o.ajustes),
         modeloRedes: lerModeloRedes(o.modeloRedes),
+        cantina: lerCantina(o.cantina, base.cantina),
     }
 }
 
+function lerCantina(x: unknown, base: Receita['cantina']): Receita['cantina'] {
+    const o = (x && typeof x === 'object' ? x : null) as Record<string, unknown> | null
+    if (!o) return base
+    const txt = (v: unknown, max: number, omissao: string) => (typeof v === 'string' ? v.trim().slice(0, max) : omissao)
+    const textos = Array.isArray(o.textos) ? o.textos.filter((t): t is string => typeof t === 'string').map((t) => t.trim().slice(0, 90)).filter(Boolean).slice(0, 4) : []
+    return { titulo: txt(o.titulo, 40, base.titulo), subtitulo: txt(o.subtitulo, 60, base.subtitulo), textos, foto: lerFoto(o.foto) }
+}
+
 /** O pedido (para /api/divulgacao/imagem ou desenharArte) de uma peça deste kit. dia = AAAA-MM-DD do culto. */
-export function paramsDaPeca(r: Receita, peca: PecaId, dia: string): URLSearchParams {
+export function paramsDaPeca(r: Receita, peca: PecaId, dia: string, ev?: { nome: string; data: Date }): URLSearchParams {
     const q = new URLSearchParams({ peca, estilo: r.estilo, paleta: r.paleta, dia })
+    if (peca === 'capa') {
+        // O título é o das redes (ou o nome do culto); no telão o "|" e os *asteriscos* não se usam
+        const titulo = semDestaque(r.titulo || ev?.nome || '').replace(/\s*\|\s*/g, ' ').trim()
+        if (titulo) q.set('capa', titulo)
+        if (ev) { const { quando, hora } = quandoDoEvento(ev.data); q.set('quando', `${quando} · ${hora}`) }
+        if (r.preletor) q.set('preletor', r.preletor)
+    }
     if (peca === 'oracao-dirigida') {
         q.set('alvo', r.alvo)
         if (r.alvoTexto) q.set('alvoTexto', r.alvoTexto)
@@ -89,7 +110,18 @@ export function paramsDaPeca(r: Receita, peca: PecaId, dia: string): URLSearchPa
         if (r.ref) q.set('ref', r.ref)
         if (r.preletor) q.set('preletor', r.preletor)
     }
-    if (peca === 'oferta' && r.iban) q.set('iban', r.iban)
+    if (peca === 'cantina') {
+        const c = r.cantina
+        if (c.titulo) q.set('ct', c.titulo)
+        if (c.subtitulo) q.set('cs', c.subtitulo)
+        for (const t of c.textos) q.append('cx', t)
+        if (c.foto) { q.set('cf', c.foto.url); if (c.foto.w && c.foto.h) { q.set('cfw', String(c.foto.w)); q.set('cfh', String(c.foto.h)) } q.set('cfoco', c.foto.foco) }
+    }
+    if (peca === 'oferta') {
+        if (r.iban) q.set('iban', r.iban)
+        if (r.mbway) q.set('mbway', r.mbway)
+        if (r.qrOferta !== 'nenhum') { q.set('qrOferta', r.qrOferta); if (r.titular) q.set('titular', r.titular) }
+    }
     if (peca === 'boas-vindas' && r.qr) q.set('qr', r.qr)
     if (r.semVersiculo) q.set('verso', '-')
     else if (r.verso) { q.set('verso', r.verso); if (r.versoRef) q.set('verso_ref', r.versoRef) }

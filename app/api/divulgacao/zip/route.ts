@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     const dia = kit.evento.data.toISOString().slice(0, 10)
     const ficheiros: { nome: string; dados: Uint8Array }[] = []
     for (const [i, peca] of receita.pecas.entries()) {
-        const img = await desenharArte(paramsDaPeca(receita, peca, dia))
+        const img = await desenharArte(paramsDaPeca(receita, peca, dia, kit.evento))
         ficheiros.push({ nome: nomeDaPeca(receita, peca, i + 1), dados: new Uint8Array(await img.arrayBuffer()) })
     }
 
