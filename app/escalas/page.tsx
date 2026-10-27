@@ -1,6 +1,7 @@
 // Escalas de um ministerio (como no LouveApp): os cultos por dia, com a equipa
 // de cada um. Vista de lista ou calendario. Botoes no topo para trocar de ministerio.
-import SeletorMinisterio, { nomeCurto } from '@/components/app/SeletorMinisterio'
+import SeletorMinisterio from '@/components/app/SeletorMinisterio'
+import { nomeCurto } from '@/lib/nome-curto'
 import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'

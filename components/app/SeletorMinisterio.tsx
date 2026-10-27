@@ -2,8 +2,8 @@
 
 // Escolher o ministério em /escalas: uma lista pequena ao lado do título (em vez de uma fila de botões com nomes compridos).
 import { useRouter } from 'next/navigation'
+import { nomeCurto } from '@/lib/nome-curto'
 
-export const nomeCurto = (nome: string) => nome.replace(/^Minist[ée]rio\s+(de|do|da|dos|das)\s+/i, '')
 
 export default function SeletorMinisterio({ ministerios, atual, quando }: { ministerios: { id: number; nome: string }[]; atual: number; quando: string }) {
     const router = useRouter()

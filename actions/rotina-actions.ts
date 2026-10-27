@@ -2,7 +2,8 @@
 
 // Rotina dos cultos (Pregações): guardar a ordem de um culto, passá-la aos
 // próximos cultos da série e gerir os modelos de cada congregação.
-// Só os administradores e os líderes da Diaconia; tudo dentro da igreja.
+// Os administradores e os líderes da Diaconia; a Mídia escalada no culto só guarda a rotina desse culto
+// (ver midiaPreencheRotina). Tudo dentro da igreja.
 
 import { revalidatePath } from 'next/cache'
 import { after } from 'next/server'
@@ -11,7 +12,8 @@ import { getSessionData } from '@/lib/auth-utils'
 import { getTenantClient } from '@/lib/prisma'
 import { serieDoEvento } from '@/lib/eventos-serie'
 import { normalizarItens, semNotas } from '@/lib/rotina-culto'
-import { congregacoesDosModelos, podeEditarRotina, podeGerirModelos } from '@/lib/rotina-culto-dados'
+import { congregacoesDosModelos, midiaPreencheRotina, podeEditarRotina, podeGerirModelos } from '@/lib/rotina-culto-dados'
+import { TERMOS_DIACONIA } from '@/lib/obreiros-permissions'
 
 type Resultado<T = object> = ({ ok: true } & T) | { ok: false; error: string }
 
@@ -21,14 +23,15 @@ function erro(e: unknown, padrao: string): { ok: false; error: string } {
     return { ok: false, error: (e instanceof Error && e.message) || padrao }
 }
 
-async function eventoQuePossoEditar(eventoId: number) {
+async function eventoQuePossoEditar(eventoId: number, aceitaMidia = false) {
     const sessao = await getSessionData()
     if (!sessao) throw new Error('Sessão expirada. Entre de novo.')
     const db = getTenantClient(sessao.tenantId)
-    const evento = await db.evento.findUnique({ where: { id: eventoId }, select: { id: true, congregacao_id: true } })
+    const evento = await db.evento.findUnique({ where: { id: eventoId }, select: { id: true, congregacao_id: true, data: true } })
     if (!evento) throw new Error('Culto não encontrado.')
-    if (!(await podeEditarRotina(sessao, evento.congregacao_id))) throw new Error(SEM_PERMISSAO)
-    return { sessao, db, evento }
+    if (await podeEditarRotina(sessao, evento.congregacao_id)) return { sessao, db, evento, pelaMidia: false }
+    if (aceitaMidia && (await midiaPreencheRotina(sessao, evento))) return { sessao, db, evento, pelaMidia: true }
+    throw new Error(SEM_PERMISSAO)
 }
 
 function revalidar(eventoId?: number) {
@@ -40,9 +43,9 @@ function revalidar(eventoId?: number) {
 /** Guarda a rotina de um culto (lista vazia = apaga). */
 export async function guardarRotina(eventoId: number, entrada: unknown): Promise<Resultado> {
     try {
-        const { sessao, db } = await eventoQuePossoEditar(eventoId)
+        const { sessao, db, pelaMidia } = await eventoQuePossoEditar(eventoId, true)
         const itens = normalizarItens(entrada)
-        const antes = await db.rotinaCulto.findUnique({ where: { evento_id: eventoId }, select: { itens: true } })
+        const antes = await db.rotinaCulto.findUnique({ where: { evento_id: eventoId }, select: { itens: true, atualizado_por: true } })
         if (!itens.length) {
             await db.rotinaCulto.deleteMany({ where: { evento_id: eventoId } })
         } else {
@@ -51,6 +54,23 @@ export async function guardarRotina(eventoId: number, entrada: unknown): Promise
                 create: { evento_id: eventoId, itens, atualizado_por: sessao.membroId, tenant_id: sessao.tenantId },
                 update: { itens, atualizado_por: sessao.membroId },
             })
+            // A Mídia preencheu (e não era já ela a última a gravar): avisar os líderes da Diaconia
+            if (pelaMidia && antes?.atualizado_por !== sessao.membroId) {
+                const [evento, lideres] = await Promise.all([
+                    db.evento.findUnique({ where: { id: eventoId }, select: { nome: true, data: true } }),
+                    db.departamento.findMany({
+                        where: { OR: TERMOS_DIACONIA.map((t) => ({ nome: { contains: t, mode: 'insensitive' as const } })), lider_id: { not: null } },
+                        select: { lider_id: true },
+                    }),
+                ])
+                const ids = [...new Set(lideres.map((l) => l.lider_id!))].filter((id) => id !== sessao.membroId)
+                const quando = evento ? evento.data.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }) : ''
+                if (ids.length) after(() => sendPushToMembros(ids, {
+                    title: 'A Mídia preencheu a rotina',
+                    body: `${evento?.nome ?? 'Culto'}, ${quando}`,
+                    url: `/pregacao/culto/${eventoId}`,
+                }).then(() => {}).catch(() => {}))
+            }
             // Quem passou a ter um momento recebe um aviso no telemóvel (não quem gravou)
             const jaTinha = new Set(normalizarItens(antes?.itens).filter((i) => i.membro_id).map((i) => `${i.membro_id}|${i.momento}`))
             const novos = itens.filter((i) => i.membro_id && i.membro_id !== sessao.membroId && !jaTinha.has(`${i.membro_id}|${i.momento}`))

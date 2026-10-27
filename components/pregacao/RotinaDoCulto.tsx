@@ -179,12 +179,16 @@ export default function RotinaDoCulto({ dados }: { dados: DadosRotina }) {
                 </p>
             )}
 
+            {dados.preenchidaPelaMidia && itens.length > 0 && (
+                <p className="text-[15px] a-suave">Preenchida por {dados.preenchidaPelaMidia} (Mídia)</p>
+            )}
+
             {dados.podeEditar && (
                 <div className="space-y-2 no-print">
                     <button type="button" className="a-botao a-botao-principal w-full" disabled={pendente} onClick={abrirEditor}>
                         <Edit3 size={18} aria-hidden /> {itens.length ? 'Alterar rotina' : 'Fazer a rotina'}
                     </button>
-                    {itens.length > 0 && (
+                    {itens.length > 0 && dados.podeGerir && (
                         <button type="button" className="a-botao a-botao-secundario w-full" disabled={pendente} onClick={passarASerie}>
                             <Repeat size={18} aria-hidden /> Passar aos próximos cultos desta série
                         </button>

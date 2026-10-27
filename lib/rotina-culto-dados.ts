@@ -4,6 +4,7 @@ import { podeEditarMensagemDoCulto } from '@/lib/obreiros-permissions'
 import { normalizarItens, palavraDe, type ItemRotina, type MembroRotina, type PregacaoFeita } from '@/lib/rotina-culto'
 import { podeGerirSermoes } from '@/lib/cursos-permissoes'
 import { pregacoesRecentes } from '@/lib/pregacoes'
+import { EQUIPA_MIDIA } from '@/lib/equipas'
 
 type Sessao = { membroId: number; role: string; tenantId: number; congregacaoId?: number }
 
@@ -16,6 +17,23 @@ const CAMPOS_MEMBRO = { id: true, first_name: true, last_name: true, church_role
 export async function podeEditarRotina(sessao: Sessao, congregacaoId: number | null): Promise<boolean> {
     if (sessao.role === 'CONGREGATION_ADMIN' && sessao.congregacaoId && congregacaoId !== sessao.congregacaoId) return false
     return podeEditarMensagemDoCulto(sessao)
+}
+
+const DA_MIDIA = { OR: EQUIPA_MIDIA.map((t) => ({ nome: { contains: t, mode: 'insensitive' as const } })) }
+
+/**
+ * A Mídia também preenche a ordem do culto (às vezes o preletor não a entrega a tempo): quem está escalado na Mídia
+ * nesse culto, ou o líder da Mídia, até ao fim do dia do culto. Não passa a rotina à série nem mexe no esboço.
+ */
+export async function midiaPreencheRotina(sessao: Sessao, evento: { id: number; data: Date }): Promise<boolean> {
+    const hoje = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Lisbon' })
+    if (evento.data.toISOString().slice(0, 10) < hoje) return false
+    const db = getTenantClient(sessao.tenantId)
+    const [escalado, lider] = await Promise.all([
+        db.escala.count({ where: { evento_id: evento.id, membro_id: sessao.membroId, departamento: DA_MIDIA } }),
+        db.departamento.count({ where: { AND: [DA_MIDIA, { lider_id: sessao.membroId }] } }),
+    ])
+    return escalado + lider > 0
 }
 
 /** Pode gerir algum modelo (para mostrar o botão "Modelos"). */
@@ -72,12 +90,18 @@ export async function dadosDaRotina(sessao: Sessao, eventoId: number) {
         select: {
             id: true, nome: true, data: true, tipo: true, congregacao_id: true,
             congregacao: { select: { id: true, nome: true } },
-            rotina: { select: { itens: true, atualizado_em: true } },
+            rotina: { select: { itens: true, atualizado_em: true, atualizado_por: true } },
         },
     })
     if (!evento) return null
     const itens = evento.rotina ? normalizarItens(evento.rotina.itens) : []
-    const podeEditar = await podeEditarRotina(sessao, evento.congregacao_id)
+    const podeGerir = await podeEditarRotina(sessao, evento.congregacao_id)
+    const podeEditar = podeGerir || (await midiaPreencheRotina(sessao, evento))
+    // "Preenchida por X (Mídia)": quem gravou por último está escalado na Mídia neste culto
+    const quemGravou = evento.rotina?.atualizado_por
+    const pelaMidia = quemGravou && (await db.escala.count({ where: { evento_id: evento.id, membro_id: quemGravou, departamento: DA_MIDIA } }))
+        ? await db.membro.findFirst({ where: { id: quemGravou }, select: { first_name: true, last_name: true } })
+        : null
 
     let modelos: { id: number; nome: string; itens: ItemRotina[] }[] = []
     let anterior: { nome: string; data: string; itens: ItemRotina[] } | null = null
@@ -114,7 +138,7 @@ export async function dadosDaRotina(sessao: Sessao, eventoId: number) {
         ? await db.sermao.findFirst({ where: { evento_id: evento.id, pregador_id: pregadorId }, select: { id: true, publicado: true } })
         : null
     const podeEscreverEsboco = !!pregadorId
-        && (pregadorId === sessao.membroId || podeEditar || (await podeGerirSermoes(sessao.membroId, sessao.role)))
+        && (pregadorId === sessao.membroId || podeGerir || (await podeGerirSermoes(sessao.membroId, sessao.role)))
     const esboco = sermao && (sermao.publicado || podeEscreverEsboco) ? sermao : null
 
     return {
@@ -125,6 +149,8 @@ export async function dadosDaRotina(sessao: Sessao, eventoId: number) {
         itens,
         atualizadoEm: evento.rotina?.atualizado_em.toISOString() ?? null,
         podeEditar,
+        podeGerir,
+        preenchidaPelaMidia: pelaMidia ? `${pelaMidia.first_name} ${pelaMidia.last_name ?? ''}`.trim() : null,
         membros,
         modelos,
         anterior,

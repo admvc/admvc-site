@@ -1,5 +1,5 @@
 // Rotina de um culto: a ordem dos momentos e quem fica com cada um.
-// Todos os membros veem; os administradores e a Diaconia alteram.
+// Todos os membros veem; os administradores e a Diaconia alteram (e a Mídia escalada, no próprio culto).
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'

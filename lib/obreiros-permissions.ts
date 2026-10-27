@@ -2,7 +2,7 @@
 
 export type ObreirosRole = 'LIDER' | 'MEMBRO' | 'ADMIN' | 'NONE'
 
-const TERMOS_DIACONIA = ['diaconia', 'diácono', 'diacono', 'obreiro']
+export const TERMOS_DIACONIA = ['diaconia', 'diácono', 'diacono', 'obreiro']
 
 export function getObreirosRole(
     membroLogado: {
