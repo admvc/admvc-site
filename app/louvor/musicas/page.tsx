@@ -1,7 +1,7 @@
 // Repertorio da igreja (so o ministerio de louvor e os admins).
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { Plus } from 'lucide-react'
+import { Compass, Plus } from 'lucide-react'
 import { getSessionData } from '@/lib/auth-utils'
 import { podeGerirRepertorio, podeVerRepertorio } from '@/lib/louvor-permissoes'
 import { repertorioDaIgreja } from '@/lib/ministerios-app'
@@ -22,11 +22,17 @@ export default async function RepertorioPage() {
                 <header className="flex items-center justify-between gap-3">
                     <h1 className="text-[24px] font-bold leading-tight">Repertório</h1>
                     {gere && (
-                        <Link href="/louvor/musicas/nova" className="a-botao a-botao-principal !min-h-[44px]">
-                            <Plus size={20} aria-hidden /> Nova
-                        </Link>
+                        <div className="flex items-center gap-2">
+                            <Link href="/louvor/musicas/ligar" className="a-botao a-botao-secundario !min-h-[44px]">Arrumar</Link>
+                            <Link href="/louvor/musicas/nova" className="a-botao a-botao-principal !min-h-[44px]">
+                                <Plus size={20} aria-hidden /> Nova
+                            </Link>
+                        </div>
                     )}
                 </header>
+                <Link href="/louvor/descobrir" className="a-foco inline-flex min-h-[44px] items-center gap-2 text-[16px] font-semibold" style={{ color: 'var(--a-destaque)' }}>
+                    <Compass size={18} aria-hidden /> Descobrir músicas
+                </Link>
                 <ListaRepertorio musicas={musicas} />
             </main>
         </div>

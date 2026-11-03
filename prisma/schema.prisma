@@ -39,14 +39,41 @@ model Musica {
   link_audio  String? // Spotify, SoundCloud, YouTube Music
   cifra_interna String? // Cifra com acordes no formato [Am]letra[G]letra
   holyrics_id String?
+  // Ligacao ao CSDB (csdb.app): identidade da musica, dados publicos e links verificados
+  csdb_track_id      Int?
+  csdb_work_id       Int?               // A obra: junta gravacoes e traducoes
+  isrc               String?
+  ano                Int?
+  duracao_seg        Int?
+  idioma             String?
+  compasso           String?
+  compositores       String[]
+  links              Json?              // external_links do CSDB: { tipo: url }
+  link_playback      String?            // Playback (*_bt) para ensaio
+  titulo_norm        String?            // Titulo sem acentos/maiusculas, para achar duplicados
+  csdb_atualizado_em DateTime?
   tenant_id   Int                // Repertorio de cada igreja
   criado_em   DateTime           @default(now())
   eventos     RepertorioEvento[]
   tenant      Tenant             @relation(fields: [tenant_id], references: [id])
 
   @@unique([tenant_id, holyrics_id])
+  @@unique([tenant_id, csdb_track_id])
   @@index([tenant_id])
+  @@index([tenant_id, titulo_norm])
   @@map("musicas")
+}
+
+// Cache das respostas do CSDB (dados publicos, partilhados entre igrejas). Expira em 30 dias.
+model CsdbCache {
+  id        Int      @id @default(autoincrement())
+  chave     String   @unique
+  resposta  Json
+  criado_em DateTime @default(now())
+  expira_em DateTime
+
+  @@index([expira_em])
+  @@map("csdb_cache")
 }
 
 model Tenant {
@@ -161,6 +188,7 @@ model Tenant {
   agendaAlertasFechados AgendaAlertaFechado[]
   kitsDivulgacao      KitDivulgacao[]
   regrasAgenda        RegraAgenda[]
+  albunsFotos         AlbumFoto[]
 }
 
 model Congregacao {
@@ -500,6 +528,7 @@ model Evento {
   cardapio       CardapioCantina?
   rotina         RotinaCulto?
   kitDivulgacao  KitDivulgacao?
+  albunsFotos    AlbumFoto[]
   grupo_id       Int?               // culto direcionado a este grupo (ex.: culto de quarta dos Homens)
   nome_original  String?            // o nome antes de uma regra o mudar ("Quarta profética"); volta se a regra parar
   regra_id       Int?
@@ -2252,4 +2281,114 @@ model RegraAgenda {
 
   @@index([tenant_id])
   @@map("agenda_regras")
+}
+
+// Album publico das fotos de um culto: /fotos (lista) e /fotos/<slug> (galeria). Sem login:
+// so aparece o que estiver publicado. As fotos (versao web e miniatura) ficam no Cloudflare R2;
+// os originais continuam no PC da Media. O culto liga-se ao Evento para herdar nome e data.
+model AlbumFoto {
+  id            Int         @id @default(autoincrement())
+  tenant_id     Int
+  slug          String      @unique
+  titulo        String
+  data          DateTime
+  descricao     String?
+  capa_chave    String?
+  publicado     Boolean     @default(false)
+  evento_id     Int?
+  criado_em     DateTime    @default(now())
+  atualizado_em DateTime    @updatedAt
+  tenant        Tenant      @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  evento        Evento?     @relation(fields: [evento_id], references: [id], onDelete: SetNull)
+  fotos         FotoAlbum[]
+
+  @@index([tenant_id, publicado, data])
+}
+
+// Uma foto do album. `origem` e o nome do ficheiro que veio da Entrada: impede que repetir
+// o envio duplique a mesma foto. `hora` (EXIF) guarda a ordem em que foram tiradas.
+model FotoAlbum {
+  id         Int                 @id @default(autoincrement())
+  album_id   Int
+  origem     String
+  chave      String
+  miniatura  String?
+  largura    Int?
+  altura     Int?
+  bytes      Int?
+  bytes_mini Int?
+  hora       DateTime?
+  ordem      Int                 @default(0)
+  criado_em  DateTime            @default(now())
+  album      AlbumFoto           @relation(fields: [album_id], references: [id], onDelete: Cascade)
+  etiquetas  FotoEtiqueta[]
+  reacoes    FotoReacao[]
+  pedidos    PedidoRetirarFoto[]
+
+  @@unique([album_id, origem])
+  @@index([album_id, ordem])
+}
+
+// Etiquetas das fotos (uso interno da Midia/administracao): Destaque, Divulgacao, Capa, Redes, Criancas, Nao publicar…
+// `esconde` = as fotos com esta etiqueta nao aparecem na galeria publica.
+model EtiquetaFoto {
+  id        Int            @id @default(autoincrement())
+  tenant_id Int
+  nome      String
+  cor       String         @default("#6b7280")
+  icone     String?
+  ordem     Int            @default(0)
+  esconde   Boolean        @default(false)
+  criado_em DateTime       @default(now())
+  fotos     FotoEtiqueta[]
+
+  @@unique([tenant_id, nome])
+  @@map("foto_etiquetas")
+}
+
+model FotoEtiqueta {
+  foto_id     Int
+  etiqueta_id Int
+  membro_id   Int?
+  criado_em   DateTime     @default(now())
+  foto        FotoAlbum    @relation(fields: [foto_id], references: [id], onDelete: Cascade)
+  etiqueta    EtiquetaFoto @relation(fields: [etiqueta_id], references: [id], onDelete: Cascade)
+
+  @@id([foto_id, etiqueta_id])
+  @@index([etiqueta_id])
+  @@map("foto_album_etiquetas")
+}
+
+// Um coracao por foto e por aparelho (cookie + hash do IP; sem login, sem nomes).
+model FotoReacao {
+  id            Int       @id @default(autoincrement())
+  tenant_id     Int
+  foto_id       Int
+  aparelho_hash String
+  ip_hash       String?
+  criado_em     DateTime  @default(now())
+  foto          FotoAlbum @relation(fields: [foto_id], references: [id], onDelete: Cascade)
+
+  @@unique([foto_id, aparelho_hash])
+  @@index([foto_id])
+  @@map("foto_reacoes")
+}
+
+// "Pedir para retirar esta foto": a foto fica escondida (PENDENTE) ate a Midia decidir (ACEITE apaga, RECUSADO volta a mostrar).
+model PedidoRetirarFoto {
+  id           Int        @id @default(autoincrement())
+  tenant_id    Int
+  album_id     Int
+  foto_id      Int?
+  motivo       String?
+  estado       String     @default("PENDENTE")
+  ip_hash      String?
+  criado_em    DateTime   @default(now())
+  decidido_em  DateTime?
+  decidido_por Int?
+  foto         FotoAlbum? @relation(fields: [foto_id], references: [id], onDelete: SetNull)
+
+  @@index([tenant_id, estado])
+  @@index([foto_id])
+  @@map("foto_pedidos_retirar")
 }

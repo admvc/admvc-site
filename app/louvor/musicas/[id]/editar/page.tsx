@@ -26,6 +26,7 @@ export default async function EditarMusicaPage(props: { params: Promise<{ id: st
                 <FormMusica musica={{
                     id: m.id, titulo: m.titulo, artista: m.artista, tom: m.tom, bpm: m.bpm,
                     link_cifra: m.links.cifra, link_letra: m.links.letra, link_video: m.links.video, link_audio: m.links.audio,
+                    csdb_track_id: m.csdb?.trackId ?? null,
                 }} />
             </main>
         </div>

@@ -6,6 +6,8 @@
 import { revalidatePath } from 'next/cache'
 import { getTenantClient } from '@/lib/prisma'
 import { requireLouvorPermission } from '@/lib/louvor-permissoes'
+import { obterFaixa } from '@/lib/csdb'
+import { dadosDaFaixa, normalizarTitulo } from '@/lib/csdb-dados'
 
 type Resultado<T = object> = ({ ok: true } & T) | { ok: false; error: string }
 
@@ -117,6 +119,28 @@ export interface DadosMusica {
     link_cifra?: string | null
     link_audio?: string | null
     link_video?: string | null
+    /** Ligação ao CSDB: número = ligar/atualizar os dados; null = desligar; ausente = não mexer. */
+    csdb_track_id?: number | null
+}
+
+/** Campos do CSDB vazios (música desligada do CSDB). */
+const SEM_CSDB = {
+    csdb_track_id: null, csdb_work_id: null, isrc: null, ano: null, duracao_seg: null, idioma: null,
+    compasso: null, compositores: [] as string[], links: null as null, link_playback: null, csdb_atualizado_em: null,
+}
+
+/** Dados do CSDB para gravar (o servidor vai buscá-los: não se confia no que o navegador manda). */
+async function dadosCsdb(id: number | null | undefined, tenantId: number, jaLigada?: number | null) {
+    if (id === undefined) return {}
+    if (id === null) return SEM_CSDB
+    if (!Number.isInteger(id) || id <= 0) throw new Error('Faixa do CSDB inválida.')
+    if (id === jaLigada) return {}
+    const f = dadosDaFaixa(await obterFaixa(id, tenantId))
+    return {
+        csdb_track_id: f.csdb_track_id, csdb_work_id: f.csdb_work_id, isrc: f.isrc, ano: f.ano,
+        duracao_seg: f.duracao_seg, idioma: f.idioma, compasso: f.compasso, compositores: f.compositores,
+        links: f.links, link_playback: f.link_playback, csdb_atualizado_em: new Date(),
+    }
 }
 
 function limparLink(v: string | null | undefined, nome: string): string | null {
@@ -138,6 +162,7 @@ function limparMusica(d: DadosMusica) {
     if (bpm !== null && (bpm < 30 || bpm > 300)) throw new Error('O BPM deve estar entre 30 e 300.')
     return {
         titulo,
+        titulo_norm: normalizarTitulo(titulo),
         artista: (d.artista ?? '').trim().slice(0, 120) || null,
         tom,
         bpm,
@@ -153,12 +178,16 @@ export async function criarMusica(dados: DadosMusica, culto?: { eventoId: number
     try {
         const { db, sessao } = await exigirGestor()
         const limpo = limparMusica(dados)
-        const igual = await db.musica.findFirst({
-            where: { titulo: { equals: limpo.titulo, mode: 'insensitive' }, artista: limpo.artista ? { equals: limpo.artista, mode: 'insensitive' } : null },
-            select: { id: true },
+        // Mesma música = mesmo título (sem acentos/maiúsculas) e mesmo artista, ou a mesma faixa do CSDB
+        const candidatas = await db.musica.findMany({
+            where: { OR: [{ titulo_norm: limpo.titulo_norm }, { titulo: { equals: limpo.titulo, mode: 'insensitive' } }, ...(dados.csdb_track_id ? [{ csdb_track_id: dados.csdb_track_id }] : [])] },
+            select: { id: true, artista: true, csdb_track_id: true },
         })
+        const artistaNorm = normalizarTitulo(limpo.artista)
+        const igual = candidatas.some((c) => (dados.csdb_track_id && c.csdb_track_id === dados.csdb_track_id) || normalizarTitulo(c.artista) === artistaNorm)
         if (igual) return { ok: false, error: 'Esta música já está no repertório.' }
-        const m = await db.musica.create({ data: { ...limpo, tenant_id: sessao.tenantId }, select: { id: true } })
+        const csdb = await dadosCsdb(dados.csdb_track_id, sessao.tenantId)
+        const m = await db.musica.create({ data: { ...limpo, ...csdb, tenant_id: sessao.tenantId }, select: { id: true } })
         if (culto) {
             const r = await adicionarMusicaNaEscala(culto.eventoId, m.id, culto.tom || limpo.tom || '')
             if (r.ok === false) return { ok: false, error: `Música criada, mas não entrou no culto: ${r.error}` }
@@ -172,10 +201,15 @@ export async function criarMusica(dados: DadosMusica, culto?: { eventoId: number
 
 export async function editarMusica(id: string, dados: DadosMusica): Promise<Resultado> {
     try {
-        const { db } = await exigirGestor()
-        const existe = await db.musica.findUnique({ where: { id }, select: { id: true } })
+        const { db, sessao } = await exigirGestor()
+        const existe = await db.musica.findUnique({ where: { id }, select: { id: true, csdb_track_id: true } })
         if (!existe) return { ok: false, error: 'Música não encontrada.' }
-        await db.musica.update({ where: { id }, data: limparMusica(dados) })
+        if (dados.csdb_track_id) {
+            const outra = await db.musica.findFirst({ where: { csdb_track_id: dados.csdb_track_id, NOT: { id } }, select: { id: true } })
+            if (outra) return { ok: false, error: 'Esta faixa do CSDB já está ligada a outra música do repertório.' }
+        }
+        const csdb = await dadosCsdb(dados.csdb_track_id, sessao.tenantId, existe.csdb_track_id)
+        await db.musica.update({ where: { id }, data: { ...limparMusica(dados), ...csdb } })
         revalidar()
         revalidatePath(`/louvor/musicas/${id}`)
         return { ok: true }

@@ -1,0 +1,289 @@
+/* Galeria publica das fotos dos cultos (/fotos). Papel quente, serifa e verde da casa;
+   nada de cromo da app: quem abre o link ve so as fotografias. */
+
+.pagina {
+    --papel: #f7f3ea;
+    --tinta: #1b1e19;
+    --tinta-suave: #6d7064;
+    --verde: #3f6b4f;
+    --linha: rgba(27, 30, 25, 0.14);
+    min-height: 100dvh;
+    background:
+        radial-gradient(1100px 520px at 82% -8%, rgba(63, 107, 79, 0.1), transparent 62%),
+        var(--papel);
+    color: var(--tinta);
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px clamp(18px, 5vw, 56px);
+}
+
+.marca {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    font-size: 17px;
+    letter-spacing: 0.2em;
+    color: var(--tinta);
+    text-decoration: none;
+}
+
+.marcaPequena {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--tinta-suave);
+}
+
+.voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    font-size: 13.5px;
+    letter-spacing: 0.04em;
+    color: var(--tinta-suave);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.voltar:hover { color: var(--verde); }
+
+.hero {
+    padding: clamp(28px, 7vh, 72px) clamp(18px, 5vw, 56px) clamp(28px, 4vh, 44px);
+}
+
+.rotulo {
+    margin: 0 0 18px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--verde);
+}
+
+.titulo {
+    margin: 0;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(46px, 9vw, 92px);
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+}
+
+.subtitulo {
+    max-width: 54ch;
+    margin: 20px 0 0;
+    font-size: clamp(15.5px, 1.5vw, 17.5px);
+    line-height: 1.6;
+    color: var(--tinta-suave);
+}
+
+.regua {
+    height: 1px;
+    margin: clamp(26px, 5vh, 52px) clamp(18px, 5vw, 56px) 0;
+    background: var(--linha);
+}
+
+.albuns {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
+    gap: clamp(26px, 4vw, 52px) clamp(18px, 3vw, 34px);
+    padding: clamp(26px, 4vh, 44px) clamp(18px, 5vw, 56px) clamp(60px, 10vh, 120px);
+}
+
+.album {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.capa {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 3px;
+    background: #e3dccd;
+}
+
+.capa::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15, 18, 14, 0) 62%, rgba(15, 18, 14, 0.24));
+    opacity: 0.8;
+    transition: opacity 0.4s ease;
+}
+
+.capa img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.005);
+    transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.album:hover .capa img { transform: scale(1.045); }
+.album:hover .capa::after { opacity: 0.55; }
+
+.albumTexto {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 14px;
+}
+
+.albumData {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--verde);
+}
+
+.albumContagem {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--tinta-suave);
+    white-space: nowrap;
+}
+
+.albumTitulo {
+    margin: 7px 0 0;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    font-size: clamp(23px, 2.4vw, 30px);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+}
+
+.vazio {
+    padding: 8vh clamp(18px, 5vw, 56px) 14vh;
+    max-width: 46ch;
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--tinta-suave);
+}
+
+.rodape {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 26px clamp(18px, 5vw, 56px) 34px;
+    border-top: 1px solid var(--linha);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: var(--tinta-suave);
+}
+
+.rodape a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--linha); }
+.rodape a:hover { color: var(--verde); }
+
+/* ── Album aberto ───────────────────────────────────────────── */
+
+.cabecalhoAlbum {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding: clamp(22px, 5vh, 54px) clamp(18px, 5vw, 56px) clamp(22px, 3vh, 34px);
+}
+
+.cabecalhoTexto { max-width: 900px; }
+
+.dataGrande {
+    margin: 0 0 14px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--verde);
+}
+
+.tituloAlbum {
+    margin: 0;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    font-size: clamp(38px, 6.6vw, 72px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.025em;
+}
+
+.descricaoAlbum {
+    max-width: 60ch;
+    margin: 18px 0 0;
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--tinta-suave);
+}
+
+.acoesAlbum {
+    display: flex;
+    flex-shrink: 0;
+    gap: 8px;
+    padding-top: 6px;
+}
+
+.fotos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 clamp(10px, 3vw, 40px) clamp(60px, 10vh, 110px);
+}
+
+.foto {
+    position: relative;
+    flex-grow: 1;
+    flex-basis: calc(var(--razao, 1.5) * 260px);
+    max-width: 100%;
+    min-width: min(100%, 200px);
+    margin: 0;
+    overflow: hidden;
+    border-radius: 2px;
+    background: #e3dccd;
+    cursor: zoom-in;
+}
+
+.foto img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.25s ease;
+}
+
+.foto:hover img { opacity: 0.92; }
+
+.fotoBotao {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+}
+
+.fotoBotao:focus-visible { outline: 3px solid var(--verde); outline-offset: -3px; }
+
+.espacoFinal { flex-grow: 12; height: 0; }
+
+@media (max-width: 640px) {
+    .cabecalhoAlbum { flex-direction: column; }
+    .acoesAlbum { padding-top: 0; }
+    .fotos { gap: 4px; padding-left: 4px; padding-right: 4px; }
+    .foto { flex-basis: calc(var(--razao, 1.5) * 190px); border-radius: 0; }
+    .capa { border-radius: 0; }
+}

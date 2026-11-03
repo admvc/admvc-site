@@ -1,12 +1,15 @@
 // Uma musica do repertorio: tom, BPM, links, cifra e os ultimos cultos.
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { ArrowLeft, FileText, Guitar, Headphones, Pencil, Youtube } from 'lucide-react'
+import { ArrowLeft, BadgeCheck, FileText, Guitar, Headphones, Pencil, PlayCircle, Youtube } from 'lucide-react'
 import { getSessionData } from '@/lib/auth-utils'
 import { podeGerirRepertorio, podeVerRepertorio } from '@/lib/louvor-permissoes'
 import { musicaDoRepertorio } from '@/lib/ministerios-app'
 import CifraDaMusica, { ApagarMusica } from '@/components/app/CifraDaMusica'
 import { diaCurto } from '@/components/app/datas'
+import MusicaCsdbRelacionados from '@/components/app/MusicaCsdbRelacionados'
+import { formatarDuracao, nomeIdioma, PLATAFORMAS } from '@/lib/csdb-dados'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,6 +28,16 @@ export default async function MusicaPage(props: { params: Promise<{ id: string }
     const [m, gere] = await Promise.all([musicaDoRepertorio(sessao, id), podeGerirRepertorio(sessao)])
     if (!m) redirect('/louvor/musicas')
     const links = LINKS.filter((l) => m.links[l.chave])
+    const c = m.csdb
+    // Outras plataformas do CSDB, só as que ainda não são o link de áudio/vídeo da música
+    const outras = c ? PLATAFORMAS.filter((p) => c.links[p.tipo] && c.links[p.tipo] !== m.links.audio && c.links[p.tipo] !== m.links.video) : []
+    const ficha = c ? ([
+        ['Compositores', c.compositores.join(', ') || null],
+        ['Ano', c.ano ? String(c.ano) : null],
+        ['Duração', formatarDuracao(c.duracaoSeg)],
+        ['Idioma', nomeIdioma(c.idioma)],
+        ['Compasso', c.compasso],
+    ] as const).filter(([, v]) => v) : []
 
     return (
         <div className="app-novo min-h-screen">
@@ -56,6 +69,12 @@ export default async function MusicaPage(props: { params: Promise<{ id: string }
                     </div>
                 </div>
 
+                {c?.playback && (
+                    <a href={c.playback} target="_blank" rel="noopener noreferrer" className="a-botao a-botao-principal w-full">
+                        <PlayCircle size={18} aria-hidden /> Playback para ensaio
+                    </a>
+                )}
+
                 {links.length > 0 && (
                     <div className="grid grid-cols-2 gap-2">
                         {links.map(({ chave, texto, Icone }) => (
@@ -64,6 +83,42 @@ export default async function MusicaPage(props: { params: Promise<{ id: string }
                             </a>
                         ))}
                     </div>
+                )}
+
+                {c && (
+                    <section className="a-card p-4 space-y-3" aria-labelledby="sobre">
+                        <div className="flex items-center justify-between gap-2">
+                            <h2 id="sobre" className="text-[19px] font-bold">Sobre a música</h2>
+                            <span className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[13px] font-semibold a-suave" style={{ borderColor: 'var(--a-borda)' }}>
+                                <BadgeCheck size={15} aria-hidden /> Dados do CSDB
+                            </span>
+                        </div>
+                        {ficha.length > 0 && (
+                            <dl className="space-y-2">
+                                {ficha.map(([k, v]) => (
+                                    <div key={k} className="flex items-baseline justify-between gap-4">
+                                        <dt className="text-[14px] a-suave">{k}</dt>
+                                        <dd className="text-right text-[16px] font-semibold">{v}</dd>
+                                    </div>
+                                ))}
+                            </dl>
+                        )}
+                        {outras.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                                {outras.map((p) => (
+                                    <a key={p.tipo} href={c.links[p.tipo]} target="_blank" rel="noopener noreferrer" className="a-botao a-botao-secundario !min-h-[40px] text-[15px]">
+                                        {p.nome}
+                                    </a>
+                                ))}
+                            </div>
+                        )}
+                    </section>
+                )}
+
+                {c && (
+                    <Suspense fallback={null}>
+                        <MusicaCsdbRelacionados trackId={c.trackId} tenantId={sessao.tenantId} />
+                    </Suspense>
                 )}
 
                 <CifraDaMusica gere={gere}

@@ -4,6 +4,9 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { sessaoDaApi } from '@/lib/api-auth'
+import { podeGerirRepertorio } from '@/lib/louvor-permissoes'
+import { csdbConfigurado, obterFaixa } from '@/lib/csdb'
+import { mapearLinks } from '@/lib/csdb-dados'
 
 /** A pagina existe? (GET rapido; o CifraClub nao responde bem a HEAD) */
 async function existe(url: string): Promise<boolean> {
@@ -114,7 +117,7 @@ async function pesquisarYoutube(titulo: string, artista: string) {
 
 // ── HANDLER PRINCIPAL ──────────────────────────────────────────────────────────
 export async function GET(request: NextRequest) {
-    const { erro } = await sessaoDaApi()
+    const { sessao, erro } = await sessaoDaApi()
     if (erro) return erro
 
     const { searchParams } = request.nextUrl
@@ -128,7 +131,17 @@ export async function GET(request: NextRequest) {
 
     console.log(`[MUSICA API] Pesquisar: "${titulo}" - "${artista}" - tipo: ${tipo}`)
 
-    // URLs directos gerados sem API (CifraClub e Letras.mus.br)
+    // Se a música já está ligada ao CSDB, os links de cifra e letra vêm de lá (verificados), não adivinhados
+    const csdbId = Number(searchParams.get('csdb'))
+    let doCsdb: { cifra: string | null; letra: string | null } | null = null
+    if (Number.isInteger(csdbId) && csdbId > 0 && csdbConfigurado() && (await podeGerirRepertorio(sessao))) {
+        try {
+            const l = mapearLinks((await obterFaixa(csdbId, sessao.tenantId)).ligacoes)
+            doCsdb = { cifra: l.link_cifra, letra: l.link_letra }
+        } catch { /* sem CSDB: fica o recurso de adivinhar */ }
+    }
+
+    // URLs directos gerados sem API (CifraClub e Letras.mus.br) — só como recurso
     const artistaSlug = artista ? toSlug(artista) : ''
     const tituloSlug = toSlug(titulo)
 
@@ -136,11 +149,11 @@ export async function GET(request: NextRequest) {
     // se nao existir sugere-se a pesquisa do CifraClub (o lider escolhe la).
     const buscaCifraClub = `https://www.cifraclub.com.br/?q=${encodeURIComponent(`${titulo} ${artista}`.trim())}`
     const adivinhado = artistaSlug ? `https://www.cifraclub.com.br/${artistaSlug}/${tituloSlug}/` : null
-    const urlCifraClub = adivinhado && (await existe(adivinhado)) ? adivinhado : buscaCifraClub
+    const urlCifraClub = doCsdb?.cifra ?? (adivinhado && (await existe(adivinhado)) ? adivinhado : buscaCifraClub)
 
-    const urlLetras = artistaSlug
+    const urlLetras = doCsdb?.letra ?? (artistaSlug
         ? `https://www.letras.mus.br/${artistaSlug}/${tituloSlug}/`
-        : `https://www.letras.mus.br/pesquisa.php?q=${encodeURIComponent(titulo)}`
+        : `https://www.letras.mus.br/pesquisa.php?q=${encodeURIComponent(titulo)}`)
 
     // Pesquisas via API (paralelas)
     const [resultadosSpotify, resultadosYoutube] = await Promise.all([
@@ -152,6 +165,7 @@ export async function GET(request: NextRequest) {
         titulo,
         artista,
         links_directos: {
+            do_csdb: !!doCsdb?.cifra || !!doCsdb?.letra,
             cifra: urlCifraClub,
             letra: urlLetras,
         },

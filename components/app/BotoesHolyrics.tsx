@@ -54,12 +54,14 @@ export default function BotoesHolyrics({ url, token, musicas, podeSincronizar }:
             }
             const lista = [...todas.values()]
             let novas = 0
+            let ligadas = 0
             for (let i = 0; i < lista.length; i += 100) {
                 const r = await sincronizarAcervoLocal(lista.slice(i, i + 100))
                 if (!r.success) throw new Error(r.error)
                 novas += r.inseridas || 0
+                ligadas += r.ligadas || 0
             }
-            setAviso({ ok: true, texto: `${lista.length} músicas no Holyrics; ${novas} novas no repertório.` })
+            setAviso({ ok: true, texto: `${lista.length} músicas no Holyrics; ${novas} novas no repertório${ligadas ? `, ${ligadas} ligada${ligadas === 1 ? '' : 's'} a músicas que já existiam` : ''}.` })
             router.refresh()
         } catch (e) {
             const msg = e instanceof Error ? e.message : ''

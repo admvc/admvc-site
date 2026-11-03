@@ -5,6 +5,8 @@ import { revalidatePath } from 'next/cache'
 import { requireAuth, requireRole } from '@/lib/auth-utils'
 import { requireLouvorPermission, podeUsarHolyrics } from '@/lib/louvor-permissoes'
 import { getTenantIdFromHeaders } from '@/lib/db'
+import { normalizarTitulo } from '@/lib/csdb-dados'
+import { musicaParaLigar, jaExisteNoPortal, type MusicaDoPortal } from '@/lib/holyrics-cliente'
 
 async function getDb() {
     const tenantId = await getTenantIdFromHeaders()
@@ -19,9 +21,33 @@ export async function sincronizarAcervoLocal(musicasHolyrics: any[]) {
         const db = getTenantClient(sessao.tenantId)
         let inseridas = 0
         let atualizadas = 0
+        let ligadas = 0
+        let ignoradas = 0
+
+        // Uma leitura so: as musicas do portal (para comparar pelo titulo normalizado, sem acentos)
+        const portal: MusicaDoPortal[] = await db.musica.findMany({
+            select: { id: true, titulo: true, artista: true, titulo_norm: true, holyrics_id: true },
+        })
 
         for (const m of musicasHolyrics) {
+            if (!m || typeof m.title !== 'string' || !m.title.trim() || m.id == null) continue
             const existe = await db.musica.findFirst({ where: { holyrics_id: String(m.id) } })
+
+            if (!existe) {
+                // Mesma musica ja no portal (outro acento/maiusculas) e ainda sem ligacao: liga em vez de duplicar
+                const mesma = musicaParaLigar(portal, m.title, m.artist)
+                if (mesma) {
+                    await db.musica.update({
+                        where: { id: mesma.id },
+                        data: { holyrics_id: String(m.id), titulo_norm: normalizarTitulo(mesma.titulo), ...(mesma.artista ? {} : { artista: m.artist || null }) },
+                    })
+                    mesma.holyrics_id = String(m.id)
+                    ligadas++
+                    continue
+                }
+                // Ja existe ligada a outra entrada do Holyrics com o mesmo titulo: nao cria duplicado
+                if (jaExisteNoPortal(portal, m.title, m.artist)) { ignoradas++; continue }
+            }
 
             if (existe) {
                 // Actualiza titulo e artista MAS preserva os links que o admin preencheu
@@ -29,6 +55,7 @@ export async function sincronizarAcervoLocal(musicasHolyrics: any[]) {
                     where: { id: existe.id },
                     data: {
                         titulo: m.title,
+                        titulo_norm: normalizarTitulo(m.title),
                         artista: m.artist || null,
                         // NÃO sobrescreve link_letra, link_cifra, link_audio, link_video, tom, bpm
                     }
@@ -40,14 +67,16 @@ export async function sincronizarAcervoLocal(musicasHolyrics: any[]) {
                         tenant_id: sessao.tenantId,
                         holyrics_id: String(m.id),
                         titulo: m.title,
+                        titulo_norm: normalizarTitulo(m.title),
                         artista: m.artist || null,
                     }
                 })
+                portal.push({ id: 'novo', titulo: m.title, artista: m.artist || null, titulo_norm: normalizarTitulo(m.title), holyrics_id: String(m.id) })
                 inseridas++
             }
         }
 
-        return { success: true, inseridas, atualizadas }
+        return { success: true, inseridas, atualizadas, ligadas, ignoradas }
     } catch (error: any) {
         return { success: false, error: 'Erro ao sincronizar acervo: ' + error.message }
     }
@@ -108,7 +137,7 @@ export async function buscarRelatorioLouvorAction(mes: number, ano: number) {
                 }
             },
             include: {
-                musica: { select: { id: true, titulo: true, artista: true, tom: true } },
+                musica: { select: { id: true, titulo: true, artista: true, tom: true, ano: true, compositores: true } },
                 evento: {
                     select: {
                         id: true, nome: true, data: true,
@@ -133,7 +162,7 @@ export async function buscarRelatorioLouvorAction(mes: number, ano: number) {
             id: number
             nome: string
             data: string
-            musicas: { titulo: string; artista: string | null; tomOriginal: string | null; tomTocado: string }[]
+            musicas: { titulo: string; artista: string | null; tomOriginal: string | null; tomTocado: string; ano: number | null; compositores: string[] }[]
             equipa: { nome: string; funcao: string }[]
         }>()
 
@@ -157,7 +186,9 @@ export async function buscarRelatorioLouvorAction(mes: number, ano: number) {
                 titulo: rep.musica.titulo,
                 artista: rep.musica.artista,
                 tomOriginal: rep.musica.tom,
-                tomTocado: rep.tom_tocado
+                tomTocado: rep.tom_tocado,
+                ano: rep.musica.ano,
+                compositores: rep.musica.compositores,
             })
         })
 

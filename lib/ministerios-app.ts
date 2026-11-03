@@ -195,6 +195,8 @@ export interface MusicaDaEscala {
     tomOriginal: string | null
     tom: string
     bpm: number | null
+    duracaoSeg: number | null
+    playback: string | null
     temCifra: boolean
     holyricsId: string | null
     links: { letra: string | null; cifra: string | null; audio: string | null; video: string | null }
@@ -264,6 +266,8 @@ export async function dadosDaEscala(sessao: SessionData, eventoId: number, depto
             tomOriginal: r.musica.tom,
             tom: r.tom_tocado,
             bpm: r.musica.bpm,
+            duracaoSeg: r.musica.duracao_seg,
+            playback: r.musica.link_playback,
             temCifra: !!r.musica.cifra_interna,
             holyricsId: r.musica.holyrics_id,
             links: { letra: r.musica.link_letra, cifra: r.musica.link_cifra, audio: r.musica.link_audio, video: r.musica.link_video },
@@ -323,6 +327,19 @@ export interface MusicaDetalhe {
     bpm: number | null
     cifra: string | null
     links: { letra: string | null; cifra: string | null; audio: string | null; video: string | null }
+    /** Dados do CSDB (só se a música estiver ligada) */
+    csdb: {
+        trackId: number
+        obraId: number | null
+        ano: number | null
+        duracaoSeg: number | null
+        idioma: string | null
+        compasso: string | null
+        isrc: string | null
+        compositores: string[]
+        playback: string | null
+        links: Record<string, string>
+    } | null
     tocadas: { eventoId: number; nome: string; data: string; tom: string }[]
 }
 
@@ -347,6 +364,18 @@ export async function musicaDoRepertorio(sessao: SessionData, id: string): Promi
         bpm: m.bpm,
         cifra: m.cifra_interna,
         links: { letra: m.link_letra, cifra: m.link_cifra, audio: m.link_audio, video: m.link_video },
+        csdb: m.csdb_track_id == null ? null : {
+            trackId: m.csdb_track_id,
+            obraId: m.csdb_work_id,
+            ano: m.ano,
+            duracaoSeg: m.duracao_seg,
+            idioma: m.idioma,
+            compasso: m.compasso,
+            isrc: m.isrc,
+            compositores: m.compositores,
+            playback: m.link_playback,
+            links: m.links && typeof m.links === 'object' && !Array.isArray(m.links) ? (m.links as Record<string, string>) : {},
+        },
         tocadas: m.eventos.map((e) => ({ eventoId: e.evento.id, nome: e.evento.nome, data: e.evento.data.toISOString(), tom: e.tom_tocado })),
     }
 }

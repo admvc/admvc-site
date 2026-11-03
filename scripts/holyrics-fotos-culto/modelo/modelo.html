@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <!--
   Slide de foto do culto (1920×1080) para o slide-show do Holyrics.
-  Parâmetros no endereço: ?estilo=direita|inclinada|diagonal&foto=&titulo=&data=&link=&verso=&ref=&n=
+  Parâmetros no endereço: ?estilo=direita|inclinada|diagonal|jovem|mulher|homem|familia&foto=&titulo=&data=&link=&verso=&ref=&n=
   link = endereço do álbum (o QR é feito aqui, com a pomba ao centro); sem verso, usa um da lista (muda com n = n.º da foto).
   O programa FotosCulto.exe abre este modelo no Edge sem janela e guarda a imagem (slide-01.png, …).
 -->
@@ -50,6 +50,72 @@ body { position: relative; font-family: Montserrat, 'Segoe UI', sans-serif; colo
 .corte { position: absolute; left: 0; top: 0; width: 1330px; height: 1080px; background: center 22% / cover no-repeat; clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%); }
 .filete { position: absolute; left: 0; top: 0; width: 1352px; height: 1080px; background: var(--dourado); clip-path: polygon(1330px 0, 1352px 0, 1086px 1080px, 1064px 1080px); }
 .diagonal .veu { background: linear-gradient(90deg, rgba(8,12,24,0) 0%, rgba(11,18,36,.90) 60%, rgba(11,18,36,.94) 100%); }
+
+/* =====================================================================================================================
+   ESTILOS NOVOS — jovem · mulher · homem · família
+   Cada um muda a composição (não só a cor): a foto inteira, o arco, o painel à esquerda, a faixa em baixo.
+   ===================================================================================================================== */
+
+/* jovem: a foto ocupa tudo, escurecida em baixo, título grande e moderno */
+.jovem { --base: #05090f; --dourado: #4fe0c0; --texto: #ffffff; }
+.jovem .fundo { inset: 0; filter: none; background-position: center 28%; }
+.jovem .veu { background: linear-gradient(0deg, rgba(3,7,12,.96) 0%, rgba(3,7,12,.72) 30%, rgba(3,7,12,.16) 58%, rgba(3,7,12,.45) 100%); }
+.jovem .area { display: none; }
+.jovem .painel { inset: 0; width: auto; display: block; }
+.jovem .marca { position: absolute; left: 76px; top: 62px; text-shadow: 0 2px 14px rgba(0,0,0,.7); }
+.jovem #bloco { position: absolute; left: 76px; bottom: 78px; width: 1060px; }
+.jovem .titulo { font-family: Montserrat, 'Segoe UI', sans-serif; font-weight: 900; font-size: 84px; line-height: .96; letter-spacing: -.015em; }
+.jovem .data { margin-top: 24px; font-size: 20px; letter-spacing: .26em; color: var(--dourado); }
+.jovem .linha { width: 104px; height: 4px; margin: 26px 0 24px; background: var(--dourado); }
+.jovem .verso { max-width: 900px; font-size: 28px; }
+.jovem .ref { font-size: 16px; letter-spacing: .26em; }
+.jovem .cartao { position: absolute; right: 76px; bottom: 78px; background: rgba(255,255,255,.97); }
+
+/* mulher: fundo rosa suave, a foto num arco, dourado velho e serifa */
+.mulher { --base: #f8ece8; --dourado: #b1865c; --texto: #452631; --papel: #fffdfb; }
+.mulher .fundo { display: none; }
+.mulher .veu { background: radial-gradient(115% 85% at 28% 42%, rgba(255,255,255,.92) 0%, rgba(248,236,232,.30) 58%, rgba(226,203,197,.80) 100%); }
+.mulher .area { left: 96px; right: auto; width: 880px; top: 84px; bottom: 84px; }
+.mulher .foto { width: 100%; height: 100%; max-width: none; max-height: none; object-fit: cover; border: 13px solid #fffdfb; border-radius: 400px 400px 10px 10px / 330px 330px 10px 10px; box-shadow: 0 42px 70px rgba(96,52,60,.3); }
+.mulher .painel { width: 486px; right: 104px; }
+.mulher .marca { color: #6d4450; }
+.mulher .marca img { filter: invert(1) opacity(.62); }
+.mulher .titulo { font-size: 58px; color: #452631; text-shadow: none; }
+.mulher .verso { color: #583743; }
+.mulher .linha { background: var(--dourado); }
+.mulher .cartao { box-shadow: 0 20px 44px rgba(96,52,60,.2); }
+
+/* homem: azul-aço, painel à esquerda, a foto à direita com um filete fino */
+.homem { --base: #0a121c; --dourado: #a6bedb; --texto: #f4f7fb; }
+.homem .veu { background: linear-gradient(270deg, rgba(6,11,18,.02) 0%, rgba(6,11,18,.55) 52%, rgba(6,11,18,.93) 100%); }
+.homem .area { left: 706px; right: 96px; top: 94px; bottom: 94px; }
+.homem .foto { border: 2px solid rgba(166,190,219,.85); border-radius: 2px; padding: 16px; background: rgba(10,18,28,.92); box-shadow: 0 40px 80px rgba(0,0,0,.6); }
+.homem .painel { left: 96px; right: auto; width: 520px; }
+.homem .titulo { font-family: Montserrat, 'Segoe UI', sans-serif; font-weight: 900; font-size: 66px; line-height: 1.02; letter-spacing: -.01em; }
+.homem .data { font-size: 19px; letter-spacing: .22em; color: var(--dourado); }
+.homem .linha { width: 88px; height: 3px; background: var(--dourado); }
+.homem .verso { font-size: 29px; }
+.homem .ref { color: var(--dourado); }
+
+/* família: a foto inteira com uma faixa clara em baixo, como uma legenda */
+.familia { --base: #f4e9d8; --dourado: #ad6837; --texto: #46301f; --papel: #fffdf8; }
+.familia .fundo { inset: 0; filter: none; background-position: center 28%; }
+.familia .veu { display: none; }
+.familia .area { display: none; }
+.familia .painel { inset: auto 0 0 0; width: auto; min-height: 300px; padding: 34px 76px; flex-direction: row; align-items: center; justify-content: space-between; gap: 44px; background: rgba(247,238,226,.97); box-shadow: 0 -18px 60px rgba(40,24,12,.28); }
+.familia .marca { flex-direction: column; align-items: flex-start; gap: 8px; font-size: 15px; letter-spacing: .26em; color: #6b4a30; }
+.familia .marca img { height: 44px; filter: invert(1) opacity(.65); }
+.familia #bloco { flex: 1; }
+.familia .titulo { font-size: 48px; line-height: 1.05; color: #46301f; text-shadow: none; }
+.familia .data { margin-top: 10px; font-size: 17px; letter-spacing: .14em; }
+.familia .linha { width: 52px; height: 3px; margin: 14px 0 12px; }
+.familia .verso { font-size: 21px; line-height: 1.35; color: #55402c; }
+.familia .ref { margin-top: 8px; font-size: 13px; letter-spacing: .2em; }
+.familia .cartao { width: 316px; flex-shrink: 0; gap: 14px; padding: 12px 16px; border-radius: 16px; box-shadow: 0 16px 34px rgba(40,24,12,.18); }
+.familia .cartao svg, .familia .cartao img { width: 152px; height: 152px; }
+.familia .cartao p { font-size: 18px; }
+.familia .cartao small { margin-top: 6px; font-size: 13px; }
+
 </style>
 </head>
 <body>
@@ -61,7 +127,7 @@ body { position: relative; font-family: Montserrat, 'Segoe UI', sans-serif; colo
 
 <div class="painel">
   <div class="marca"><img src="pomba.png" alt=""><span>Igreja <b>ADMVC</b></span></div>
-  <div>
+  <div id="bloco">
     <div class="titulo" id="titulo"></div>
     <div class="data" id="data"></div>
     <div class="linha"></div>
@@ -103,7 +169,7 @@ function qrSvg(texto) {
 </script>
 <script>
 const q = new URLSearchParams(location.search)
-const estilo = ['direita', 'inclinada', 'diagonal'].includes(q.get('estilo')) ? q.get('estilo') : 'direita'
+const estilo = ['direita', 'inclinada', 'diagonal', 'jovem', 'mulher', 'homem', 'familia'].includes(q.get('estilo')) ? q.get('estilo') : 'direita'
 document.body.className = estilo
 const foto = q.get('foto') || ''
 const css = `url("${foto.replace(/"/g, '%22')}")`
@@ -119,10 +185,11 @@ if (estilo === 'diagonal') {
   for (const id of ['corte', 'filete']) document.getElementById(id).hidden = false
   document.getElementById('corte').style.backgroundImage = css
 }
-// título longo: encolhe para caber em 3 linhas
+// título longo: encolhe para caber (3 linhas; o tamanho de partida é o do estilo)
 const t = document.getElementById('titulo')
-let tam = 60
-while (t.scrollHeight > tam * 1.04 * 3 + 4 && tam > 34) { tam -= 2; t.style.fontSize = tam + 'px' }
+let tam = parseFloat(getComputedStyle(t).fontSize) || 60
+const minimo = Math.round(tam * 0.58)
+while (t.scrollHeight > tam * 1.06 * (estilo === 'familia' ? 2 : 3) + 6 && tam > minimo) { tam -= 2; t.style.fontSize = tam + 'px' }
 // "postal" atrás da foto inclinada, com o tamanho da foto
 document.getElementById('foto').addEventListener('load', () => {
   if (estilo !== 'inclinada') return

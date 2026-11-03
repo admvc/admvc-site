@@ -35,6 +35,8 @@ interface ResultadosPesquisa {
 interface Props {
     titulo: string
     artista: string
+    /** Faixa do CSDB já ligada: os links de cifra e letra vêm de lá em vez de serem adivinhados */
+    csdbId?: number | null
     onSelectCifra: (url: string) => void
     onSelectLetra: (url: string) => void
     onSelectAudio: (url: string) => void
@@ -67,7 +69,7 @@ function BtnUsar({ tipo, url, onSelect, label, cor }: {
 }
 
 export default function PesquisarLinksMusica({
-    titulo, artista,
+    titulo, artista, csdbId,
     onSelectCifra, onSelectLetra, onSelectAudio, onSelectVideo
 }: Props) {
     const [isPending, startTransition] = useTransition()
@@ -79,7 +81,7 @@ export default function PesquisarLinksMusica({
         setErro('')
         startTransition(async () => {
             try {
-                const params = new URLSearchParams({ titulo: titulo.trim(), artista: artista.trim() })
+                const params = new URLSearchParams({ titulo: titulo.trim(), artista: artista.trim(), ...(csdbId ? { csdb: String(csdbId) } : {}) })
                 const res = await fetch(`/api/musica/pesquisar?${params}`)
                 if (!res.ok) throw new Error(`${res.status}`)
                 setResultados(await res.json())

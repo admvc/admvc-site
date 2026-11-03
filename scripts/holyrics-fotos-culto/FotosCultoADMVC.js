@@ -1,9 +1,12 @@
 // Fotos do Culto ADMVC — módulo JS do Holyrics (2.24+, Windows)
-// Clique direito na pasta de imagens das fotos (FOTOS-CULTO) → "Preparar fotos para o slide-show" (ou o botão do módulo):
-// pergunta o título, a data, o estilo, o link do álbum e um versículo; corre o FotosCulto.exe, que põe moldura, título,
-// data, versículo e o QR do álbum em cada foto (slide-01.png…) e apaga os originais; no fim pode arrancar o slide-show.
-// "Receber o culto do portal" e "Trazer as artes do culto": pedem ao portal (app.igrejaadmvc.org) as artes do TELÃO publicadas pela Mídia e põe-nas na pasta
-// ARTES-CULTO (por omissão o culto de hoje, senão o próximo); basta depois mostrar a pasta. Precisa da chave de Mídia → Holyrics.
+// A equipa da fotografia larga as fotos cruas em Entrada\ (ao lado do FotosCulto.exe). O botão prepara o slide-show:
+// escolhe as fotos espalhadas pela hora, põe moldura, título, data, versículo e o QR do álbum (slide-01.png…),
+// arquiva TODAS as originais em Cultos\<data> <título>\ e deixa a Entrada vazia. Sem fotos na Entrada, usa as que
+// estiverem na própria pasta da lista de mídia (como antes, com os originais em _originais).
+// Clique direito na pasta de imagens das fotos (FOTOS-CULTO) → "Preparar fotos para o slide-show" (ou o botão do módulo).
+// "Sincronizar APP": pede ao portal (app.igrejaadmvc.org) o culto publicado pela Mídia — músicas para LOUVOR, artes do
+// TELÃO por secção, escala e rotina em texto — e escreve na lista aberta no Holyrics; ou só as artes, para a pasta
+// ARTES-CULTO, sem mexer na lista. Precisa da chave de Mídia → Holyrics.
 // Precisa de "FotosCulto.exe" na lista de ficheiros permitidos do módulo (Definições do módulo → Arquivos permitidos).
 
 var mID = 'admvc-fotos-culto'
@@ -12,7 +15,7 @@ function info() {
     return {
         id: mID,
         name: 'Fotos do Culto ADMVC',
-        description: 'Põe moldura, título, data, versículo e o QR do álbum nas fotos do culto e prepara o slide-show.',
+        description: 'Prepara o slide-show das fotos do culto: as da Entrada (arquivadas por culto) ou as da pasta, com moldura, título, data, versículo e o QR do álbum.',
         min_version: '2.24.0',
         os_required: 'windows',
         available_in_main_window: true,
@@ -41,41 +44,32 @@ function settings(module) {
         { id: 'SEGUNDOS', name: 'Segundos por foto', label: 'Segundos por foto', type: 'number', min: 3, max: 60, default_value: 8 },
         { id: 'PORTAL', name: 'Portal (artes do culto)', label: 'Portal (artes do culto)', type: 'string', default_value: 'https://app.igrejaadmvc.org' },
         { id: 'CHAVE', name: 'Chave do portal (artes do culto)', label: 'Chave do portal (artes do culto)', type: 'password', default_value: '' },
-        { id: 'PASTA_ARTES', name: 'Pasta das artes (em Imagens)', label: 'Pasta das artes (em Imagens)', type: 'string', default_value: 'ARTES-CULTO' }
+        { id: 'PASTA_ARTES', name: 'Pasta das artes (em Imagens)', label: 'Pasta das artes (em Imagens)', type: 'string', default_value: 'ARTES-CULTO' },
+        { id: 'ENVIAR', name: 'Enviar para o álbum do portal', label: 'Enviar para o álbum do portal', type: 'boolean', default_value: 'true' }
     ]
 }
 
 function actions(module) {
     return [{
+        id: 'sincronizar_app',
+        name: 'Sincronizar APP',
+        hint: 'Músicas, artes do telão, escala e rotina do culto — ou só as artes, para a pasta',
+        icon: 'sync',
+        action: function (evt) { sincronizarApp(module) }
+    }, {
         id: 'preparar_fotos_culto',
         name: 'Preparar fotos do culto',
-        hint: 'Moldura, título, versículo e QR do álbum nas fotos',
+        hint: 'As fotos da Entrada → 10 escolhidas com moldura, título e QR do álbum',
         icon: 'photo_library',
         action: function (evt) { preparar(module, null) }
-    }, {
-        id: 'trazer_artes_culto',
-        name: 'Trazer as artes do culto',
-        hint: 'As artes do telão publicadas no portal, na pasta ARTES-CULTO',
-        icon: 'cloud_download',
-        action: function (evt) { trazerArtes(module) }
-    }, {
-        id: 'receber_culto_portal',
-        name: 'Receber o culto do portal',
-        hint: 'Músicas, artes do telão, escala e rotina do culto, na lista aberta',
-        icon: 'download_for_offline',
-        action: function (evt) { receberCulto(module) }
     }]
 }
 
 function contextActions(module) {
     return [{
-        name: 'Receber o culto do portal',
+        name: 'Sincronizar APP',
         types: ['image_folder'],
-        action: function (evt) { receberCulto(module) }
-    }, {
-        name: 'Trazer as artes do culto',
-        types: ['image_folder'],
-        action: function (evt) { trazerArtes(module) }
+        action: function (evt) { sincronizarApp(module) }
     }, {
         name: 'Preparar fotos para o slide-show',
         types: ['image_folder'],
@@ -109,6 +103,18 @@ function tituloSugerido() {
     return 'Culto de ' + dia
 }
 
+/** Os títulos do costume, com o sugerido à frente (o do culto aberto, senão o do dia da semana). */
+function titulosParaEscolher() {
+    var titulos = [
+        'Culto de Jovens', 'Culto da Família', 'Culto de Mulheres', 'Culto de Homens',
+        'Culto de Missões', 'Culto de Oração', 'Culto de Gratidão', 'Santa Ceia',
+        'Escola Bíblica', 'Batismo'
+    ]
+    var sugestao = tituloSugerido()
+    if (sugestao && titulos.indexOf(sugestao) < 0) titulos.unshift(sugestao)
+    return titulos
+}
+
 function exePermitido(module) {
     var lista = module.getAllowedFiles() || []
     for (var i = 0; i < lista.length; i++) {
@@ -125,69 +131,185 @@ function preparar(module, pastaEscolhida) {
     if (!exe) return
 
     var s = module.settings
-    var pasta = pastaEscolhida || s.PASTA || 'FOTOS-CULTO'
+    var alvo = resolverPasta(pastaEscolhida || s.PASTA || 'FOTOS-CULTO')
     var ultimoLink = h.restore('fotos_culto_link') || s.LINK || ''
 
-    var r = h.input([
-        { type: 'title', label: 'Fotos do culto · ' + pasta },
+    if (versaoDoExe(module, exe) < 6) {
+        h.notificationError('O FotosCulto.exe é antigo (ainda não envia as fotos para o álbum do portal). Copie o FotosCulto.exe novo de admvc/scripts/holyrics-fotos-culto/ para a pasta onde está o exe e volte a tentar.', 15)
+        return
+    }
+
+    var inv = inventarioDaPasta(module, exe, alvo.caminho)
+    var daEntrada = !!inv && inv.naEntrada > 0
+    var quantas = daEntrada
+        ? Math.min(inv.naEntrada, Math.min(Number(s.MAX) || 10, 20))
+        : (inv && inv.fotos.length > 0 ? Math.min(inv.fotos.length, 20) : Math.min(Number(s.MAX) || 10, 20))
+
+    // O envio para o álbum do portal só existe na rotina da Entrada e precisa da chave de Mídia nas definições.
+    var envioLigado = s.ENVIAR === undefined || s.ENVIAR === null || s.ENVIAR === '' || ligado(s.ENVIAR)
+    var podeEnviar = daEntrada && !!s.CHAVE && envioLigado
+
+    var titulos = titulosParaEscolher()
+    var campos = [
+        { type: 'title', label: 'Fotos do culto · ' + alvo.nome },
         { type: 'separator' },
-        { id: 'titulo', key: 'titulo', type: 'string', label: 'Título', default_value: tituloSugerido() },
+        { id: 'titulo', key: 'titulo', type: 'string', label: 'Título (escolhe da lista)', default_value: titulos[0], allowed_values: titulos },
+        { id: 'titulo_outro', key: 'titulo_outro', type: 'string', label: 'Outro título? (escreve aqui e fica este)', default_value: '' },
         { id: 'data', key: 'data', type: 'string', label: 'Data', default_value: hojePorExtenso() },
         {
-            id: 'estilo', key: 'estilo', type: 'string', label: 'Estilo', default_value: s.ESTILO || 'direita',
+            id: 'estilo', key: 'estilo', type: 'string', label: 'Estilo da moldura', default_value: s.ESTILO || 'direita',
             allowed_values: [
-                { value: 'direita', label: 'Moldura direita' },
-                { value: 'inclinada', label: 'Moldura inclinada (postal)' },
-                { value: 'diagonal', label: 'Faixa diagonal' }
+                { value: 'direita', label: 'Clássico · foto à esquerda, painel à direita' },
+                { value: 'inclinada', label: 'Postal · foto inclinada com moldura branca' },
+                { value: 'diagonal', label: 'Diagonal · foto grande com corte' },
+                { value: 'jovem', label: 'Jovem · foto inteira, título grande, verde-água' },
+                { value: 'mulher', label: 'Mulher · foto em arco, tons de rosa' },
+                { value: 'homem', label: 'Homem · azul-aço, texto à esquerda' },
+                { value: 'familia', label: 'Família · foto inteira com faixa em baixo' }
             ]
         },
-        { id: 'link', key: 'link', type: 'string', label: 'Link do álbum (QR)', default_value: ultimoLink },
+        { id: 'link', key: 'link', type: 'string', label: podeEnviar ? 'Link do álbum (só se o envio para o portal falhar ou estiver desligado)' : 'Link do álbum (o QR)', default_value: ultimoLink },
         { id: 'verso', key: 'verso', type: 'string', label: 'Versículo (vazio = um diferente em cada foto)', default_value: '' },
         { id: 'ref', key: 'ref', type: 'string', label: 'Referência do versículo (ex.: Salmos 23:1)', default_value: '' },
         { type: 'separator' },
-        { type: 'title', label: 'Os originais são apagados depois de cada slide estar pronto.' }
-    ])
-    if (r == null) { h.notification('Cancelado.', 3); return }
-    if (!r.link) { h.notificationError('Falta o link do álbum para o QR.', 6); return }
-    h.store('fotos_culto_link', r.link)
+        { type: 'title', label: daEntrada ? 'As fotos da Entrada' : 'As fotos' },
+        { id: 'quantas', key: 'quantas', type: 'number', min: 1, max: 20, default_value: quantas,
+            label: 'Quantas fotos — ' + (daEntrada
+                ? inv.naEntrada + (inv.naEntrada === 1 ? ' à espera na Entrada (escolhida pela hora)' : ' à espera na Entrada (escolhidas pela hora)')
+                : textoDoInventario(inv)) }
+    ]
 
-    var base = h.hly('GetVersion').data.baseDir
-    var caminho = base + '\\Holyrics\\files\\media\\image\\' + pasta
-    var cli = ['--pasta', caminho, '--titulo', r.titulo || 'Culto', '--data', r.data || '', '--estilo', r.estilo || 'direita',
-        '--link', r.link, '--max', String(s.MAX || 10)]
-    if (r.verso) cli = cli.concat(['--verso', r.verso, '--ref', r.ref || ''])
-
-    var mensagens = []
-    h.popupWorker({
-        action: function (evtFn) {
-            return module.process(exe, {
-                cli: cli,
-                on_message: function (buf) {
-                    var linha = buf.readString()
-                    mensagens.push(linha)
-                    h.log(mID, '[FotosCulto] {}', [linha])
-                },
-                on_error: function (buf) { h.log(mID, '[FotosCulto|erro] {}', [buf.readString()]) },
-                on_finish: function (codigo) {
-                    var ultima = mensagens.length ? String(mensagens[mensagens.length - 1]).trim() : ''
-                    if (codigo === 0) {
-                        h.notification(ultima || 'Fotos prontas.', 8)
-                        if (s.MOSTRAR) {
-                            h.hly('ShowImage', { file: pasta, automatic: { seconds: Number(s.SEGUNDOS) || 8, repeat: true } })
-                        }
-                    } else {
-                        h.notificationError(ultima || 'Não foi possível preparar as fotos. Veja o registo do módulo.', 10)
-                    }
-                }
-            }).await()
-        },
-        callback: function (resp, err) {
-            if (err) {
-                h.log(mID, 'erro: {}', [err])
-                h.notificationError('Algo correu mal ao preparar as fotos.', 8)
-            }
+    if (daEntrada) {
+        campos.push({ type: 'title', label: 'As ' + inv.naEntrada + ' fotos ficam arquivadas em Cultos\\ (por data e título) e a Entrada fica vazia. As escolhidas vêm para esta pasta e, no fim, também saem (ficam no arquivo).' })
+        if (s.CHAVE) {
+            campos.push({ id: 'enviar', key: 'enviar', type: 'boolean', label: 'Enviar as fotos para o álbum do portal (o QR passa a apontar para lá)', default_value: envioLigado })
+        } else {
+            campos.push({ type: 'title', label: 'Para enviar as fotos para o álbum do portal, cole a chave do portal nas definições do módulo.' })
         }
-    })
+    } else {
+        campos.push({ id: 'recursivo', key: 'recursivo', type: 'boolean', label: 'Incluir também as fotos das subpastas', default_value: false })
+        campos.push({ id: 'apagar', key: 'apagar', type: 'boolean', label: 'Apagar os originais (por omissão ficam em _originais)', default_value: false })
+    }
+    campos.push({ id: 'alta', key: 'alta', type: 'boolean', label: 'Slides em 4K (mais nítidos, mais pesados e mais lentos)', default_value: false })
+
+    var naoEntram = []
+    var totalNaoEntram = 0
+    var mapa = inv ? (daEntrada ? inv.ignoradasEntrada : inv.ignoradas) : {}
+    for (var ext in mapa) {
+        if (!mapa.hasOwnProperty(ext)) continue
+        totalNaoEntram += mapa[ext]
+        naoEntram.push(ext.replace(/^\./, '').toUpperCase() + (mapa[ext] > 1 ? ' ' + mapa[ext] : ''))
+    }
+    if (totalNaoEntram) {
+        campos.push({ type: 'separator' })
+        campos.push({ type: 'title', label: totalNaoEntram + (totalNaoEntram === 1 ? ' ficheiro não entra' : ' ficheiros não entram') + ' (' + naoEntram.join(', ') + '): o Windows não abre esse formato. No iPhone: Definições → Câmara → Formatos → Mais compatível. RAW (CR3, NEF…) tem de ser exportado em JPG.' })
+    }
+
+    campos.push({ type: 'separator' })
+    campos.push({ type: 'title', label: 'No fim' })
+    campos.push({ id: 'mostrar', key: 'mostrar', type: 'boolean', label: 'Começar o slide-show', default_value: ligado(s.MOSTRAR) })
+    campos.push({ id: 'segundos', key: 'segundos', type: 'number', min: 3, max: 60, label: 'Segundos por foto', default_value: Number(s.SEGUNDOS) || 8 })
+
+    var r = h.input(campos)
+    if (r == null) { h.notification('Cancelado.', 3); return }
+    var enviar = podeEnviar && (r.enviar === undefined || ligado(r.enviar))
+    if (!r.link && !enviar) { h.notificationError('Falta o link do álbum para o QR.', 6); return }
+    if (r.link) h.store('fotos_culto_link', r.link)
+
+    var n = Math.min(Math.max(parseInt(r.quantas, 10) || quantas, 1), 20)
+    var titulo = String(r.titulo_outro || '').trim() || String(r.titulo || '').trim() || 'Culto'
+    var cli = ['--pasta', alvo.caminho, '--titulo', titulo, '--data', r.data || '',
+        '--estilo', r.estilo || 'direita', '--link', r.link || '', '--max', String(n)]
+    if (enviar) cli = cli.concat(['--enviar', '--portal', s.PORTAL || 'https://app.igrejaadmvc.org', '--chave', s.CHAVE])
+    if (r.verso) cli = cli.concat(['--verso', r.verso, '--ref', r.ref || ''])
+    if (ligado(r.recursivo)) cli.push('--recursivo')
+    if (ligado(r.apagar)) cli.push('--apagar-originais')
+    if (ligado(r.alta)) cli.push('--escala', '2')
+
+    var mostrar = ligado(r.mostrar)
+    var segundos = Number(r.segundos) || 8
+
+    // Um prazo folgado (o Holyrics mata o programa ao fim de 5 s por omissão!): ~20 s por foto + 1 minuto.
+    // Se ainda assim for cortado, o exe já gravou os slides feitos e a próxima tentativa continua de onde ficou.
+    // Com o envio para o portal, soma-se ~10 s por foto arquivada. Se for cortado, repetir o botão continua de onde ficou.
+    var prazo = Math.min(60000 + n * 20000 + (enviar ? Math.max(daEntrada ? inv.naEntrada : 0, 10) * 10000 : 0), 900000)
+    h.notification('A preparar ' + n + (n === 1 ? ' foto…' : ' fotos…') + (enviar ? ' e a enviar para o portal' : '') + ' (pode levar alguns minutos)', 6)
+
+    var res = rodarExe(module, exe, cli, prazo)
+    var ultima = ultimaLinha(res, 'Fotos prontas.')
+
+    if (res.ok) {
+        h.notification(ultima, 8)
+        if (mostrar) h.hly('ShowImage', { file: alvo.nome, automatic: { seconds: segundos, repeat: true } })
+    } else {
+        h.notificationError(ultima || 'Não foi possível preparar as fotos. Veja o registo do módulo.', 12)
+        if (res.linhas.length > 1) h.log(mID, '[FotosCulto] {}', [res.linhas.join(' / ')])
+    }
+}
+
+/** A pasta do evento pode chegar como nome ("FOTOS-CULTO") ou como caminho completo (clique direito). */
+function resolverPasta(pasta) {
+    var p = String(pasta || '').replace(/[\\\/]+$/, '')
+    if (/^[a-zA-Z]:[\\\/]/.test(p) || p.substring(0, 2) === '\\\\') {
+        var i = Math.max(p.lastIndexOf('\\'), p.lastIndexOf('/'))
+        return { nome: p.substring(i + 1) || p, caminho: p }
+    }
+    var nome = p || 'FOTOS-CULTO'
+    var j = Math.max(nome.lastIndexOf('\\'), nome.lastIndexOf('/'))
+    if (j >= 0) nome = nome.substring(j + 1)
+    return { nome: nome || 'FOTOS-CULTO', caminho: pastaAbsoluta(nome || 'FOTOS-CULTO') }
+}
+
+/** Que exe está instalado: 2 = o que já conta as fotos e guarda os originais. 0 = antigo. */
+function versaoDoExe(module, exe) {
+    var res = rodarExe(module, exe, ['--versao'], 20000)
+    for (var i = 0; i < res.linhas.length; i++) {
+        var p = res.linhas[i].split('|')
+        if (p[0] === 'V') return Number(p[1]) || 0
+    }
+    return 0
+}
+
+/** O que há na pasta e na Entrada, sem mexer em nada: { fotos: [nome…], ignoradas: {}, ignoradasTotal, slides, naEntrada } */
+function inventarioDaPasta(module, exe, caminho) {
+    var res = rodarExe(module, exe, ['--inventario', '--pasta', caminho], 30000)
+    if (!res.ok) return null
+    var inv = { fotos: [], ignoradas: {}, ignoradasTotal: 0, naEntrada: 0, ignoradasEntrada: {}, ignoradasEntradaTotal: 0 }
+    for (var i = 0; i < res.linhas.length; i++) {
+        var p = res.linhas[i].split('|')
+        if (p[0] === 'F') inv.fotos.push(p[1])
+        else if (p[0] === 'S') inv.slides = parseInt(p[1], 10) || 0
+        else if (p[0] === 'E') inv.naEntrada = parseInt(p[1], 10) || 0
+        else if (p[0] === 'I') {
+            var quantas = parseInt(p[2], 10) || 0
+            inv.ignoradas[p[1]] = quantas
+            inv.ignoradasTotal += quantas
+        } else if (p[0] === 'IE') {
+            var quantasE = parseInt(p[2], 10) || 0
+            inv.ignoradasEntrada[p[1]] = quantasE
+            inv.ignoradasEntradaTotal += quantasE
+        }
+    }
+    return inv
+}
+
+function textoDoInventario(inv) {
+    if (!inv) return 'não consegui ler a pasta'
+    var f = inv.fotos.length
+    var t = f + (f === 1 ? ' foto na pasta' : ' fotos na pasta')
+    if (inv.slides) t += ' · ' + inv.slides + (inv.slides === 1 ? ' slide anterior' : ' slides anteriores')
+    if (inv.ignoradasTotal) {
+        var exts = []
+        for (var e in inv.ignoradas) {
+            if (!inv.ignoradas.hasOwnProperty(e)) continue
+            var nome = e.replace(/^\./, '').toUpperCase()
+            if (inv.ignoradas[e] > 1) nome += ' ' + inv.ignoradas[e]
+            exts.push(nome)
+        }
+        t += ' · ' + inv.ignoradasTotal + (inv.ignoradasTotal === 1 ? ' ignorada (' : ' ignoradas (') + exts.join(', ') + ')'
+    }
+    if (f > 20) t += ' · só entram 20'
+    return t
 }
 
 
@@ -257,53 +379,71 @@ function cultosDoApp(module, exe, k) {
 
 function rotuloDoCulto(c) { return dataCurta(c.data) + ' · ' + c.nome + ' (' + c.musicas + ' músicas, ' + c.artes + ' artes)' }
 
-function escolherCulto(titulo, lista) {
+function escolherCulto(titulo, lista, comModo) {
     var valores = []
     for (var k = 0; k < lista.cultos.length; k++) valores.push({ value: lista.cultos[k].id, label: rotuloDoCulto(lista.cultos[k]) })
-    var r = h.input([
+    var campos = [
         { type: 'title', label: titulo },
         { type: 'separator' },
         { id: 'evento', key: 'evento', type: 'string', label: 'Culto do app', default_value: lista.omissao, allowed_values: valores }
-    ])
+    ]
+    if (comModo) {
+        campos.push({ type: 'separator' })
+        campos.push({ type: 'title', label: 'O que trazer' })
+        campos.push({
+            id: 'modo', key: 'modo', type: 'string', label: 'Culto completo ou só as artes', default_value: 'tudo',
+            allowed_values: [
+                { value: 'tudo', label: 'Culto completo: músicas, artes, escala e rotina na lista aberta' },
+                { value: 'artes', label: 'Só as artes do telão: para a pasta, sem mexer na lista' }
+            ]
+        })
+    }
+    var r = h.input(campos)
     if (r == null) { h.notification('Cancelado.', 3); return null }
     // o Holyrics pode devolver o valor (o id) ou o texto da linha escolhida: aceita os dois (e a posição, como último recurso)
     // com UM só campo a preencher, o Holyrics devolve o próprio valor (não um objeto com o nome do campo)
     var escolhido = (r !== null && r !== undefined && r.evento !== undefined && r.evento !== null) ? String(r.evento) : String(r)
+    var modo = (r !== null && r !== undefined && r.modo !== undefined && r.modo !== null) ? String(r.modo) : 'tudo'
+    var culto = null
     for (var m = 0; m < lista.cultos.length; m++) {
-        if (String(lista.cultos[m].id) === escolhido || rotuloDoCulto(lista.cultos[m]) === escolhido) return lista.cultos[m]
+        if (String(lista.cultos[m].id) === escolhido || rotuloDoCulto(lista.cultos[m]) === escolhido) { culto = lista.cultos[m]; break }
     }
-    for (var n = 0; n < lista.cultos.length; n++) {
-        if (escolhido.indexOf(lista.cultos[n].nome) >= 0 && escolhido.indexOf(dataCurta(lista.cultos[n].data).substring(0, 5)) >= 0) return lista.cultos[n]
+    if (!culto) {
+        for (var n = 0; n < lista.cultos.length; n++) {
+            if (escolhido.indexOf(lista.cultos[n].nome) >= 0 && escolhido.indexOf(dataCurta(lista.cultos[n].data).substring(0, 5)) >= 0) { culto = lista.cultos[n]; break }
+        }
     }
-    h.notificationError('Não percebi qual culto escolheu (o Holyrics devolveu: «' + escolhido.substring(0, 70) + '»).', 12)
-    return null
+    if (!culto) {
+        h.notificationError('Não percebi qual culto escolheu (o Holyrics devolveu: «' + escolhido.substring(0, 70) + '»).', 12)
+        return null
+    }
+    return { culto: culto, modo: modo }
 }
 
-// ---- Trazer as artes do culto (só descarrega para a pasta ARTES-CULTO)
+// ---- Sincronizar APP: uma ação só. Traz o culto do portal para a lista aberta ou só as artes para a pasta.
 
-function trazerArtes(module) {
+function sincronizarApp(module) {
     var exe = exePermitido(module)
     if (!exe) return
     var k = chavesDoPortal(module)
     if (!k) return
-    var res = rodarExe(module, exe, ['--listar', '--portal', k.portal, '--chave', k.chave], 60000)
-    if (!res.ok) { h.notificationError(ultimaLinha(res, 'Não foi possível ver os cultos.'), 10); return }
-    var cultos = []
-    for (var i = 0; i < res.linhas.length; i++) {
-        var p = res.linhas[i].split('|')
-        if (p.length >= 4) cultos.push({ id: p[0], data: p[1], nome: p[2], musicas: '', artes: p[3] })
-    }
-    if (cultos.length === 0) { h.notificationError('Não há artes do telão publicadas.', 8); return }
-    var d = new Date()
-    var hoje = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2)
-    var omissao = cultos[0].id
-    for (var j = 0; j < cultos.length; j++) { if (cultos[j].data.substring(0, 10) === hoje) { omissao = cultos[j].id; break } }
-    var culto = escolherCulto('Artes do culto → ' + k.pasta + ' (as que lá estavam são substituídas)', { cultos: cultos, omissao: omissao })
-    if (!culto) return
+
+    var lista = cultosDoApp(module, exe, k)
+    if (!lista) return
+    var escolha = escolherCulto('Sincronizar APP · portal → Holyrics', lista, true)
+    if (!escolha) return
+
+    if (escolha.modo === 'artes') { baixarSoArtes(module, exe, k, escolha.culto); return }
+    receberCultoDe(module, exe, k, escolha.culto)
+}
+
+/** Só as artes do telão, para a pasta ARTES-CULTO (as que lá estavam com o mesmo nome são substituídas). */
+function baixarSoArtes(module, exe, k, culto) {
+    h.notification('A descarregar as artes de ' + dataCurta(culto.data) + '…', 4)
     var fim = rodarExe(module, exe, ['--trazer', '--portal', k.portal, '--chave', k.chave, '--evento', String(culto.id), '--pasta', pastaAbsoluta(k.pasta)], 120000)
     if (fim.ok) {
         h.notification(ultimaLinha(fim, 'Artes prontas.'), 8)
-        if (k.s.MOSTRAR) h.hly('ShowImage', { file: k.pasta, automatic: { seconds: Number(k.s.SEGUNDOS) || 8, repeat: true } })
+        if (ligado(k.s.MOSTRAR)) h.hly('ShowImage', { file: k.pasta, automatic: { seconds: Number(k.s.SEGUNDOS) || 8, repeat: true } })
     } else {
         h.notificationError(ultimaLinha(fim, 'Não foi possível trazer as artes.'), 10)
     }
@@ -475,17 +615,7 @@ function escolherMusica(module, m, cand) {
     return null
 }
 
-function receberCulto(module) {
-    var exe = exePermitido(module)
-    if (!exe) return
-    var k = chavesDoPortal(module)
-    if (!k) return
-
-    var lista = cultosDoApp(module, exe, k)
-    if (!lista) return
-    var culto = escolherCulto('Receber o culto do portal', lista)
-    if (!culto) return
-
+function receberCultoDe(module, exe, k, culto) {
     var res = rodarExe(module, exe, ['--culto', '--portal', k.portal, '--chave', k.chave, '--evento', String(culto.id)], 60000)
     if (!res.ok) { h.notificationError(ultimaLinha(res, 'Não foi possível ver o culto.'), 10); return }
     var nome = culto.nome, data = culto.data
@@ -569,7 +699,7 @@ function receberCulto(module) {
     for (var c = 0; c < musicas.length; c++) {
         if (!ligado(r['m' + c])) continue
         var achada = acharMusica(module, musicas[c], mapa)
-        if (achada && achada.via === 'criar') { avisos.push('Música: ' + musicas[c].titulo + ' — depois de guardar a letra nova, carregue outra vez em "Receber o culto" (Mesclar).'); continue }
+        if (achada && achada.via === 'criar') { avisos.push('Música: ' + musicas[c].titulo + ' — depois de guardar a letra nova, carregue outra vez em "Sincronizar APP" (Mesclar).'); continue }
         if (!achada) { falhas.push('Música: ' + musicas[c].titulo + ' (não está no Holyrics; ficou de fora)'); continue }
         if (achada.via === 'parecida' && tituloLimpo(achada.titulo) !== tituloLimpo(musicas[c].titulo)) avisos.push('Música: ' + musicas[c].titulo + ' → usei «' + achada.titulo + '» (a mais parecida)')
         if (achada.via !== 'portal') {

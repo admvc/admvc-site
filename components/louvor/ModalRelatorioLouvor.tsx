@@ -12,7 +12,7 @@ type EventoLouvor = {
     id: number
     nome: string
     data: string
-    musicas: { titulo: string; artista: string | null; tomOriginal: string | null; tomTocado: string }[]
+    musicas: { titulo: string; artista: string | null; tomOriginal: string | null; tomTocado: string; ano: number | null; compositores: string[] }[]
     equipa: { nome: string; funcao: string }[]
 }
 
@@ -135,7 +135,8 @@ export default function ModalRelatorioLouvor() {
                                             <div key={i} className="flex items-center justify-between bg-bg border border-soft rounded-xl px-3 py-2">
                                                 <div className="min-w-0">
                                                     <p className="text-[14px] font-bold text-fg truncate">{m.titulo}</p>
-                                                    {m.artista && <p className="text-[13px] text-muted font-medium truncate">{m.artista}</p>}
+                                                    {m.artista && <p className="text-[13px] text-muted font-medium truncate">{m.artista}{m.ano ? ` · ${m.ano}` : ''}</p>}
+                                                    {m.compositores.length > 0 && <p className="text-[13px] text-muted font-medium truncate">Compositores: {m.compositores.join(', ')}</p>}
                                                 </div>
                                                 <div className="flex items-center gap-1.5 shrink-0 ml-2">
                                                     {m.tomOriginal && m.tomOriginal !== m.tomTocado && (
