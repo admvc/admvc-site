@@ -14,19 +14,21 @@ import {
 // ---------------------------------------------------------------------------------------------------------------------
 // Letras (OFL, em public/fontes/cantina) e a pomba
 
+// Só o nome do ficheiro: a pasta fica escrita no path.join, para a Vercel levar estas letras para a função
+// (com o caminho todo numa variável, o rastreio não as encontra e o banner falha em produção).
 const FONTES = [
-    ['Titan', 'public/fontes/cantina/TitanOne-Regular.ttf'],
-    ['Lilita', 'public/fontes/cantina/LilitaOne-Regular.ttf'],
-    ['Gochi', 'public/fontes/cantina/GochiHand-Regular.ttf'],
-    ['Pacifico', 'public/fontes/cantina/Pacifico-Regular.ttf'],
+    ['Titan', 'TitanOne-Regular.ttf'],
+    ['Lilita', 'LilitaOne-Regular.ttf'],
+    ['Gochi', 'GochiHand-Regular.ttf'],
+    ['Pacifico', 'Pacifico-Regular.ttf'],
 ] as const
 type Fonte = { name: string; data: Buffer; weight: 400 | 700 | 900; style: 'normal' }
 let fontes: Promise<Fonte[]> | null = null
 const carregarFontes = () => (fontes ??= (async () => {
-    const dos400 = await Promise.all(FONTES.map(async ([name, f]) => ({ name, weight: 400 as const, style: 'normal' as const, data: await readFile(path.join(process.cwd(), f)) })))
+    const dos400 = await Promise.all(FONTES.map(async ([name, f]) => ({ name, weight: 400 as const, style: 'normal' as const, data: await readFile(path.join(process.cwd(), 'public', 'fontes', 'cantina', f)) })))
     const mont = await Promise.all([700, 900].map(async (w) => ({ name: 'Montserrat', weight: w as 700 | 900, style: 'normal' as const, data: await readFile(path.join(process.cwd(), 'public', 'fonts', 'divulgacao', `Montserrat-${w}.ttf`)) })))
     return [...dos400, ...mont]
-})())
+})().catch((e) => { fontes = null; throw e }))   // uma falha não fica guardada para sempre
 
 let pomba: Promise<string | null> | null = null
 const carregarPomba = () => (pomba ??= readFile(path.join(process.cwd(), 'public', 'images', 'pomba_admvc.png'))

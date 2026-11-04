@@ -38,6 +38,7 @@ export async function GET(request: Request) {
         img = await desenharBanner(pedido)
     } catch (err) {
         if (err instanceof ErroFoto) return NextResponse.json({ error: err.message }, { status: 422 })
+        console.error('[cantina/banner] falhou a desenhar', pedido.modelo, pedido.formato, err)   // fica nos registos da Vercel
         return NextResponse.json({ error: 'Não foi possível desenhar o banner.' }, { status: 500 })
     }
     if (url.searchParams.get('download')) {
