@@ -5,7 +5,7 @@ import { getDb } from '@/lib/db'
 import { getSessionData, isAdmin as isAdminCheck } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Store, ShoppingCart, Package, BarChart3, Clock, CreditCard, HandCoins, Coffee, AlertTriangle, Users } from 'lucide-react'
+import { Store, ShoppingCart, Package, BarChart3, Clock, CreditCard, HandCoins, Coffee, AlertTriangle, Users, Megaphone } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -49,6 +49,7 @@ export default async function GestaoCantinaPage() {
         { href: '/cantina/turnos', label: 'Turnos', desc: 'Abrir e fechar caixa', icon: Clock, cor: 'text-purple-500' },
         { href: '/cantina/encomendas', label: 'Encomendas', desc: `${encomendaHoje} para hoje`, icon: ShoppingCart, cor: 'text-emerald-500' },
         { href: '/cantina/fiados', label: 'Fiados', desc: 'Dividas pendentes', icon: HandCoins, cor: 'text-red-400' },
+        { href: '/cantina/divulgar', label: 'Divulgar', desc: 'Banners para o telão e as redes', icon: Megaphone, cor: 'text-rose-500' },
         { href: '/cantina/menu-local', label: 'Menu Público', desc: 'Ver como o membro ve', icon: Coffee, cor: 'text-amber-500' },
     ]
 
