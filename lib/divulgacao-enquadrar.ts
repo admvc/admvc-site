@@ -37,6 +37,26 @@ export const CAIXA_FOTO_MODELO: Record<string, Record<RedeId, Caixa>> = {
         post: { left: 0, top: 0, width: 1080, height: 1050 },
         story: { left: 0, top: 0, width: 1080, height: 1400 },
     },
+    faixas: {
+        youtube: { left: 540, top: 0, width: 740, height: 720 },
+        post: { left: 0, top: 0, width: 1080, height: 800 },
+        story: { left: 0, top: 0, width: 1080, height: 1160 },
+    },
+    moldura: {
+        youtube: { left: 690, top: 80, width: 540, height: 540 },
+        post: { left: 260, top: 170, width: 560, height: 560 },
+        story: { left: 180, top: 260, width: 720, height: 720 },
+    },
+    horizonte: {
+        youtube: { left: 690, top: 40, width: 520, height: 560 },
+        post: { left: 190, top: 375, width: 700, height: 625 },
+        story: { left: 150, top: 520, width: 780, height: 920 },
+    },
+    editorial: {
+        youtube: { left: 800, top: 50, width: 420, height: 620 },
+        post: { left: 110, top: 110, width: 860, height: 620 },
+        story: { left: 110, top: 230, width: 860, height: 880 },
+    },
 }
 
 /** A caixa da foto de um formato, no estilo das redes escolhido. */

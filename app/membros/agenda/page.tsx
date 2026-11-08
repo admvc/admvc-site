@@ -18,6 +18,7 @@ import { lerMes, limitesDoMes, TIPOS_AGENDA_DEPTO, type TipoAgendaDepto } from '
 import CalendarioMes from '@/components/CalendarioMes'
 import { getTipoEvento } from '@/lib/evento-tipos'
 import { gereDepartamento } from '@/lib/escalas-permissoes'
+import { semReunioesDuplicadas } from '@/lib/agenda-reunioes'
 import { geralNaAgenda, grupoOndeEstou, grupoQueLidero, meusGruposIds } from '@/lib/agenda-grupos'
 
 export const dynamic = 'force-dynamic'
@@ -63,10 +64,12 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
     const gereAlgo = equipasQueGero.length > 0
 
     // Encontros das minhas equipas (o administrador vê todos)
-    const encontros = await db.agendaDepartamento.findMany({
+    const encontrosTodos = await db.agendaDepartamento.findMany({
         where: {
             inicio: periodo,
-            ...(veTudo ? {} : { OR: [{ departamento: { OR: [{ lider_id: sessao.membroId }, { integrantes: { some: { membro_id: sessao.membroId } } }] } }, { grupo: grupoOndeEstou(sessao.membroId) }] }),
+            ...(veTudo ? {} : { OR: [{ departamento: { OR: [{ lider_id: sessao.membroId }, { integrantes: { some: { membro_id: sessao.membroId } } }] } }, { grupo: grupoOndeEstou(sessao.membroId) },
+                // as reuniões dos grupos públicos (ex.: Homens, Mulheres, Casais às segundas) veem-nas todos
+                { tipo: 'REUNIAO', grupo: { publico: true } }] }),
         },
         orderBy: { inicio: 'asc' },
         select: { id: true, titulo: true, tipo: true, inicio: true, local: true, cancelado_em: true, departamento_id: true, grupo_id: true, departamento: { select: { nome: true } }, grupo: { select: { nome: true } } },
@@ -90,6 +93,9 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
             },
         },
     })
+
+    // Um culto direcionado a um grupo já aparece como culto: a reunião do mesmo grupo no mesmo dia não se repete
+    const encontros = semReunioesDuplicadas(encontrosTodos.map((e) => ({ ...e, grupoId: e.grupo_id ?? 0 })), eventos)
 
     // A rotina de cada culto (todos os membros veem)
     const rotinas = new Map(eventos.map((ev) => [ev.id, ev.rotina ? normalizarItens(ev.rotina.itens) : []]))
@@ -129,20 +135,25 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
         </span>
     ) : null
 
-    const CartaoEncontro = ({ e }: { e: (typeof encontros)[number] }) => (
+    // Reunião de um grupo a que não pertenço: só vejo o nome e a hora (sem local nem ligação para a agenda do grupo)
+    const CartaoEncontro = ({ e }: { e: (typeof encontros)[number] }) => {
+        const deOutro = !veTudo && !!e.grupo_id && !meusGrupos.includes(e.grupo_id)
+        const Cx: React.ElementType = deOutro ? 'div' : Link
+        return (
         <li>
-            <Link href={e.grupo_id ? `/membros/grupo/${e.grupo_id}/agenda` : `/membros/gestao/equipa/${e.departamento_id}/agenda`} className="a-card a-foco flex items-center gap-3 px-4 py-3">
+            <Cx {...(deOutro ? {} : { href: e.grupo_id ? `/membros/grupo/${e.grupo_id}/agenda` : `/membros/gestao/equipa/${e.departamento_id}/agenda` })} className="a-card a-foco flex items-center gap-3 px-4 py-3">
                 <Users size={20} className="shrink-0 a-suave" aria-hidden />
                 <span className="min-w-0 flex-1">
                     <span className="block text-[16px] font-semibold" style={e.cancelado_em ? { textDecoration: 'line-through' } : undefined}>{e.titulo}{e.cancelado_em ? ' (cancelado)' : ''}</span>
                     <span className="block text-[14px] a-suave">
                         {TIPOS_AGENDA_DEPTO[e.tipo as TipoAgendaDepto] ?? e.tipo} · {e.departamento?.nome ?? e.grupo?.nome} · {diaPorExtenso(e.inicio.toISOString())}, às {hora(e.inicio.toISOString())}
                     </span>
-                    {e.local && <span className="flex items-center gap-1 text-[14px] a-suave"><MapPin size={14} aria-hidden /> {e.local}</span>}
+                    {e.local && !deOutro && <span className="flex items-center gap-1 text-[14px] a-suave"><MapPin size={14} aria-hidden /> {e.local}</span>}
                 </span>
-            </Link>
+            </Cx>
         </li>
-    )
+        )
+    }
 
     return (
         <div className="app-novo min-h-screen">

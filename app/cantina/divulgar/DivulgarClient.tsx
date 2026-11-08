@@ -4,6 +4,8 @@
 // 3. foto no centro (zoom e foco: arrasta-se na pré-visualização), 4. ver e descarregar. A última escolha fica neste aparelho.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Download, ImagePlus, RotateCcw, Share2, Trash2 } from 'lucide-react'
+import PublicarNoCulto, { type CultoParaPublicar } from '@/components/encerramento/PublicarNoCulto'
+import { publicarBannerNoCulto, retirarBannerDoCulto } from './publicar-actions'
 import { AVISO_PARTILHA, partilharArte } from '@/lib/partilhar-arte'
 import { reduzirImagem } from '@/lib/reduzir-imagem'
 import {
@@ -155,7 +157,7 @@ function Enquadrador({ e, aoMudar }: { e: Estado; aoMudar: (fx: number, fy: numb
     )
 }
 
-export default function DivulgarClient({ produtos }: { produtos: Produto[] }) {
+export default function DivulgarClient({ produtos, cultos }: { produtos: Produto[]; cultos: CultoParaPublicar[] }) {
     const [e, setE] = useState<Estado>(INICIAL)
     const [pronto, setPronto] = useState(false)
     const [aEnviar, setAEnviar] = useState(false)
@@ -327,6 +329,8 @@ export default function DivulgarClient({ produtos }: { produtos: Produto[] }) {
                     )}
                 </div>
                 {comFoto && e.tirarBranco && <p className="text-[14px] a-suave">O fundo branco só se vê tirado na imagem de cima.</p>}
+                <PublicarNoCulto cultos={cultos} titulo="Põe o banner do telão em ENCERRAMENTO, no Holyrics, depois da agenda da semana."
+                    aoPublicar={(id) => publicarBannerNoCulto(id, paramsBanner(e, 'telao'))} aoRetirar={retirarBannerDoCulto} />
             </section>
 
             {/* Barra fixa: por cima da barra de baixo da app no telemóvel */}

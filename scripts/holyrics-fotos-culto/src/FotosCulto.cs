@@ -772,7 +772,21 @@ static class FotosCulto
             }
         }
 
-        // 3) Sem Entrada (ou vazia): como sempre foi — as fotos que estão na própria pasta.
+        // 3) Sem Entrada, mas com o envio para o portal ligado e fotos na própria pasta (a equipa pôs as fotos em
+        //    FOTOS-CULTO em vez de na Entrada): seguem a mesma rotina da Entrada — arquivo por culto, slides e envio.
+        //    Assim as fotos chegam sempre ao álbum, seja qual for a pasta onde foram postas.
+        if (EnviarAtivo(a))
+        {
+            var naPasta = Recolher(a, pasta);
+            var fotosNaPasta = naPasta.Where(Foto).ToList();
+            if (fotosNaPasta.Count > 0)
+            {
+                Console.WriteLine("As fotos estavam em " + Path.GetFileName(pasta) + " (não na Entrada): seguem a rotina da Entrada e vão para o álbum.");
+                return PrepararEntrada(a, pasta, arquivo, modelo, navegador, estilo, max, escala, assinatura, fila, fotosNaPasta, Ignorados(naPasta));
+            }
+        }
+
+        // 4) Sem envio: como sempre foi — as fotos que estão na própria pasta (originais em _originais).
         return CorrerDaPasta(a, pasta, modelo, navegador, estilo, max, escala, apagar, arquivo);
     }
 

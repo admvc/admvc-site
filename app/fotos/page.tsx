@@ -1,10 +1,12 @@
 // /fotos — a galeria aberta da igreja: todos os albuns de cultos ja publicados.
 // Sem login: quem tem o link entra e ve. Nao aparece no Google (noindex).
 import type { Metadata } from 'next'
+import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { tenantPublico } from '@/lib/divulgacao-publica'
 import { albunsPublicos, dataCurta } from '@/lib/fotos'
+import { agruparPorAno, inclinacao } from '@/lib/fotos-galeria'
 import { urlDaFoto } from '@/lib/fotos-armazenamento'
 import s from './fotos.module.css'
 
@@ -56,25 +58,31 @@ export default async function Fotos() {
                     de um culto, elas aparecem aqui.
                 </p>
             ) : (
-                <section className={s.albuns} aria-label="Álbuns">
-                    {albuns.map((a) => (
-                        <Link key={a.slug} href={`/fotos/${a.slug}`} className={s.album}>
-                            <div className={s.capa}>
-                                {a.capa && (
-                                    /* eslint-disable-next-line @next/next/no-img-element */
-                                    <img src={urlDaFoto(a.capa)} alt="" loading="lazy" decoding="async" />
-                                )}
+                <div className={s.anos}>
+                    {agruparPorAno(albuns).map(({ ano, itens }) => (
+                        <section key={ano} className={s.ano} aria-label={`Álbuns de ${ano}`}>
+                            <h2 className={s.anoNumero}>{ano}</h2>
+                            <div className={s.albuns}>
+                                {itens.map((a, n) => (
+                                    <Link key={a.slug} href={`/fotos/${a.slug}`} className={s.album} style={{ '--giro': `${inclinacao(n)}deg` } as CSSProperties}>
+                                        <div className={s.polaroid}>
+                                            <div className={s.capa}>
+                                                {a.capa && (
+                                                    /* eslint-disable-next-line @next/next/no-img-element */
+                                                    <img src={urlDaFoto(a.capa)} alt="" loading={n < 2 && ano === agruparPorAno(albuns)[0].ano ? 'eager' : 'lazy'} decoding="async" />
+                                                )}
+                                            </div>
+                                            <h3 className={s.albumTitulo}>{a.titulo}</h3>
+                                            <p className={s.albumLinha}>
+                                                {dataCurta(a.data)} · {a.fotos} {a.fotos === 1 ? 'foto' : 'fotos'}
+                                            </p>
+                                        </div>
+                                    </Link>
+                                ))}
                             </div>
-                            <div className={s.albumTexto}>
-                                <span className={s.albumData}>{dataCurta(a.data)}</span>
-                                <span className={s.albumContagem}>
-                                    {a.fotos} {a.fotos === 1 ? 'fotografia' : 'fotografias'}
-                                </span>
-                            </div>
-                            <h2 className={s.albumTitulo}>{a.titulo}</h2>
-                        </Link>
+                        </section>
                     ))}
-                </section>
+                </div>
             )}
 
             <footer className={s.rodape}>

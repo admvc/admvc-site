@@ -3,7 +3,8 @@
 import { getDb } from '@/lib/db'
 import { getSessionData, isAdmin as isAdminCheck } from '@/lib/auth-utils'
 import { redirect } from 'next/navigation'
-import { HeartHandshake, Package, AlertTriangle } from 'lucide-react'
+import { HeartHandshake, Package, AlertTriangle, Megaphone } from 'lucide-react'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -62,6 +63,9 @@ export default async function AdminDespensaPage() {
                 </span>
                 <h1 className="text-3xl md:text-4xl font-bold text-fg">Despensa</h1>
                 <p className="text-xs text-muted">Controlo de donativos e insumos.</p>
+                <Link href="/acaosocial/divulgar" className="inline-flex items-center gap-2 rounded-xl border border-soft bg-bg2 px-4 py-3 text-sm font-bold text-fg">
+                    <Megaphone size={16} aria-hidden /> Divulgar no culto (arte para o telão)
+                </Link>
             </header>
 
             {produtos.length === 0 ? (

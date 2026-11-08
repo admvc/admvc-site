@@ -6,9 +6,10 @@ import { notFound } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { ArrowLeft } from 'lucide-react'
 import { tenantPublico } from '@/lib/divulgacao-publica'
-import { albumPublico, dataPorExtenso, reacoesDoAparelho } from '@/lib/fotos'
+import { albumPublico, albunsPublicos, contagemReacoes, dataCurta, dataPorExtenso, reacoesDoAparelho } from '@/lib/fotos'
 import { aparelhoValido, COOKIE_APARELHO, hashDoAparelho } from '@/lib/fotos-gestao'
 import { urlDaFoto } from '@/lib/fotos-armazenamento'
+import { vizinhosDoAlbum } from '@/lib/fotos-galeria'
 import Galeria from '@/components/fotos/Galeria'
 import Partilhar from '@/components/fotos/Partilhar'
 import s from '../fotos.module.css'
@@ -50,9 +51,16 @@ export default async function Album({ params }: { params: Promise<{ slug: string
     })
     if (!album) notFound()
 
-    // Os coracoes deste aparelho (cookie) — sem login
+    // As reaccoes (contagens + as deste aparelho, por cookie) e os albuns vizinhos
     const ap = (await cookies()).get(COOKIE_APARELHO)?.value
-    const minhas = await reacoesDoAparelho(album.fotos.map((f) => f.id), aparelhoValido(ap) ? hashDoAparelho(ap) : null).catch(() => new Set<number>())
+    const ids = album.fotos.map((f) => f.id)
+    const [contagens, minhas, todos] = await Promise.all([
+        contagemReacoes(ids).catch(() => new Map<number, Record<string, number>>()),
+        reacoesDoAparelho(ids, aparelhoValido(ap) ? hashDoAparelho(ap) : null).catch(() => new Map<number, string[]>()),
+        tenantPublico().then((t) => (t ? albunsPublicos(t) : [])).catch(() => []),
+    ])
+    const { maisRecente, maisAntigo } = vizinhosDoAlbum(todos, album.slug)
+    const vizinho = (a: typeof maisRecente) => (a ? { slug: a.slug, titulo: a.titulo, data: dataCurta(a.data), capa: a.capa ? urlDaFoto(a.capa) : null } : null)
 
     const fotos = album.fotos.map((f) => ({
         id: f.id,
@@ -60,9 +68,12 @@ export default async function Album({ params }: { params: Promise<{ slug: string
         mini: urlDaFoto(f.miniatura ?? f.chave),
         largura: f.largura,
         altura: f.altura,
-        gostos: f._count.reacoes,
-        minha: minhas.has(f.id),
+        reacoes: contagens.get(f.id) ?? {},
+        minhas: minhas.get(f.id) ?? [],
     }))
+
+    const capaF = album.fotos.find((f) => f.chave === album.capa)
+    const capaMini = album.capa ? urlDaFoto(capaF?.miniatura ?? album.capa) : ''
 
     return (
         <div className={s.pagina}>
@@ -83,13 +94,19 @@ export default async function Album({ params }: { params: Promise<{ slug: string
                     <p className={s.albumContagem} style={{ marginTop: 16 }}>
                         {album.fotos.length} {album.fotos.length === 1 ? 'fotografia' : 'fotografias'}
                     </p>
+                    <div className={s.acoesAlbum}>
+                        <Partilhar titulo={`${album.titulo} · Fotografias ADMVC`} />
+                    </div>
                 </div>
-                <div className={s.acoesAlbum}>
-                    <Partilhar titulo={`${album.titulo} · Fotografias ADMVC`} />
-                </div>
+                {album.capa && (
+                    <div className={s.capaCabecalho} aria-hidden>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={capaMini} alt="" decoding="async" />
+                    </div>
+                )}
             </section>
 
-            <Galeria fotos={fotos} titulo={album.titulo} />
+            <Galeria fotos={fotos} titulo={album.titulo} maisRecente={vizinho(maisRecente)} maisAntigo={vizinho(maisAntigo)} />
 
             <footer className={s.rodape}>
                 <span>ADMVC · Figueira da Foz</span>

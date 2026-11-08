@@ -12,7 +12,7 @@ describe('estilos novos das redes', () => {
         expect(semDestaque('O *fruto* do Espírito')).toBe('O fruto do Espírito')
     })
     it('a receita guarda o estilo; o pedido leva o estilo e o tema; o telão nunca leva asteriscos', () => {
-        const r = normalizarReceita({ ...receitaVazia(), modeloRedes: 'elegante', tema: 'Transformados pela *reconciliação*', pecas: ['palavra'] })
+        const r = normalizarReceita({ ...receitaVazia(), estilosSeparados: true, modeloRedes: 'elegante', tema: 'Transformados pela *reconciliação*', pecas: ['palavra'] })
         expect(r.modeloRedes).toBe('elegante')
         expect(normalizarReceita({ modeloRedes: 'inventado' }).modeloRedes).toBe('classico')
         const ev = { nome: 'Culto', data: new Date('2026-10-18T18:30:00Z') }

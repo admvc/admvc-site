@@ -42,17 +42,31 @@ export const MODELOS_REDES = [
     { id: 'arcos', nome: 'Escuro com arcos' },
     { id: 'arco-claro', nome: 'Claro com arco' },
     { id: 'elegante', nome: 'Escuro elegante' },
+    { id: 'faixas', nome: 'Faixas' },
+    { id: 'moldura', nome: 'Moldura' },
+    { id: 'horizonte', nome: 'Horizonte' },
+    { id: 'editorial', nome: 'Editorial (papel)' },
 ] as const
 export type ModeloRedesId = (typeof MODELOS_REDES)[number]['id']
 export const lerModeloRedes = (v: unknown): ModeloRedesId => (MODELOS_REDES.find((m) => m.id === v)?.id ?? 'classico')
 
+/** Os 8 estilos. Cada um tem a versão do telão (o id) e a das redes (`redes`): escolher o estilo muda as duas.
+ *  Os 4 primeiros são os de antes (os ids não mudam: as publicações já feitas continuam iguais). */
 export const ESTILOS = [
-    { id: 'manchas', nome: 'Escuro com luzes' },
-    { id: 'foto', nome: 'Foto de fundo' },
-    { id: 'capsula', nome: 'Cápsula' },
-    { id: 'pastel', nome: 'Claro suave' },
-] as const
+    { id: 'manchas', nome: 'Escuro com luzes', redes: 'classico' },
+    { id: 'foto', nome: 'Foto de fundo', redes: 'elegante' },
+    { id: 'capsula', nome: 'Cápsula', redes: 'arcos' },
+    { id: 'pastel', nome: 'Claro suave', redes: 'arco-claro' },
+    { id: 'faixas', nome: 'Faixas', redes: 'faixas' },
+    { id: 'moldura', nome: 'Moldura', redes: 'moldura' },
+    { id: 'horizonte', nome: 'Horizonte', redes: 'horizonte' },
+    { id: 'editorial', nome: 'Editorial (papel)', redes: 'editorial' },
+] as const satisfies readonly { id: string; nome: string; redes: string }[]
 export type EstiloId = (typeof ESTILOS)[number]['id']
+/** Estilos claros (texto escuro sobre papel): usam `claro`/`claroTexto` da paleta. */
+export const ESTILOS_CLAROS: readonly EstiloId[] = ['pastel', 'editorial']
+/** O estilo das redes que acompanha um estilo do telão. */
+export const redesDoEstilo = (e: EstiloId): ModeloRedesId => (ESTILOS.find((x) => x.id === e)?.redes ?? 'classico') as ModeloRedesId
 
 export const PECAS = [
     { id: 'capa', nome: 'Capa do culto' },
@@ -129,6 +143,8 @@ export type OpcoesPeca = {
     alvo?: string; alvoTexto?: string          // oração dirigida (alvo da lista ou texto livre)
     tema?: string; ref?: string; preletor?: string // palavra
     capa?: string; quando?: string                // capa do culto: o título (ex.: "Culto da Família") e "Quarta, 21 out · 20h00"
+    sub?: string                                  // capa do culto: a linha de cima (ex.: "Jovens & Gerações")
+    livre?: string                                // texto livre a mais (aparece nas peças com texto)
     cantina?: { titulo?: string; subtitulo?: string; textos?: string[] } // capa da Cantina (a foto vai à parte)
     iban?: string; qr?: string                    // oferta / boas-vindas
     mbway?: string; qrOferta?: string             // oferta: o número do MB WAY e o que o QR leva (transferência ou página)
@@ -141,9 +157,15 @@ export type ConteudoArte = {
     linhaPequena?: string; titulo?: string; subtitulo?: string; destaque?: string
     preletor?: string; qr?: string; qrLegenda?: string; destaque2?: string; versiculo?: Versiculo | null
     moldura?: 'comida'; textosLegais?: string[]   // Cantina: moldura de ícones de comida e as linhas pequenas em baixo
+    livre?: string                                // o texto livre (só nas peças com texto: não na oferta, cantina nem no fundo sem texto)
 }
 
 export function conteudoDaPeca(peca: PecaId, o: OpcoesPeca): ConteudoArte {
+    const c = conteudoBase(peca, o)
+    return o.livre && peca !== 'neutro' && peca !== 'cantina' && peca !== 'oferta' ? { ...c, livre: o.livre } : c
+}
+
+function conteudoBase(peca: PecaId, o: OpcoesPeca): ConteudoArte {
     const rodar = (chave: string) => (o.versiculo !== undefined ? o.versiculo : versiculoDoDia(VERSICULOS[chave], o.semente))
     switch (peca) {
         case 'cantina':
@@ -152,7 +174,7 @@ export function conteudoDaPeca(peca: PecaId, o: OpcoesPeca): ConteudoArte {
                 moldura: 'comida', textosLegais: (o.cantina?.textos ?? []).filter(Boolean).slice(0, 4), versiculo: null,
             }
         case 'capa':
-            return { titulo: o.capa || 'Culto', subtitulo: o.quando, preletor: o.preletor, versiculo: null }
+            return { linhaPequena: o.sub, titulo: o.capa || 'Culto', subtitulo: o.quando, preletor: o.preletor, versiculo: null }
         case 'oracao':
             return { linhaPequena: 'Momento de', titulo: 'Oração', versiculo: rodar('oracao') }
         case 'oracao-dirigida': {

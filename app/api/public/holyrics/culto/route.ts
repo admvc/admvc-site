@@ -22,7 +22,7 @@ export async function GET(request: Request) {
 
         const evento = Number(q.get('evento'))
         if (q.get('evento')) {
-            const c = Number.isInteger(evento) && evento > 0 ? await cultoCompleto(tenantId, evento) : null
+            const c = Number.isInteger(evento) && evento > 0 ? await cultoCompleto(tenantId, evento, { origem: new URL(request.url).origin, chave: q.get('chave') ?? '' }) : null
             return c ? NextResponse.json({ ok: true, ...c }, { headers: { 'Cache-Control': 'no-store' } }) : NextResponse.json({ error: 'Culto não encontrado.' }, { status: 404 })
         }
         return NextResponse.json({ ok: true, cultos: await cultosDoApp(tenantId, 21) }, { headers: { 'Cache-Control': 'no-store' } })

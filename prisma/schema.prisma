@@ -2365,11 +2365,12 @@ model FotoReacao {
   tenant_id     Int
   foto_id       Int
   aparelho_hash String
+  emoji         String    @default("❤️")
   ip_hash       String?
   criado_em     DateTime  @default(now())
   foto          FotoAlbum @relation(fields: [foto_id], references: [id], onDelete: Cascade)
 
-  @@unique([foto_id, aparelho_hash])
+  @@unique([foto_id, aparelho_hash, emoji])
   @@index([foto_id])
   @@map("foto_reacoes")
 }
@@ -2391,4 +2392,41 @@ model PedidoRetirarFoto {
   @@index([tenant_id, estado])
   @@index([foto_id])
   @@map("foto_pedidos_retirar")
+}
+
+// Banco de fundos da Mídia (imagens de fundo para as artes de divulgação, por categoria). Ficheiro no Blob público <tenant>/fundos/.
+model FundoMidia {
+  id         Int      @id @default(autoincrement())
+  tenant_id  Int
+  nome       String
+  categoria  String   @default("ADMVC") // MULHERES | JOVENS | HOMENS | FAMILIA | LOUVOR | ADMVC
+  url        String
+  largura    Int      @default(0)
+  altura     Int      @default(0)
+  bytes      Int      @default(0)
+  ordem      Int      @default(0)
+  criado_por Int?
+  criado_em  DateTime @default(now())
+
+  @@index([tenant_id, categoria, ordem])
+  @@map("fundos_midia")
+}
+
+// Artes publicadas num culto para a secção ENCERRAMENTO do Holyrics: o banner da Cantina e a arte da Assistência Social
+// (uma de cada tipo por culto). Ficheiro no Blob público divulgacao/<tenant>/encerramento/<evento>/. Sem ligação ao culto:
+// a lista só mostra as de cultos que ainda existem.
+model ArteEncerramento {
+  id            Int      @id @default(autoincrement())
+  tenant_id     Int
+  evento_id     Int
+  tipo          String   // ASSISTENCIA | CANTINA
+  nome          String
+  url           String
+  criado_por    Int?
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @default(now()) @updatedAt
+
+  @@unique([evento_id, tipo])
+  @@index([tenant_id])
+  @@map("artes_encerramento")
 }

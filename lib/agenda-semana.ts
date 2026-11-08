@@ -4,6 +4,7 @@
 // sem kit, a pregação marcada para o culto (nome e foto do perfil do pregador). Tudo se pode mudar à mão (editarSemana).
 import { getTenantClient } from '@/lib/prisma'
 import { horaCurta } from '@/lib/agenda-midia'
+import { reunioesDeGrupos } from '@/lib/agenda-reunioes'
 
 export type FotoCartao = { url: string; recorte: boolean; w?: number; h?: number; foco?: string }
 export type Cartao = {
@@ -83,7 +84,10 @@ export async function cartoesDaSemana(tenantId: number, segunda: string, cong: n
             foto: fotoKit ?? avatar,
         })
     }
-    return montarCartoes(eventos, extras)
+    // As reuniões dos grupos entram como eventos (id negativo: nunca batem com um evento real)
+    const reunioes = await reunioesDeGrupos(tenantId, de, new Date(de.getTime() + 7 * 86400000), { congregacaoId: cong })
+    const todos = [...eventos.map((e) => ({ id: e.id, nome: e.nome, data: e.data })), ...reunioes.map((r) => ({ id: -r.id, nome: r.titulo, data: r.inicio }))]
+    return montarCartoes(todos, extras)
 }
 
 export type EdicaoSemana = {

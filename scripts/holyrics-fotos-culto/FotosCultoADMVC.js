@@ -145,9 +145,12 @@ function preparar(module, pastaEscolhida) {
         ? Math.min(inv.naEntrada, Math.min(Number(s.MAX) || 10, 20))
         : (inv && inv.fotos.length > 0 ? Math.min(inv.fotos.length, 20) : Math.min(Number(s.MAX) || 10, 20))
 
-    // O envio para o álbum do portal só existe na rotina da Entrada e precisa da chave de Mídia nas definições.
+    // O envio para o álbum do portal precisa da chave de Mídia nas definições. Vale para as fotos da Entrada e também para
+    // as que foram postas diretamente na pasta FOTOS-CULTO (seguem a mesma rotina: arquivo por culto + envio).
     var envioLigado = s.ENVIAR === undefined || s.ENVIAR === null || s.ENVIAR === '' || ligado(s.ENVIAR)
-    var podeEnviar = daEntrada && !!s.CHAVE && envioLigado
+    var haFotos = daEntrada || (!!inv && inv.fotos.length > 0)
+    // Mesmo sem fotos novas passa-se o --enviar: o exe retoma os cultos arquivados que ficaram por enviar (sem rede, cortado…).
+    var podeEnviar = !!s.CHAVE && envioLigado
 
     var titulos = titulosParaEscolher()
     var campos = [
@@ -179,13 +182,15 @@ function preparar(module, pastaEscolhida) {
                 : textoDoInventario(inv)) }
     ]
 
+    if (haFotos && s.CHAVE) {
+        campos.push({ id: 'enviar', key: 'enviar', type: 'boolean', label: 'Enviar as fotos para o álbum do portal (o QR passa a apontar para lá)', default_value: envioLigado })
+    } else if (haFotos) {
+        campos.push({ type: 'title', label: 'As fotos NÃO vão para o álbum do portal: falta colar a chave do portal nas definições do módulo.' })
+    }
     if (daEntrada) {
         campos.push({ type: 'title', label: 'As ' + inv.naEntrada + ' fotos ficam arquivadas em Cultos\\ (por data e título) e a Entrada fica vazia. As escolhidas vêm para esta pasta e, no fim, também saem (ficam no arquivo).' })
-        if (s.CHAVE) {
-            campos.push({ id: 'enviar', key: 'enviar', type: 'boolean', label: 'Enviar as fotos para o álbum do portal (o QR passa a apontar para lá)', default_value: envioLigado })
-        } else {
-            campos.push({ type: 'title', label: 'Para enviar as fotos para o álbum do portal, cole a chave do portal nas definições do módulo.' })
-        }
+    } else if (podeEnviar) {
+        campos.push({ type: 'title', label: 'As fotos desta pasta seguem a rotina da Entrada: ficam arquivadas em Cultos\\ (por data e título) e vão para o álbum.' })
     } else {
         campos.push({ id: 'recursivo', key: 'recursivo', type: 'boolean', label: 'Incluir também as fotos das subpastas', default_value: false })
         campos.push({ id: 'apagar', key: 'apagar', type: 'boolean', label: 'Apagar os originais (por omissão ficam em _originais)', default_value: false })
@@ -232,14 +237,15 @@ function preparar(module, pastaEscolhida) {
     // Um prazo folgado (o Holyrics mata o programa ao fim de 5 s por omissão!): ~20 s por foto + 1 minuto.
     // Se ainda assim for cortado, o exe já gravou os slides feitos e a próxima tentativa continua de onde ficou.
     // Com o envio para o portal, soma-se ~10 s por foto arquivada. Se for cortado, repetir o botão continua de onde ficou.
-    var prazo = Math.min(60000 + n * 20000 + (enviar ? Math.max(daEntrada ? inv.naEntrada : 0, 10) * 10000 : 0), 900000)
+    var prazo = Math.min(60000 + n * 20000 + (enviar ? Math.max(daEntrada ? inv.naEntrada : (inv ? inv.fotos.length : 0), 10) * 10000 : 0), 900000)
     h.notification('A preparar ' + n + (n === 1 ? ' foto…' : ' fotos…') + (enviar ? ' e a enviar para o portal' : '') + ' (pode levar alguns minutos)', 6)
 
     var res = rodarExe(module, exe, cli, prazo)
     var ultima = ultimaLinha(res, 'Fotos prontas.')
 
     if (res.ok) {
-        h.notification(ultima, 8)
+        // diz sempre se as fotos foram ou não para o álbum do portal (antes não dizia e parecia que tinham ido)
+        h.notification(ultima + (enviar ? '' : ' · As fotos NÃO foram para o álbum do portal' + (s.CHAVE ? ' (envio desligado).' : ' (falta a chave nas definições).')), 10)
         if (mostrar) h.hly('ShowImage', { file: alvo.nome, automatic: { seconds: segundos, repeat: true } })
     } else {
         h.notificationError(ultima || 'Não foi possível preparar as fotos. Veja o registo do módulo.', 12)

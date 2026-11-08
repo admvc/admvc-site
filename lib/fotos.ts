@@ -79,7 +79,7 @@ export async function albumPublico(tenantId: number, slug: string) {
             fotos: {
                 where: fotoVisivel,
                 orderBy: [{ ordem: 'asc' }, { hora: 'asc' }, { id: 'asc' }],
-                select: { id: true, chave: true, miniatura: true, largura: true, altura: true, _count: { select: { reacoes: true } } },
+                select: { id: true, chave: true, miniatura: true, largura: true, altura: true },
             },
         },
     })
@@ -92,11 +92,22 @@ export async function albumPublico(tenantId: number, slug: string) {
     }
 }
 
-/** Quais destas fotos este aparelho ja marcou com coracao. */
-export async function reacoesDoAparelho(fotoIds: number[], aparelhoHash: string | null): Promise<Set<number>> {
-    if (!aparelhoHash || !fotoIds.length) return new Set()
-    const r = await prisma.fotoReacao.findMany({ where: { foto_id: { in: fotoIds }, aparelho_hash: aparelhoHash }, select: { foto_id: true } })
-    return new Set(r.map((x) => x.foto_id))
+/** Contagem de reaccoes por foto e por emoji: { fotoId: { '❤️': 3, '🙏': 1 } }. */
+export async function contagemReacoes(fotoIds: number[]): Promise<Map<number, Record<string, number>>> {
+    const mapa = new Map<number, Record<string, number>>()
+    if (!fotoIds.length) return mapa
+    const linhas = await prisma.fotoReacao.groupBy({ by: ['foto_id', 'emoji'], where: { foto_id: { in: fotoIds } }, _count: { _all: true } })
+    for (const l of linhas) mapa.set(l.foto_id, { ...(mapa.get(l.foto_id) ?? {}), [l.emoji]: l._count._all })
+    return mapa
+}
+
+/** Que emojis este aparelho ja usou em cada foto: { fotoId: ['❤️', '🙏'] }. */
+export async function reacoesDoAparelho(fotoIds: number[], aparelhoHash: string | null): Promise<Map<number, string[]>> {
+    const mapa = new Map<number, string[]>()
+    if (!aparelhoHash || !fotoIds.length) return mapa
+    const r = await prisma.fotoReacao.findMany({ where: { foto_id: { in: fotoIds }, aparelho_hash: aparelhoHash }, select: { foto_id: true, emoji: true } })
+    for (const x of r) mapa.set(x.foto_id, [...(mapa.get(x.foto_id) ?? []), x.emoji])
+    return mapa
 }
 
 /**

@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { getSessionData } from '@/lib/auth-utils'
 import { getTenantClient } from '@/lib/prisma'
 import { podeFazerBannersCantina } from '@/lib/cantina-acesso'
+import { cultosParaPublicar } from '@/lib/encerramento-artes'
 import DivulgarClient from './DivulgarClient'
 
 export const dynamic = 'force-dynamic'
@@ -18,6 +19,7 @@ export default async function CantinaDivulgarPage() {
         select: { id: true, nome: true, preco: true, imagem_url: true },
         take: 400,
     })
+    const cultos = await cultosParaPublicar(sessao.tenantId, 'CANTINA')
     return (
         <div className="app-novo min-h-screen">
             <main className="mx-auto max-w-5xl space-y-5 px-4 pt-20 pb-56 md:pt-8">
@@ -25,7 +27,7 @@ export default async function CantinaDivulgarPage() {
                     <h1 className="text-[24px] font-bold">Divulgar a cantina</h1>
                     <p className="text-[16px] a-suave">Escolha o modelo, escreva o que vende e descarregue o banner para o telão ou para as redes.</p>
                 </header>
-                <DivulgarClient produtos={produtos.map((p) => ({ id: p.id, nome: p.nome, preco: p.preco, imagem: p.imagem_url }))} />
+                <DivulgarClient produtos={produtos.map((p) => ({ id: p.id, nome: p.nome, preco: p.preco, imagem: p.imagem_url }))} cultos={cultos} />
             </main>
         </div>
     )

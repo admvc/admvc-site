@@ -93,6 +93,7 @@ export default async function MembroLayoutWrapper({ children }: { children: Reac
     if (permissoes.isMidia || permissoes.isAdmin) itensMais.push({ chave: 'divulgar', texto: 'Agenda para divulgar', href: '/midia/agenda', detalhe: 'Telão, redes, impressão' })
     if (permissoes.isMidia || permissoes.isAdmin) itensMais.push({ chave: 'divulgacao-culto', texto: 'Divulgação do culto', href: '/midia/divulgacao', detalhe: 'Artes do telão: oração, boas-vindas, oferta, Palavra' })
     if (permissoes.isMidia || permissoes.isAdmin) itensMais.push({ chave: 'fotos-culto', texto: 'Fotos dos cultos', href: '/midia/fotos', detalhe: 'Álbuns, etiquetas e pedidos para retirar' })
+    if (permissoes.isMidia || permissoes.isAdmin) itensMais.push({ chave: 'fundos-midia', texto: 'Banco de fundos', href: '/midia/fundos', detalhe: 'Fundos das artes, por categoria' })
     if (temModulo(MODULOS.MESA_SOM) && (permissoes.isMidia || permissoes.isLouvor || permissoes.isAdmin)) itensMais.push({ chave: 'mesa', texto: 'Mesa de som', href: '/midia/mesax32' })
     if (temModulo(MODULOS.LUMIKIT) && (permissoes.isMidia || permissoes.isAdmin)) itensMais.push({ chave: 'luz', texto: 'Iluminação', href: '/midia/lumikit' })
     // Modulos que so aparecem se estiverem ligados no Cloud (e para quem tem acesso)

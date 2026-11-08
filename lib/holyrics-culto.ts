@@ -4,6 +4,7 @@
 import prisma from '@/lib/prisma'
 import { agoraLisboa } from '@/lib/alertas-encontros'
 import { lerPublicado } from '@/lib/divulgacao-publicacao'
+import { artesDeEncerramento, artesGuardadas, urlDaAgendaSemana, type ArteDoApp } from '@/lib/encerramento-artes'
 import { horasPrevistas, minutosPorExtenso, normalizarItens, responsavel, type MembroRotina } from '@/lib/rotina-culto'
 
 /** A secção (título colorido da lista do Holyrics) onde cada arte do telão entra. */
@@ -12,6 +13,12 @@ export const SECAO_DA_PECA: Record<string, string> = {
 }
 
 export type CultoDoApp = { id: number; data: string; nome: string; musicas: number; artes: number }
+/** De onde o módulo fala com o portal (para o portal lhe dar o endereço da agenda da semana, que leva a chave). */
+export type PedidoHolyrics = { origem: string; chave: string }
+
+/** Quantas artes extra do ENCERRAMENTO um culto tem (a agenda da semana conta sempre). */
+const PUBLICADAS_EXTRA = 1
+
 export type CultoCompleto = {
     culto: { id: number; nome: string; data: string }
     musicas: { id: string; titulo: string; artista: string; holyricsId: string; tom: string }[]
@@ -31,13 +38,15 @@ export async function cultosDoApp(tenantId: number, dias = 14): Promise<CultoDoA
         take: 40,
         select: { id: true, nome: true, data: true, kitDivulgacao: { select: { publicado: true } }, _count: { select: { repertorio: true } } },
     })
+    const extras = eventos.length ? await prisma.arteEncerramento.groupBy({ by: ['evento_id'], where: { tenant_id: tenantId, evento_id: { in: eventos.map((e) => e.id) } }, _count: { _all: true } }) : []
+    const nExtras = new Map(extras.map((x) => [x.evento_id, x._count._all]))
     return eventos.map((e) => ({
         id: e.id, nome: e.nome, data: e.data.toISOString(), musicas: e._count.repertorio,
-        artes: (lerPublicado(e.kitDivulgacao?.publicado)?.itens ?? []).filter((i) => i.tipo === 'telao').length,
+        artes: (lerPublicado(e.kitDivulgacao?.publicado)?.itens ?? []).filter((i) => i.tipo === 'telao').length + PUBLICADAS_EXTRA + (nExtras.get(e.id) ?? 0),
     }))
 }
 
-export async function cultoCompleto(tenantId: number, eventoId: number): Promise<CultoCompleto | null> {
+export async function cultoCompleto(tenantId: number, eventoId: number, pedido?: PedidoHolyrics): Promise<CultoCompleto | null> {
     const e = await prisma.evento.findFirst({
         where: { id: eventoId, tenant_id: tenantId },
         select: {
@@ -55,7 +64,10 @@ export async function cultoCompleto(tenantId: number, eventoId: number): Promise
     const data = e.data.toISOString()
 
     const telao = (lerPublicado(e.kitDivulgacao?.publicado)?.itens ?? []).filter((i) => i.tipo === 'telao')
-    const artes = telao.map((a, n) => ({ nome: a.nome, ficheiro: `${String(n + 1).padStart(2, '0')}-${a.id}.png`, url: a.url, secao: SECAO_DA_PECA[a.id] ?? 'AVISOS' }))
+    const artes: ArteDoApp[] = [
+        ...telao.map((a, n) => ({ nome: a.nome, ficheiro: `${String(n + 1).padStart(2, '0')}-${a.id}.png`, url: a.url, secao: SECAO_DA_PECA[a.id] ?? 'AVISOS' })),
+        ...artesDeEncerramento(pedido ? urlDaAgendaSemana(pedido.origem, pedido.chave, e.id) : null, await artesGuardadas(tenantId, e.id)),
+    ]
 
     // escala: uma linha por equipa ("Louvor: Vocalista Fulano · Baterista Sicrano")
     const porEquipa = new Map<string, string[]>()
@@ -99,4 +111,17 @@ export async function ligarMusica(tenantId: number, musicaId: string, holyricsId
     if (outra) return 'em-uso'
     const r = await prisma.musica.updateMany({ where: { id: musicaId, tenant_id: tenantId }, data: { holyrics_id: holyricsId } })
     return r.count === 1 ? 'ok' : 'nao-encontrada'
+}
+
+/**
+ * Só as artes extra do ENCERRAMENTO de um culto (agenda da semana, Assistência Social, Cantina), com os mesmos nomes de
+ * ficheiro que o "Sincronizar APP" recebe: o `--trazer` do módulo descarrega-as por aqui.
+ */
+export async function artesExtraDoCulto(tenantId: number, eventoId: number, pedido: PedidoHolyrics): Promise<{ culto: { id: number; nome: string; data: string }; artes: ArteDoApp[] } | null> {
+    const e = await prisma.evento.findFirst({ where: { id: eventoId, tenant_id: tenantId }, select: { id: true, nome: true, data: true } })
+    if (!e) return null
+    return {
+        culto: { id: e.id, nome: e.nome, data: e.data.toISOString() },
+        artes: artesDeEncerramento(urlDaAgendaSemana(pedido.origem, pedido.chave, e.id), await artesGuardadas(tenantId, e.id)),
+    }
 }

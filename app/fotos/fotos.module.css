@@ -93,77 +93,107 @@
     background: var(--linha);
 }
 
+.anos {
+    padding: clamp(10px, 3vh, 30px) clamp(18px, 5vw, 56px) clamp(60px, 10vh, 120px);
+}
+
+.ano { padding-top: clamp(22px, 4vh, 40px); }
+
+.anoNumero {
+    margin: 0;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+    font-size: clamp(34px, 5vw, 52px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--tinta);
+}
+
+.anoNumero::after {
+    content: '';
+    display: block;
+    width: 44px;
+    height: 2px;
+    margin-top: 12px;
+    background: var(--verde);
+}
+
 .albuns {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
-    gap: clamp(26px, 4vw, 52px) clamp(18px, 3vw, 34px);
-    padding: clamp(26px, 4vh, 44px) clamp(18px, 5vw, 56px) clamp(60px, 10vh, 120px);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: clamp(34px, 5vw, 60px) clamp(22px, 3.5vw, 44px);
+    padding: clamp(26px, 4vh, 44px) 0 clamp(26px, 5vh, 52px);
 }
 
 .album {
     display: block;
     color: inherit;
     text-decoration: none;
+    padding: 6px;
+    transform: rotate(var(--giro, 0deg));
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
+
+.album:hover,
+.album:focus-visible { transform: rotate(0deg) translateY(-4px); }
+.album:focus-visible { outline: 3px solid var(--verde); outline-offset: 6px; }
+
+/* Cartao tipo polaroid: papel branco, margem larga em baixo, duas folhas por tras */
+.polaroid {
+    position: relative;
+    padding: 12px 12px 16px;
+    background: #fffdf8;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(27, 30, 25, 0.12), 0 14px 28px -12px rgba(27, 30, 25, 0.3);
+    transition: box-shadow 0.35s ease;
+}
+
+.polaroid::before,
+.polaroid::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: #fffdf8;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(27, 30, 25, 0.16);
+}
+
+.polaroid::before { transform: rotate(3.2deg) translate(5px, 2px); }
+.polaroid::after { transform: rotate(-2.4deg) translate(-4px, 3px); }
+
+.album:hover .polaroid { box-shadow: 0 2px 4px rgba(27, 30, 25, 0.12), 0 22px 36px -14px rgba(27, 30, 25, 0.38); }
 
 .capa {
     position: relative;
     aspect-ratio: 4 / 3;
     overflow: hidden;
-    border-radius: 3px;
     background: #e3dccd;
-}
-
-.capa::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(15, 18, 14, 0) 62%, rgba(15, 18, 14, 0.24));
-    opacity: 0.8;
-    transition: opacity 0.4s ease;
 }
 
 .capa img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scale(1.005);
     transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.album:hover .capa img { transform: scale(1.045); }
-.album:hover .capa::after { opacity: 0.55; }
-
-.albumTexto {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 16px;
-    padding-top: 14px;
-}
-
-.albumData {
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--verde);
-}
-
-.albumContagem {
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    color: var(--tinta-suave);
-    white-space: nowrap;
-}
+.album:hover .capa img { transform: scale(1.04); }
 
 .albumTitulo {
-    margin: 7px 0 0;
+    margin: 14px 2px 0;
     font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
-    font-size: clamp(23px, 2.4vw, 30px);
+    font-size: clamp(20px, 2vw, 24px);
     font-weight: 400;
-    line-height: 1.12;
+    line-height: 1.15;
     letter-spacing: -0.01em;
+}
+
+.albumLinha {
+    margin: 6px 2px 0;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    color: var(--tinta-suave);
 }
 
 .vazio {
@@ -192,32 +222,38 @@
 
 /* ── Album aberto ───────────────────────────────────────────── */
 
-.cabecalhoAlbum {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 24px;
-    padding: clamp(22px, 5vh, 54px) clamp(18px, 5vw, 56px) clamp(22px, 3vh, 34px);
+.albumContagem {
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    color: var(--tinta-suave);
 }
 
-.cabecalhoTexto { max-width: 900px; }
+.cabecalhoAlbum {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(24px, 5vw, 64px);
+    padding: clamp(22px, 5vh, 54px) clamp(18px, 5vw, 56px) clamp(26px, 4vh, 40px);
+}
+
+.cabecalhoTexto { max-width: 760px; }
 
 .dataGrande {
     margin: 0 0 14px;
-    font-size: 11.5px;
-    font-weight: 600;
-    letter-spacing: 0.26em;
-    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.02em;
     color: var(--verde);
+    font-weight: 600;
 }
 
 .tituloAlbum {
     margin: 0;
     font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
-    font-size: clamp(38px, 6.6vw, 72px);
+    font-size: clamp(36px, 6.2vw, 68px);
     font-weight: 400;
     line-height: 1;
     letter-spacing: -0.025em;
+    text-wrap: balance;
 }
 
 .descricaoAlbum {
@@ -230,40 +266,59 @@
 
 .acoesAlbum {
     display: flex;
-    flex-shrink: 0;
-    gap: 8px;
-    padding-top: 6px;
-}
-
-.fotos {
-    display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    margin-top: 22px;
+}
+
+/* A capa, em moldura, a espreitar ao lado do titulo */
+.capaCabecalho {
+    flex-shrink: 0;
+    width: clamp(220px, 28vw, 380px);
+    padding: 10px 10px 30px;
+    background: #fffdf8;
+    border-radius: 2px;
+    transform: rotate(2.2deg);
+    box-shadow: 0 1px 2px rgba(27, 30, 25, 0.12), 0 22px 40px -16px rgba(27, 30, 25, 0.4);
+}
+
+.capaCabecalho img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    background: #e3dccd;
+}
+
+/* Masonry: colunas que respeitam a proporcao de cada foto */
+.fotos {
+    column-count: 4;
+    column-gap: 10px;
     padding: 0 clamp(10px, 3vw, 40px) clamp(60px, 10vh, 110px);
 }
 
 .foto {
+    margin: 0 0 10px;
+    break-inside: avoid;
+}
+
+.fotoMoldura {
     position: relative;
-    flex-grow: 1;
-    flex-basis: calc(var(--razao, 1.5) * 260px);
-    max-width: 100%;
-    min-width: min(100%, 200px);
-    margin: 0;
     overflow: hidden;
-    border-radius: 2px;
+    border-radius: 3px;
     background: #e3dccd;
     cursor: zoom-in;
 }
 
-.foto img {
+.fotoMoldura img {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: opacity 0.25s ease;
+    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-.foto:hover img { opacity: 0.92; }
+.fotoMoldura:hover img { transform: scale(1.03); }
 
 .fotoBotao {
     position: absolute;
@@ -278,12 +333,15 @@
 
 .fotoBotao:focus-visible { outline: 3px solid var(--verde); outline-offset: -3px; }
 
-.espacoFinal { flex-grow: 12; height: 0; }
+@media (max-width: 1100px) { .fotos { column-count: 3; } }
 
-@media (max-width: 640px) {
-    .cabecalhoAlbum { flex-direction: column; }
-    .acoesAlbum { padding-top: 0; }
-    .fotos { gap: 4px; padding-left: 4px; padding-right: 4px; }
-    .foto { flex-basis: calc(var(--razao, 1.5) * 190px); border-radius: 0; }
-    .capa { border-radius: 0; }
+@media (max-width: 760px) {
+    .cabecalhoAlbum { flex-direction: column-reverse; align-items: flex-start; }
+    .capaCabecalho { width: min(78%, 300px); align-self: center; }
+    .fotos { column-count: 2; column-gap: 6px; padding-left: 6px; padding-right: 6px; }
+    .foto { margin-bottom: 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .album, .capa img, .fotoMoldura img { transition: none; }
 }

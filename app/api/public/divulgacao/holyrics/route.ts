@@ -6,6 +6,7 @@ import prisma from '@/lib/prisma'
 import { rateLimit, ipDoPedido } from '@/lib/rate-limit'
 import { chaveCerta } from '@/lib/holyrics-chave'
 import { cultosPublicados, tenantPublico } from '@/lib/divulgacao-publica'
+import { artesExtraDoCulto } from '@/lib/holyrics-culto'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,11 +24,14 @@ export async function GET(request: Request) {
         const cultos = await cultosPublicados(tenantId, 14, evento)
         if (evento) {
             const c = cultos[0]
-            if (!c || c.telao.length === 0) return NextResponse.json({ error: 'Este culto não tem artes do telão publicadas.' }, { status: 404 })
-            return NextResponse.json({
-                ok: true,
-                culto: { id: c.id, nome: c.nome, data: c.data, artes: c.telao.map((a, n) => ({ nome: a.nome, ficheiro: `${String(n + 1).padStart(2, '0')}-${a.id}.png`, url: a.url })) },
-            })
+            // além das artes do telão: a agenda da semana, a Assistência Social e a Cantina (secção ENCERRAMENTO)
+            const extra = await artesExtraDoCulto(tenantId, evento, { origem: new URL(request.url).origin, chave: q.get('chave') ?? '' })
+            const artes = [
+                ...(c ? c.telao.map((a, n) => ({ nome: a.nome, ficheiro: `${String(n + 1).padStart(2, '0')}-${a.id}.png`, url: a.url })) : []),
+                ...(extra?.artes.map(({ nome, ficheiro, url }) => ({ nome, ficheiro, url })) ?? []),
+            ]
+            if (!extra || artes.length === 0) return NextResponse.json({ error: 'Este culto não tem artes do telão publicadas.' }, { status: 404 })
+            return NextResponse.json({ ok: true, culto: { id: extra.culto.id, nome: c?.nome ?? extra.culto.nome, data: c?.data ?? extra.culto.data, artes } })
         }
         return NextResponse.json({ ok: true, cultos: cultos.filter((c) => c.telao.length > 0).map((c) => ({ id: c.id, nome: c.nome, data: c.data, artes: c.telao.length })) })
     } catch (error) {

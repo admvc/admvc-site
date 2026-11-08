@@ -47,6 +47,24 @@ export const TEMAS_AGENDA: TemaAgenda[] = [
         celulaVazia: 'rgba(255,255,255,0.04)', celulaTexto: '#ffffff', celulaSuave: '#f0c9c0', numero: '#ffc778', cabecalho: '#ffc778',
         amostra: ['#7a2a6b', '#ffc778'],
     },
+    {
+        // Dos cultos regulares da marca: verde profundo e dourado
+        id: 'floresta', nome: 'Verde e dourado',
+        fundo: 'radial-gradient(circle at 85% 10%, #2e4f40 0%, #1a3c34 55%, #12291f 100%)', painel: '#0f241d', painelTexto: '#f5ecd0', painelSuave: '#a9bfae',
+        acento: '#d4af37', texto: '#eef2e8', suave: '#a9bfae', linha: '#b8962e',
+        fundoRedes: 'linear-gradient(170deg, #2e4f40 0%, #1a3c34 55%, #12291f 100%)', tituloRedes: '#f5ecd0', celula: 'rgba(245,236,208,0.12)',
+        celulaVazia: 'rgba(245,236,208,0.04)', celulaTexto: '#f5ecd0', celulaSuave: '#a9bfae', numero: '#d4af37', cabecalho: '#d4af37',
+        amostra: ['#1a3c34', '#d4af37'],
+    },
+    {
+        // Das Mulheres da marca, em claro: nude e terracota
+        id: 'nude', nome: 'Nude e terracota',
+        fundo: 'linear-gradient(135deg, #faf0e8 0%, #ecd0bf 100%)', painel: '#6e3626', painelTexto: '#fff6ee', painelSuave: '#e8c8b8',
+        acento: '#a8472f', texto: '#4a2a1f', suave: '#8f6a58', linha: '#c06c54',
+        fundoRedes: 'linear-gradient(180deg, #faf0e8 0%, #e9cbb9 100%)', tituloRedes: '#6e3626', celula: '#fffaf5',
+        celulaVazia: 'rgba(255,255,255,0.40)', celulaTexto: '#4a2a1f', celulaSuave: '#8f6a58', numero: '#a8472f', cabecalho: '#6e3626', logoFundo: '#6e3626',
+        amostra: ['#ecd0bf', '#a8472f'],
+    },
 ]
 
 export function lerTema(q: unknown): TemaAgenda {

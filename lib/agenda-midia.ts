@@ -3,6 +3,7 @@
 import { getTenantClient } from '@/lib/prisma'
 import { isAdmin, type SessionData } from '@/lib/auth-utils'
 import { pertenceAEquipa, EQUIPA_MIDIA } from '@/lib/equipas'
+import { reunioesDeGrupos } from '@/lib/agenda-reunioes'
 
 export type LinhaAgenda = { dia: string; hora: string; nome: string; tipo: string; casa: string | null }
 
@@ -25,7 +26,11 @@ export async function eventosDaAgenda(tenantId: number, de: Date, ate: Date, con
         orderBy: { data: 'asc' },
         select: { nome: true, data: true, tipo: true, congregacao: { select: { nome: true } } },
     })
-    return eventos.map((e) => ({ dia: e.data.toISOString().slice(0, 10), hora: horaCurta(e.data), nome: e.nome, tipo: e.tipo, casa: e.congregacao?.nome ?? null }))
+    const linhas: (LinhaAgenda & { quando: number })[] = eventos.map((e) => ({ dia: e.data.toISOString().slice(0, 10), hora: horaCurta(e.data), nome: e.nome, tipo: e.tipo, casa: e.congregacao?.nome ?? null, quando: e.data.getTime() }))
+    // As reuniões dos grupos (ex.: 1.ª segunda, Homens, 20h) entram com o nome do grupo e a hora
+    const reunioes = await reunioesDeGrupos(tenantId, de, ate, { congregacaoId })
+    for (const r of reunioes) linhas.push({ dia: r.inicio.toISOString().slice(0, 10), hora: horaCurta(r.inicio), nome: r.titulo, tipo: 'REUNIAO_GRUPO', casa: r.casa, quando: r.inicio.getTime() })
+    return linhas.sort((a, b) => a.quando - b.quando).map(({ quando: _q, ...l }) => l)
 }
 
 /** Juntar por dia: [{ dia, linhas }] pela ordem. */

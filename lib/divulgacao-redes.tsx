@@ -10,10 +10,10 @@ import { carregarFontes, carregarPomba, fotoPermitida, lerFundo, rgba } from '@/
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { ajustePorOmissao, caixaFoto, enquadrarFoto, enquadrarRecorte, lerAjuste, type Ajuste } from '@/lib/divulgacao-enquadrar'
-import { ModeloRede } from '@/lib/divulgacao-redes-modelos'
+import { ModeloRede, TextoLivre } from '@/lib/divulgacao-redes-modelos'
 import { lerModeloRedes } from '@/lib/divulgacao'
 
-type Dados = { titulo: string; subtitulo: string; quando: string; hora: string; preletor: string; foto: string | null; fw: number; fh: number; foco: string; tinta: number; recorte: boolean; fundo: string | null; ajuste: Ajuste | null; modelo: string; tema: string }
+type Dados = { livre: string; livreTam: string; titulo: string; subtitulo: string; quando: string; hora: string; preletor: string; foto: string | null; fw: number; fh: number; foco: string; tinta: number; recorte: boolean; fundo: string | null; ajuste: Ajuste | null; modelo: string; tema: string }
 
 // Maiúsculas em Cinzel são largas (~0.8 em): o título cabe em até 2 linhas no espaço dado
 function tamanhoTitulo(titulo: string, max: number, largura: number) {
@@ -65,7 +65,7 @@ function Rede({ formato, p, d, marca, letras }: { formato: RedeId; p: Paleta; d:
         const foto = d.foto ? (d.recorte ? recortado(d, caixa, p) : corte(d, caixa)) : null
         return (
             <ModeloRede modelo={d.modelo} formato={formato} W={W} H={H} p={p} marca={marca} letras={letras.claras} letrasEscuras={letras.escuras} foto={foto} caixa={caixa}
-                d={{ grande: d.tema || d.titulo, pequeno: d.tema ? d.titulo.replace(/[*|]/g, ' ').replace(/\s+/g, ' ').trim() : d.subtitulo, quando: d.quando, hora: d.hora, preletor: d.preletor }} />
+                d={{ grande: d.tema || d.titulo, pequeno: d.tema ? d.titulo.replace(/[*|]/g, ' ').replace(/\s+/g, ' ').trim() : d.subtitulo, quando: d.quando, hora: d.hora, preletor: d.preletor, livre: d.livre, livreTam: d.livreTam }} />
         )
     }
     const degrade = horizontal
@@ -98,6 +98,8 @@ function Rede({ formato, p, d, marca, letras }: { formato: RedeId; p: Paleta; d:
                     <div style={{ display: 'flex', fontWeight: 700, fontSize: tamPreletor, whiteSpace: 'nowrap' }}>{d.preletor}</div>
                 </div>
             )}
+            <TextoLivre texto={d.livre} tam={d.livreTam} base={horizontal ? 24 : story ? 34 : 30} largura={larg} centro={centro}
+                box={{ borderLeft: centro ? 'none' : `6px solid ${p.acento}`, paddingLeft: centro ? 0 : 16 }} estilo={{ color: p.texto, fontFamily: 'Montserrat', fontWeight: 500 }} />
         </div>
     )
 
@@ -161,7 +163,7 @@ export async function desenharRede(q: URLSearchParams): Promise<ImageResponse> {
     const d: Dados = {
         titulo: corta('titulo', 60) || 'Culto', subtitulo: corta('subtitulo', 40), quando: corta('quando', 30), hora: corta('hora', 10),
         preletor: corta('preletor', 60), foto: fotoPermitida(q.get('foto')), fw: Number(q.get('fw')) || 0, fh: Number(q.get('fh')) || 0, foco, tinta,
-        recorte: q.get('recorte') === '1', fundo: null, ajuste: lerAjuste(q.get('aj')), modelo: lerModeloRedes(q.get('modelo')), tema: corta('tema', 120),
+        recorte: q.get('recorte') === '1', fundo: null, ajuste: lerAjuste(q.get('aj')), modelo: lerModeloRedes(q.get('modelo')), tema: corta('tema', 120), livre: corta('livre', 120), livreTam: corta('livreTam', 1) || 'm',
     }
     const [fonts, marca, fundo] = await Promise.all([carregarFontes(), carregarPomba(), lerFundo(q.get('fundo'))])
     d.fundo = fundo

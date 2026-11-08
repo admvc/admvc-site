@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-    CalendarCheck2, CalendarDays, Palette, Home, ListMusic, Menu, X, Megaphone, Music2, Users, UserRound,
+    CalendarCheck2, CalendarDays, Layers, Palette, Home, ListMusic, Menu, X, Megaphone, Music2, Users, UserRound,
     HelpCircle, ShieldCheck, LogOut, HeartHandshake, MonitorPlay, Shield,
     Store, Wallet, HandHeart, BookOpen, Church, GraduationCap, Car, Briefcase, CalendarClock, Package,
     SlidersVertical, Lightbulb,
@@ -21,7 +21,7 @@ import { logoutMembro } from '@/actions/auth-actions'
 export type ItemMais = {
     chave: 'agenda' | 'avisos' | 'louvor' | 'grupo' | 'acolhimento' | 'midia' | 'perfil' | 'admin' | 'privacidade'
         | 'cantina' | 'tesouraria' | 'social' | 'pregacao' | 'obreiros' | 'cursos' | 'boleias'
-        | 'gabinete' | 'atendimento' | 'inventario' | 'mesa' | 'luz' | 'inscricoes' | 'divulgar' | 'divulgacao-culto' | 'fotos-culto' | 'familia'
+        | 'gabinete' | 'atendimento' | 'inventario' | 'mesa' | 'luz' | 'inscricoes' | 'divulgar' | 'divulgacao-culto' | 'fotos-culto' | 'fundos-midia' | 'familia'
     texto: string
     href: string
     detalhe?: string
@@ -32,7 +32,7 @@ export const ICONES: Record<ItemMais['chave'], typeof Users> = {
     midia: MonitorPlay, perfil: UserRound, admin: ShieldCheck, privacidade: Shield,
     cantina: Store, tesouraria: Wallet, social: HandHeart, pregacao: BookOpen, obreiros: Church,
     cursos: GraduationCap, boleias: Car, gabinete: Briefcase, atendimento: CalendarClock, inventario: Package,
-    mesa: SlidersVertical, luz: Lightbulb, inscricoes: ClipboardList, divulgar: Megaphone, 'divulgacao-culto': Palette, 'fotos-culto': Images, familia: Home,
+    mesa: SlidersVertical, luz: Lightbulb, inscricoes: ClipboardList, divulgar: Megaphone, 'divulgacao-culto': Palette, 'fotos-culto': Images, 'fundos-midia': Layers, familia: Home,
 }
 
 export default function BarraBaixo({ itensMais, repertorio = false }: { itensMais: ItemMais[]; repertorio?: boolean }) {

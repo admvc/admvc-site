@@ -3,7 +3,7 @@
 //   ?formato=redes&mes=AAAA-MM        → 1080×1350, calendário do mês (D S T Q Q S S); &disposicao=cartoes = o modelo antigo
 //   ?formato=semana&tamanho=post|story|telao&variante=claro|escuro&semana=AAAA-MM-DD → cartões por dia com fotos
 //      (lib/agenda-semana.ts; mudanças à mão: t=, r=, l_<dia>=, p_<dia>=, f_<dia>=, x_<dia>=1)
-//   &tema=classico|noite|areia|aurora (lib/agenda-temas.ts) · &c=<id da congregação> · &download=1 para descarregar
+//   &tema=classico|noite|areia|aurora|floresta|nude (lib/agenda-temas.ts) · &c=<id da congregação> · &download=1 para descarregar
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { ImageResponse } from 'next/og'
@@ -138,8 +138,9 @@ export async function GET(request: Request) {
             const doDia = new Map(todos.map((d) => [d.dia, d.linhas]))
             const semanas = semanasDomingo(mes)
             const gap = 10, largura = 1080 - 2 * 44, celula = Math.floor((largura - gap * 6) / 7)
-            const altura = semanas.length > 5 ? 136 : 164
-            const max = altura > 140 ? 3 : 2
+            // altura certa para o que cabe: 5 semanas = 2 eventos por dia; 6 semanas = 1 (e "+n")
+            const altura = semanas.length > 5 ? 150 : 172
+            const max = semanas.length > 5 ? 1 : 2
             img = new ImageResponse(
                 <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', background: t.fundoRedes, padding: '44px 44px 34px', fontFamily: 'sans-serif' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 26, width: largura }}>
@@ -160,8 +161,8 @@ export async function GET(request: Request) {
                                 {s.map((dia, j) => {
                                     const linhas = dia ? doDia.get(dia) ?? [] : []
                                     return (
-                                        <div key={j} style={{ width: celula, height: altura, borderRadius: 18, background: !dia ? 'transparent' : linhas.length ? t.celula : t.celulaVazia, display: 'flex', flexDirection: 'column', padding: 10, border: `2px solid ${dia && linhas.length && t.numero ? t.numero : 'transparent'}` }}>
-                                            {dia && <div style={{ display: 'flex', fontSize: 34, fontWeight: 700, lineHeight: 1, color: linhas.length ? corNumero(dia) : t.celulaSuave }}>{String(Number(dia.slice(8)))}</div>}
+                                        <div key={j} style={{ width: celula, height: altura, borderRadius: 18, background: !dia ? 'transparent' : linhas.length ? t.celula : t.celulaVazia, display: 'flex', flexDirection: 'column', padding: 10, overflow: 'hidden', border: `2px solid ${dia && linhas.length && t.numero ? t.numero : 'transparent'}` }}>
+                                            {dia && <div style={{ display: 'flex', flexShrink: 0, fontSize: 34, fontWeight: 700, lineHeight: 1, color: linhas.length ? corNumero(dia) : t.celulaSuave }}>{String(Number(dia.slice(8)))}</div>}
                                             {linhas.slice(0, max).map((l, k) => (
                                                 <div key={k} style={{ display: 'flex', flexDirection: 'column', marginTop: 6 }}>
                                                     <div style={{ display: 'flex', fontSize: 15, fontWeight: 700, color: t.celulaTexto, lineHeight: 1.1, textTransform: 'uppercase' }}>{curto(l.nome, 16)}</div>

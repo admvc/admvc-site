@@ -4,17 +4,19 @@
 // ver, guardar e descarregar, e copiar a legenda e a mensagem de WhatsApp.
 // As imagens vêm de /api/divulgacao/imagem (geradas na hora; a pré-visualização é uma versão pequena); o que fica guardado é só a receita.
 import { useEffect, useMemo, useState, useTransition } from 'react'
-import { Check, ChevronDown, Copy, Download, ImagePlus, Megaphone, Save, Share2, Trash2, Send } from 'lucide-react'
+import { Check, ChevronDown, Copy, Download, Eraser, ImagePlus, Layers, Megaphone, Save, Share2, Trash2, Send } from 'lucide-react'
 import { concluirPublicacao, guardarKitDivulgacao, guardarPadraoDivulgacao, retirarPublicacao } from '@/actions/divulgacao-actions'
-import { ALVOS, ESTILOS, FUNDOS_PRONTOS, MODELOS_REDES, PALETAS, PECAS, REDES, type PecaId, type RedeId } from '@/lib/divulgacao'
+import { ALVOS, ESTILOS, FUNDOS_PRONTOS, MODELOS_REDES, PALETAS, PECAS, REDES, redesDoEstilo, type EstiloId, type PecaId, type RedeId } from '@/lib/divulgacao'
 import { ibanValido } from '@/lib/oferta'
-import { nomeDaPeca, nomeDaRede, paramsDaPeca, paramsDaRede, semDestaque, type FotoKit, type Receita } from '@/lib/divulgacao-kit'
+import { FORMATOS_TEXTO, LIMITES_TEXTO, modeloDasRedes, nomeDaPeca, nomeDaRede, paramsDaPeca, paramsDaRede, quandoDoEvento, semDestaque, type CamposTexto, type FormatoTexto, type FotoKit, type Receita, type TextosAfinados } from '@/lib/divulgacao-kit'
 import { textosDoCulto } from '@/lib/divulgacao-textos'
 import { linkWhatsApp } from '@/lib/whatsapp'
 import { enviarImagem } from './enviar-imagem'
 import { AVISO_PARTILHA, partilharArte } from '@/lib/partilhar-arte'
 import { criarZip } from '@/lib/zip'
 import AjustarFoto from './AjustarFoto'
+import BancoDeFundos from '@/components/midia/EscolherFundo'
+import type { CategoriaFundo } from '@/lib/fundos'
 import { limitarAjuste, type Ajuste } from '@/lib/divulgacao-enquadrar'
 
 type Props = {
@@ -53,10 +55,13 @@ function CampoFoto({ titulo, ajuda, foto, onChange }: { titulo: string; ajuda: s
     const [erro, setErro] = useState('')
     // a última foto escolhida (para voltar a enviar sem o fundo branco) e se o servidor viu um fundo claro
     const [original, setOriginal] = useState<{ file: File; claro: boolean } | null>(null)
+    const [antes, setAntes] = useState<FotoKit | null>(null)   // a foto com fundo, para desfazer o recorte
+    const [aTirar, setATirar] = useState(false)
+    const [aviso, setAviso] = useState('')
 
     async function enviar(file: File | undefined, tirarBranco = false) {
         if (!file) return
-        setErro(''); setAEnviar(true)
+        setErro(''); setAEnviar(true); setAntes(null)
         try {
             const j = await enviarImagem(file, 'foto', tirarBranco)
             setOriginal({ file, claro: !!j.fundoClaro })
@@ -65,6 +70,29 @@ function CampoFoto({ titulo, ajuda, foto, onChange }: { titulo: string; ajuda: s
             setErro(e instanceof Error ? e.message : 'Não foi possível enviar a foto.')
         } finally {
             setAEnviar(false)
+        }
+    }
+
+    // "Tirar fundo branco": serve para a foto que acabou de ser escolhida e também para uma que já estava guardada
+    async function tirarFundo() {
+        if (!foto) return
+        setErro(''); setAviso(''); setATirar(true)
+        try {
+            let file = original?.file
+            if (!file) {
+                const res = await fetch(foto.url)
+                if (!res.ok) throw new Error('Não consegui abrir a foto. Escolha-a outra vez.')
+                const blob = await res.blob()
+                file = new File([blob], 'foto.jpg', { type: blob.type || 'image/jpeg' })
+            }
+            const j = await enviarImagem(file, 'foto', true)
+            if (!j.recorte) { setAviso('Não encontrei um fundo branco para tirar nesta foto.'); return }
+            setAntes(foto)
+            onChange({ url: j.url, foco: '50% 30%', w: j.largura, h: j.altura, recorte: true })
+        } catch (e) {
+            setErro(e instanceof Error ? e.message : 'Não foi possível tirar o fundo.')
+        } finally {
+            setATirar(false)
         }
     }
 
@@ -88,11 +116,18 @@ function CampoFoto({ titulo, ajuda, foto, onChange }: { titulo: string; ajuda: s
                     {foto.recorte
                         ? <p className="text-[14px] font-semibold">Recorte (fundo transparente): o preletor aparece de pé sobre o fundo.</p>
                         : <p className="text-[14px] a-suave">Clique na cara do preletor: o corte das artes fica à volta desse ponto.</p>}
-                    {!foto.recorte && original?.claro && (
-                        <button type="button" disabled={aEnviar} onClick={() => enviar(original.file, true)} className="a-botao a-botao-secundario !min-h-[44px]">
-                            {aEnviar ? 'A tirar o fundo…' : 'Tirar o fundo branco (fica recortado)'}
-                        </button>
+                    {!foto.recorte && (
+                        <div className="space-y-1">
+                            <button type="button" disabled={aEnviar || aTirar} onClick={tirarFundo} className={`a-botao ${original?.claro ? 'a-botao-principal' : 'a-botao-secundario'} !min-h-[48px] w-full max-w-xs`}>
+                                <Eraser size={18} aria-hidden /> {aTirar ? 'A tirar o fundo…' : 'Tirar fundo branco'}
+                            </button>
+                            <p className="text-[13px] a-suave">Para fotos tiradas contra uma parede ou pano branco: o preletor fica recortado, de pé sobre o fundo da arte.</p>
+                        </div>
                     )}
+                    {antes && foto.recorte && (
+                        <button type="button" onClick={() => { onChange(antes); setAntes(null) }} className="a-botao a-botao-secundario !min-h-[44px]">Voltar à foto com fundo</button>
+                    )}
+                    {aviso && <p role="status" className="text-[14px] font-semibold">{aviso}</p>}
                     <button type="button" onClick={() => onChange(null)} className="a-botao a-botao-secundario !min-h-[44px]"><Trash2 size={18} aria-hidden /> Tirar a foto</button>
                 </div>
             ) : (
@@ -106,10 +141,22 @@ function CampoFoto({ titulo, ajuda, foto, onChange }: { titulo: string; ajuda: s
     )
 }
 
-// Fundo da arte: só cores, um dos prontos ou um enviado (fica no Blob público)
-function EscolherFundo({ valor, onChange }: { valor: string; onChange: (v: string) => void }) {
+/** A categoria do banco de fundos que faz sentido abrir para este culto (pelo nome do culto). */
+function categoriaDoCulto(nome: string): CategoriaFundo {
+    const n = nome.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    if (/mulher|senhora/.test(n)) return 'MULHERES'
+    if (/jove|adolesc/.test(n)) return 'JOVENS'
+    if (/homen|varo/.test(n)) return 'HOMENS'
+    if (/famil|casa/.test(n)) return 'FAMILIA'
+    if (/louvor|adora/.test(n)) return 'LOUVOR'
+    return 'ADMVC'
+}
+
+// Fundo da arte: só cores, um dos prontos, um do banco de fundos da Mídia ou um enviado (fica no Blob público)
+function EscolherFundo({ valor, onChange, nomeCulto = '' }: { valor: string; onChange: (v: string) => void; nomeCulto?: string }) {
     const [aEnviar, setAEnviar] = useState(false)
     const [erro, setErro] = useState('')
+    const [banco, setBanco] = useState(false)
     const proprio = valor.startsWith('https://')
     async function enviar(file: File | undefined) {
         if (!file) return
@@ -144,7 +191,16 @@ function EscolherFundo({ valor, onChange }: { valor: string; onChange: (v: strin
                     <ImagePlus size={18} aria-hidden /> {aEnviar ? 'A enviar…' : proprio ? 'Trocar o meu fundo' : 'Enviar um fundo'}
                     <input type="file" accept="image/*" className="sr-only" disabled={aEnviar} onChange={(e) => { enviar(e.target.files?.[0]); e.target.value = '' }} />
                 </label>
+                <button type="button" className="a-botao a-botao-secundario !min-h-[48px]" aria-expanded={banco} onClick={() => setBanco((b) => !b)}>
+                    <Layers size={18} aria-hidden /> {banco ? 'Fechar o banco de fundos' : 'Escolher do banco de fundos'}
+                </button>
             </div>
+            {banco && (
+                <BancoDeFundos
+                    categoria={categoriaDoCulto(nomeCulto)}
+                    onEscolher={(f) => { onChange(f.url); setBanco(false) }}
+                />
+            )}
             {erro && <p role="alert" className="text-[15px]" style={{ color: 'var(--a-erro, #dc2626)' }}>{erro}</p>}
         </fieldset>
     )
@@ -169,7 +225,7 @@ function CaixaTexto({ titulo, valor, onChange, onRefazer, whatsapp }: { titulo: 
     )
 }
 
-const PADRAO_CAMPOS = ['estilo', 'paleta', 'redes', 'fundo', 'tinta', 'modeloRedes', 'cantina'] as const
+const PADRAO_CAMPOS = ['estilo', 'paleta', 'redes', 'fundo', 'tinta', 'modeloRedes', 'estilosSeparados', 'cantina'] as const
 const doPadrao = (x: Partial<Receita>) => JSON.stringify(PADRAO_CAMPOS.map((k) => x[k]))
 
 // O padrão de publicação da ADMVC: as cores e as letras das artes, as regras de desenho, e o botão para o fixar como início de cada kit
@@ -218,7 +274,146 @@ function PadraoAdmvc({ r, padraoJson, onGuardar, aGuardar }: { r: Receita; padra
     )
 }
 
-type BlocoId = 'estilo' | 'artes' | 'fotos' | 'textos'
+// Uma linha de texto para a equipa das redes: título, contador de caracteres, "repor o automático" e a pré-visualização
+// ao vivo (a imagem segue o que se escreve, depois de um instante). Cada mudança vale logo na receita.
+function CampoLinha({ id, rotulo, ajuda, valor, onChange, max, placeholder, multi }: {
+    id: string; rotulo: string; ajuda?: string; valor: string; onChange: (v: string) => void; max: number; placeholder?: string; multi?: boolean
+}) {
+    const quase = valor.length >= max * 0.9
+    return (
+        <div className="space-y-1">
+            <div className="flex items-baseline justify-between gap-2">
+                <label htmlFor={id} className="text-[15px] font-semibold">{rotulo}</label>
+                <span className={`shrink-0 text-[13px] ${quase ? 'font-semibold' : 'a-suave'}`} style={quase ? { color: 'var(--a-aviso, #b45309)' } : undefined} aria-live="polite">{valor.length}/{max}</span>
+            </div>
+            {multi
+                ? <textarea id={id} value={valor} rows={2} maxLength={max} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className="a-foco w-full rounded-[14px] border px-3 py-2 text-[16px]" style={estiloCampo} />
+                : <input id={id} value={valor} maxLength={max} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className={campo} style={estiloCampo} />}
+            <div className="flex items-start justify-between gap-3">
+                <p className="min-w-0 text-[13px] a-suave">{ajuda}</p>
+                {valor && <button type="button" onClick={() => onChange('')} className="a-foco inline-flex min-h-[32px] shrink-0 items-center text-[13px] underline" style={{ color: 'var(--a-destaque)' }}>Repor o automático</button>}
+            </div>
+        </div>
+    )
+}
+
+type FormatoTab = FormatoTexto
+
+// "Escrever nas artes": os campos ao lado de UMA arte ao vivo. O que se escreve vale para o telão e para as redes;
+// "Só para este formato" afina um texto num formato (o resto continua igual).
+function EditorTextos({ r, rv, mudar, ev, dia, meuVerso, setMeuVerso, ativo }: {
+    ativo: boolean; r: Receita; rv: Receita; mudar: (p: Partial<Receita>) => void; ev: { nome: string; data: Date }; dia: string; meuVerso: boolean; setMeuVerso: (v: boolean) => void
+}) {
+    const tabs: FormatoTab[] = ['telao', ...r.redes]
+    const [formato, setFormato] = useState<FormatoTab>(r.redes[0] ?? 'telao')
+    const atual: FormatoTab = tabs.includes(formato) ? formato : 'telao'
+    const [afinandoEm, setAfinandoEm] = useState<Partial<Record<FormatoTab, boolean>>>({})
+    const afinando = afinandoEm[atual] ?? !!r.afinar[atual]
+    const nomeFormato = FORMATOS_TEXTO.find((f) => f.id === atual)?.nome ?? ''
+
+    const geral = (k: CamposTexto) => (k === 'quando' ? r.quandoTexto : k === 'livre' ? r.textoLivre : r[k])
+    const valor = (k: CamposTexto) => (afinando ? r.afinar[atual]?.[k] ?? '' : geral(k))
+    function gravar(k: CamposTexto, v: string) {
+        if (afinando) {
+            const f: TextosAfinados = { ...(r.afinar[atual] ?? {}), [k]: v }
+            if (!v) delete f[k]
+            const afinar = { ...r.afinar }
+            if (Object.keys(f).length) afinar[atual] = f; else delete afinar[atual]
+            mudar({ afinar })
+        } else mudar(k === 'quando' ? { quandoTexto: v } : k === 'livre' ? { textoLivre: v } : { [k]: v } as Partial<Receita>)
+    }
+    function alternarAfinar(ligar: boolean) {
+        setAfinandoEm((x) => ({ ...x, [atual]: ligar }))
+        if (!ligar && r.afinar[atual]) { const afinar = { ...r.afinar }; delete afinar[atual]; mudar({ afinar }) }
+    }
+    const auto = quandoDoEvento(ev.data)
+    const marca = (k: CamposTexto, auto: string) => (afinando && geral(k) ? `Igual ao geral: ${geral(k)}` : auto)
+    const q = atual === 'telao' ? paramsDaPeca(rv, 'capa', dia, ev) : paramsDaRede(rv, atual, ev)
+    const vertical = atual === 'post' || atual === 'story'
+
+    return (
+        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(260px,380px)]">
+            <div className="order-2 space-y-4 md:order-1">
+                <p className="text-[15px] a-suave">O que escrever aqui vale para o telão e para as redes. Veja o resultado ao lado.</p>
+                <label className="a-foco flex min-h-[48px] cursor-pointer items-start gap-3 rounded-[14px] border px-3 py-2 text-[15px]" style={estiloCampo}>
+                    <input type="checkbox" checked={afinando} onChange={(e) => alternarAfinar(e.target.checked)} className="mt-1 h-5 w-5 shrink-0" />
+                    <span><strong>Só para {atual === 'telao' ? 'o telão' : `o ${nomeFormato}`}</strong><span className="block text-[13px] a-suave">{afinando ? 'O que escrever fica só nesta arte; o resto segue o texto geral. Desligar volta ao geral.' : 'Ligue para este formato ter textos diferentes.'}</span></span>
+                </label>
+
+                <CampoLinha id="t-titulo" rotulo="Título" valor={valor('titulo')} onChange={(v) => gravar('titulo', v)} max={LIMITES_TEXTO.titulo}
+                    placeholder={marca('titulo', ev.nome)} ajuda="O nome do culto. Pode usar | para mudar de linha." />
+                <CampoLinha id="t-sub" rotulo="Linha de cima" valor={valor('subtitulo')} onChange={(v) => gravar('subtitulo', v)} max={LIMITES_TEXTO.subtitulo}
+                    placeholder={marca('subtitulo', 'Ex.: Jovens & Gerações')} ajuda="Uma frase pequena por cima do título." />
+                <CampoLinha id="t-tema" rotulo="Tema da mensagem" valor={valor('tema')} onChange={(v) => gravar('tema', v)} max={LIMITES_TEXTO.tema}
+                    placeholder={marca('tema', 'Ex.: O fruto do Espírito')} ajuda="Ponha entre *asteriscos* a parte a destacar. Vazio = o título é o texto grande." />
+                <CampoLinha id="t-quando" rotulo="Data e hora" valor={valor('quando')} onChange={(v) => gravar('quando', v)} max={LIMITES_TEXTO.quando}
+                    placeholder={marca('quando', `${auto.quando} · ${auto.hora}`)} ajuda="Vazio = a data e a hora do culto. Separe com um ponto: Sábado, 14 nov · 19h30." />
+                <CampoLinha id="t-livre" rotulo="Texto livre" multi valor={valor('livre')} onChange={(v) => gravar('livre', v)} max={LIMITES_TEXTO.livre}
+                    placeholder={marca('livre', 'Ex.: Traz um amigo!')} ajuda="Uma frase a mais (convite, aviso…). Vazio = não aparece." />
+                {(r.textoLivre || r.afinar[atual]?.livre) && (
+                    <fieldset className="space-y-1">
+                        <legend className="text-[15px] font-semibold">Tamanho do texto livre</legend>
+                        <div className="flex gap-2">
+                            {([['p', 'Pequeno'], ['m', 'Normal'], ['g', 'Grande']] as const).map(([id, nome]) => (
+                                <label key={id} className={`${chip} flex-1 justify-center`} style={estiloCampo}>
+                                    <input type="radio" name="livre-tam" checked={r.textoLivreTam === id} onChange={() => mudar({ textoLivreTam: id })} className="sr-only" />{nome}
+                                </label>
+                            ))}
+                        </div>
+                    </fieldset>
+                )}
+
+                <div className="space-y-1">
+                    <label htmlFor="t-preletor" className="block text-[15px] font-semibold">Preletor</label>
+                    <input id="t-preletor" value={r.preletor} maxLength={60} placeholder="Ex.: Irmão Genesis (vazio se ainda não sabe)" onChange={(e) => mudar({ preletor: e.target.value })} className={campo} style={estiloCampo} />
+                </div>
+
+                <fieldset className="space-y-2">
+                    <legend className="text-[15px] font-semibold">Versículo no rodapé do telão</legend>
+                    <select value={r.semVersiculo ? 'sem' : meuVerso ? 'meu' : 'auto'} aria-label="Versículo no rodapé do telão"
+                        onChange={(e) => {
+                            const v = e.target.value
+                            setMeuVerso(v === 'meu')
+                            mudar(v === 'sem' ? { semVersiculo: true } : v === 'meu' ? { semVersiculo: false } : { semVersiculo: false, verso: '', versoRef: '' })
+                        }}
+                        className={campo} style={estiloCampo}>
+                        <option value="auto">Um da lista (muda de culto para culto)</option>
+                        <option value="meu">Escolher eu</option>
+                        <option value="sem">Sem versículo</option>
+                    </select>
+                    {!r.semVersiculo && meuVerso && (
+                        <>
+                            <CampoLinha id="t-verso" rotulo="Texto do versículo" multi valor={r.verso} onChange={(v) => mudar({ verso: v })} max={220} placeholder="Ex.: O Senhor é o meu pastor; nada me faltará." />
+                            <CampoLinha id="t-verso-ref" rotulo="Referência" valor={r.versoRef} onChange={(v) => mudar({ versoRef: v })} max={60} placeholder="Ex.: Salmos 23:1" />
+                        </>
+                    )}
+                </fieldset>
+            </div>
+
+            <div className="order-1 md:order-2">
+                <div className="space-y-2 md:sticky md:top-4">
+                    <div role="tablist" aria-label="Formato da pré-visualização" className="flex gap-1 overflow-x-auto">
+                        {tabs.map((id) => (
+                            <button key={id} type="button" role="tab" aria-selected={id === atual} onClick={() => setFormato(id)}
+                                className="a-foco min-h-[44px] shrink-0 rounded-full border px-4 text-[15px] font-semibold aria-selected:ring-2 aria-selected:ring-[var(--a-acento,#f5a524)]" style={estiloCampo}>
+                                {FORMATOS_TEXTO.find((f) => f.id === id)?.nome}{r.afinar[id] ? ' ✎' : ''}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="flex justify-center rounded-[14px] border p-2" style={{ borderColor: 'var(--a-borda)', background: 'var(--a-card)' }}>
+                        {/* só desenha quando este bloco está aberto */}
+                        {ativo && /* eslint-disable-next-line @next/next/no-img-element */
+                        <img key={atual} src={`/api/divulgacao/imagem?${q}&previa=1`} alt={`Pré-visualização: ${nomeFormato}`} className={`rounded-lg ${vertical ? 'h-[min(46vh,420px)] w-auto' : 'w-full'}`}
+                            style={{ aspectRatio: atual === 'post' ? '4 / 5' : atual === 'story' ? '9 / 16' : '16 / 9' }} />}
+                    </div>
+                    <p className="text-[13px] a-suave">{atual === 'telao' ? 'Mostra a capa do culto no telão.' : `Mostra o ${nomeFormato} das redes.`} Atualiza uns instantes depois de parar de escrever.</p>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+type BlocoId = 'estilo' | 'escrita' | 'artes' | 'fotos' | 'textos'
 type Escopo = 'tudo' | 'telao' | 'redes'
 
 // Bloco que abre e fecha (só um aberto de cada vez); o conteúdo fica montado para não perder o que se escreveu
@@ -263,11 +458,17 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
     const [publicadoEm, setPublicadoEm] = useState(publicadoEmInicial)
     const [publicadoJson, setPublicadoJson] = useState(publicadoJsonInicial)
     const [aPublicar, setAPublicar] = useState(false)
+    // O grupo "Telão" começa fechado (só a capa); abre-se para ver as outras artes. Fica lembrado neste aparelho.
+    const [telaoAberto, setTelaoAberto] = useState(false)
+    useEffect(() => { try { setTelaoAberto(localStorage.getItem('admvc-divulgacao-telao') === '1') } catch { /* sem armazenamento */ } }, [])
+    const alternarTelao = () => setTelaoAberto((v) => { const n = !v; try { localStorage.setItem('admvc-divulgacao-telao', n ? '1' : '0') } catch { /* sem armazenamento */ } return n })
 
     const atual = JSON.stringify(r)
     const alterado = atual !== guardadoJson
     const data = useMemo(() => new Date(dataISO), [dataISO])
     const mudar = (p: Partial<Receita>) => { setR((x) => ({ ...x, ...p })); setMsg(null) }
+    // Escolher o estilo muda o telão e as redes (a não ser que estejam separados)
+    const escolherEstilo = (id: EstiloId) => mudar(r.estilosSeparados ? { estilo: id } : { estilo: id, modeloRedes: redesDoEstilo(id) })
     const alternarPeca = (id: PecaId) => mudar({ pecas: PECAS.map((p) => p.id).filter((x) => (x === id ? !r.pecas.includes(x) : r.pecas.includes(x))) })
     const alternarRede = (id: RedeId) => mudar({ redes: REDES.map((p) => p.id).filter((x) => (x === id ? !r.redes.includes(x) : r.redes.includes(x))) })
 
@@ -383,25 +584,53 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
 
     // Legenda e WhatsApp: saem do culto e do preletor; podem editar-se (a edição fica até carregar em "Refazer")
     const gerados = useMemo(() => textosDoCulto({ nome: semDestaque(r.titulo) || eventoNome, data, preletor: r.preletor, local, hoje: new Date(hojeISO) }), [r.titulo, r.preletor, eventoNome, data, local, hojeISO])
-    const mostrarPreletor = r.pecas.includes('palavra') || r.pecas.includes('capa') || r.redes.length > 0
 
     return (
         <div className="space-y-4 pb-24 md:pb-0">
-            <Bloco id="estilo" titulo="Estilo e cores" resumo={`${ESTILOS.find((e) => e.id === r.estilo)?.nome} · ${paleta.nome}`} aberto={aberto} abrir={setAberto}>
+            <Bloco id="estilo" titulo="Estilo e cores" resumo={`${ESTILOS.find((e) => e.id === r.estilo)?.nome}${r.estilosSeparados ? ` · redes: ${MODELOS_REDES.find((m) => m.id === r.modeloRedes)?.nome}` : ''} · ${paleta.nome}`} aberto={aberto} abrir={setAberto}>
                 <PadraoAdmvc r={r} padraoJson={padraoJson} onGuardar={usarComoPadrao} aGuardar={aGuardarPadrao} />
                 <fieldset className="space-y-2">
-                    <legend className="text-[17px] font-bold">Estilo do telão</legend>
+                    <legend className="text-[17px] font-bold">Estilo {r.estilosSeparados ? 'do telão' : '(telão e redes)'}</legend>
+                    {!r.estilosSeparados && <p className="text-[14px] a-suave">Cada estilo tem a versão do telão e a das redes (o quadradinho no canto): escolher um muda as duas.</p>}
                     <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                         {ESTILOS.map((e) => (
                             <label key={e.id} className={`${miniatura} ${r.estilo === e.id ? 'ring-2 ring-[var(--a-acento,#f5a524)]' : ''}`} style={estiloCampo}>
-                                <input type="radio" name="estilo" checked={r.estilo === e.id} onChange={() => mudar({ estilo: e.id })} className="sr-only" />
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={`/images/divulgacao/amostras/${e.id}-${r.paleta}.jpg`} alt="" loading="lazy" className="block w-full" style={{ aspectRatio: '16 / 9', background: 'var(--a-borda)' }} />
+                                <input type="radio" name="estilo" checked={r.estilo === e.id} onChange={() => escolherEstilo(e.id)} className="sr-only" />
+                                <span className="relative block">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={`/images/divulgacao/amostras/${e.id}-${r.paleta}.jpg`} alt="" loading="lazy" className="block w-full" style={{ aspectRatio: '16 / 9', background: 'var(--a-borda)' }} />
+                                    {!r.estilosSeparados && (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img src={`/images/divulgacao/amostras/redes-${e.redes}.jpg`} alt="" loading="lazy" className="absolute bottom-1 right-1 w-[36%] rounded border-2 border-white shadow" style={{ aspectRatio: '16 / 9', objectFit: 'cover', background: 'var(--a-borda)' }} />
+                                    )}
+                                </span>
                                 <span className="block px-2 py-1.5 text-[14px] font-semibold">{e.nome}</span>
                             </label>
                         ))}
                     </div>
                 </fieldset>
+
+                <label className="a-foco flex min-h-[48px] cursor-pointer items-center gap-3 rounded-[14px] border px-3 py-2 text-[15px]" style={estiloCampo}>
+                    <input type="checkbox" checked={r.estilosSeparados} className="h-5 w-5 shrink-0"
+                        onChange={(e) => mudar(e.target.checked ? { estilosSeparados: true } : { estilosSeparados: false, modeloRedes: redesDoEstilo(r.estilo) })} />
+                    <span><strong>Estilos diferentes no telão e nas redes</strong><span className="block text-[13px] a-suave">Desligado: o mesmo estilo nos dois.</span></span>
+                </label>
+
+                {r.estilosSeparados && (
+                    <fieldset className="space-y-2">
+                        <legend className="text-[17px] font-bold">Estilo das redes</legend>
+                        <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+                            {MODELOS_REDES.map((m) => (
+                                <label key={m.id} className={`${miniatura} ${r.modeloRedes === m.id ? 'ring-2 ring-[var(--a-acento,#f5a524)]' : ''}`} style={estiloCampo}>
+                                    <input type="radio" name="modeloRedes" checked={r.modeloRedes === m.id} onChange={() => mudar({ modeloRedes: m.id })} className="sr-only" />
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={`/images/divulgacao/amostras/redes-${m.id}.jpg`} alt="" loading="lazy" className="block w-full" style={{ aspectRatio: '16 / 9', background: 'var(--a-borda)', objectFit: 'cover' }} />
+                                    <span className="block px-2 py-1.5 text-[14px] font-semibold">{m.nome}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </fieldset>
+                )}
 
                 <fieldset className="space-y-2">
                     <legend className="text-[17px] font-bold">Cores · {paleta.nome}</legend>
@@ -417,7 +646,11 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
                     </div>
                 </fieldset>
 
-                <EscolherFundo valor={r.fundo} onChange={(v) => mudar(v ? { fundo: v, estilo: 'foto' } : { fundo: '' })} />
+                <EscolherFundo nomeCulto={eventoNome} valor={r.fundo} onChange={(v) => mudar(v ? { fundo: v, estilo: 'foto', ...(r.estilosSeparados ? {} : { modeloRedes: redesDoEstilo('foto') }) } : { fundo: '' })} />
+            </Bloco>
+
+            <Bloco id="escrita" titulo="Escrever nas artes" resumo={`${r.titulo || eventoNome}${r.textoLivre ? ' · com texto livre' : ''}`} aberto={aberto} abrir={setAberto}>
+                <EditorTextos ativo={aberto === 'escrita'} r={r} rv={rv} mudar={mudar} ev={ev} dia={dia} meuVerso={meuVerso} setMeuVerso={setMeuVerso} />
             </Bloco>
 
             <Bloco id="artes" titulo="Artes" resumo={`${r.pecas.length} no telão · ${r.redes.length} nas redes`} aberto={aberto} abrir={setAberto}>
@@ -453,43 +686,8 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
                     </div>
                 </fieldset>
 
-                {r.redes.length > 0 && (
-                    <fieldset className="space-y-2">
-                        <legend className="text-[17px] font-bold">Estilo das redes</legend>
-                        <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-                            {MODELOS_REDES.map((m) => (
-                                <label key={m.id} className={`${miniatura} ${r.modeloRedes === m.id ? 'ring-2 ring-[var(--a-acento,#f5a524)]' : ''}`} style={estiloCampo}>
-                                    <input type="radio" name="modeloRedes" checked={r.modeloRedes === m.id} onChange={() => mudar({ modeloRedes: m.id })} className="sr-only" />
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={`/images/divulgacao/amostras/redes-${m.id}.jpg`} alt="" loading="lazy" className="block w-full" style={{ aspectRatio: '16 / 9', background: 'var(--a-borda)', objectFit: 'cover' }} />
-                                    <span className="block px-2 py-1.5 text-[14px] font-semibold">{m.nome}</span>
-                                </label>
-                            ))}
-                        </div>
-                    </fieldset>
-                )}
-
                 <div className="grid gap-3 md:grid-cols-2">
                     {r.redes.length === 0 && r.pecas.length === 0 && <p className="a-suave md:col-span-2">Marque pelo menos uma arte.</p>}
-                    {mostrarPreletor && (
-                        <div className="space-y-1">
-                            <span className="block text-[15px] font-semibold">Preletor (Palavra e redes; deixe vazio se ainda não sabe)</span>
-                            <CampoTexto valor={r.preletor} onCommit={(v) => mudar({ preletor: v })} placeholder="Ex.: Irmão Genesis" maxLength={60} />
-                        </div>
-                    )}
-                    {(r.redes.length > 0 || r.pecas.includes('capa')) && (
-                        <div className="space-y-1">
-                            <span className="block text-[15px] font-semibold">{r.redes.length > 0 ? 'Título (capa do telão e redes) e linha de cima nas redes' : 'Título da capa do culto'}</span>
-                            <CampoTexto valor={r.titulo} onCommit={(v) => mudar({ titulo: v })} placeholder={`Título (vazio = ${eventoNome}). Ex.: Culto da Família`} maxLength={60} />
-                            {r.redes.length > 0 && <CampoTexto valor={r.subtitulo} onCommit={(v) => mudar({ subtitulo: v })} placeholder="Linha de cima (ex.: Jovens & Gerações)" maxLength={40} />}
-                            {r.redes.length > 0 && r.modeloRedes !== 'classico' && (
-                                <>
-                                    <CampoTexto valor={r.tema} onCommit={(v) => mudar({ tema: v })} placeholder="Tema da mensagem (o texto grande da arte)" maxLength={80} />
-                                    <p className="text-[13px] a-suave">Ponha entre *asteriscos* a parte a destacar: As obras da carne X o *fruto do Espírito*. Sem tema, o texto grande é o título.</p>
-                                </>
-                            )}
-                        </div>
-                    )}
                     {r.pecas.includes('oracao-dirigida') && (
                         <div className="space-y-1">
                             <span className="block text-[15px] font-semibold">Oração por…</span>
@@ -502,8 +700,7 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
                     )}
                     {r.pecas.includes('palavra') && (
                         <div className="space-y-1">
-                            <span className="block text-[15px] font-semibold">Palavra no telão (sem tema = &quot;Momento da Palavra&quot;)</span>
-                            <CampoTexto valor={r.tema} onCommit={(v) => mudar({ tema: v })} placeholder="Tema da mensagem" maxLength={80} />
+                            <span className="block text-[15px] font-semibold">Palavra no telão (o tema escreve-se em &quot;Escrever nas artes&quot;)</span>
                             <CampoTexto valor={r.ref} onCommit={(v) => mudar({ ref: v })} placeholder="Texto bíblico (ex.: 1 Samuel 17:22-26)" maxLength={80} />
                             {(r.fotoV ?? r.fotoH)?.recorte && (
                                 <label className="flex min-h-[44px] items-center gap-2 text-[15px]">
@@ -575,26 +772,6 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
                             <CampoTexto valor={r.qr} onCommit={(v) => mudar({ qr: v })} maxLength={300} inputMode="url" />
                         </div>
                     )}
-                    <div className="space-y-1">
-                        <span className="block text-[15px] font-semibold">Versículo no rodapé do telão</span>
-                        <select value={r.semVersiculo ? 'sem' : meuVerso ? 'meu' : 'auto'}
-                            onChange={(e) => {
-                                const v = e.target.value
-                                setMeuVerso(v === 'meu')
-                                mudar(v === 'sem' ? { semVersiculo: true } : v === 'meu' ? { semVersiculo: false } : { semVersiculo: false, verso: '', versoRef: '' })
-                            }}
-                            className={campo} style={estiloCampo}>
-                            <option value="auto">Um da lista (muda de culto para culto)</option>
-                            <option value="meu">Escolher eu</option>
-                            <option value="sem">Sem versículo</option>
-                        </select>
-                        {!r.semVersiculo && meuVerso && (
-                            <>
-                                <CampoTexto valor={r.verso} onCommit={(v) => mudar({ verso: v })} placeholder="Texto do versículo" maxLength={220} />
-                                <CampoTexto valor={r.versoRef} onCommit={(v) => mudar({ versoRef: v })} placeholder="Referência (ex.: Salmos 23:1)" maxLength={60} />
-                            </>
-                        )}
-                    </div>
                 </div>
             </Bloco>
 
@@ -637,24 +814,40 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
 
             {msg && <p role="status" className="text-[15px]" style={{ color: msg.ok ? 'var(--a-ok, #16a34a)' : 'var(--a-erro, #dc2626)' }}>{msg.texto}</p>}
 
-            {lista.length > 0 && (
-                <section className="space-y-2" aria-labelledby="h-telao">
-                    <div className="flex items-center justify-between gap-2">
-                        <h2 id="h-telao" className="text-[19px] font-bold">Telão <span className="text-[15px] font-normal a-suave">· {lista.length} {lista.length === 1 ? 'arte' : 'artes'}</span></h2>
-                        <button type="button" onClick={() => descarregarTudo('telao')} disabled={ocupado} className="a-foco inline-flex min-h-[40px] shrink-0 items-center gap-1 rounded-full px-3 text-[14px] font-semibold disabled:opacity-50" style={{ background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }}><Download size={16} aria-hidden /> ZIP</button>
-                    </div>
-                    <Carrossel>
-                        {lista.map(({ id, n, q }) => (
-                            <figure key={id} className="w-[85%] shrink-0 snap-center space-y-2 md:w-[calc(50%-8px)]">
-                                <figcaption className="text-[16px] font-semibold">{PECAS.find((p) => p.id === id)?.nome}</figcaption>
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={`/api/divulgacao/imagem?${q}&previa=1`} alt={PECAS.find((p) => p.id === id)?.nome} loading="lazy" className="w-full rounded-xl border" style={{ borderColor: 'var(--a-borda)', aspectRatio: '16 / 9', background: 'var(--a-card)' }} />
-                                <a href={`/api/divulgacao/imagem?${q}&download=1`} download={nomeDaPeca(rv, id, n)} className="a-botao a-botao-secundario !min-h-[44px]"><Download size={18} aria-hidden /> Descarregar (1920×1080)</a>
-                            </figure>
-                        ))}
-                    </Carrossel>
-                </section>
-            )}
+            {lista.length > 0 && (() => {
+                const capa = lista.find((x) => x.id === 'capa') ?? lista[0]
+                return (
+                    <section className="space-y-2" aria-labelledby="h-telao">
+                        <div className="flex items-center justify-between gap-2">
+                            <button type="button" onClick={alternarTelao} aria-expanded={telaoAberto} aria-controls="telao-artes" className="a-foco flex min-h-[48px] min-w-0 flex-1 items-center gap-2 text-left">
+                                <ChevronDown size={22} className={`shrink-0 a-suave transition-transform ${telaoAberto ? 'rotate-180' : '-rotate-90'}`} aria-hidden />
+                                <h2 id="h-telao" className="text-[19px] font-bold">Telão <span className="text-[15px] font-normal a-suave">· {lista.length} {lista.length === 1 ? 'arte' : 'artes'}</span></h2>
+                            </button>
+                            <button type="button" onClick={() => descarregarTudo('telao')} disabled={ocupado} className="a-foco inline-flex min-h-[44px] shrink-0 items-center gap-1 rounded-full px-3 text-[14px] font-semibold disabled:opacity-50" style={{ background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }}><Download size={16} aria-hidden /> ZIP</button>
+                        </div>
+                        <div id="telao-artes">
+                            {!telaoAberto ? (
+                                <button type="button" onClick={alternarTelao} className="a-foco flex w-full max-w-md items-center gap-3 rounded-[14px] border p-2 text-left" style={{ borderColor: 'var(--a-borda)', background: 'var(--a-card)' }}>
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={`/api/divulgacao/imagem?${capa.q}&previa=1`} alt={`${PECAS.find((p) => p.id === capa.id)?.nome} (pré-visualização)`} className="w-[46%] shrink-0 rounded-lg border" style={{ borderColor: 'var(--a-borda)', aspectRatio: '16 / 9', background: 'var(--a-card)' }} />
+                                    <span className="min-w-0 text-[15px]"><strong className="block">{PECAS.find((p) => p.id === capa.id)?.nome}</strong><span className="a-suave">Toque para ver as {lista.length} artes.</span></span>
+                                </button>
+                            ) : (
+                                <Carrossel>
+                                    {lista.map(({ id, n, q }) => (
+                                        <figure key={id} className="w-[85%] shrink-0 snap-center space-y-2 md:w-[calc(50%-8px)]">
+                                            <figcaption className="text-[16px] font-semibold">{PECAS.find((p) => p.id === id)?.nome}</figcaption>
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={`/api/divulgacao/imagem?${q}&previa=1`} alt={PECAS.find((p) => p.id === id)?.nome} loading="lazy" className="w-full rounded-xl border" style={{ borderColor: 'var(--a-borda)', aspectRatio: '16 / 9', background: 'var(--a-card)' }} />
+                                            <a href={`/api/divulgacao/imagem?${q}&download=1`} download={nomeDaPeca(rv, id, n)} className="a-botao a-botao-secundario !min-h-[44px]"><Download size={18} aria-hidden /> Descarregar (1920×1080)</a>
+                                        </figure>
+                                    ))}
+                                </Carrossel>
+                            )}
+                        </div>
+                    </section>
+                )
+            })()}
 
             {rv.redes.length > 0 && (
                 <section className="space-y-2" aria-labelledby="h-redes">
@@ -693,7 +886,7 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
             )}
 
             {ajustando && fotoDa(ajustando) && (
-                <AjustarFoto formato={ajustando} modelo={r.modeloRedes} foto={fotoDa(ajustando)!} paleta={paleta}
+                <AjustarFoto formato={ajustando} modelo={modeloDasRedes(r)} foto={fotoDa(ajustando)!} paleta={paleta}
                     inicial={r.ajustes[ajustando] && r.ajustes[ajustando]!.url === fotoDa(ajustando)!.url ? r.ajustes[ajustando]! : null}
                     onFeito={(a) => guardarAjuste(ajustando, a)} onFechar={() => setAjustando(null)} />
             )}
