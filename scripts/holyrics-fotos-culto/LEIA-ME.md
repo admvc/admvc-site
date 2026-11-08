@@ -3,27 +3,31 @@
 A equipa da fotografia larga as fotos cruas do culto na pasta **Entrada** (ao lado do `FotosCulto.exe`). Com um clique,
 as escolhidas ganham moldura, o título do culto, a data, um versículo e o QR do álbum (`slide-01.png`, `slide-02.png`…) na
 pasta **FOTOS-CULTO** do Holyrics, e **todas** as originais ficam arquivadas em **Cultos\`<data> <título>`**. A Entrada fica
-vazia. Sem fotos na Entrada funciona como antes: usa as que estiverem na pasta FOTOS-CULTO e guarda os originais em
-`_originais`. Como os PCs sincronizam pelo Holyrics, chega fazer isto no PC da fotografia.
+vazia. **Se as fotos forem postas diretamente na pasta FOTOS-CULTO** (em vez da Entrada), com o envio para o portal
+ligado seguem a mesma rotina (arquivo por culto + álbum do portal); sem envio, funciona como antes (originais em
+`_originais`). O aviso do fim diz sempre se as fotos foram ou não para o álbum. Como os PCs sincronizam pelo Holyrics,
+chega fazer isto no PC da fotografia.
 
 ```
-C:\Holyrics\FotosCulto\
-├─ Entrada\                             as fotos cruas do culto (a equipa larga aqui)
-├─ FOTOS-CULTO\                         o Holyrics lê daqui: as slides prontos
-├─ Cultos\2026-11-02 Culto da Família\  as originais arquivadas, por culto
-└─ modelo\                              o desenho do slide
+C:\Holyrics\Holyrics\files\media\file\    (a pasta "file" do Holyrics)
+├─ FotosCulto.exe, FotosCultoADMVC.js     o programa e o módulo
+├─ Entrada\                               as fotos cruas do culto (a equipa larga aqui)
+├─ Cultos\2026-11-02 Culto da Família\    as originais arquivadas, por culto (e o estado do envio)
+└─ modelo\                                o desenho do slide
+
+C:\Holyrics\Holyrics\files\media\image\FOTOS-CULTO\   as slides prontas (o Holyrics mostra-as em Imagens)
 ```
 
 Fica guardado com o portal da igreja, em `admvc/scripts/holyrics-fotos-culto/` (histórico no git). Para levar para um PC,
 copiar esta pasta (ou descarregá-la do repositório).
 
 ## Instalar (uma vez em cada PC onde se vai usar)
-1. Copiar esta pasta inteira para `C:\Holyrics\FotosCulto\`
+1. Copiar esta pasta inteira para a pasta "file" do Holyrics: `C:\Holyrics\Holyrics\files\media\file\`
    (tem de ficar `FotosCulto.exe`, a pasta `modelo` e a pasta `Entrada` lado a lado; a `Cultos` é criada na 1.ª vez).
-2. Criar um atalho no Ambiente de Trabalho para `C:\Holyrics\FotosCulto\Entrada` — é onde a equipa põe as fotos.
+2. Criar um atalho no Ambiente de Trabalho para `C:\Holyrics\Holyrics\files\media\file\Entrada` — é onde a equipa põe as fotos.
 3. No Holyrics: **Menu → Módulos (JavaScript)** → adicionar módulo → escolher `FotosCultoADMVC.js`.
 4. Nas definições do módulo **Fotos do Culto ADMVC**:
-   - em **Arquivos permitidos**, escolher `C:\Holyrics\FotosCulto\FotosCulto.exe`;
+   - em **Arquivos permitidos**, escolher `C:\Holyrics\Holyrics\files\media\file\FotosCulto.exe`;
    - confirmar a pasta (`FOTOS-CULTO`) e o link do álbum;
    - colar a **chave do portal** (ver "Sincronizar APP", mais abaixo) e deixar ligado **"Enviar para o álbum do portal"** (vem ligado);
    - opcional: "Começar o slide-show no fim" e os segundos por foto.
