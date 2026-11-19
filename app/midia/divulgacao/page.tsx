@@ -11,6 +11,7 @@ import { diaCurto, hora } from '@/components/app/datas'
 import { normalizarReceita, receitaVazia } from '@/lib/divulgacao-kit'
 import DivulgacaoKit from '@/components/app/DivulgacaoKit'
 import SeletorCulto from '@/components/app/SeletorCulto'
+import YoutubeLivePainel from '@/components/midia/YoutubeLivePainel'
 
 export const dynamic = 'force-dynamic'
 
@@ -106,6 +107,8 @@ export default async function DivulgacaoCulto({ searchParams }: { searchParams: 
                 )}
 
                 {conteudo}
+
+                {escolhido && <YoutubeLivePainel key={`yt-${escolhido.id}`} eventoId={escolhido.id} />}
             </main>
         </div>
     )

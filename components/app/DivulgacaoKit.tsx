@@ -15,6 +15,7 @@ import { enviarImagem } from './enviar-imagem'
 import { AVISO_PARTILHA, partilharArte } from '@/lib/partilhar-arte'
 import { criarZip } from '@/lib/zip'
 import AjustarFoto from './AjustarFoto'
+import CampoPreletor from '@/components/midia/CampoPreletor'
 import BancoDeFundos from '@/components/midia/EscolherFundo'
 import type { CategoriaFundo } from '@/lib/fundos'
 import { limitarAjuste, type Ajuste } from '@/lib/divulgacao-enquadrar'
@@ -365,7 +366,7 @@ function EditorTextos({ r, rv, mudar, ev, dia, meuVerso, setMeuVerso, ativo }: {
 
                 <div className="space-y-1">
                     <label htmlFor="t-preletor" className="block text-[15px] font-semibold">Preletor</label>
-                    <input id="t-preletor" value={r.preletor} maxLength={60} placeholder="Ex.: Irmão Genesis (vazio se ainda não sabe)" onChange={(e) => mudar({ preletor: e.target.value })} className={campo} style={estiloCampo} />
+                    <CampoPreletor id="t-preletor" value={r.preletor} maxLength={60} placeholder="Escreva o nome (vazio se ainda não sabe)" onChange={(t) => mudar({ preletor: t })} />
                 </div>
 
                 <fieldset className="space-y-2">

@@ -7,6 +7,9 @@
 // "Sincronizar APP": pede ao portal (app.igrejaadmvc.org) o culto publicado pela Mídia — músicas para LOUVOR, artes do
 // TELÃO por secção, escala e rotina em texto — e escreve na lista aberta no Holyrics; ou só as artes, para a pasta
 // ARTES-CULTO, sem mexer na lista. Precisa da chave de Mídia → Holyrics.
+// "Capa na live do YouTube": escolhe o culto e o estado (Agendada / Em direto / Arquivo / Reserva, pré-escolhido pela hora), mostra a live
+// encontrada e o título que vai ficar e, se disser que sim, o portal troca a capa e o título da live. O Holyrics NUNCA tem credenciais do Google:
+// o portal é que fala com o YouTube (precisa do FotosCulto.exe versão 8 e da mesma chave de Mídia → Holyrics).
 // Precisa de "FotosCulto.exe" na lista de ficheiros permitidos do módulo (Definições do módulo → Arquivos permitidos).
 
 var mID = 'admvc-fotos-culto'
@@ -45,7 +48,8 @@ function settings(module) {
         { id: 'PORTAL', name: 'Portal (artes do culto)', label: 'Portal (artes do culto)', type: 'string', default_value: 'https://app.igrejaadmvc.org' },
         { id: 'CHAVE', name: 'Chave do portal (artes do culto)', label: 'Chave do portal (artes do culto)', type: 'password', default_value: '' },
         { id: 'PASTA_ARTES', name: 'Pasta das artes (em Imagens)', label: 'Pasta das artes (em Imagens)', type: 'string', default_value: 'ARTES-CULTO' },
-        { id: 'ENVIAR', name: 'Enviar para o álbum do portal', label: 'Enviar para o álbum do portal', type: 'boolean', default_value: 'true' }
+        { id: 'ENVIAR', name: 'Enviar para o álbum do portal', label: 'Enviar para o álbum do portal', type: 'boolean', default_value: 'true' },
+        { id: 'STUDIO', name: 'Media Studio (pasta ou .exe; vazio = procurar)', label: 'Media Studio (pasta ou .exe; vazio = procurar)', type: 'string', default_value: '' }
     ]
 }
 
@@ -62,7 +66,38 @@ function actions(module) {
         hint: 'As fotos da Entrada → 10 escolhidas com moldura, título e QR do álbum',
         icon: 'photo_library',
         action: function (evt) { preparar(module, null) }
+    }, {
+        id: 'capa_live_youtube',
+        name: 'Capa na live do YouTube',
+        hint: 'Troca a capa e o título da live agendada do YouTube para este culto (agendada, em direto ou arquivo)',
+        icon: 'smart_display',
+        action: function (evt) { capaNaLiveYoutube(module) }
+    }, {
+        id: 'abrir_media_studio',
+        name: 'Abrir Media Studio',
+        hint: 'Abre o ADMVC Media Studio (sermões e clips); se estiver fechado, arranca-o',
+        icon: 'movie',
+        action: function (evt) { abrirMediaStudio(module) }
     }]
+}
+
+/** Abre o painel do Media Studio; se não estiver a correr, o FotosCulto.exe arranca-o (ele abre o painel quando fica pronto). */
+function abrirMediaStudio(module) {
+    var exe = exePermitido(module)
+    if (!exe) return
+    // Um exe antigo não conhece --abrir-studio e faria a rotina das fotos: confirmar a versão primeiro
+    if (versaoDoExe(module, exe) < 7) {
+        h.notificationError('O FotosCulto.exe é antigo: copie o novo (versão 7) para a pasta do módulo.', 10)
+        return
+    }
+    var s = module.settings || {}
+    var cli = ['--abrir-studio']
+    if (s.STUDIO) cli = cli.concat(['--studio', String(s.STUDIO)])
+    var res = rodarExe(module, exe, cli, 20000)
+    var p = ultimaLinha(res, 'Sem resposta do FotosCulto.exe.').split('|')
+    if (p[0] === 'OK' && p[1] === 'aberto') h.notification('Media Studio aberto no browser.', 5)
+    else if (p[0] === 'OK') h.notification('A arrancar o Media Studio… o painel abre sozinho dentro de segundos (deixe a janela preta aberta).', 10)
+    else h.notificationError(p.length > 1 ? p.slice(1).join('|') : p[0], 10)
 }
 
 function contextActions(module) {
@@ -70,6 +105,10 @@ function contextActions(module) {
         name: 'Sincronizar APP',
         types: ['image_folder'],
         action: function (evt) { sincronizarApp(module) }
+    }, {
+        name: 'Capa na live do YouTube',
+        types: ['image_folder'],
+        action: function (evt) { capaNaLiveYoutube(module) }
     }, {
         name: 'Preparar fotos para o slide-show',
         types: ['image_folder'],
@@ -452,6 +491,86 @@ function baixarSoArtes(module, exe, k, culto) {
         if (ligado(k.s.MOSTRAR)) h.hly('ShowImage', { file: k.pasta, automatic: { seconds: Number(k.s.SEGUNDOS) || 8, repeat: true } })
     } else {
         h.notificationError(ultimaLinha(fim, 'Não foi possível trazer as artes.'), 10)
+    }
+}
+
+// ---- Capa na live do YouTube: ver a live → escolher o estado → confirmar → aplicar (o portal fala com o Google)
+
+var ESTADOS_LIVE = [
+    { value: 'agendada', label: 'Agendada (com o dia e a hora)' },
+    { value: 'direto', label: 'Em direto (EM DIRETO · AGORA)' },
+    { value: 'arquivo', label: 'Arquivo (depois do culto, com a data)' },
+    { value: 'reserva', label: 'Reserva (Culto em direto)' }
+]
+
+function nomeDoEstadoLive(v) {
+    for (var i = 0; i < ESTADOS_LIVE.length; i++) if (ESTADOS_LIVE[i].value === v) return ESTADOS_LIVE[i].label
+    return v
+}
+
+/** Lê as linhas do FotosCulto.exe --live-ver: { erro } ou { sugerido, live: { titulo, quando, estado, culto }, titulos: { estado: título } }. */
+function lerLiveVer(res) {
+    var r = { erro: '', sugerido: 'agendada', live: null, titulos: {} }
+    for (var i = 0; i < res.linhas.length; i++) {
+        var p = res.linhas[i].split('|')
+        if (p[0] === 'ERRO') { r.erro = p.slice(1).join('|'); return r }
+        if (p[0] === 'S') r.sugerido = p[1]
+        else if (p[0] === 'L' && p.length >= 5) r.live = { titulo: p[1], quando: p[2], estado: p[3], culto: p[4] }
+        else if (p[0] === 'T' && p.length >= 3) r.titulos[p[1]] = p.slice(2).join('|')
+    }
+    if (!r.live) r.erro = ultimaLinha(res, 'Não consegui ver a live do YouTube.')
+    return r
+}
+
+function capaNaLiveYoutube(module) {
+    var exe = exePermitido(module)
+    if (!exe) return
+    // Um exe antigo não conhece --live-ver e faria a rotina das fotos: confirmar a versão primeiro
+    if (versaoDoExe(module, exe) < 8) {
+        h.notificationError('O FotosCulto.exe é antigo: copie o novo (versão 8) para a pasta do módulo.', 10)
+        return
+    }
+    var k = chavesDoPortal(module)
+    if (!k) return
+
+    var lista = cultosDoApp(module, exe, k)
+    if (!lista) return
+    var escolha = escolherCulto('Capa na live do YouTube', lista, false)
+    if (!escolha) return
+    var culto = escolha.culto
+
+    h.notification('A procurar a live do YouTube de ' + dataCurta(culto.data) + '…', 4)
+    var ver = lerLiveVer(rodarExe(module, exe, ['--live-ver', '--portal', k.portal, '--chave', k.chave, '--evento', String(culto.id)], 60000))
+    if (ver.erro) { h.notificationError(ver.erro, 12); return }
+
+    // o estado vem pré-escolhido (pela live e pela hora do culto); com UM só campo o Holyrics devolve o próprio valor
+    var r = h.input([
+        { type: 'title', label: 'Capa na live do YouTube' },
+        { type: 'separator' },
+        { id: 'estado', key: 'estado', type: 'string', label: 'Estado da capa', default_value: ver.sugerido, allowed_values: ESTADOS_LIVE }
+    ])
+    if (r == null) { h.notification('Cancelado.', 3); return }
+    var texto = (r !== null && r !== undefined && r.estado !== undefined && r.estado !== null) ? String(r.estado) : String(r)
+    var estado = ''
+    for (var i = 0; i < ESTADOS_LIVE.length; i++) {
+        if (ESTADOS_LIVE[i].value === texto || ESTADOS_LIVE[i].label === texto) { estado = ESTADOS_LIVE[i].value; break }
+    }
+    if (!estado) { h.notificationError('Não percebi o estado escolhido (o Holyrics devolveu: «' + texto.substring(0, 70) + '»).', 12); return }
+
+    var novoTitulo = ver.titulos[estado] || '(o portal escolhe)'
+    if (!h.yesNo('Live encontrada: ' + ver.live.titulo + ', ' + dataCurta(ver.live.quando) + '\n\nCapa: ' + nomeDoEstadoLive(estado) + '\nO título passa a:\n' + novoTitulo + '\n\nAplicar na live do YouTube?')) {
+        h.notification('Não foi aplicado.', 3)
+        return
+    }
+
+    h.notification('A trocar a capa e o título na live…', 6)
+    var fim = rodarExe(module, exe, ['--live-aplicar', '--portal', k.portal, '--chave', k.chave, '--evento', String(culto.id), '--estado', estado], 90000)
+    var ultima = ultimaLinha(fim, 'Sem resposta do FotosCulto.exe.').split('|')
+    if (ultima[0] === 'OK') {
+        if (ultima[2] === '0') h.notification(ultima.slice(3).join('|') || 'Título trocado, mas a capa não.', 15)
+        else h.notification('Live atualizada: «' + ultima[1] + '». A capa nova pode demorar uns minutos a aparecer no YouTube.', 12)
+    } else {
+        h.notificationError(ultima[0] === 'ERRO' ? ultima.slice(1).join('|') : (ultima.join('|') || 'Não foi possível aplicar na live.'), 15)
     }
 }
 

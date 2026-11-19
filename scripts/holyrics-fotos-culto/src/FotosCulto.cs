@@ -24,7 +24,14 @@
 //   o álbum publica-se e o QR do slide aponta para https://<portal>/fotos/<slug>. O estado fica em
 //   Cultos\<data> <título>\._portal.txt (retoma se for cortado; sem rede tenta da próxima vez).
 //
-//   FotosCulto.exe --versao                    → V|6 (o módulo confirma que este exe é o novo antes de perguntar)
+//   Capa na live do YouTube (o portal é que fala com o Google; este programa NUNCA tem credenciais do Google):
+//   FotosCulto.exe --live-ver --portal … --chave … --evento N        → S|estado sugerido  L|título da live|AAAA-MM-DDTHH:MM|estado da live|culto  T|estado|título que vai ficar (um por estado)
+//                                                                       ou ERRO|mensagem (sem live agendada, YouTube não ligado…)
+//   FotosCulto.exe --live-aplicar --portal … --chave … --evento N --estado agendada|direto|arquivo|reserva   → OK|título|capa (1/0)|aviso   ou ERRO|mensagem
+//
+//   FotosCulto.exe --versao                    → V|8 (o módulo confirma que este exe é o novo antes de perguntar)
+//   FotosCulto.exe --abrir-studio [--studio "…\ADMVC Media Studio.exe"] [--url http://127.0.0.1:8100]
+//                  → OK|aberto (já corria: abre o painel)  OK|arrancado|<exe>  ERRO|<motivo>
 //   FotosCulto.exe --inventario --pasta "…"    → S|slides  T|fotos  F|nome  I|extensão|quantas  E|na Entrada  IE|extensão|quantas
 //
 // Para cada foto da pasta (jpg/jpeg/png/webp, por ordem, subpastas com --recursivo) abre
@@ -61,9 +68,12 @@ static class FotosCulto
         {
             var a = LerArgumentos(args);
             if (a.ContainsKey("versao")) return Versao();
+            if (a.ContainsKey("abrir-studio")) return AbrirStudio(a);
             if (a.ContainsKey("inventario")) return Inventario(a);
             if (a.ContainsKey("cultos")) return CultosDoApp(a);
             if (a.ContainsKey("culto")) return CultoDoApp(a);
+            if (a.ContainsKey("live-ver")) return LiveVer(a);
+            if (a.ContainsKey("live-aplicar")) return LiveAplicar(a);
             if (a.ContainsKey("ligar")) return LigarMusica(a);
             if (a.ContainsKey("listar")) return Listar(a);
             if (a.ContainsKey("trazer")) return Trazer(a);
@@ -618,10 +628,173 @@ static class FotosCulto
         }
     }
 
+    // ---- capa na live do YouTube (o portal troca a capa e o título; aqui só se pede e se mostra) ---------------------------------
+
+    /// <summary>POST ao portal (/api/public/holyrics/youtube-live). Devolve null se correu bem, senão a mensagem de erro (já em português).</summary>
+    static string PedirLive(Dictionary<string, string> a, string acao, string extra, out Dictionary<string, object> json)
+    {
+        json = null;
+        string portal = Valor(a, "portal").TrimEnd('/');
+        string chave = Valor(a, "chave");
+        string evento = Valor(a, "evento");
+        if (portal == "" || chave == "") return "Falta o endereço do portal ou a chave (definições do módulo).";
+        int n;
+        if (!int.TryParse(evento, out n) || n <= 0) return "Falta indicar o culto.";
+        ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
+        var js = new JavaScriptSerializer();
+        try
+        {
+            using (var c = new WebClient { Encoding = Encoding.UTF8 })
+            {
+                string url = portal + "/api/public/holyrics/youtube-live?chave=" + Uri.EscapeDataString(chave) + "&acao=" + acao + "&evento=" + n + extra;
+                json = js.DeserializeObject(c.UploadString(url, "POST", "")) as Dictionary<string, object>;
+                return json == null ? "O portal respondeu de forma inesperada." : null;
+            }
+        }
+        catch (WebException e)
+        {
+            var r = e.Response as HttpWebResponse;
+            if (r != null)
+            {
+                try
+                {
+                    using (var sr = new StreamReader(r.GetResponseStream(), Encoding.UTF8))
+                    {
+                        var j = js.DeserializeObject(sr.ReadToEnd()) as Dictionary<string, object>;
+                        if (j != null && j.ContainsKey("error")) return Convert.ToString(j["error"]);
+                    }
+                }
+                catch { }
+                if ((int)r.StatusCode == 401) return "A chave não é válida (veja em Mídia, no portal).";
+                if ((int)r.StatusCode == 429) return "Pedidos a mais: tente daqui a um minuto.";
+            }
+            return "Não consegui falar com o portal: " + e.Message;
+        }
+    }
+
+    static string Texto(Dictionary<string, object> d, string chave)
+    {
+        object v;
+        return d != null && d.TryGetValue(chave, out v) && v != null ? Convert.ToString(v) : "";
+    }
+
+    /// <summary>A live do YouTube ligada ao culto: S (estado sugerido), L (a live), T (o título de cada estado) ou ERRO.</summary>
+    static int LiveVer(Dictionary<string, string> a)
+    {
+        Dictionary<string, object> j;
+        string erro = PedirLive(a, "ver", "", out j);
+        if (erro != null) { Console.WriteLine("ERRO|" + Linha(erro)); return 1; }
+        object ligado;
+        if (!j.TryGetValue("ligado", out ligado) || !(ligado is bool) || !(bool)ligado)
+        {
+            Console.WriteLine("ERRO|" + Linha(Texto(j, "mensagem") != "" ? Texto(j, "mensagem") : "O YouTube ainda não está ligado ao portal."));
+            return 2;
+        }
+        var live = j.ContainsKey("live") ? j["live"] as Dictionary<string, object> : null;
+        if (live == null)
+        {
+            Console.WriteLine("ERRO|" + Linha(Texto(j, "aviso") != "" ? Texto(j, "aviso") : "Não encontrei nenhuma live do YouTube para este culto."));
+            return 3;
+        }
+        var culto = j.ContainsKey("culto") ? j["culto"] as Dictionary<string, object> : null;
+        string quando = Texto(live, "quando"); if (quando.Length >= 16) quando = quando.Substring(0, 16);
+        Console.WriteLine("S|" + Linha(Texto(j, "estadoSugerido")));
+        Console.WriteLine("L|" + Linha(Texto(live, "titulo")) + "|" + quando + "|" + Linha(Texto(live, "estado")) + "|" + Linha(Texto(culto, "nome")));
+        var titulos = j.ContainsKey("titulos") ? j["titulos"] as Dictionary<string, object> : null;
+        if (titulos != null) foreach (var kv in titulos) Console.WriteLine("T|" + Linha(kv.Key) + "|" + Linha(kv.Value));
+        return 0;
+    }
+
+    /// <summary>Troca a capa e o título da live do culto para o estado pedido: OK|título|capa 1/0|aviso, ou ERRO|mensagem.</summary>
+    static int LiveAplicar(Dictionary<string, string> a)
+    {
+        string estado = Valor(a, "estado");
+        if (estado != "agendada" && estado != "direto" && estado != "arquivo" && estado != "reserva") { Console.WriteLine("ERRO|Estado da capa inválido."); return 1; }
+        Dictionary<string, object> j;
+        string erro = PedirLive(a, "aplicar", "&estado=" + estado, out j);
+        if (erro != null) { Console.WriteLine("ERRO|" + Linha(erro)); return 1; }
+        object capa;
+        bool comCapa = !j.TryGetValue("capaAplicada", out capa) || !(capa is bool) || (bool)capa;
+        Console.WriteLine("OK|" + Linha(Texto(j, "titulo")) + "|" + (comCapa ? "1" : "0") + "|" + Linha(Texto(j, "aviso")));
+        return 0;
+    }
+
     static int Versao()
     {
-        Console.WriteLine("V|6");
+        Console.WriteLine("V|8");
         return 0;
+    }
+
+    // ---- ADMVC Media Studio (app local de sermões e clips) --------------------------------------------------------------
+
+    /// <summary>Se o Media Studio já está a correr, abre o painel no browser; senão arranca o programa (ele próprio abre o
+    /// painel quando fica pronto). O programa arranca à parte: o Holyrics pode fechar este exe sem o levar consigo.</summary>
+    static int AbrirStudio(Dictionary<string, string> a)
+    {
+        string url = Valor(a, "url", "http://127.0.0.1:8100").TrimEnd('/');
+        if (StudioResponde(url))
+        {
+            Process.Start(new ProcessStartInfo(url + "/") { UseShellExecute = true });
+            Console.WriteLine("OK|aberto");
+            return 0;
+        }
+        string exe = ProcurarStudio(Valor(a, "studio"));
+        if (exe == null)
+        {
+            Console.WriteLine("ERRO|Não encontrei o \"ADMVC Media Studio.exe\". Indique o caminho nas definições do módulo.");
+            return 2;
+        }
+        Process.Start(new ProcessStartInfo(exe) { UseShellExecute = true, WorkingDirectory = Path.GetDirectoryName(exe) });
+        Console.WriteLine("OK|arrancado|" + exe);
+        return 0;
+    }
+
+    static bool StudioResponde(string url)
+    {
+        try
+        {
+            var pedido = (HttpWebRequest)WebRequest.Create(url + "/health");
+            pedido.Timeout = 2000;
+            using (var r = (HttpWebResponse)pedido.GetResponse()) return (int)r.StatusCode < 500;
+        }
+        catch (WebException e)
+        {
+            // Respondeu com erro (ex.: 401) = está a correr; sem resposta = não está
+            return e.Response != null;
+        }
+        catch { return false; }
+    }
+
+    /// <summary>O caminho das definições (o exe ou a pasta dele); senão os sítios habituais.</summary>
+    static string ProcurarStudio(string indicado)
+    {
+        const string nome = "ADMVC Media Studio.exe";
+        var candidatos = new List<string>();
+        if (indicado != "")
+        {
+            candidatos.Add(indicado);
+            candidatos.Add(Path.Combine(indicado, nome));
+            candidatos.Add(Path.Combine(indicado, "ADMVC Media Studio", nome));
+        }
+        string casa = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        string[] bases = {
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Programs",
+            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+            Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            Path.Combine(casa, "Downloads"),
+            "C:\\",
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "repos\\admvc-media-studio\\dist"),
+        };
+        foreach (var b in bases)
+        {
+            if (string.IsNullOrEmpty(b)) continue;
+            candidatos.Add(Path.Combine(b, "ADMVC Media Studio", nome));
+            candidatos.Add(Path.Combine(b, "ADMVC-Media-Studio-Windows-x64", "ADMVC Media Studio", nome));
+        }
+        foreach (var c in candidatos)
+            if (c.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) && File.Exists(c)) return c;
+        return null;
     }
 
     /// <summary>Ordena "IMG_2" antes de "IMG_10": compara os números como números.</summary>

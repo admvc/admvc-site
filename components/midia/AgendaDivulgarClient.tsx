@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { ChevronLeft, ChevronRight, Download, EyeOff, ImagePlus, RotateCcw, Share2, Eye } from 'lucide-react'
 import { AVISO_PARTILHA, partilharArte } from '@/lib/partilhar-arte'
 import { enviarImagem } from '@/components/app/enviar-imagem'
+import CampoPreletor from '@/components/midia/CampoPreletor'
 
 type Tema = { id: string; nome: string; amostra: [string, string] }
 type Cartao = { dia: string; nomeDia: string; linhas: string[]; preletor: string | null; foto: { url: string } | null }
@@ -359,13 +360,13 @@ function DiaEditor({ k, d, onMudar }: { k: Cartao; d: EdicaoDia; onMudar: (p: Pa
             {!escondido && (<>
                 <label className="block space-y-1"><span className="block text-[15px] font-semibold">Evento e hora</span>
                     <input value={d.linha ?? ''} maxLength={70} onChange={(e) => onMudar({ linha: e.target.value })} placeholder={k.linhas.join(' + ')} className={campo} style={estiloCampo} /></label>
-                <label className="block space-y-1"><span className="block text-[15px] font-semibold">Na Palavra</span>
+                <div className="block space-y-1"><label htmlFor={`p-${k.dia}`} className="block text-[15px] font-semibold">Na Palavra</label>
                     <div className="flex gap-2">
-                        <input value={d.preletor === '-' ? '' : d.preletor ?? ''} maxLength={50} disabled={d.preletor === '-'}
-                            onChange={(e) => onMudar({ preletor: e.target.value })} placeholder={k.preletor ?? 'Sem preletor'} className={campo} style={estiloCampo} />
+                        <CampoPreletor id={`p-${k.dia}`} value={d.preletor === '-' ? '' : d.preletor ?? ''} maxLength={50} disabled={d.preletor === '-'}
+                            onChange={(t) => onMudar({ preletor: t })} placeholder={k.preletor ?? 'Sem preletor'} />
                         <button type="button" className="a-botao a-botao-secundario !min-h-[48px] shrink-0"
                             onClick={() => onMudar({ preletor: d.preletor === '-' ? '' : '-' })}>{d.preletor === '-' ? 'Pôr' : 'Tirar'}</button>
-                    </div></label>
+                    </div></div>
                 <fieldset className="min-w-0 space-y-2"><legend className="text-[15px] font-semibold">Foto</legend>
                     <div className="flex flex-wrap gap-2">
                         <label className={chip} style={estiloCampo}><input type="radio" checked={modoFoto === 'auto'} onChange={() => onMudar({ foto: undefined })} className="sr-only" />{k.foto ? 'A do culto' : 'Automática (não há)'}</label>

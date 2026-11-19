@@ -2430,3 +2430,24 @@ model ArteEncerramento {
   @@index([tenant_id])
   @@map("artes_encerramento")
 }
+
+// Registo do que o portal fez nas lives do YouTube (capa + título): quem, quando, que live, que estado.
+// Escreve-se ao aplicar a capa (botão da Divulgação, módulo do Holyrics ou cron). Nunca guarda credenciais do Google.
+model YoutubeLiveRegisto {
+  id              Int      @id @default(autoincrement())
+  tenant_id       Int
+  evento_id       Int?
+  broadcast_id    String   // id da live (é o mesmo id do vídeo)
+  live_titulo     String   // o título da live antes de mexer
+  titulo_aplicado String?  // o título que ficou
+  estado          String   // agendada | direto | arquivo | reserva
+  origem          String   // portal | holyrics | cron
+  por             String?  // quem carregou ("Holyrics" / "Automático" quando não há pessoa)
+  resultado       String   // ok | erro
+  mensagem        String?  // o erro, em português
+  criado_em       DateTime @default(now())
+
+  @@index([tenant_id, criado_em])
+  @@index([broadcast_id, estado])
+  @@map("youtube_lives_registo")
+}

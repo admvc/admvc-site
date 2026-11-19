@@ -110,6 +110,13 @@ Holyrics. E, se só quiseres as artes, também é por aqui.
 - À mão (teste): `FotosCulto.exe --listar --portal https://app.igrejaadmvc.org --chave …` e
   `FotosCulto.exe --trazer --portal … --chave … --evento 12 --pasta "C:\...\ARTES-CULTO"`.
 
+## Abrir Media Studio
+Botão **"Abrir Media Studio"** no módulo: se o ADMVC Media Studio (sermões e clips) já está a correr, abre o painel no
+browser; se está fechado, arranca o programa — abre uma janela preta (deixe-a aberta) e o painel aparece sozinho em
+segundos. Procura o `ADMVC Media Studio.exe` nos sítios habituais (Programas, Ambiente de Trabalho, Documentos, Transferências,
+`C:\`); se estiver noutro sítio, pôr a pasta (ou o .exe) na definição **"Media Studio"** do módulo. Precisa do
+`FotosCulto.exe` versão 7 (o botão avisa se o exe for antigo). Só funciona no PC onde o Media Studio está instalado.
+
 ## Bom saber
 - **As fotos da Entrada:** escolhem-se as **10 espalhadas pela hora da foto** (EXIF; sem EXIF, a hora do ficheiro), para não
   saírem todas do mesmo momento. Fotos tiradas no mesmo segundo (rajada) contam como uma: fica a maior. **Todas** as
@@ -138,3 +145,6 @@ Holyrics. E, se só quiseres as artes, também é por aqui.
   livre de Project Nayuki (licença MIT, em `modelo\qrcodegen.js`).
 - `FotosCultoADMVC.js` — o módulo do Holyrics.
 - À mão (teste do envio): acrescentar `--enviar --portal https://app.igrejaadmvc.org --chave …` ao comando do preparar (mais `--evento-id 12` para ligar o álbum a um culto do portal).
+
+## Capa na live do YouTube (V|8)
+Botao "Capa na live do YouTube" (e clique direito na pasta de imagens): escolhe o culto e o estado (Agendada / Em direto / Arquivo / Reserva; vem pre-escolhido), mostra a live encontrada e o titulo que vai ficar, e so troca depois de confirmares. Precisa do FotosCulto.exe versao 8 e da mesma chave de Media -> Holyrics. O Holyrics nao tem credenciais do Google: quem fala com o YouTube e o portal.
