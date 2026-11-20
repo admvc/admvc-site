@@ -291,6 +291,14 @@ export const TITULO_DA_CHAVE = 'ADMVC · YoloBox'
 
 type CorpoStream = { id?: string; snippet?: { title?: string }; contentDetails?: { isReusable?: boolean }; cdn?: { ingestionInfo?: { ingestionAddress?: string; streamName?: string } } }
 
+/** As chaves do canal com o nome da chave (cdn.ingestionInfo.streamName) — só para comparar com uma chave colada; nunca se grava nem se mostra. */
+export async function listarStreamsComChave(ctx: ContextoYoutube): Promise<{ id: string; chave: string }[]> {
+    const token = await obterAccessToken(ctx)
+    const r = await pedir(ctx, `${API}/liveStreams?part=id,cdn&mine=true&maxResults=50`, { method: 'GET' }, 'lista', token)
+    const j = (await r.json()) as { items?: CorpoStream[] }
+    return (j.items ?? []).filter((s) => s.id && s.cdn?.ingestionInfo?.streamName).map((s) => ({ id: s.id!, chave: s.cdn!.ingestionInfo!.streamName! }))
+}
+
 /** As chaves (liveStreams) do canal, sem a chave em si. */
 export async function listarStreams(ctx: ContextoYoutube): Promise<StreamYoutube[]> {
     const token = await obterAccessToken(ctx)

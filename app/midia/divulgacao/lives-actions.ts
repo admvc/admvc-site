@@ -6,7 +6,7 @@ import { getSessionData } from '@/lib/auth-utils'
 import prisma, { getTenantClient } from '@/lib/prisma'
 import { podeFazerAgenda } from '@/lib/agenda-midia'
 import { ErroYoutube } from '@/lib/youtube'
-import { estadoDaChave, gerarOutraChave, ligarYoloBox, type ChaveParaMostrar, type EstadoDaChave } from '@/lib/youtube-chave'
+import { estadoDaChave, gerarOutraChave, ligarYoloBox, usarChaveColada, type ChaveParaMostrar, type EstadoDaChave } from '@/lib/youtube-chave'
 import { sincronizarLives, type ResultadoSync } from '@/lib/youtube-agendar'
 import { livesDaSemana, type SemanaDeLives } from '@/lib/youtube-semana'
 import { valorDaEscolha } from '@/lib/youtube-regra'
@@ -86,6 +86,17 @@ export async function mostrarChaveYoloBox(): Promise<ChaveParaMostrar | Erro> {
     const sessao = await sessaoDaMidia()
     if (!sessao) return { erro: 'Só a Mídia e a administração.' }
     try { return await ligarYoloBox(sessao.tenantId) } catch (e) { return { erro: msg(e, 'Não foi possível obter a chave agora.') } }
+}
+
+/** Usar uma chave criada à mão no YouTube Studio (se "Criar a chave" falhar). A chave não fica gravada: só o ID da stream ou o hash. */
+export async function colarChaveYoloBox(chave: string): Promise<{ ligada: boolean; mensagem: string } | Erro> {
+    const sessao = await sessaoDaMidia()
+    if (!sessao) return { erro: 'Só a Mídia e a administração.' }
+    try {
+        const r = await usarChaveColada(sessao.tenantId, String(chave ?? '').slice(0, 100))
+        if (r.ligada) await sincronizarLives(sessao.tenantId, { origem: 'portal', por: await nomeDe(sessao.tenantId, sessao.membroId) }).catch(() => null)
+        return r
+    } catch (e) { return { erro: msg(e, 'Não foi possível usar esta chave agora.') } }
 }
 
 export async function gerarOutraChaveYoloBox(): Promise<(ChaveParaMostrar & { antigaApagada: boolean }) | Erro> {

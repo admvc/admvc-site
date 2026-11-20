@@ -2,6 +2,7 @@
 // 7 dias, compara com o YouTube e só faz o que falta — criar a live (com título, descrição, capa "agendada", categoria e idioma), atualizar
 // se o culto mudou, apagar se deixou de transmitir (só se ainda não começou) e ligar à chave fixa SÓ a próxima live. Idempotente.
 // Fala com o Google só por lib/youtube.ts (transporte injetável); a decisão está em lib/youtube-regra.ts (puro).
+import { chavePendente, streamIdConfirmado } from '@/lib/youtube-chave'
 import prisma from '@/lib/prisma'
 import {
     ErroYoutube, MENSAGEM_NAO_LIGADO, apagarLiveYoutube, atualizarLiveYoutube, criarLiveYoutube, instanteDeLisboa, ligarALiveAChave, listarLives,
@@ -51,6 +52,7 @@ export async function sincronizarLives(tenantId: number, o: OpcoesSync = {}, dep
     const origem = o.origem ?? 'cron'
     const por = o.por ?? (origem === 'cron' ? 'Automático' : null)
     const igreja = await dadosDaIgreja(tenantId)
+    if (chavePendente(igreja.streamId)) igreja.streamId = o.ensaio ? null : await streamIdConfirmado(tenantId, igreja.streamId, ctx)   // chave colada à mão, ainda por confirmar
     const res: ResultadoSync = { ...base, ligado: true, temChave: !!igreja.streamId }
     if (!igreja.streamId) res.avisos.push('Ainda não há chave fixa: as lives criam-se, mas só ficam ligadas ao YoloBox depois de "Ligar o YoloBox".')
 
