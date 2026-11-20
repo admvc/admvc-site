@@ -6,7 +6,7 @@
 import { useEffect, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowDown, ArrowLeft, ArrowUp, Plus, Search, Trash2, X } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowUp, Plus, Search, Trash2 } from 'lucide-react'
 import {
     adicionarMusicaNaEscala, criarMusica, moverMusicaNaEscala, mudarTomNaEscala,
     pesquisarRepertorio, tirarMusicaDaEscala,
@@ -35,7 +35,6 @@ export default function AlterarMusicas({ dados }: { dados: DadosEscala }) {
     const router = useRouter()
     const [pendente, iniciar] = useTransition()
     const [aviso, setAviso] = useState<string | null>(null)
-    const [juntar, setJuntar] = useState(false)
     const { evento, departamento, musicas } = dados
 
     function correr(f: () => Promise<Resultado>, depois?: () => void) {
@@ -99,168 +98,108 @@ export default function AlterarMusicas({ dados }: { dados: DadosEscala }) {
                 </ol>
             )}
 
-            <button type="button" className="a-botao a-botao-principal w-full" onClick={() => setJuntar(true)}>
-                <Plus size={20} aria-hidden /> Juntar música
-            </button>
+            <JuntarMusica eventoId={evento.id} jaNoCulto={musicas.map((m) => m.musicaId)} correr={correr} pendente={pendente} />
 
             {aviso && <p role="alert" className="text-[15px] font-semibold" style={{ color: 'var(--a-erro)' }}>{aviso}</p>}
-
-            {juntar && (
-                <JuntarMusica
-                    eventoId={evento.id}
-                    jaNoCulto={musicas.map((m) => m.musicaId)}
-                    onFechar={() => setJuntar(false)}
-                    correr={correr}
-                    pendente={pendente}
-                />
-            )}
         </div>
     )
 }
 
 type Encontrada = { id: string; titulo: string; artista: string | null; tom: string | null }
 
-function JuntarMusica({ eventoId, jaNoCulto, onFechar, correr, pendente }: {
+/** Uma linha de resultado: o tom já vem escolhido (o original) e o botão Juntar — sem janelas. */
+function LinhaResultado({ m, ja, pendente, onJuntar }: { m: Encontrada; ja: boolean; pendente: boolean; onJuntar: (tom: string) => void }) {
+    const [tom, setTom] = useState(m.tom || '')
+    return (
+        <li className="a-card flex min-h-[60px] items-center gap-2 px-3 py-2">
+            <span className="min-w-0 flex-1">
+                <span className="block truncate text-[16px] font-semibold">{m.titulo}</span>
+                <span className="block truncate text-[14px] a-suave">{ja ? 'Já está neste culto' : (m.artista || 'Sem artista')}</span>
+            </span>
+            {!ja && <EscolherTom valor={tom} rotulo={`Tom de ${m.titulo}`} onMudar={setTom} disabled={pendente} />}
+            {!ja && (
+                <button type="button" className="a-botao a-botao-principal !min-h-[44px] !px-3" disabled={pendente || !tom} onClick={() => onJuntar(tom)}
+                    aria-label={`Juntar ${m.titulo}`} title={tom ? undefined : 'Escolha o tom'}>
+                    <Plus size={18} aria-hidden /> Juntar
+                </button>
+            )}
+        </li>
+    )
+}
+
+/**
+ * Juntar músicas (20/11): a pesquisa fica na própria página. Cada resultado traz o tom (o original, se houver) e "Juntar";
+ * depois de juntar, a caixa limpa e fica pronta para a seguinte. Se não estiver no repertório, a última linha cria a música
+ * com o nome escrito (artista e tom na mesma linha) e junta-a logo — os links acrescentam-se depois no Repertório.
+ */
+function JuntarMusica({ eventoId, jaNoCulto, correr, pendente }: {
     eventoId: number
     jaNoCulto: string[]
-    onFechar: () => void
     correr: (f: () => Promise<Resultado>, depois?: () => void) => void
     pendente: boolean
 }) {
     const [texto, setTexto] = useState('')
     const [lista, setLista] = useState<Encontrada[]>([])
-    const [escolhida, setEscolhida] = useState<Encontrada | null>(null)
-    const [tom, setTom] = useState('')
-    const [nova, setNova] = useState(false)
-    const [novaDados, setNovaDados] = useState({ titulo: '', artista: '', tom: '', link_video: '', link_cifra: '' })
-    const [parecidas, setParecidas] = useState<Encontrada[]>([])
+    const [artista, setArtista] = useState('')
+    const [tomNova, setTomNova] = useState('')
+    const [ultima, setUltima] = useState('')
 
     useEffect(() => {
+        if (!texto.trim()) return
         const t = setTimeout(async () => {
             const r = await pesquisarRepertorio(texto)
-            if (r.ok) setLista(r.musicas)
-        }, 250)
+            if (r.ok) setLista(r.musicas.slice(0, 8))
+        }, 200)
         return () => clearTimeout(t)
     }, [texto])
 
-    // Ao criar: avisa se já existe uma música com nome parecido (evita duplicados)
-    useEffect(() => {
-        if (!nova || novaDados.titulo.trim().length < 3) { setParecidas([]); return }
-        const t = setTimeout(async () => {
-            const r = await pesquisarRepertorio(novaDados.titulo)
-            setParecidas(r.ok ? r.musicas.slice(0, 3) : [])
-        }, 300)
-        return () => clearTimeout(t)
-    }, [nova, novaDados.titulo])
+    function limpar(nomeJuntado: string) {
+        setUltima(nomeJuntado); setTexto(''); setArtista(''); setTomNova(''); setLista([])
+        setTimeout(() => document.getElementById('juntar-pesquisa')?.focus(), 50)
+    }
 
-    const campo = 'a-foco min-h-[48px] w-full rounded-[14px] border px-4 text-[16px]'
+    const nome = texto.trim()
+    const igual = lista.some((m) => m.titulo.trim().toLowerCase() === nome.toLowerCase())
     const estiloCampo = { background: 'var(--a-card)', borderColor: 'var(--a-borda)', color: 'var(--a-texto)' }
 
     return (
-        <div className="app-novo fixed inset-0 z-[60] flex flex-col" role="dialog" aria-modal="true" aria-label="Juntar música"
-            style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
-            <div className="mx-auto flex w-full max-w-md items-center justify-between px-4 py-3">
-                <h2 className="text-[22px] font-bold">{nova ? 'Música nova' : escolhida ? 'Em que tom?' : 'Juntar música'}</h2>
-                <button type="button" onClick={onFechar} className="a-botao a-botao-secundario !px-3" aria-label="Fechar">
-                    <X size={22} aria-hidden />
-                </button>
-            </div>
+        <section className="space-y-3" aria-labelledby="h-juntar">
+            <h2 id="h-juntar" className="text-[18px] font-bold">Juntar música</h2>
+            <label className="relative block">
+                <span className="sr-only">Pesquisar no repertório</span>
+                <Search size={20} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 a-suave" aria-hidden />
+                <input id="juntar-pesquisa" value={texto} onChange={(e) => { setTexto(e.target.value); setUltima(''); if (!e.target.value.trim()) setLista([]) }}
+                    placeholder="Escreva o nome, o artista ou parte da letra" autoComplete="off"
+                    className="a-foco min-h-[48px] w-full rounded-[14px] border pl-12 pr-4 text-[16px]" style={estiloCampo} />
+            </label>
+            {ultima && !nome && <p role="status" className="text-[15px] font-semibold" style={{ color: 'var(--a-ok, #16a34a)' }}>✓ «{ultima}» juntada. Pode escrever a seguinte.</p>}
 
-            <div className="mx-auto w-full max-w-md flex-1 space-y-4 overflow-y-auto px-4 pb-8">
-                {nova ? (
-                    <form className="space-y-3" onSubmit={(e) => {
-                        e.preventDefault()
-                        correr(async () => {
-                            const r = await criarMusica({ titulo: novaDados.titulo, artista: novaDados.artista, tom: novaDados.tom, link_video: novaDados.link_video, link_cifra: novaDados.link_cifra }, { eventoId, tom: novaDados.tom })
-                            return r.ok ? { ok: true } : r
-                        }, onFechar)
-                    }}>
-                        <label className="block space-y-1">
-                            <span className="text-[15px] font-semibold">Nome da música</span>
-                            <input required value={novaDados.titulo} onChange={(e) => setNovaDados({ ...novaDados, titulo: e.target.value })} className={campo} style={estiloCampo} />
-                        </label>
-                        <label className="block space-y-1">
-                            <span className="text-[15px] font-semibold">Artista</span>
-                            <input value={novaDados.artista} onChange={(e) => setNovaDados({ ...novaDados, artista: e.target.value })} className={campo} style={estiloCampo} />
-                        </label>
-                        {parecidas.length > 0 && (
-                            <div className="a-card space-y-2 p-3" role="status">
-                                <p className="text-[15px] font-semibold">Já há músicas parecidas no repertório:</p>
-                                {parecidas.map((m) => (
-                                    <button key={m.id} type="button" disabled={jaNoCulto.includes(m.id)} className="a-botao a-botao-secundario w-full !justify-between"
-                                        onClick={() => { const t = m.tom || novaDados.tom; if (t) correr(() => adicionarMusicaNaEscala(eventoId, m.id, t), onFechar); else { setNova(false); setEscolhida(m); setTom('') } }}>
-                                        <span className="truncate">{m.titulo}{m.artista ? ` · ${m.artista}` : ''}</span>
-                                        <span>{jaNoCulto.includes(m.id) ? 'Já está' : 'Juntar esta'}</span>
-                                    </button>
-                                ))}
+            {nome && (
+                <ul className="space-y-2">
+                    {lista.map((m) => (
+                        <LinhaResultado key={m.id} m={m} ja={jaNoCulto.includes(m.id)} pendente={pendente}
+                            onJuntar={(tom) => correr(() => adicionarMusicaNaEscala(eventoId, m.id, tom), () => limpar(m.titulo))} />
+                    ))}
+                    {!igual && nome.length >= 2 && (
+                        <li className="a-card space-y-2 p-3" style={{ borderStyle: 'dashed' }}>
+                            <p className="text-[15px]">{lista.length ? 'Não é nenhuma destas?' : 'Não está no repertório.'} Juntar <strong>«{nome}»</strong> como música nova:</p>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <input value={artista} onChange={(e) => setArtista(e.target.value)} placeholder="Artista (opcional)" aria-label="Artista"
+                                    className="a-foco min-h-[44px] w-full min-w-0 rounded-[12px] border px-3 text-[15px] sm:w-auto sm:flex-1" style={estiloCampo} />
+                                <EscolherTom valor={tomNova} rotulo="Tom da música nova" onMudar={setTomNova} disabled={pendente} />
+                                <button type="button" className="a-botao a-botao-principal !min-h-[44px] flex-1 !px-3 sm:flex-none" disabled={pendente || !tomNova}
+                                    onClick={() => correr(async () => {
+                                        const r = await criarMusica({ titulo: nome, artista, tom: tomNova, link_video: '', link_cifra: '' }, { eventoId, tom: tomNova })
+                                        return r.ok ? { ok: true } : r
+                                    }, () => limpar(nome))}>
+                                    <Plus size={18} aria-hidden /> Criar e juntar
+                                </button>
                             </div>
-                        )}
-                        <label className="block space-y-1">
-                            <span className="text-[15px] font-semibold">Link do YouTube <span className="font-normal a-suave">(se tiver)</span></span>
-                            <input type="url" inputMode="url" value={novaDados.link_video} onChange={(e) => setNovaDados({ ...novaDados, link_video: e.target.value })} className={campo} style={estiloCampo} />
-                        </label>
-                        <label className="block space-y-1">
-                            <span className="text-[15px] font-semibold">Link da cifra <span className="font-normal a-suave">(se tiver)</span></span>
-                            <input type="url" inputMode="url" value={novaDados.link_cifra} onChange={(e) => setNovaDados({ ...novaDados, link_cifra: e.target.value })} className={campo} style={estiloCampo} />
-                        </label>
-                        <div className="flex items-center justify-between gap-3">
-                            <span className="text-[15px] font-semibold">Tom</span>
-                            <EscolherTom valor={novaDados.tom} rotulo="Tom" onMudar={(t) => setNovaDados({ ...novaDados, tom: t })} />
-                        </div>
-                        <p className="text-[14px] a-suave">BPM e outros links acrescentam-se depois, na página da música (Repertório).</p>
-                        <button type="submit" className="a-botao a-botao-principal w-full" disabled={pendente || !novaDados.titulo.trim() || !novaDados.tom}>
-                            Criar e juntar ao culto
-                        </button>
-                        <button type="button" className="a-botao a-botao-secundario w-full" onClick={() => setNova(false)}>Voltar à pesquisa</button>
-                    </form>
-                ) : escolhida ? (
-                    <div className="space-y-4">
-                        <div className="a-card p-4">
-                            <p className="text-[18px] font-semibold">{escolhida.titulo}</p>
-                            <p className="text-[15px] a-suave">{escolhida.artista || 'Sem artista'}{escolhida.tom ? ` · original em ${escolhida.tom}` : ''}</p>
-                        </div>
-                        <div className="flex items-center justify-between gap-3">
-                            <span className="text-[16px] font-semibold">Tom neste culto</span>
-                            <EscolherTom valor={tom} rotulo="Tom neste culto" onMudar={setTom} />
-                        </div>
-                        <button type="button" className="a-botao a-botao-principal w-full" disabled={pendente || !tom}
-                            onClick={() => correr(() => adicionarMusicaNaEscala(eventoId, escolhida.id, tom), onFechar)}>
-                            Juntar ao culto
-                        </button>
-                        <button type="button" className="a-botao a-botao-secundario w-full" onClick={() => setEscolhida(null)}>Escolher outra</button>
-                    </div>
-                ) : (
-                    <>
-                        <label className="relative block">
-                            <span className="sr-only">Pesquisar no repertório</span>
-                            <Search size={20} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 a-suave" aria-hidden />
-                            <input autoFocus value={texto} onChange={(e) => setTexto(e.target.value)} placeholder="Nome, artista ou parte da letra"
-                                className={`${campo} pl-12`} style={estiloCampo} />
-                        </label>
-                        <ul className="space-y-2">
-                            {lista.map((m) => {
-                                const ja = jaNoCulto.includes(m.id)
-                                return (
-                                    <li key={m.id}>
-                                        <button type="button" disabled={ja} onClick={() => { if (m.tom) correr(() => adicionarMusicaNaEscala(eventoId, m.id, m.tom!), onFechar); else { setEscolhida(m); setTom('') } }}
-                                            className="a-card a-foco flex min-h-[60px] w-full items-center gap-3 px-4 py-3 text-left disabled:opacity-60">
-                                            <span className="min-w-0 flex-1">
-                                                <span className="block truncate text-[17px] font-semibold">{m.titulo}</span>
-                                                <span className="block text-[14px] a-suave">{ja ? 'Já está neste culto' : (m.artista || 'Sem artista')}{!ja && m.tom ? ' · toque para juntar' : ''}</span>
-                                            </span>
-                                            {m.tom && <span className="text-[16px] font-bold a-suave">{m.tom}</span>}
-                                        </button>
-                                    </li>
-                                )
-                            })}
-                        </ul>
-                        {lista.length === 0 && <p className="text-[16px] a-suave">{texto ? 'Não está no repertório.' : 'O repertório está vazio.'}</p>}
-                        <button type="button" className="a-botao a-botao-secundario w-full" onClick={() => { setNova(true); setNovaDados({ titulo: texto, artista: '', tom: '', link_video: '', link_cifra: '' }) }}>
-                            <Plus size={20} aria-hidden /> Criar música nova
-                        </button>
-                    </>
-                )}
-            </div>
-        </div>
+                            <p className="text-[13px] a-suave">Links do YouTube e da cifra acrescentam-se depois, no Repertório.</p>
+                        </li>
+                    )}
+                </ul>
+            )}
+        </section>
     )
 }
