@@ -79,7 +79,21 @@ async function pedir(ctx: ContextoYoutube, url: string, init: RequestInit, passo
     } catch {
         throw new ErroYoutube('rede', 'Não consegui falar com o YouTube (sem rede?). Tente daqui a pouco.')
     }
-    if (!r.ok) throw traduzirErro(r.status, await lerCorpo(r), passo)
+    // 5xx do Google costuma ser passageiro: as leituras repetem-se uma vez (as escritas não, para não criar em duplicado)
+    if (r.status >= 500 && (init.method ?? 'GET') === 'GET') {
+        await new Promise((ok) => setTimeout(ok, 1500))
+        try { r = await ctx.transporte(url, { ...init, headers: { ...(init.headers as Record<string, string> | undefined), Authorization: `Bearer ${token}` } }) } catch { /* fica a resposta anterior */ }
+    }
+    if (!r.ok) {
+        const corpo = await lerCorpo(r)
+        const razoes = typeof corpo.error === 'object' ? (corpo.error?.errors ?? []).map((e) => e.reason ?? '').filter(Boolean).join(',') : String(corpo.error ?? '')
+        const mensagem = typeof corpo.error === 'object' ? (corpo.error?.message ?? '') : ''
+        // fica nos registos da Vercel (sem o token): que pedido, que código e que motivo deu o Google
+        console.error(`[youtube] ${init.method ?? 'GET'} ${url.replace(API, '').split('?')[0]} (${passo}) → ${r.status} ${razoes} ${mensagem}`.slice(0, 500))
+        const e = traduzirErro(r.status, corpo, passo)
+        if (e.codigo === 'outro' && razoes) e.message = `${e.message} (motivo: ${razoes})`
+        throw e
+    }
     return r
 }
 
@@ -288,10 +302,19 @@ export async function listarStreams(ctx: ContextoYoutube): Promise<StreamYoutube
 /** liveStreams.insert: a chave fixa (RTMP, resolução e fps variáveis, reutilizável). Devolve só o id. */
 export async function criarStream(ctx: ContextoYoutube, titulo = TITULO_DA_CHAVE): Promise<{ id: string }> {
     const token = await obterAccessToken(ctx)
-    const r = await pedir(ctx, `${API}/liveStreams?part=snippet,cdn,contentDetails`, {
+    const corpo = (resolution: string, frameRate: string) => ({
         method: 'POST', headers: JSON_H,
-        body: JSON.stringify({ snippet: { title: titulo }, cdn: { ingestionType: 'rtmp', resolution: 'variable', frameRate: 'variable' }, contentDetails: { isReusable: true } }),
-    }, 'criar', token)
+        body: JSON.stringify({ snippet: { title: titulo }, cdn: { ingestionType: 'rtmp', resolution, frameRate }, contentDetails: { isReusable: true } }),
+    })
+    const url = `${API}/liveStreams?part=snippet,cdn,contentDetails`
+    let r: Response
+    try {
+        r = await pedir(ctx, url, corpo('variable', 'variable'), 'criar', token)
+    } catch (e) {
+        // o YouTube às vezes dá 500 com "variable": tenta-se uma vez com 1080p/30fps (o YoloBox manda 1080p30); um 500 não criou nada
+        if (!(e instanceof ErroYoutube) || e.codigo !== 'outro' || !/\(5\d\d\)/.test(e.message)) throw e
+        r = await pedir(ctx, url, corpo('1080p', '30fps'), 'criar', token)
+    }
     const j = (await r.json()) as CorpoStream
     if (!j.id) throw new ErroYoutube('outro', 'O YouTube não devolveu a chave criada.')
     return { id: j.id }
