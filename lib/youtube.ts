@@ -44,7 +44,7 @@ async function lerCorpo(r: Response): Promise<CorpoErro> {
 }
 
 /** Traduz um erro do Google para português (sem repetir o texto técnico dele, que pode ter dados da conta). */
-export function traduzirErro(status: number, corpo: CorpoErro, passo: 'token' | 'lista' | 'capa' | 'video'): ErroYoutube {
+export function traduzirErro(status: number, corpo: CorpoErro, passo: 'token' | 'lista' | 'capa' | 'video' | 'criar'): ErroYoutube {
     const razoes = typeof corpo.error === 'object' ? (corpo.error?.errors ?? []).map((e) => e.reason ?? '') : []
     const msg = typeof corpo.error === 'object' ? (corpo.error?.message ?? '') : ''
     const tem = (...r: string[]) => razoes.some((x) => r.includes(x))
@@ -53,6 +53,9 @@ export function traduzirErro(status: number, corpo: CorpoErro, passo: 'token' | 
     }
     if (tem('quotaExceeded', 'rateLimitExceeded', 'dailyLimitExceeded') || status === 429) {
         return new ErroYoutube('quota', 'O YouTube já não aceita mais pedidos hoje (quota diária esgotada). Tente amanhã ou faça a troca à mão no YouTube Studio.')
+    }
+    if (tem('liveStreamingNotEnabled', 'insufficientLivePermissions')) {
+        return new ErroYoutube('sem-verificacao', 'O canal ainda não tem as transmissões em direto ativadas (youtube.com/features; o YouTube pode demorar até 24 horas a ativá-las).')
     }
     if (passo === 'capa' && (tem('forbidden') || status === 403)) {
         if (/thumbnail|miniatura/i.test(msg) || tem('forbidden')) {
@@ -69,7 +72,7 @@ export function traduzirErro(status: number, corpo: CorpoErro, passo: 'token' | 
     return new ErroYoutube('outro', `O YouTube respondeu com um erro (${status || 'sem código'}). Tente daqui a pouco.`)
 }
 
-async function pedir(ctx: ContextoYoutube, url: string, init: RequestInit, passo: 'lista' | 'capa' | 'video', token: string): Promise<Response> {
+async function pedir(ctx: ContextoYoutube, url: string, init: RequestInit, passo: 'lista' | 'capa' | 'video' | 'criar', token: string): Promise<Response> {
     let r: Response
     try {
         r = await ctx.transporte(url, { ...init, headers: { ...(init.headers as Record<string, string> | undefined), Authorization: `Bearer ${token}` } })
@@ -120,12 +123,15 @@ export type LiveYoutube = {
     inicioReal: number | null
     fim: number | null
     privacidade: string              // public | unlisted | private
+    ciclo?: string                   // lifeCycleStatus do YouTube (created, ready, live, complete…)
+    streamId?: string | null         // a chave (liveStream) a que está ligada, se estiver
 }
 
 type Transmissao = {
     id: string
     snippet?: { title?: string; scheduledStartTime?: string; actualStartTime?: string; actualEndTime?: string }
     status?: { lifeCycleStatus?: string; privacyStatus?: string }
+    contentDetails?: { boundStreamId?: string }
 }
 
 const ms = (s?: string) => { const t = s ? Date.parse(s) : NaN; return Number.isFinite(t) ? t : null }
@@ -143,7 +149,7 @@ export function estadoDaTransmissao(ciclo: string | undefined): EstadoLiveYoutub
  */
 export async function listarLives(ctx: ContextoYoutube): Promise<LiveYoutube[]> {
     const token = await obterAccessToken(ctx)
-    const r = await pedir(ctx, 'https://www.googleapis.com/youtube/v3/liveBroadcasts?part=id,snippet,status&mine=true&maxResults=50', { method: 'GET' }, 'lista', token)
+    const r = await pedir(ctx, 'https://www.googleapis.com/youtube/v3/liveBroadcasts?part=id,snippet,status,contentDetails&mine=true&maxResults=50', { method: 'GET' }, 'lista', token)
     const j = (await r.json()) as { items?: Transmissao[] }
     const lives: LiveYoutube[] = []
     for (const t of j.items ?? []) {
@@ -151,6 +157,7 @@ export async function listarLives(ctx: ContextoYoutube): Promise<LiveYoutube[]> 
         if (!estado || !t.id) continue
         lives.push({
             id: t.id, titulo: t.snippet?.title ?? '', estado, privacidade: t.status?.privacyStatus ?? 'public',
+            ciclo: t.status?.lifeCycleStatus, streamId: t.contentDetails?.boundStreamId ?? null,
             inicioAgendado: ms(t.snippet?.scheduledStartTime), inicioReal: ms(t.snippet?.actualStartTime), fim: ms(t.snippet?.actualEndTime),
         })
     }
@@ -236,7 +243,7 @@ export const limparDescricao = (t: string) => t.replace(/[<>]/g, '').slice(0, LI
  * videos.update: muda o título (e a descrição, se dada). LÊ ANTES o snippet e reenvia categoryId, etiquetas e o resto —
  * senão o YouTube apaga os campos que faltarem.
  */
-export async function atualizarTextos(ctx: ContextoYoutube, videoId: string, novo: { titulo: string; descricao?: string }): Promise<{ titulo: string }> {
+export async function atualizarTextos(ctx: ContextoYoutube, videoId: string, novo: { titulo: string; descricao?: string; categoriaId?: string; idioma?: string }): Promise<{ titulo: string }> {
     const token = await obterAccessToken(ctx)
     const lido = await pedir(ctx, `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${encodeURIComponent(videoId)}`, { method: 'GET' }, 'video', token)
     const j = (await lido.json()) as { items?: { snippet?: SnippetVideo }[] }
@@ -248,9 +255,100 @@ export async function atualizarTextos(ctx: ContextoYoutube, videoId: string, nov
     if (!titulo) throw new ErroYoutube('outro', 'O título ficaria vazio.')
     snippet.title = titulo
     if (novo.descricao !== undefined) snippet.description = limparDescricao(novo.descricao)
+    if (novo.categoriaId) snippet.categoryId = novo.categoriaId
+    if (novo.idioma) { snippet.defaultLanguage = novo.idioma; snippet.defaultAudioLanguage = novo.idioma }
     // categoryId é obrigatório no update: se o vídeo não a trouxe, usa "Pessoas e blogues"
     if (!snippet.categoryId) snippet.categoryId = '22'
     await pedir(ctx, 'https://www.googleapis.com/youtube/v3/videos?part=snippet',
         { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: videoId, snippet }) }, 'video', token)
     return { titulo }
+}
+
+// ---- criar e gerir lives (LA1, LA3, LA4) -----------------------------------------------------------------------------------
+
+const API = 'https://www.googleapis.com/youtube/v3'
+const JSON_H = { 'Content-Type': 'application/json' }
+
+export type StreamYoutube = { id: string; titulo: string; reutilizavel: boolean }
+/** O que se mostra no ecrã "Ligar o YoloBox". NUNCA se grava (nem na base nem em logs): lê-se do YouTube na hora. */
+export type DadosDaChave = { servidor: string; chave: string }
+
+export const TITULO_DA_CHAVE = 'ADMVC · YoloBox'
+
+type CorpoStream = { id?: string; snippet?: { title?: string }; contentDetails?: { isReusable?: boolean }; cdn?: { ingestionInfo?: { ingestionAddress?: string; streamName?: string } } }
+
+/** As chaves (liveStreams) do canal, sem a chave em si. */
+export async function listarStreams(ctx: ContextoYoutube): Promise<StreamYoutube[]> {
+    const token = await obterAccessToken(ctx)
+    const r = await pedir(ctx, `${API}/liveStreams?part=id,snippet,contentDetails&mine=true&maxResults=50`, { method: 'GET' }, 'lista', token)
+    const j = (await r.json()) as { items?: CorpoStream[] }
+    return (j.items ?? []).filter((s) => s.id).map((s) => ({ id: s.id!, titulo: s.snippet?.title ?? '', reutilizavel: s.contentDetails?.isReusable !== false }))
+}
+
+/** liveStreams.insert: a chave fixa (RTMP, resolução e fps variáveis, reutilizável). Devolve só o id. */
+export async function criarStream(ctx: ContextoYoutube, titulo = TITULO_DA_CHAVE): Promise<{ id: string }> {
+    const token = await obterAccessToken(ctx)
+    const r = await pedir(ctx, `${API}/liveStreams?part=snippet,cdn,contentDetails`, {
+        method: 'POST', headers: JSON_H,
+        body: JSON.stringify({ snippet: { title: titulo }, cdn: { ingestionType: 'rtmp', resolution: 'variable', frameRate: 'variable' }, contentDetails: { isReusable: true } }),
+    }, 'criar', token)
+    const j = (await r.json()) as CorpoStream
+    if (!j.id) throw new ErroYoutube('outro', 'O YouTube não devolveu a chave criada.')
+    return { id: j.id }
+}
+
+/** O servidor e a chave de uma stream, lidos na hora (liveStreams.list part=cdn). null se a stream já não existe. */
+export async function lerDadosDaChave(ctx: ContextoYoutube, streamId: string): Promise<DadosDaChave | null> {
+    const token = await obterAccessToken(ctx)
+    const r = await pedir(ctx, `${API}/liveStreams?part=id,cdn&id=${encodeURIComponent(streamId)}`, { method: 'GET' }, 'lista', token)
+    const j = (await r.json()) as { items?: CorpoStream[] }
+    const info = j.items?.[0]?.cdn?.ingestionInfo
+    if (!info?.ingestionAddress || !info.streamName) return null
+    return { servidor: info.ingestionAddress, chave: info.streamName }
+}
+
+export async function apagarStream(ctx: ContextoYoutube, streamId: string): Promise<void> {
+    const token = await obterAccessToken(ctx)
+    await pedir(ctx, `${API}/liveStreams?id=${encodeURIComponent(streamId)}`, { method: 'DELETE' }, 'video', token)
+}
+
+export type NovaLive = { titulo: string; descricao: string; inicioMs: number }
+
+/** O corpo do liveBroadcasts.insert: pública, não é para crianças, Auto Start/Stop, DVR, latência normal, sem monitor. */
+export function corpoDaLive(l: NovaLive) {
+    return {
+        snippet: { title: limparTitulo(l.titulo), description: limparDescricao(l.descricao), scheduledStartTime: new Date(l.inicioMs).toISOString() },
+        status: { privacyStatus: 'public', selfDeclaredMadeForKids: false },
+        contentDetails: { enableAutoStart: true, enableAutoStop: true, enableDvr: true, latencyPreference: 'normal', monitorStream: { enableMonitorStream: false } },
+    }
+}
+
+/** liveBroadcasts.insert. Devolve o id da live. */
+export async function criarLiveYoutube(ctx: ContextoYoutube, l: NovaLive): Promise<{ id: string }> {
+    const token = await obterAccessToken(ctx)
+    const r = await pedir(ctx, `${API}/liveBroadcasts?part=snippet,status,contentDetails`, { method: 'POST', headers: JSON_H, body: JSON.stringify(corpoDaLive(l)) }, 'criar', token)
+    const j = (await r.json()) as { id?: string }
+    if (!j.id) throw new ErroYoutube('outro', 'O YouTube não devolveu a live criada.')
+    return { id: j.id }
+}
+
+/** liveBroadcasts.update (só o snippet: título, descrição e hora; o resto fica como está). */
+export async function atualizarLiveYoutube(ctx: ContextoYoutube, id: string, l: NovaLive): Promise<void> {
+    const token = await obterAccessToken(ctx)
+    const { snippet } = corpoDaLive(l)
+    await pedir(ctx, `${API}/liveBroadcasts?part=snippet`, { method: 'PUT', headers: JSON_H, body: JSON.stringify({ id, snippet }) }, 'video', token)
+}
+
+/** liveBroadcasts.delete (só se a live ainda não começou: quem chama confirma o estado). */
+export async function apagarLiveYoutube(ctx: ContextoYoutube, id: string): Promise<void> {
+    const token = await obterAccessToken(ctx)
+    await pedir(ctx, `${API}/liveBroadcasts?id=${encodeURIComponent(id)}`, { method: 'DELETE' }, 'video', token)
+}
+
+/** liveBroadcasts.bind: liga a live à chave; sem streamId, desliga. */
+export async function ligarALiveAChave(ctx: ContextoYoutube, id: string, streamId: string | null): Promise<void> {
+    const token = await obterAccessToken(ctx)
+    const q = new URLSearchParams({ id, part: 'id,contentDetails' })
+    if (streamId) q.set('streamId', streamId)
+    await pedir(ctx, `${API}/liveBroadcasts/bind?${q.toString()}`, { method: 'POST' }, 'video', token)
 }

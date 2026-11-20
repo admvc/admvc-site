@@ -13,7 +13,7 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { ImageResponse } from 'next/og'
-import type { CSSProperties, ReactNode } from 'react'
+import type { CSSProperties, ReactElement, ReactNode } from 'react'
 import { ESTILOS_CLAROS, FUNDOS_PRONTOS, conteudoDaPeca, lerEstilo, lerPaleta, lerPeca, type ConteudoArte, type EstiloId, type Paleta } from '@/lib/divulgacao'
 import { qrSvg } from '@/lib/qr-svg'
 import { ICONES_COMIDA } from '@/lib/icones-comida'
@@ -240,7 +240,7 @@ function MolduraComida({ cor, claro }: { cor: string; claro: boolean }) {
     )
 }
 export type FotoLado = { src: string; w: number; h: number; foco: string }
-const CAIXA_CANTINA = { left: 1110, top: 260, width: 560, height: 560 }
+const CAIXA_CANTINA = { left: 1230, top: 250, width: 580, height: 580 }
 function FotoCantina({ f, cor }: { f: FotoLado; cor: string }) {
     const c = CAIXA_CANTINA
     const img = f.w && f.h
@@ -249,6 +249,57 @@ function FotoCantina({ f, cor }: { f: FotoLado; cor: string }) {
     return (
         <div style={{ position: 'absolute', left: c.left, top: c.top, width: c.width, height: c.height, borderRadius: c.width / 2, overflow: 'hidden', display: 'flex', border: `10px solid ${rgba(cor, 0.9)}` }}>
             {img}
+        </div>
+    )
+}
+
+// ── Cantina com cara de restaurante (20/11): cartão de menu em papel, título cursivo, pratos com preço e a foto ao lado ──
+const PRECO = /^(.*?)[\s.\-–—:]*((?:\d+(?:[.,]\d{1,2})?\s?€)|(?:€\s?\d+(?:[.,]\d{1,2})?))\s*$/
+export function linhaDoMenu(t: string): { nome: string; preco: string } | null {
+    const m = PRECO.exec(t.trim())
+    return m && m[1].trim() ? { nome: m[1].trim(), preco: m[2].replace(/\s/g, '') } : null
+}
+function Talheres({ cor, tam }: { cor: string; tam: number }) {
+    return (
+        <svg width={tam} height={tam} viewBox="0 0 24 24" fill="none" stroke={cor} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+            {ICONES[0].map(([t, a], i) => { const El = t as unknown as 'path'; return <El key={i} {...(a as Record<string, string>)} /> })}
+        </svg>
+    )
+}
+function CantinaMenu({ p, c, marca, fotoLado }: { p: Paleta; c: ConteudoArte; marca: string | null; fotoLado: FotoLado | null }) {
+    const papel = '#f7f0e3', tinta = p.claroTexto, destaque = p.c1
+    const cartao = fotoLado ? { left: 140, top: 90, width: 1000, height: 900 } : { left: 360, top: 90, width: 1200, height: 900 }
+    const linhas = (c.textosLegais ?? []).map((t) => ({ t, m: linhaDoMenu(t) }))
+    const titulo = c.titulo || 'Cantina'
+    const tamTitulo = titulo.length > 14 ? 130 : titulo.length > 9 ? 170 : 210
+    const traco = (w: number) => <div style={{ display: 'flex', width: w, height: 2, background: rgba(tinta, 0.35) }} />
+    return (
+        <div style={{ width: W, height: H, display: 'flex', position: 'relative', background: p.fundo,
+            backgroundImage: `radial-gradient(circle at 78% 30%, ${rgba(p.c2, 0.38)} 0%, ${rgba(p.c2, 0)} 50%), radial-gradient(circle at 20% 85%, ${rgba(p.c1, 0.35)} 0%, ${rgba(p.c1, 0)} 45%)` }}>
+            {marca && <img alt="" src={marca} width={70} height={70} style={{ position: 'absolute', left: 40, top: 30, objectFit: 'contain' }} />}
+            {/* o cartão de menu */}
+            <div style={{ position: 'absolute', ...cartao, display: 'flex', background: papel, borderRadius: 18, boxShadow: '0 30px 80px rgba(0,0,0,0.55)' }}>
+                <div style={{ position: 'absolute', left: 22, top: 22, width: cartao.width - 44, height: cartao.height - 44, border: `3px solid ${rgba(destaque, 0.8)}`, borderRadius: 10, display: 'flex' }} />
+                <div style={{ position: 'absolute', left: 34, top: 34, width: cartao.width - 68, height: cartao.height - 68, border: `1px solid ${rgba(destaque, 0.55)}`, borderRadius: 6, display: 'flex' }} />
+                <div style={{ position: 'absolute', left: 0, top: 0, width: cartao.width, height: cartao.height, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 110px' }}>
+                    <div style={{ display: 'flex', fontFamily: 'Montserrat', fontWeight: 700, fontSize: 24, letterSpacing: 10, color: rgba(tinta, 0.8) }}>IGREJA ADMVC</div>
+                    <div style={{ display: 'flex', fontFamily: 'GreatVibes', fontSize: tamTitulo, lineHeight: 1.1, color: destaque, marginTop: 10 }}>{titulo}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 22, marginTop: 6 }}>{traco(170)}<Talheres cor={tinta} tam={44} />{traco(170)}</div>
+                    {c.subtitulo && <div style={{ display: 'flex', fontFamily: 'DMSerif', fontStyle: 'italic', fontSize: 46, color: tinta, marginTop: 22, textAlign: 'center' }}>{c.subtitulo}</div>}
+                    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', marginTop: 44, gap: 26 }}>
+                        {linhas.map(({ t, m }, i) => m ? (
+                            <div key={i} style={{ display: 'flex', alignItems: 'flex-end', width: '100%' }}>
+                                <div style={{ display: 'flex', fontFamily: 'Playfair', fontWeight: 700, fontSize: 44, color: tinta }}>{m.nome}</div>
+                                <div style={{ display: 'flex', flexGrow: 1, margin: '0 18px 12px', borderBottom: `3px dashed ${rgba(tinta, 0.4)}` }} />
+                                <div style={{ display: 'flex', fontFamily: 'Montserrat', fontWeight: 900, fontSize: 42, color: destaque }}>{m.preco}</div>
+                            </div>
+                        ) : (
+                            <div key={i} style={{ display: 'flex', justifyContent: 'center', fontFamily: 'DMSerif', fontStyle: 'italic', fontSize: 34, color: rgba(tinta, 0.85), textAlign: 'center' }}>{t}</div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+            {fotoLado && <FotoCantina f={fotoLado} cor={papel} />}
         </div>
     )
 }
@@ -379,6 +430,8 @@ export function fotoPermitida(u: string | null): string | null {
     if (!u) return null
     try {
         const url = new URL(u)
+        // em ensaio (YouTube simulado, nunca em produção) também uma foto servida pelo próprio computador
+        if (url.protocol === 'http:' && url.hostname === 'localhost' && process.env.YOUTUBE_SIMULADO === '1' && process.env.NODE_ENV !== 'production') return url.href
         return url.protocol === 'https:' && url.hostname.endsWith('.public.blob.vercel-storage.com') ? url.href : null
     } catch { return null }
 }
@@ -405,7 +458,17 @@ function lerFotoLado(q: URLSearchParams): FotoLado | null {
     return { src, w: Number(q.get('cfw')) || 0, h: Number(q.get('cfh')) || 0, foco }
 }
 
-export async function desenharArte(q: URLSearchParams): Promise<ImageResponse> {
+/** Para as pré-visualizações: o mesmo desenho, reduzido (escala < 1), para o servidor não rasterizar nem comprimir 1920×1080 a cada miniatura. */
+export function reduzido(el: ReactElement, w: number, h: number, escala: number): ReactElement {
+    if (escala >= 1) return el
+    return (
+        <div style={{ display: 'flex', width: Math.round(w * escala), height: Math.round(h * escala), overflow: 'hidden' }}>
+            <div style={{ display: 'flex', flexShrink: 0, width: w, height: h, transform: `scale(${escala})`, transformOrigin: 'top left' }}>{el}</div>
+        </div>
+    )
+}
+
+export async function desenharArte(q: URLSearchParams, escala = 1): Promise<ImageResponse> {
     const peca = lerPeca(q.get('peca'))
     const estilo = lerEstilo(q.get('estilo'))
     const p = lerPaleta(q.get('paleta'))
@@ -425,8 +488,11 @@ export async function desenharArte(q: URLSearchParams): Promise<ImageResponse> {
     })
 
     const [fonts, marca, fundo] = await Promise.all([carregarFontes(), carregarPomba(), estilo === 'foto' ? lerFundo(q.get('fundo')) : null])
+    const retrato = peca === 'palavra' ? lerRetrato(q) : null
+    const fotoLado = peca === 'cantina' ? lerFotoLado(q) : null
+    const e = fundo || retrato || fotoLado ? 1 : escala   // com imagens, em tamanho real (o satori não as encolhe bem); a prévia reduz depois
     return new ImageResponse(
-        <Arte estilo={estilo} p={p} c={c} foto={fundo} marca={marca} retrato={peca === 'palavra' ? lerRetrato(q) : null} fotoLado={peca === 'cantina' ? lerFotoLado(q) : null} livreTam={q.get('livreTam') ?? 'm'} />,
-        { width: W, height: H, fonts },
+        reduzido(peca === 'cantina' ? <CantinaMenu p={p} c={c} marca={marca} fotoLado={fotoLado} /> : <Arte estilo={estilo} p={p} c={c} foto={fundo} marca={marca} retrato={retrato} fotoLado={fotoLado} livreTam={q.get('livreTam') ?? 'm'} />, W, H, e),
+        { width: Math.round(W * e), height: Math.round(H * e), fonts },
     )
 }

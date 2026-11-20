@@ -7,6 +7,7 @@ import type { SessionData } from '@/lib/auth-utils'
 import { lerArea, type PontoArea } from '@/lib/area-grupo'
 import { agoraLisboa } from '@/lib/alertas-encontros'
 import { normalizarReceita, semDestaque } from '@/lib/divulgacao-kit'
+import { cartoesRotinaDoMembro, type CartaoRotina } from '@/lib/rotina-alertas'
 
 /** O membro tem de aceitar (ou renovar) os termos de protecao de dados. */
 export async function termosPorAssinar(sessao: SessionData): Promise<boolean> {
@@ -83,6 +84,11 @@ export async function divulgacaoDaSemana(sessao: SessionData): Promise<{ nome: s
         select: { receita: true, evento: { select: { nome: true, data: true } } },
     })
     return kit ? { nome: semDestaque(normalizarReceita(kit.receita).titulo) || kit.evento.nome, data: kit.evento.data.toISOString() } : null
+}
+
+/** Rotinas do culto: as artes de hoje/amanhã por publicar ou por postar, para quem cuida do telão (e o líder). */
+export async function rotinaDoMembro(sessao: SessionData): Promise<CartaoRotina[]> {
+    return cartoesRotinaDoMembro(sessao.tenantId, sessao.membroId)
 }
 
 export interface MeuGrupo {

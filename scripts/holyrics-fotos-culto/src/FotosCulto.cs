@@ -29,7 +29,12 @@
 //                                                                       ou ERRO|mensagem (sem live agendada, YouTube não ligado…)
 //   FotosCulto.exe --live-aplicar --portal … --chave … --evento N --estado agendada|direto|arquivo|reserva   → OK|título|capa (1/0)|aviso   ou ERRO|mensagem
 //
-//   FotosCulto.exe --versao                    → V|8 (o módulo confirma que este exe é o novo antes de perguntar)
+//   Rotina do culto (botão "Iniciar o culto"; o portal diz o que fazer, este programa só pede e regista):
+//   FotosCulto.exe --rotina-ver --portal … --chave … [--evento N]   → C|id|AAAA-MM-DDTHH:MM|nome (ou C|0 sem culto)  K|publicado 1/0|publicadoEm|temFundoSemTexto 1/0
+//                                                                       G|música|vídeo|lumikitAcaoId|lumikitTipo (api/script)  B|texto da bênção|referência   ou ERRO|mensagem
+//   FotosCulto.exe --rotina-registar <ficheiro.json | b64:JSON-em-base64> --portal … --chave …   → OK  ou ERRO|mensagem   (o JSON: { eventoId, operador, passos: [{ id, nome, ok, mensagem }] })
+//
+//   FotosCulto.exe --versao                    → V|9 (o módulo confirma que este exe é o novo antes de perguntar)
 //   FotosCulto.exe --abrir-studio [--studio "…\ADMVC Media Studio.exe"] [--url http://127.0.0.1:8100]
 //                  → OK|aberto (já corria: abre o painel)  OK|arrancado|<exe>  ERRO|<motivo>
 //   FotosCulto.exe --inventario --pasta "…"    → S|slides  T|fotos  F|nome  I|extensão|quantas  E|na Entrada  IE|extensão|quantas
@@ -74,6 +79,8 @@ static class FotosCulto
             if (a.ContainsKey("culto")) return CultoDoApp(a);
             if (a.ContainsKey("live-ver")) return LiveVer(a);
             if (a.ContainsKey("live-aplicar")) return LiveAplicar(a);
+            if (a.ContainsKey("rotina-ver")) return RotinaVer(a);
+            if (a.ContainsKey("rotina-registar")) return RotinaRegistar(a);
             if (a.ContainsKey("ligar")) return LigarMusica(a);
             if (a.ContainsKey("listar")) return Listar(a);
             if (a.ContainsKey("trazer")) return Trazer(a);
@@ -719,9 +726,126 @@ static class FotosCulto
         return 0;
     }
 
+    // ---- rotina do culto ("Iniciar o culto"): ler o que o portal configurou e registar o resultado --------------------------------
+
+    /// <summary>Pedido à rota /api/public/holyrics/rotina (GET sem corpo, POST com o JSON). Devolve null se correu bem, senão o erro em português.</summary>
+    static string PedirRotina(Dictionary<string, string> a, string metodo, string extra, string corpo, out Dictionary<string, object> json)
+    {
+        json = null;
+        string portal = Valor(a, "portal").TrimEnd('/');
+        string chave = Valor(a, "chave");
+        if (portal == "" || chave == "") return "Falta o endereço do portal ou a chave (definições do módulo).";
+        ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
+        var js = new JavaScriptSerializer();
+        try
+        {
+            using (var c = new WebClient { Encoding = Encoding.UTF8 })
+            {
+                string url = portal + "/api/public/holyrics/rotina?chave=" + Uri.EscapeDataString(chave) + extra;
+                string texto;
+                if (metodo == "POST") { c.Headers[HttpRequestHeader.ContentType] = "application/json; charset=utf-8"; texto = c.UploadString(url, "POST", corpo); }
+                else texto = c.DownloadString(url);
+                json = js.DeserializeObject(texto) as Dictionary<string, object>;
+                return json == null ? "O portal respondeu de forma inesperada." : null;
+            }
+        }
+        catch (WebException e)
+        {
+            var r = e.Response as HttpWebResponse;
+            if (r != null)
+            {
+                try
+                {
+                    using (var sr = new StreamReader(r.GetResponseStream(), Encoding.UTF8))
+                    {
+                        var j = js.DeserializeObject(sr.ReadToEnd()) as Dictionary<string, object>;
+                        if (j != null && j.ContainsKey("error")) return Convert.ToString(j["error"]);
+                    }
+                }
+                catch { }
+                int cod = (int)r.StatusCode;
+                if (cod == 401) return "A chave não é válida (veja em Mídia, no portal).";
+                if (cod == 404) return "O portal ainda não tem a rotina do culto (atualize o portal).";
+                if (cod == 429) return "Pedidos a mais: tente daqui a um minuto.";
+            }
+            return "Não consegui falar com o portal: " + e.Message;
+        }
+    }
+
+    static Dictionary<string, object> Sub(Dictionary<string, object> d, string chave)
+    {
+        object v;
+        return d != null && d.TryGetValue(chave, out v) ? v as Dictionary<string, object> : null;
+    }
+
+    static string Bool01(Dictionary<string, object> d, string chave)
+    {
+        object v;
+        if (d == null || !d.TryGetValue(chave, out v) || v == null) return "0";
+        if (v is bool) return (bool)v ? "1" : "0";
+        string t = Convert.ToString(v).ToLowerInvariant();
+        return t == "true" || t == "1" ? "1" : "0";
+    }
+
+    /// <summary>--rotina-ver [--evento N]: C (culto), K (kit), G (configuração), B (bênção) ou ERRO|mensagem.</summary>
+    static int RotinaVer(Dictionary<string, string> a)
+    {
+        string evento = Valor(a, "evento");
+        string extra = "";
+        if (evento != "" && evento != "1")
+        {
+            int n;
+            if (!int.TryParse(evento, out n) || n <= 0) { Console.WriteLine("ERRO|Culto inválido."); return 1; }
+            extra = "&evento=" + n;
+        }
+        Dictionary<string, object> j;
+        string erro = PedirRotina(a, "GET", extra, null, out j);
+        if (erro != null) { Console.WriteLine("ERRO|" + Linha(erro)); return 1; }
+        var culto = Sub(j, "culto");
+        if (culto == null) Console.WriteLine("C|0");
+        else
+        {
+            string data = Texto(culto, "data"); if (data.Length >= 16) data = data.Substring(0, 16);
+            Console.WriteLine("C|" + Linha(Texto(culto, "id")) + "|" + data + "|" + Linha(Texto(culto, "nome")));
+        }
+        var kit = Sub(j, "kit");
+        Console.WriteLine("K|" + Bool01(kit, "publicado") + "|" + Linha(Texto(kit, "publicadoEm")) + "|" + Bool01(kit, "temFundoSemTexto"));
+        var cfg = Sub(j, "config");
+        Console.WriteLine("G|" + Linha(Texto(cfg, "musica")) + "|" + Linha(Texto(cfg, "video")) + "|" + Linha(Texto(cfg, "lumikitAcaoId")) + "|" + Linha(Texto(cfg, "lumikitTipo")));
+        var bencao = Sub(j, "bencao");
+        Console.WriteLine("B|" + Linha(Texto(bencao, "texto")) + "|" + Linha(Texto(bencao, "ref")));
+        return 0;
+    }
+
+    /// <summary>--rotina-registar ficheiro.json: envia o resultado dos passos ao portal. OK ou ERRO|mensagem.</summary>
+    static int RotinaRegistar(Dictionary<string, string> a)
+    {
+        string caminho = Valor(a, "rotina-registar");
+        string corpo;
+        if (caminho.StartsWith("b64:"))
+        {
+            // o módulo do Holyrics não escreve ficheiros: manda o JSON em base64 (só ASCII, sem aspas a estragar a linha de comandos)
+            try { corpo = Encoding.UTF8.GetString(Convert.FromBase64String(caminho.Substring(4))); }
+            catch { Console.WriteLine("ERRO|O resultado da rotina veio mal formado."); return 1; }
+        }
+        else
+        {
+            if (caminho == "" || caminho == "1" || !File.Exists(caminho)) { Console.WriteLine("ERRO|Falta o ficheiro com o resultado da rotina."); return 1; }
+            corpo = File.ReadAllText(caminho, Encoding.UTF8);
+        }
+        if (corpo.Length > 200000) { Console.WriteLine("ERRO|O resultado da rotina é demasiado grande."); return 1; }
+        Dictionary<string, object> j;
+        string erro = PedirRotina(a, "POST", "", corpo, out j);
+        if (erro != null) { Console.WriteLine("ERRO|" + Linha(erro)); return 1; }
+        object ok;
+        if (j.TryGetValue("ok", out ok) && ok is bool && !(bool)ok) { Console.WriteLine("ERRO|" + Linha(Texto(j, "error") != "" ? Texto(j, "error") : "O portal não registou a rotina.")); return 2; }
+        Console.WriteLine("OK");
+        return 0;
+    }
+
     static int Versao()
     {
-        Console.WriteLine("V|8");
+        Console.WriteLine("V|9");
         return 0;
     }
 

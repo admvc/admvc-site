@@ -1,7 +1,9 @@
 // O que decide a capa e o título de uma live (funções puras, sem desenho nem base de dados).
 // Estados: agendada ("Domingo · 10h00"), direto ("EM DIRETO · AGORA", rodapé vermelho), arquivo (a data; título final
 // "Tema | Culto | Preletor | Data") e reserva ("Culto em direto": quando ninguém preencheu nada).
-import { quandoDoEvento } from '@/lib/divulgacao-kit'
+import { PALETAS } from '@/lib/divulgacao'
+import { modeloDasRedes, paramsDaRede, quandoDoEvento, type Receita } from '@/lib/divulgacao-kit'
+import type { CapaYt, PadraoCapa } from '@/lib/youtube-capa-receita'
 import { LIMITE_CAPA_BYTES } from '@/lib/youtube'
 
 export const ESTADOS_CAPA = ['agendada', 'direto', 'arquivo', 'reserva'] as const
@@ -101,14 +103,80 @@ export type DadosCapa = {
     preletor: string
     rodape: string               // agendada: "DOMINGO · 10H00"; arquivo: "22 NOV 2026"; os outros não usam
     foto: { url: string; w: number; h: number; recorte: boolean } | null
+    // o padrão e a edição (sem eles: "Profundidade com foto" com as cores da categoria, como antes do editor da capa)
+    padrao?: PadraoCapa
+    cores?: PaletaCapa           // as cores já escolhidas (ver coresDaCapa)
+    fotoLado?: 'esquerda' | 'direita'
+    fundo?: string | null        // imagem de fundo (um dos prontos ou do Blob público); null = só cores
+    igual?: string | null        // padrão "igual às artes do culto": o pedido (URLSearchParams em texto) da arte 16:9 do kit
+}
+
+/** A parte da receita que a capa usa (para o endereço da pré-visualização: a receita do ecrã, ainda por guardar). */
+export function receitaParaCapa(r: Receita): string {
+    const { estilo, paleta, estilosSeparados, modeloRedes, tinta, fundo, tema, preletor, quandoTexto, textoLivre, textoLivreTam, fotoH, fotoV, ajustes, capaYt } = r
+    return JSON.stringify({ estilo, paleta, estilosSeparados, modeloRedes, tinta, fundo, tema, preletor, quandoTexto, textoLivre, textoLivreTam, fotoH, fotoV, ajustes, capaYt })
+}
+
+/** O endereço da capa de um estado, com a receita do ecrã. `w` = pré-visualização pequena (JPEG); sem `w` o PNG inteiro. */
+export function enderecoDaCapa(eventoId: number, r: Receita, estado: EstadoCapa, o: { w?: number; descarregar?: boolean } = {}): string {
+    return `/api/divulgacao/capa-live?evento=${eventoId}&estado=${estado}&receita=${encodeURIComponent(receitaParaCapa(r))}${o.w ? `&previa=1&w=${o.w}` : ''}${o.descarregar ? '&download=1' : ''}`
+}
+
+/** Marca verde e dourado (a de sempre nos cultos normais). */
+export const CORES_MARCA = PALETAS_CAPA.regular
+
+/**
+ * As cores da capa de um padrão. `paletaId` vazio = a do padrão: o evento usa a da categoria, o editorial a marca em papel claro,
+ * os outros a marca verde e dourado. Com uma paleta escolhida, valem as cores dela (o editorial usa as claras).
+ */
+export function coresDaCapa(padrao: PadraoCapa, categoria: CategoriaCapa, paletaId: string): PaletaCapa {
+    const p = PALETAS.find((x) => x.id === paletaId) ?? (padrao === 'editorial' ? PALETAS.find((x) => x.id === 'verde-dourado')! : null)
+    if (padrao === 'editorial' && p) return { fundo: p.claro[1], luz: p.claro[0], sombra: p.claro[2], acento: p.c1, texto: p.claroTexto, sobreAcento: '#FFFFFF' }
+    if (p) return { fundo: p.fundo, luz: p.c1, sombra: p.fundo, acento: p.acento, texto: p.texto, sobreAcento: p.fundo }
+    return padrao === 'evento' ? PALETAS_CAPA[categoria] : CORES_MARCA
+}
+
+/**
+ * O pedido da arte 16:9 do kit com o selo do estado (o padrão "igual às artes do culto"; desenhado por lib/divulgacao-redes.tsx).
+ * Agendada: sem selo (a arte já diz o dia e a hora). Em direto: selo vermelho. Arquivo: a data. Reserva: "Culto em direto" sem tema, foto nem preletor.
+ */
+export function pedidoIgual(kit: Receita, capa: CapaYt, c: { nome: string; data: Date; tema: string }, estado: EstadoCapa, rodape: string): string {
+    const k: Receita = { ...kit, quandoTexto: capa.quando || kit.quandoTexto, afinar: {}, preletor: capa.preletor || kit.preletor }
+    const q = paramsDaRede(k, 'youtube', { nome: c.nome, data: c.data })
+    const reserva = estado === 'reserva'
+    const grande = reserva ? 'Culto *em direto*' : capa.titulo || c.tema || c.nome
+    const pequeno = reserva ? '' : capa.subtitulo || (semMarcas(grande).toLowerCase() === semMarcas(c.nome).toLowerCase() ? '' : c.nome)
+    q.delete('tema'); q.delete('subtitulo'); q.delete('titulo')
+    if (!pequeno) q.set('titulo', grande)
+    else if (modeloDasRedes(kit) === 'classico') { q.set('titulo', grande); q.set('subtitulo', pequeno) }
+    else { q.set('titulo', pequeno); q.set('tema', grande) }
+    if (reserva) q.delete('preletor')
+    if (capa.paleta) q.set('paleta', capa.paleta)
+    if (capa.fundo === 'cores') q.delete('fundo')
+    if (capa.foto === 'sem' || reserva) for (const k2 of ['foto', 'foco', 'fw', 'fh', 'recorte', 'aj']) q.delete(k2)
+    q.set('estadoCapa', estado)
+    if (estado === 'direto') q.set('selo', 'EM DIRETO · AGORA')
+    else if (estado === 'arquivo') q.set('selo', rodape)
+    else if (reserva) q.set('selo', 'EM DIRETO')
+    return q.toString()
+}
+
+const FOTO_NO_PEDIDO = ['foto', 'foco', 'fw', 'fh', 'recorte', 'aj']
+const temFoto = (d: DadosCapa) => !!d.foto || (!!d.igual && new URLSearchParams(d.igual).has('foto'))
+/** A mesma capa sem a foto do preletor (e sem a imagem de fundo, que também pesa). */
+export function semFoto(d: DadosCapa): DadosCapa {
+    let igual = d.igual
+    if (igual) { const q = new URLSearchParams(igual); for (const k of [...FOTO_NO_PEDIDO, 'fundo']) q.delete(k); igual = q.toString() }
+    return { ...d, foto: null, fundo: null, igual }
 }
 
 /** O PNG da capa em bytes, garantido ≤ 2 MB: se a foto a fizer passar o limite (ou não se conseguir buscar), refaz sem ela. */
 export async function capaEmBytes(d: DadosCapa, desenhar: (d: DadosCapa) => Promise<Response>): Promise<Uint8Array> {
     const bytes = async (x: DadosCapa) => new Uint8Array(await (await desenhar(x)).arrayBuffer())
+    const comImagens = temFoto(d) || !!d.fundo
     let png: Uint8Array | null = null
-    try { png = await bytes(d) } catch { if (!d.foto) throw new Error('Não consegui desenhar a capa.') }
-    if ((!png || png.length > LIMITE_CAPA_BYTES) && d.foto) png = await bytes({ ...d, foto: null })
+    try { png = await bytes(d) } catch { if (!comImagens) throw new Error('Não consegui desenhar a capa.') }
+    if ((!png || png.length > LIMITE_CAPA_BYTES) && comImagens) png = await bytes(semFoto(d))
     if (!png || png.length > LIMITE_CAPA_BYTES) throw new Error('A capa ficou com mais de 2 MB.')
     return png
 }

@@ -2,14 +2,14 @@
 // automático (Em direto / Arquivo) para o cron. Fala com o Google só através de lib/youtube.ts (transporte injetável).
 import prisma from '@/lib/prisma'
 import { agoraLisboa } from '@/lib/alertas-encontros'
-import { normalizarReceita, textosPara, quandoDoEvento } from '@/lib/divulgacao-kit'
+import { normalizarReceita, quandoDoEvento, type Receita } from '@/lib/divulgacao-kit'
 import {
     ErroYoutube, MENSAGEM_NAO_LIGADO, TOLERANCIA_MIN, atualizarTextos, contextoYoutube, definirCapa, instanteDeLisboa, listarLives, ligarLiveAoCulto,
     type ContextoYoutube, type LiveYoutube,
 } from '@/lib/youtube'
 import { simuladoAtivo, transporteSimulado } from '@/lib/youtube-simulado'
 import {
-    ESTADOS_CAPA, categoriaDaCapa, dataDoArquivo, estadoSugerido, lisboaEscrita, rodapeAgendada, tituloDaLive, type DadosCapa, type EstadoCapa,
+    ESTADOS_CAPA, categoriaDaCapa, coresDaCapa, dataDoArquivo, estadoSugerido, lisboaEscrita, pedidoIgual, rodapeAgendada, tituloDaLive, type DadosCapa, type EstadoCapa,
 } from '@/lib/youtube-capa-dados'
 
 /** O contexto do portal: as credenciais do ambiente (ou o YouTube falso em desenvolvimento com YOUTUBE_SIMULADO=1). */
@@ -29,43 +29,62 @@ export type Dependencias = {
 export type DadosDoCulto = {
     id: number; nome: string; data: Date; tipo: string
     tema: string; preletor: string; paletaDoKit: string | null
+    liveId: string | null                 // Evento.youtube_live_id: a live que o portal criou para este culto
     foto: DadosCapa['foto']
+    kit?: Receita | null                  // a receita do kit (a guardada, ou a que se está a mexer na pré-visualização)
+    cultoTxt?: string                     // a linha pequena da capa e o "culto" do título: o subtítulo escrito, senão o nome do culto
 }
 
-/** O culto com o que a Divulgação já sabe: tema e preletor do kit (senão do sermão), foto (a horizontal, senão a vertical). */
-export async function dadosDoCulto(tenantId: number, eventoId: number): Promise<DadosDoCulto | null> {
+/**
+ * O culto com o que a Divulgação já sabe, já com a edição da capa do YouTube (kit.capaYt): título grande (a edição, senão o tema do kit
+ * ou do sermão), preletor, subtítulo e foto (a horizontal, senão a vertical; "sem foto" tira-a). `kitNovo` = uma receita ainda por
+ * guardar (a pré-visualização), no lugar da guardada.
+ */
+export async function dadosDoCulto(tenantId: number, eventoId: number, kitNovo?: Receita): Promise<DadosDoCulto | null> {
     const e = await prisma.evento.findFirst({
         where: { id: eventoId, tenant_id: tenantId },
         select: {
-            id: true, nome: true, data: true, tipo: true,
+            id: true, nome: true, data: true, tipo: true, youtube_live_id: true,
             kitDivulgacao: { select: { receita: true } },
             sermoes: { orderBy: { created_at: 'desc' }, take: 1, select: { titulo: true, pregador: { select: { first_name: true, last_name: true } } } },
         },
     })
     if (!e) return null
-    const kit = e.kitDivulgacao ? normalizarReceita(e.kitDivulgacao.receita) : null
+    const kit = kitNovo ?? (e.kitDivulgacao ? normalizarReceita(e.kitDivulgacao.receita) : null)
     const sermao = e.sermoes[0]
-    const tema = (kit ? textosPara(kit, 'youtube').tema : '') || sermao?.titulo || ''
-    const preletor = kit?.preletor || (sermao ? `${sermao.pregador.first_name} ${sermao.pregador.last_name}`.trim() : '')
-    const f = kit ? (kit.fotoH?.recorte ? kit.fotoH : kit.fotoV?.recorte ? kit.fotoV : kit.fotoH ?? kit.fotoV) : null
+    const capa = kit?.capaYt
+    const tema = capa?.titulo || kit?.tema || sermao?.titulo || ''
+    const preletor = capa?.preletor || kit?.preletor || (sermao ? `${sermao.pregador.first_name} ${sermao.pregador.last_name}`.trim() : '')
+    const f = kit && capa?.foto !== 'sem' ? (kit.fotoH?.recorte ? kit.fotoH : kit.fotoV?.recorte ? kit.fotoV : kit.fotoH ?? kit.fotoV) : null
     return {
         id: e.id, nome: e.nome, data: e.data, tipo: e.tipo, tema, preletor,
+        liveId: e.youtube_live_id && e.youtube_live_id !== 'a-criar' ? e.youtube_live_id : null,
         paletaDoKit: kit && kit.paleta !== 'preto-laranja' ? kit.paleta : null,   // a paleta de origem não conta: é a que ninguém escolheu
         foto: f && f.w && f.h ? { url: f.url, w: f.w, h: f.h, recorte: !!f.recorte } : null,
+        kit, cultoTxt: capa?.subtitulo || e.nome,
     }
 }
 
-/** Os dados da capa de um estado (o título grande é o tema; sem tema, o nome do culto). */
+/** Os dados da capa de um estado: o padrão escolhido e a edição do kit (sem escolha: igual às artes do culto). */
 export function dadosDaCapa(c: DadosDoCulto, estado: EstadoCapa, hojeMs: number): DadosCapa {
-    return {
-        estado, categoria: categoriaDaCapa(c.nome, c.tipo, c.paletaDoKit),
-        titulo: c.tema || c.nome, culto: c.nome, preletor: c.preletor,
-        rodape: estado === 'arquivo' ? dataDoArquivo(c.data) : estado === 'agendada' ? rodapeAgendada(c.data, hojeMs) : '',
-        foto: estado === 'reserva' ? null : c.foto,
+    const kit = c.kit ?? normalizarReceita({})   // sem kit guardado: as artes por omissão (e a capa igual a elas)
+    const capa = kit.capaYt
+    const padrao = capa?.padrao ?? 'igual'
+    const categoria = categoriaDaCapa(c.nome, c.tipo, c.paletaDoKit)
+    const rodape = estado === 'arquivo' ? dataDoArquivo(c.data) : estado === 'agendada' ? (capa.quando ? capa.quando.toUpperCase() : rodapeAgendada(c.data, hojeMs)) : ''
+    const reserva = estado === 'reserva'
+    const base: DadosCapa = {
+        estado, categoria, titulo: reserva ? 'Culto *em direto*' : c.tema || c.nome, culto: reserva ? '' : c.cultoTxt ?? c.nome, preletor: reserva ? '' : c.preletor, rodape,
+        foto: reserva ? null : c.foto, padrao,
+        cores: coresDaCapa(padrao, categoria, capa.paleta),
+        fotoLado: capa.foto === 'esquerda' ? 'esquerda' : 'direita',
+        fundo: capa.fundo !== 'cores' && kit.fundo ? kit.fundo : null,
     }
+    if (padrao === 'igual') base.igual = pedidoIgual(kit, capa, { nome: c.nome, data: c.data, tema: c.tema }, estado, rodape)
+    return base
 }
 
-export const tituloDoEstado = (c: DadosDoCulto, estado: EstadoCapa) => tituloDaLive(estado, { tema: c.tema, culto: c.nome, preletor: c.preletor, data: c.data })
+export const tituloDoEstado = (c: DadosDoCulto, estado: EstadoCapa) => tituloDaLive(estado, { tema: c.tema, culto: c.cultoTxt ?? c.nome, preletor: c.preletor, data: c.data })
 
 // ---- ver ---------------------------------------------------------------------------------------------------------------------
 
@@ -119,7 +138,8 @@ export async function verLive(tenantId: number, eventoId: number, dep: Dependenc
     const [todas, cultos] = await Promise.all([listarLives(ctx), cultosProximos(tenantId, hoje)])
     const cultosComEste = cultos.some((c) => c.id === culto.id) ? cultos : [...cultos, { id: culto.id, nome: culto.nome, data: culto.data }]
     const ligacoes = ligarLivesAosCultos(todas, cultosComEste)
-    const ligada = ligarLiveAoCulto(todas, culto.data, { estados: ['agendada', 'direto', 'terminada'] })
+    const pelaId = culto.liveId ? todas.find((l) => l.id === culto.liveId) : undefined
+    const ligada = pelaId ? { live: pelaId } : ligarLiveAoCulto(todas, culto.data, { estados: ['agendada', 'direto', 'terminada'] })
     const live = ligada ? vista(ligada.live, { id: culto.id, nome: culto.nome }) : null
     const titulos = Object.fromEntries(ESTADOS_CAPA.map((e) => [e, tituloDoEstado(culto, e)])) as Record<EstadoCapa, string>
     return {
@@ -145,7 +165,7 @@ export function mensagemSemLive(data: Date): string {
 export type Origem = 'portal' | 'holyrics' | 'cron'
 export type ResultadoAplicar = { live: LiveVista; titulo: string; estado: EstadoCapa; capaAplicada: boolean; aviso: string | null }
 
-async function registar(tenantId: number, d: { eventoId: number | null; liveId: string; liveTitulo: string; tituloAplicado: string | null; estado: EstadoCapa; origem: Origem; por: string | null; ok: boolean; mensagem: string | null }) {
+export async function registar(tenantId: number, d: { eventoId: number | null; liveId: string; liveTitulo: string; tituloAplicado: string | null; estado: EstadoCapa; origem: Origem; por: string | null; ok: boolean; mensagem: string | null }) {
     try {
         await prisma.youtubeLiveRegisto.create({
             data: {
@@ -161,14 +181,17 @@ async function registar(tenantId: number, d: { eventoId: number | null; liveId: 
  * Se só a capa falhar por o canal não estar verificado, o título troca-se na mesma e devolve-se um aviso.
  * Lança ErroYoutube (mensagem em português) quando não dá.
  */
-export async function aplicarLive(tenantId: number, eventoId: number, estado: EstadoCapa, quem: { origem: Origem; por: string | null }, dep: Dependencias = {}): Promise<ResultadoAplicar> {
+export async function aplicarLive(tenantId: number, eventoId: number, estado: EstadoCapa, quem: { origem: Origem; por: string | null }, dep: Dependencias = {}, extra: { descricao?: string; categoriaId?: string; idioma?: string } = {}): Promise<ResultadoAplicar> {
     const ctx = dep.ctx === undefined ? contextoDoPortal() : dep.ctx
     if (!ctx) throw new ErroYoutube('nao-ligado', MENSAGEM_NAO_LIGADO)
     const culto = await dadosDoCulto(tenantId, eventoId)
     if (!culto) throw new ErroYoutube('outro', 'Culto não encontrado.')
     let liveId = '', liveTitulo = '', titulo: string | null = null
     try {
-        const ligada = ligarLiveAoCulto(await listarLives(ctx), culto.data, { estados: ['agendada', 'direto', 'terminada'] })
+        const todas = await listarLives(ctx)
+        // a live que o portal criou para o culto (youtube_live_id) vem primeiro; só sem ela se procura pela data e hora
+        const pelaId = culto.liveId ? todas.find((l) => l.id === culto.liveId) : undefined
+        const ligada: { live: LiveYoutube } | null = pelaId ? { live: pelaId } : ligarLiveAoCulto(todas, culto.data, { estados: ['agendada', 'direto', 'terminada'] })
         if (!ligada) throw new ErroYoutube('sem-live', mensagemSemLive(culto.data))
         liveId = ligada.live.id; liveTitulo = ligada.live.titulo
         const hoje = new Date(agoraLisboa().toISOString().slice(0, 10) + 'T00:00:00Z').getTime()
@@ -177,7 +200,7 @@ export async function aplicarLive(tenantId: number, eventoId: number, estado: Es
         try { await definirCapa(ctx, liveId, png) } catch (e) {
             if (e instanceof ErroYoutube && e.codigo === 'sem-verificacao') { aviso = `Título trocado, mas a capa não: ${e.message}`; capaAplicada = false } else throw e
         }
-        titulo = (await atualizarTextos(ctx, liveId, { titulo: tituloDoEstado(culto, estado) })).titulo
+        titulo = (await atualizarTextos(ctx, liveId, { titulo: tituloDoEstado(culto, estado), ...extra })).titulo
         await registar(tenantId, { eventoId, liveId, liveTitulo, tituloAplicado: titulo, estado, origem: quem.origem, por: quem.por, ok: true, mensagem: aviso })
         return { live: vista(ligada.live, { id: culto.id, nome: culto.nome }), titulo, estado, capaAplicada, aviso }
     } catch (e) {

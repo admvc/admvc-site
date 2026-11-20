@@ -1,6 +1,7 @@
 // A "receita" de um kit de divulgação (o que fica guardado na base por evento) e como vira o pedido de cada peça.
-import { ALVOS, FUNDOS_PRONTOS, PECAS, REDES, lerEstilo, lerModeloRedes, lerPaleta, redesDoEstilo, type EstiloId, type ModeloRedesId, type PecaId, type RedeId } from '@/lib/divulgacao'
+import { ALVOS, FUNDOS_PRONTOS, PALETAS, PECAS, REDES, lerEstilo, lerModeloRedes, lerPaleta, redesDoEstilo, type EstiloId, type ModeloRedesId, type PecaId, type RedeId } from '@/lib/divulgacao'
 import { ajusteEmTexto, lerAjustesKit, type AjustesKit } from '@/lib/divulgacao-enquadrar'
+import { capaYtVazia, lerCapaYt, type CapaYt } from '@/lib/youtube-capa-receita'
 
 export const QR_BOAS_VINDAS = 'https://www.igrejaadmvc.org/boasvindas?c=sede'
 
@@ -39,6 +40,7 @@ export type Receita = {
     textoLivre: string                               // texto livre a mais nas artes; vazio = sem
     textoLivreTam: TamanhoLivre                      // pequeno / normal / grande
     afinar: Partial<Record<FormatoTexto, TextosAfinados>> // textos diferentes só num formato (vazio = segue o geral)
+    capaYt: CapaYt                                   // a capa do YouTube: o padrão escolhido e a edição (sem escolha = igual às artes do culto)
 }
 
 /** O estilo das artes das redes que vale para esta receita (o do estilo do telão, a não ser que estejam separados). */
@@ -72,12 +74,15 @@ export function receitaVazia(): Receita {
         verso: '', versoRef: '', semVersiculo: false,
         redes: [...REDES_POR_OMISSAO], titulo: '', subtitulo: '', fotoH: null, fotoV: null, tinta: 0.25,
         fundo: '', palavraComFoto: true, ajustes: {}, modeloRedes: 'classico',
-        estilosSeparados: false, quandoTexto: '', textoLivre: '', textoLivreTam: 'm', afinar: {},
+        estilosSeparados: false, quandoTexto: '', textoLivre: '', textoLivreTam: 'm', afinar: {}, capaYt: capaYtVazia(),
     }
 }
 
 // Só fotos do nosso Blob público (o servidor vai buscá-las); o foco é "x% y%"
-const URL_FOTO = /^https:\/\/[a-z0-9-]+\.public\.blob\.vercel-storage\.com\//i
+const URL_FOTO_BLOB = /^https:\/\/[a-z0-9-]+\.public\.blob\.vercel-storage\.com\//i
+// só em ensaio (YouTube simulado, nunca em produção): também uma foto servida pelo próprio computador, para ver o desenho com foto
+const ensaio = () => process.env.YOUTUBE_SIMULADO === '1' && process.env.NODE_ENV !== 'production'
+const URL_FOTO = { test: (u: string) => URL_FOTO_BLOB.test(u) || (ensaio() && /^http:\/\/localhost:\d+\//.test(u)) }
 function lerFoto(x: unknown): FotoKit | null {
     const o = (x && typeof x === 'object' ? x : null) as Record<string, unknown> | null
     if (!o || typeof o.url !== 'string' || !URL_FOTO.test(o.url) || o.url.length > 400) return null
@@ -119,7 +124,7 @@ export function normalizarReceita(x: unknown): Receita {
         modeloRedes: estilosSeparados ? modeloRedes : redesDoEstilo(estilo), estilosSeparados,
         quandoTexto: txt(o.quandoTexto, LIMITES_TEXTO.quando, ''), textoLivre: txt(o.textoLivre, LIMITES_TEXTO.livre, ''),
         textoLivreTam: o.textoLivreTam === 'p' || o.textoLivreTam === 'g' ? o.textoLivreTam : 'm',
-        afinar: lerAfinar(o.afinar),
+        afinar: lerAfinar(o.afinar), capaYt: lerCapaYt(o.capaYt, PALETAS.map((p) => p.id)),
         cantina: lerCantina(o.cantina, base.cantina),
     }
 }
@@ -235,3 +240,13 @@ export const nomeDaRede = (formato: RedeId) => `redes-${formato}.png`
 
 /** O título sem os asteriscos do destaque ("*fruto do Espírito*" → "fruto do Espírito"), para textos e estilos sem destaque. */
 export const semDestaque = (t: string) => t.replace(/\*/g, '')
+
+/** Os separadores da página da Divulgação (o escolhido fica no endereço: ?aba=redes). */
+export const ABAS_DIVULGACAO = ['telao', 'redes', 'youtube'] as const
+export type AbaDivulgacao = (typeof ABAS_DIVULGACAO)[number]
+export const lerAba = (v: unknown): AbaDivulgacao => (ABAS_DIVULGACAO.find((a) => a === v) ?? 'telao')
+
+/** As artes das redes que se fazem aqui: só o post (4:5) e o story (9:16). A capa do YouTube vive no separador YouTube. */
+export const REDES_DAS_ARTES = ['post', 'story'] as const satisfies readonly RedeId[]
+/** Das redes da receita, as que contam (tira a capa 16:9, que já não é uma arte das redes). */
+export const redesAtivas = (r: Pick<Receita, 'redes'>): RedeId[] => r.redes.filter((x) => (REDES_DAS_ARTES as readonly string[]).includes(x))

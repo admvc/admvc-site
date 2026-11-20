@@ -11,8 +11,9 @@ import { minhasEscalas, minhasIndisponibilidades } from '@/lib/escalas-app'
 import { meusMinisterios } from '@/lib/ministerios-app'
 import { alertasDoMembro } from '@/lib/alertas-encontros'
 import AlertasEncontros from './AlertasEncontros'
-import { aniversariantesDoMes, cultosDaSemana, divulgacaoDaSemana, meusGrupos, termosPorAssinar } from '@/lib/inicio-app'
+import { aniversariantesDoMes, cultosDaSemana, divulgacaoDaSemana, meusGrupos, rotinaDoMembro, termosPorAssinar } from '@/lib/inicio-app'
 import AjudaDivulgar from './AjudaDivulgar'
+import AlertaRotinaCulto from './AlertaRotinaCulto'
 import Aniversariantes from './Aniversariantes'
 import AtivarNotificacoes from './AtivarNotificacoes'
 import EstaSemana from './EstaSemana'
@@ -22,7 +23,7 @@ import { diaCurto, diaPorExtenso, hora } from './datas'
 
 export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: SessionData; primeiroNome: string }) {
     const db = getTenantClient(sessao.tenantId)
-    const [escalas, indisponiveis, ministerios, proximoCulto, termos, aniversariantes, semana, grupos, alertas, divulgar] = await Promise.all([
+    const [escalas, indisponiveis, ministerios, proximoCulto, termos, aniversariantes, semana, grupos, alertas, divulgar, rotina] = await Promise.all([
         minhasEscalas(sessao),
         minhasIndisponibilidades(sessao),
         meusMinisterios(sessao),
@@ -33,6 +34,7 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
         meusGrupos(sessao),
         alertasDoMembro(sessao).catch(() => []),
         divulgacaoDaSemana(sessao).catch(() => null),
+        rotinaDoMembro(sessao).catch(() => []),
     ])
     // Início limpo: só a próxima escala POR CONFIRMAR; as confirmadas (e as seguintes) ficam em Escalas
     const porConfirmar = escalas.filter((e) => e.estado === 'POR_CONFIRMAR')
@@ -59,6 +61,8 @@ export default async function InicioEscalas({ sessao, primeiroNome }: { sessao: 
             <InscricoesAbertas sessao={sessao} />
 
             <AtivarNotificacoes />
+
+            <AlertaRotinaCulto cartoes={rotina} />
 
             <AjudaDivulgar culto={divulgar} />
 

@@ -6,14 +6,27 @@
 import { ImageResponse } from 'next/og'
 import type { CSSProperties } from 'react'
 import { REDES, lerPaleta, type Paleta, type RedeId } from '@/lib/divulgacao'
-import { carregarFontes, carregarPomba, fotoPermitida, lerFundo, rgba } from '@/lib/divulgacao-imagem'
+import { carregarFontes, carregarPomba, fotoPermitida, lerFundo, reduzido, rgba } from '@/lib/divulgacao-imagem'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { ajustePorOmissao, caixaFoto, enquadrarFoto, enquadrarRecorte, lerAjuste, type Ajuste } from '@/lib/divulgacao-enquadrar'
 import { ModeloRede, TextoLivre } from '@/lib/divulgacao-redes-modelos'
 import { lerModeloRedes } from '@/lib/divulgacao'
 
-type Dados = { livre: string; livreTam: string; titulo: string; subtitulo: string; quando: string; hora: string; preletor: string; foto: string | null; fw: number; fh: number; foco: string; tinta: number; recorte: boolean; fundo: string | null; ajuste: Ajuste | null; modelo: string; tema: string }
+type Dados = { livre: string; livreTam: string; titulo: string; subtitulo: string; quando: string; hora: string; preletor: string; foto: string | null; fw: number; fh: number; foco: string; tinta: number; recorte: boolean; fundo: string | null; ajuste: Ajuste | null; modelo: string; tema: string; estadoCapa: string; selo: string }
+
+/** O selo do estado da capa do YouTube (canto de baixo à direita): vermelho em direto, a data no arquivo. Só com `estadoCapa` no pedido. */
+function Selo({ estado, texto, p }: { estado: string; texto: string; p: Paleta }) {
+    if (!texto) return null
+    const vermelho = estado === 'direto' || estado === 'reserva'
+    return (
+        <div style={{ position: 'absolute', right: 40, bottom: 36, display: 'flex', alignItems: 'center', padding: '12px 22px', borderRadius: 6, fontFamily: 'Montserrat', fontWeight: 900, fontSize: 24, letterSpacing: 3,
+            ...(vermelho ? { backgroundColor: '#D32F2F', color: '#fff' } : estado === 'arquivo' ? { backgroundColor: 'rgba(0,0,0,0.62)', color: '#fff', border: `3px solid ${p.acento}` } : { backgroundColor: p.acento, color: p.fundo }) }}>
+            {vermelho && <div style={{ display: 'flex', width: 14, height: 14, borderRadius: 7, backgroundColor: '#fff', marginRight: 12 }} />}
+            <div style={{ display: 'flex' }}>{texto}</div>
+        </div>
+    )
+}
 
 // Maiúsculas em Cinzel são largas (~0.8 em): o título cabe em até 2 linhas no espaço dado
 function tamanhoTitulo(titulo: string, max: number, largura: number) {
@@ -63,10 +76,12 @@ function Rede({ formato, p, d, marca, letras }: { formato: RedeId; p: Paleta; d:
     // estilos novos: o tema da mensagem é o texto grande (o nome do culto passa a linha pequena)
     if (d.modelo !== 'classico') {
         const foto = d.foto ? (d.recorte ? recortado(d, caixa, p) : corte(d, caixa)) : null
-        return (
+        const arte = (
             <ModeloRede modelo={d.modelo} formato={formato} W={W} H={H} p={p} marca={marca} letras={letras.claras} letrasEscuras={letras.escuras} foto={foto} caixa={caixa}
                 d={{ grande: d.tema || d.titulo, pequeno: d.tema ? d.titulo.replace(/[*|]/g, ' ').replace(/\s+/g, ' ').trim() : d.subtitulo, quando: d.quando, hora: d.hora, preletor: d.preletor, livre: d.livre, livreTam: d.livreTam }} />
         )
+        if (!d.estadoCapa) return arte
+        return <div style={{ width: W, height: H, display: 'flex', position: 'relative' }}>{arte}<Selo estado={d.estadoCapa} texto={d.selo} p={p} /></div>
     }
     const degrade = horizontal
         ? `linear-gradient(90deg, ${base} 0%, ${base} 40%, ${mistura(base, 65)} 55%, ${rgba(base, 0)} 78%)`
@@ -127,7 +142,7 @@ function Rede({ formato, p, d, marca, letras }: { formato: RedeId; p: Paleta; d:
                         {texto}
                         <div style={{ display: 'flex', marginTop: 6 }}>{logo(20)}</div>
                     </div>
-                    <div style={{ position: 'absolute', right: 150, top: 84, display: 'flex', backgroundColor: p.acento, color: base, fontWeight: 900, fontSize: 20, padding: '6px 14px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: 1 }}>● Em direto</div>
+                    {!d.estadoCapa && <div style={{ position: 'absolute', right: 150, top: 84, display: 'flex', backgroundColor: p.acento, color: base, fontWeight: 900, fontSize: 20, padding: '6px 14px', borderRadius: 6, textTransform: 'uppercase', letterSpacing: 1 }}>● Em direto</div>}
                 </>
             )}
             {formato === 'post' && (
@@ -142,6 +157,7 @@ function Rede({ formato, p, d, marca, letras }: { formato: RedeId; p: Paleta; d:
                     <div style={{ display: 'flex', marginTop: 20 }}>{logo(30)}</div>
                 </div>
             )}
+            {d.estadoCapa && <Selo estado={d.estadoCapa} texto={d.selo} p={p} />}
         </div>
     )
 }
@@ -153,7 +169,7 @@ const letrasAdmvc = () => (letrasLidas ??= readFile(path.join(process.cwd(), 'pu
     escuras: `data:image/svg+xml;base64,${Buffer.from(svg.replace('fill="#fff"', 'fill="#1b1b1b"')).toString('base64')}`,
 })))
 
-export async function desenharRede(q: URLSearchParams): Promise<ImageResponse> {
+export async function desenharRede(q: URLSearchParams, escala = 1): Promise<ImageResponse> {
     const formato = (REDES.find((r) => r.id === q.get('formato'))?.id ?? 'post') as RedeId
     const f = REDES.find((r) => r.id === formato)!
     const p = lerPaleta(q.get('paleta'))
@@ -163,9 +179,11 @@ export async function desenharRede(q: URLSearchParams): Promise<ImageResponse> {
     const d: Dados = {
         titulo: corta('titulo', 60) || 'Culto', subtitulo: corta('subtitulo', 40), quando: corta('quando', 30), hora: corta('hora', 10),
         preletor: corta('preletor', 60), foto: fotoPermitida(q.get('foto')), fw: Number(q.get('fw')) || 0, fh: Number(q.get('fh')) || 0, foco, tinta,
-        recorte: q.get('recorte') === '1', fundo: null, ajuste: lerAjuste(q.get('aj')), modelo: lerModeloRedes(q.get('modelo')), tema: corta('tema', 120), livre: corta('livre', 120), livreTam: corta('livreTam', 1) || 'm',
+        recorte: q.get('recorte') === '1', fundo: null, ajuste: lerAjuste(q.get('aj')), modelo: lerModeloRedes(q.get('modelo')), tema: corta('tema', 120), livre: corta('livre', 120), livreTam: corta('livreTam', 1) || 'm', estadoCapa: corta('estadoCapa', 10), selo: corta('selo', 30),
     }
     const [fonts, marca, fundo] = await Promise.all([carregarFontes(), carregarPomba(), lerFundo(q.get('fundo'))])
     d.fundo = fundo
-    return new ImageResponse(<Rede formato={formato} p={p} d={d} marca={marca} letras={await letrasAdmvc()} />, { width: f.largura, height: f.altura, fonts })
+    // com foto, desenha-se em tamanho real (o satori não encolhe bem imagens posicionadas); a prévia reduz depois com o sharp
+    const e = d.foto || d.fundo ? 1 : escala
+    return new ImageResponse(reduzido(<Rede formato={formato} p={p} d={d} marca={marca} letras={await letrasAdmvc()} />, f.largura, f.altura, e), { width: Math.round(f.largura * e), height: Math.round(f.altura * e), fonts })
 }

@@ -107,6 +107,8 @@ model Tenant {
   regioes_custom           Json?                     // Array de strings com regioes customizadas
   // Redes Sociais
   youtube_channel_id       String?                   // ID do canal YouTube (ex: UCxxxxx)
+  youtube_stream_id        String?                   // id da chave fixa (liveStreams) do YoloBox; a chave em si NUNCA se grava
+  rotina_culto             Json?                     // Rotinas do culto: { funcoes, horaAlerta, horaManha, musica, video, lumikitAcaoId, lumikitTipo } (lib/rotina-config.ts)
   instagram_handle         String?                   // Handle Instagram sem @ (ex: igrejaxyz)
   // Integracao Permanecer
   curso_permanecer_id      String?                   // ID do curso EBD usado como Permanecer
@@ -532,6 +534,9 @@ model Evento {
   grupo_id       Int?               // culto direcionado a este grupo (ex.: culto de quarta dos Homens)
   nome_original  String?            // o nome antes de uma regra o mudar ("Quarta profética"); volta se a regra parar
   regra_id       Int?
+  transmitir_youtube     Boolean?   // null = regra (domingo e quarta, cultos); true/false = escolha da Mídia
+  youtube_live_id        String?    // id da live criada pelo portal (liveBroadcasts)
+  youtube_live_criada_em DateTime?  // quando o portal a criou
   grupo          Grupo?             @relation(fields: [grupo_id], references: [id], onDelete: SetNull)
   regra          RegraAgenda?       @relation(fields: [regra_id], references: [id], onDelete: SetNull)
 
@@ -2450,4 +2455,21 @@ model YoutubeLiveRegisto {
   @@index([tenant_id, criado_em])
   @@index([broadcast_id, estado])
   @@map("youtube_lives_registo")
+}
+
+// Registo das rotinas do culto: alertas enviados (alerta_d1, alerta_dia), 'postado' (Já postei) e 'inicio_culto' (o botão do Holyrics).
+// A chave única impede repetir um alerta ao mesmo membro no mesmo culto (null = sem limite, ex.: vários inicio_culto).
+model RotinaRegisto {
+  id        Int      @id @default(autoincrement())
+  tenant_id Int
+  evento_id Int
+  tipo      String   // alerta_d1 | alerta_dia | postado | inicio_culto
+  membro_id Int?
+  ok        Boolean  @default(true)
+  chave     String?  @unique
+  detalhes  Json?
+  criado_em DateTime @default(now())
+
+  @@index([tenant_id, evento_id, tipo])
+  @@map("rotina_registos")
 }

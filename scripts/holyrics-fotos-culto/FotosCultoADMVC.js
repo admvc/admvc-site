@@ -10,6 +10,10 @@
 // "Capa na live do YouTube": escolhe o culto e o estado (Agendada / Em direto / Arquivo / Reserva, pré-escolhido pela hora), mostra a live
 // encontrada e o título que vai ficar e, se disser que sim, o portal troca a capa e o título da live. O Holyrics NUNCA tem credenciais do Google:
 // o portal é que fala com o YouTube (precisa do FotosCulto.exe versão 8 e da mesma chave de Mídia → Holyrics).
+// "Iniciar o culto": o botão do dia do culto. Lê a rotina no portal (Mídia → Rotina do culto) e corre os passos em sequência — artes,
+// luz pré-culto (Lumikit), música de fundo, papel de parede, vídeo de pré-início (fica num aviso clicável), capa "Agendada" da live —
+// mostra o relatório com a bênção e regista o resultado no portal. Cada passo apanha os seus erros e nunca trava os seguintes.
+// Precisa do FotosCulto.exe versão 9 e da mesma chave de Mídia → Holyrics.
 // Precisa de "FotosCulto.exe" na lista de ficheiros permitidos do módulo (Definições do módulo → Arquivos permitidos).
 
 var mID = 'admvc-fotos-culto'
@@ -49,12 +53,19 @@ function settings(module) {
         { id: 'CHAVE', name: 'Chave do portal (artes do culto)', label: 'Chave do portal (artes do culto)', type: 'password', default_value: '' },
         { id: 'PASTA_ARTES', name: 'Pasta das artes (em Imagens)', label: 'Pasta das artes (em Imagens)', type: 'string', default_value: 'ARTES-CULTO' },
         { id: 'ENVIAR', name: 'Enviar para o álbum do portal', label: 'Enviar para o álbum do portal', type: 'boolean', default_value: 'true' },
+        { id: 'OPERADOR', name: 'Operador (nome no registo de "Iniciar o culto")', label: 'Operador (nome no registo de "Iniciar o culto")', type: 'string', default_value: '' },
         { id: 'STUDIO', name: 'Media Studio (pasta ou .exe; vazio = procurar)', label: 'Media Studio (pasta ou .exe; vazio = procurar)', type: 'string', default_value: '' }
     ]
 }
 
 function actions(module) {
     return [{
+        id: 'iniciar_culto',
+        name: 'Iniciar o culto',
+        hint: 'Artes, luz, música, papel de parede, vídeo de pré-início e capa da live — com relatório e registo no portal',
+        icon: 'play_circle',
+        action: function (evt) { iniciarCulto(module) }
+    }, {
         id: 'sincronizar_app',
         name: 'Sincronizar APP',
         hint: 'Músicas, artes do telão, escala e rotina do culto — ou só as artes, para a pasta',
@@ -102,6 +113,10 @@ function abrirMediaStudio(module) {
 
 function contextActions(module) {
     return [{
+        name: 'Iniciar o culto',
+        types: ['image_folder'],
+        action: function (evt) { iniciarCulto(module) }
+    }, {
         name: 'Sincronizar APP',
         types: ['image_folder'],
         action: function (evt) { sincronizarApp(module) }
@@ -571,6 +586,302 @@ function capaNaLiveYoutube(module) {
         else h.notification('Live atualizada: «' + ultima[1] + '». A capa nova pode demorar uns minutos a aparecer no YouTube.', 12)
     } else {
         h.notificationError(ultima[0] === 'ERRO' ? ultima.slice(1).join('|') : (ultima.join('|') || 'Não foi possível aplicar na live.'), 15)
+    }
+}
+
+// ---- Iniciar o culto: a rotina do dia (o portal diz o que fazer; cada passo é isolado e nunca trava os seguintes)
+
+/** Base64 sem depender de btoa/Buffer (o motor de JS do Holyrics pode não os ter). O texto já vem só em ASCII (ver jsonAscii). */
+function paraBase64(ascii) {
+    var abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+    var out = ''
+    for (var i = 0; i < ascii.length; i += 3) {
+        var b1 = ascii.charCodeAt(i)
+        var tem2 = i + 1 < ascii.length, tem3 = i + 2 < ascii.length
+        var b2 = tem2 ? ascii.charCodeAt(i + 1) : 0
+        var b3 = tem3 ? ascii.charCodeAt(i + 2) : 0
+        out += abc.charAt(b1 >> 2) + abc.charAt(((b1 & 3) << 4) | (b2 >> 4))
+        out += tem2 ? abc.charAt(((b2 & 15) << 2) | (b3 >> 6)) : '='
+        out += tem3 ? abc.charAt(b3 & 63) : '='
+    }
+    return out
+}
+
+function jsonAscii(o) {
+    return JSON.stringify(o).replace(/[\u0080-￿]/g, function (c) { return '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4) })
+}
+
+/** Chamada à API do Holyrics que lança erro claro se não correr bem (o passo apanha-o). */
+function hlyOuErro(acao, params, oQue) {
+    var r = params === undefined ? h.hly(acao) : h.hly(acao, params)
+    if (!r || r.status !== 'ok') throw new Error(oQue + ' (' + acao + '): ' + (r && r.error ? String(r.error).substring(0, 100) : 'o Holyrics não aceitou'))
+    return r
+}
+
+// As 4 funções abaixo seguem a documentação da API do Holyrics mas ainda não foram vistas a correr num culto real:
+// CONFIRMAR NO ENSAIO (nomes e parâmetros). Se falharem, o passo regista o erro e o resto da rotina continua.
+function luzPreCulto(cfg) {   // confirmar no ensaio: ApiAction / ScriptAction com {id}
+    hlyOuErro(cfg.lumikitTipo === 'script' ? 'ScriptAction' : 'ApiAction', { id: String(cfg.lumikitAcaoId) }, 'Ação da Lumikit')
+}
+function tocarMusicaDeFundo(ficheiro) {   // confirmar no ensaio: PlayAudio {file, settings:{repeat}}
+    hlyOuErro('PlayAudio', { file: ficheiro, settings: { repeat: true } }, 'Música de fundo')
+}
+function porPapelDeParede(ficheiro) {   // confirmar no ensaio: SetWallpaperSettings {file, enabled}
+    hlyOuErro('SetWallpaperSettings', { file: ficheiro, enabled: true }, 'Papel de parede')
+}
+function tocarVideoDePreInicio(ficheiro) {   // confirmar no ensaio: MediaPlayerAction stop + PlayVideo {file}
+    hlyOuErro('MediaPlayerAction', { action: 'stop' }, 'Parar a música')
+    hlyOuErro('PlayVideo', { file: ficheiro }, 'Vídeo de pré-início')
+}
+
+/** Lista do Holyrics (pode vir como lista Java) → array JS. */
+function paraArray(x) {
+    if (!x) return []
+    if (x.length !== undefined) { var a = []; for (var i = 0; i < x.length; i++) a.push(x[i]); return a }
+    try { var b = []; for (var j = 0; j < x.size(); j++) b.push(x.get(j)); return b } catch (e) { return [] }
+}
+
+/**
+ * Abre no Holyrics a programação de HOJE (de preferência à hora do culto do portal). Confirmar no ensaio:
+ * GetSchedules {month, year} → Schedule.datetime "AAAA-MM-DD HH:MM" e metadata.event.id; GetEvents como recurso;
+ * SetCurrentSchedule {event_id} (Holyrics 2.26+, precisa do Holyrics Plan). Cultos fixos sem evento não se abrem por data.
+ */
+function abrirCultoDeHoje(module, culto) {
+    var d = new Date()
+    var hoje = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2)
+    var hora = culto && culto.data ? culto.data.substring(11, 16) : ''
+    var aberto = cultoAberto(module)
+    if (aberto && aberto.datetime && String(aberto.datetime).substring(0, 10) === hoje) return { mensagem: 'já estava aberto: ' + (aberto.name || hoje) }
+    var mes = { month: d.getMonth() + 1, year: d.getFullYear() }
+    var escolher = function (lista, idDe) {
+        var deHoje = [], certo = null
+        for (var i = 0; i < lista.length; i++) if (String(lista[i].datetime || '').substring(0, 10) === hoje && idDe(lista[i])) deHoje.push(lista[i])
+        for (var j = 0; j < deHoje.length && !certo; j++) if (hora && String(deHoje[j].datetime).substring(11, 16) === hora) certo = deHoje[j]
+        return certo || deHoje[0] || null
+    }
+    // Eventos (Chá de Mulheres, Congresso…) têm metadata.event.id. Os cultos que se repetem (separador "Culto") podem não ter:
+    // tenta-se também o id do culto (metadata.service.id, não documentado) e, se nada servir, regista-se o objeto para o ensaio.
+    var idsDoSchedule = function (s) {
+        var ids = []
+        if (s.metadata && s.metadata.event && s.metadata.event.id) ids.push(String(s.metadata.event.id))
+        if (s.metadata && s.metadata.service && s.metadata.service.id) ids.push(String(s.metadata.service.id))
+        if (s.id) ids.push(String(s.id))
+        return ids
+    }
+    var todos = paraArray(hlyOuErro('GetSchedules', mes, 'Agenda do Holyrics').data)
+    var s = escolher(todos, function () { return true })
+    var ids = s ? idsDoSchedule(s) : [], nome = s ? s.name : ''
+    var ev = escolher(paraArray(hlyOuErro('GetEvents', mes, 'Eventos do Holyrics').data), function (e) { return !!e.id })
+    if (ev && ids.indexOf(String(ev.id)) < 0) { ids.push(String(ev.id)); if (!nome) nome = ev.name }
+    if (!s && !ev) throw new Error('não há nada no calendário do Holyrics para hoje')
+    var ultimoErro = ''
+    for (var k = 0; k < ids.length; k++) {
+        try {
+            hlyOuErro('SetCurrentSchedule', { event_id: ids[k] }, 'Abrir o culto de hoje')
+            var depois = cultoAberto(module)
+            if (!depois || !depois.datetime || String(depois.datetime).substring(0, 10) === hoje) return { mensagem: 'aberto: ' + (nome || hoje) }
+        } catch (e) { ultimoErro = String(e && e.message ? e.message : e) }
+    }
+    try { h.logp(s || ev) } catch (e) { }   // para o ensaio: como o Holyrics descreve o culto de hoje
+    throw new Error('não consegui abrir «' + (nome || 'o culto de hoje') + '» sozinho' + (ultimoErro ? ' (' + ultimoErro + ')' : '') + ' — abra-o à mão no calendário')
+}
+
+/** Lê as linhas do FotosCulto.exe --rotina-ver: { erro } ou { culto, kit, config, bencao }. */
+function lerRotinaVer(res) {
+    var r = { erro: '', culto: null, kit: { publicado: false, publicadoEm: '', temFundo: false }, config: { musica: '', video: '', lumikitAcaoId: '', lumikitTipo: 'api' }, bencao: { texto: '', ref: '' } }
+    for (var i = 0; i < res.linhas.length; i++) {
+        var p = res.linhas[i].split('|')
+        if (p[0] === 'ERRO') { r.erro = p.slice(1).join('|'); return r }
+        if (p[0] === 'C' && p[1] && p[1] !== '0') r.culto = { id: p[1], data: p[2] || '', nome: p[3] || 'Culto' }
+        else if (p[0] === 'K') r.kit = { publicado: p[1] === '1', publicadoEm: p[2] || '', temFundo: p[3] === '1' }
+        else if (p[0] === 'G') r.config = { musica: p[1] || '', video: p[2] || '', lumikitAcaoId: p[3] || '', lumikitTipo: p[4] === 'script' ? 'script' : 'api' }
+        else if (p[0] === 'B') r.bencao = { texto: p[1] || '', ref: p[2] || '' }
+    }
+    if (res.linhas.length === 0) r.erro = res.erro || 'Sem resposta do FotosCulto.exe.'
+    return r
+}
+
+/** Mostra o relatório. h.ok pode ter outra forma no Holyrics: se falhar, cai para a janela de linhas (confirmar no ensaio). */
+function mostrarRelatorio(titulo, linhas) {
+    try { h.ok(linhas.join('\n'), titulo); return } catch (e) { h.log(mID, 'h.ok falhou: {}', [e]) }
+    var campos = [{ type: 'title', label: titulo }, { type: 'separator' }]
+    for (var i = 0; i < linhas.length; i++) campos.push({ type: 'title', label: linhas[i] === '' ? ' ' : linhas[i] })
+    h.input(campos)
+}
+
+function iniciarCulto(module) {
+    var exe = exePermitido(module)
+    if (!exe) return
+    if (versaoDoExe(module, exe) < 9) {
+        h.notificationError('O FotosCulto.exe é antigo: copie o novo (versão 9) para a pasta do módulo.', 10)
+        return
+    }
+    var k = chavesDoPortal(module)
+    if (!k) return
+
+    var passos = []
+    var marcas = { ok: '✓', erro: '✗', saltado: '–' }
+    function passo(id, nome, fn) {
+        var p = { id: id, nome: nome, ok: true, estado: 'ok', mensagem: '' }
+        try {
+            var r = fn() || {}
+            if (r.saltado) p.estado = 'saltado'
+            p.mensagem = String(r.mensagem || '')
+        } catch (e) {
+            p.ok = false; p.estado = 'erro'
+            p.mensagem = String(e && e.message ? e.message : e)
+            h.log(mID, 'Iniciar o culto, passo {}: {}', [id, p.mensagem])
+        }
+        passos.push(p)
+        return p
+    }
+
+    h.notification('A ler a rotina do culto no portal…', 4)
+    var rot = lerRotinaVer(rodarExe(module, exe, ['--rotina-ver', '--portal', k.portal, '--chave', k.chave], 60000))
+    if (rot.erro) { h.notificationError(rot.erro, 12); return }
+    var culto = rot.culto
+    var cfg = rot.config
+    var artes = []   // [{ secao, ficheiro, nome }] do culto
+    if (culto) {   // a lista das artes serve ao passo das artes e ao papel de parede (mesmo que só um esteja marcado)
+        var info = rodarExe(module, exe, ['--culto', '--portal', k.portal, '--chave', k.chave, '--evento', String(culto.id)], 60000)
+        for (var ia = 0; ia < info.linhas.length; ia++) {
+            var pa = info.linhas[ia].split('|')
+            if (pa[0] === 'A') artes.push({ secao: pa[1], ficheiro: pa[2], nome: pa[3] })
+        }
+    }
+
+    // Pré-seleção: o operador vê tudo o que vai ser feito e marca/desmarca. O que já correu bem neste culto (neste PC) vem
+    // desmarcado; o que deu erro ou ficou por fazer vem marcado — carregar outra vez refaz só o que falta.
+    var chaveMem = 'rotina_culto_' + (culto ? culto.id : 'sem')
+    var antes = null
+    try { antes = JSON.parse(h.restore(chaveMem) || 'null') } catch (e) { antes = null }
+    var estadoAntes = {}
+    if (antes && antes.passos) for (var ib = 0; ib < antes.passos.length; ib++) estadoAntes[antes.passos[ib].id] = antes.passos[ib].estado
+    function marcaAntes(id) { var e = estadoAntes[id]; return e === 'ok' ? '  (já feito ✓)' : e === 'erro' ? '  (deu erro ✗)' : e === 'saltado' ? '  (ficou por fazer)' : '' }
+    function porOmissao(id) { return estadoAntes[id] !== 'ok' }
+    // o ID do botão da Lumikit: o último escolhido neste PC, senão o da página Rotina do culto (pode trocar-se aqui)
+    var lumiId = h.restore('rotina_lumikit_id') || cfg.lumikitAcaoId || ''
+    var lumiTipo = h.restore('rotina_lumikit_tipo') || cfg.lumikitTipo || 'api'
+    var esc = h.input([
+        { type: 'title', label: 'Iniciar o culto · ' + (culto ? dataCurta(culto.data) + ' · ' + culto.nome : 'sem culto no portal para hoje') },
+        { type: 'title', label: antes ? 'Última vez neste PC: ' + antes.quando + ' — o que já está feito vem desmarcado.' : 'Marque o que fazer agora.' },
+        { type: 'separator' },
+        { id: 'agenda', key: 'agenda', type: 'boolean', label: 'Abrir no Holyrics o culto de hoje (calendário)' + marcaAntes('agenda'), default_value: porOmissao('agenda') },
+        { id: 'artes', key: 'artes', type: 'boolean', label: 'Receber as artes' + (rot.kit.publicado ? '' : ' (ainda NÃO publicadas)') + marcaAntes('artes'), default_value: porOmissao('artes') },
+        { id: 'luz', key: 'luz', type: 'boolean', label: 'Luz pré-culto (Lumikit)' + marcaAntes('luz'), default_value: porOmissao('luz') && !!lumiId },
+        { id: 'musica', key: 'musica', type: 'boolean', label: 'Música de fundo' + (cfg.musica ? ': ' + cfg.musica : ' (não configurada)') + marcaAntes('musica'), default_value: porOmissao('musica') && !!cfg.musica },
+        { id: 'papel', key: 'papel', type: 'boolean', label: 'Papel de parede do culto' + marcaAntes('papel'), default_value: porOmissao('papel') },
+        { id: 'video', key: 'video', type: 'boolean', label: 'Vídeo de pré-início (fica num aviso)' + (cfg.video ? ': ' + cfg.video : ' (não configurado)') + marcaAntes('video'), default_value: porOmissao('video') && !!cfg.video },
+        { id: 'live', key: 'live', type: 'boolean', label: 'Capa "Agendada" na live do YouTube' + marcaAntes('live'), default_value: porOmissao('live') },
+        { type: 'separator' },
+        { id: 'lumi_id', key: 'lumi_id', type: 'string', label: 'ID do botão da Lumikit (pré-culto)', default_value: lumiId },
+        { id: 'lumi_tipo', key: 'lumi_tipo', type: 'string', label: 'Tipo do botão', default_value: lumiTipo, allowed_values: [{ value: 'api', label: 'API / WebService' }, { value: 'script', label: 'Script' }] }
+    ])
+    if (esc == null) { h.notification('Cancelado.', 3); return }
+    function quer(id) { return ligado(esc[id]) }
+    var novoId = String(esc.lumi_id || '').trim()
+    var novoTipo = /script/i.test(String(esc.lumi_tipo || lumiTipo)) ? 'script' : 'api'
+    if (novoId) { h.store('rotina_lumikit_id', novoId); h.store('rotina_lumikit_tipo', novoTipo) }
+    cfg.lumikitAcaoId = novoId
+    cfg.lumikitTipo = novoTipo
+    var DESMARCADO = 'desmarcado pelo operador'
+
+    // 0) o calendário do Holyrics no culto de hoje
+    passo('agenda', 'Culto de hoje no Holyrics', function () {
+        if (!quer('agenda')) return { saltado: true, mensagem: DESMARCADO }
+        return abrirCultoDeHoje(module, culto)
+    })
+
+    // 1) as artes do culto (só se a Mídia as publicou; senão avisa e segue com o que houver)
+    passo('artes', 'Artes do culto', function () {
+        if (!quer('artes')) return { saltado: true, mensagem: DESMARCADO }
+        if (!culto) return { saltado: true, mensagem: 'não há culto no portal para hoje' }
+        if (!rot.kit.publicado) {
+            h.notificationWarning('As artes deste culto ainda não foram publicadas', 10)
+            return { saltado: true, mensagem: 'ainda não publicadas' + (artes.length ? ' (uso as que já estão na pasta)' : '') }
+        }
+        h.notification('A descarregar as artes de ' + dataCurta(culto.data) + '…', 4)
+        var fim = rodarExe(module, exe, ['--trazer', '--portal', k.portal, '--chave', k.chave, '--evento', String(culto.id), '--pasta', pastaAbsoluta(k.pasta)], 120000)
+        if (!fim.ok) throw new Error(ultimaLinha(fim, 'não foi possível descarregar as artes'))
+        return { mensagem: ultimaLinha(fim, 'artes prontas').substring(0, 120) }
+    })
+
+    // 2) luz pré-culto (Lumikit): um botão/ação que já existe no Holyrics, chamado pelo id
+    passo('luz', 'Luz pré-culto', function () {
+        if (!quer('luz')) return { saltado: true, mensagem: DESMARCADO }
+        if (!cfg.lumikitAcaoId) return { saltado: true, mensagem: 'sem ação da Lumikit configurada' }
+        luzPreCulto(cfg)
+        return { mensagem: 'cena pré-culto ligada' }
+    })
+
+    // 3) música de fundo
+    passo('musica', 'Música de fundo', function () {
+        if (!quer('musica')) return { saltado: true, mensagem: DESMARCADO }
+        if (!cfg.musica) return { saltado: true, mensagem: 'sem música configurada' }
+        tocarMusicaDeFundo(cfg.musica)
+        return { mensagem: 'a tocar em repetição' }
+    })
+
+    // 4) papel de parede: «Fundo sem texto» do culto (o mesmo caminho que o "Receber o culto" usa na aba Imagens); senão a capa
+    passo('papel', 'Papel de parede', function () {
+        if (!quer('papel')) return { saltado: true, mensagem: DESMARCADO }
+        var alvo = null, qual = ''
+        for (var i = 0; i < artes.length && !alvo; i++) if (semAcentos(artes[i].nome).indexOf('fundo sem texto') >= 0) { alvo = artes[i]; qual = 'Fundo sem texto' }
+        for (var j = 0; j < artes.length && !alvo; j++) if (semAcentos(artes[j].nome).indexOf('capa') >= 0) { alvo = artes[j]; qual = 'capa do culto' }
+        if (!alvo) return { saltado: true, mensagem: 'sem arte de fundo nem capa neste culto' }
+        porPapelDeParede(k.pasta + '\\' + alvo.ficheiro)
+        return { mensagem: qual }
+    })
+
+    // 5) vídeo de pré-início: NÃO toca logo (só há um leitor de media e a música está a tocar); fica num aviso para o operador carregar
+    passo('video', 'Vídeo de pré-início', function () {
+        if (!quer('video')) return { saltado: true, mensagem: DESMARCADO }
+        if (!cfg.video) return { saltado: true, mensagem: 'sem vídeo configurado' }
+        var ficheiroVideo = cfg.video
+        h.notificationAction('▶ Vídeo de pré-início', function () {
+            try { tocarVideoDePreInicio(ficheiroVideo) } catch (e) { h.notificationError(String(e && e.message ? e.message : e), 10) }
+        })
+        return { mensagem: 'pronto a tocar (carregue no aviso)' }
+    })
+
+    // 6) capa «Agendada» na live do YouTube + a live está encontrada?
+    passo('live', 'Capa da live', function () {
+        if (!quer('live')) return { saltado: true, mensagem: DESMARCADO }
+        if (!culto) return { saltado: true, mensagem: 'não há culto no portal para hoje' }
+        var ver = lerLiveVer(rodarExe(module, exe, ['--live-ver', '--portal', k.portal, '--chave', k.chave, '--evento', String(culto.id)], 60000))
+        if (ver.erro) throw new Error(ver.erro)
+        var fim = rodarExe(module, exe, ['--live-aplicar', '--portal', k.portal, '--chave', k.chave, '--evento', String(culto.id), '--estado', 'agendada'], 90000)
+        var u = ultimaLinha(fim, 'Sem resposta do FotosCulto.exe.').split('|')
+        if (u[0] !== 'OK') throw new Error(u[0] === 'ERRO' ? u.slice(1).join('|') : u.join('|'))
+        var estadoLive = ver.live.estado === 'direto' ? 'no ar' : ver.live.estado === 'terminada' ? 'terminada' : 'agendada'
+        return { mensagem: (u[2] === '0' ? 'título trocado, capa não; ' : 'capa Agendada aplicada; ') + 'live ' + estadoLive + ' em ' + dataCurta(ver.live.quando) }
+    })
+
+    // lembrar neste PC o estado de cada passo deste culto (desmarcar não apaga um "já feito" anterior)
+    try {
+        var agora = new Date()
+        var memo = { quando: ('0' + agora.getHours()).slice(-2) + ':' + ('0' + agora.getMinutes()).slice(-2), passos: [] }
+        for (var im = 0; im < passos.length; im++) {
+            var est = passos[im].estado
+            if (passos[im].mensagem === DESMARCADO && estadoAntes[passos[im].id]) est = estadoAntes[passos[im].id]
+            memo.passos.push({ id: passos[im].id, estado: est })
+        }
+        h.store(chaveMem, JSON.stringify(memo))
+    } catch (e) { h.log(mID, 'não guardei o estado da rotina: {}', [e]) }
+
+    // 7) relatório ao operador + bênção
+    var linhas = []
+    if (!culto) linhas.push('Atenção: o portal não tem culto para hoje.')
+    for (var i = 0; i < passos.length; i++) linhas.push(marcas[passos[i].estado] + ' ' + passos[i].nome + (passos[i].mensagem ? ': ' + passos[i].mensagem : ''))
+    if (rot.bencao.texto) { linhas.push(''); linhas.push('Que Deus abençoe este culto! ' + rot.bencao.texto + (rot.bencao.ref ? ' (' + rot.bencao.ref + ')' : '')) }
+    mostrarRelatorio('Culto pronto', linhas)
+
+    // 8) registar no portal (o JSON vai em base64 na linha de comandos: o módulo não escreve ficheiros)
+    if (culto) {
+        var corpo = { eventoId: Number(culto.id), operador: String(k.s.OPERADOR || 'Holyrics'), passos: [] }
+        for (var q = 0; q < passos.length; q++) corpo.passos.push({ id: passos[q].id, nome: passos[q].nome, ok: passos[q].ok, mensagem: passos[q].mensagem.substring(0, 200) })
+        var reg = rodarExe(module, exe, ['--rotina-registar', 'b64:' + paraBase64(jsonAscii(corpo)), '--portal', k.portal, '--chave', k.chave], 30000)
+        if (!reg.ok) h.notificationWarning('A rotina correu, mas não ficou registada no portal: ' + ultimaLinha(reg, 'sem resposta'), 12)
     }
 }
 

@@ -3,6 +3,25 @@
 import type { Metadata } from 'next'
 import { cultosPublicados, tenantPublico } from '@/lib/divulgacao-publica'
 import DivulgarClient from '@/components/app/DivulgarClient'
+import JaPostei from '@/components/midia/JaPostei'
+import { getSessionData, isAdmin } from '@/lib/auth-utils'
+import { quemPostou, souDestinatario } from '@/lib/rotina-alertas'
+
+// Para quem tem sessão (escalado no telão, líder ou administração): os cultos com artes publicadas que podem marcar como postados
+async function paraPostar(cultos: { id: number; nome: string }[]) {
+    try {
+        const sessao = await getSessionData()
+        if (!sessao || cultos.length === 0) return []
+        const postou = await quemPostou(sessao.tenantId, cultos.map((c) => c.id))
+        const saida: { id: number; nome: string; postadoPor: string | null }[] = []
+        for (const c of cultos) {
+            if (isAdmin(sessao.role) || (await souDestinatario(sessao.tenantId, c.id, sessao.membroId))) saida.push({ id: c.id, nome: c.nome, postadoPor: postou.get(c.id)?.nome ?? null })
+        }
+        return saida
+    } catch {
+        return []
+    }
+}
 
 export const dynamic = 'force-dynamic'
 
@@ -33,6 +52,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Divulgar() {
     const cultos = await carregar()
+    const postar = await paraPostar(cultos)
     return (
         <div className="app-novo min-h-screen">
             <main className="mx-auto max-w-3xl space-y-4 px-4 pb-16 pt-6">
@@ -41,6 +61,11 @@ export default async function Divulgar() {
                     <h1 className="text-[26px] font-bold leading-tight">Ajuda a divulgar</h1>
                     <p className="text-[16px] a-suave">Escolhe o culto, toca em <strong>Partilhar</strong> e envia a arte a quem quiseres convidar.</p>
                 </header>
+                {postar.length > 0 && (
+                    <section className="space-y-2" aria-label="Já postei">
+                        {postar.map((c) => <JaPostei key={c.id} eventoId={c.id} nome={c.nome} postadoPor={c.postadoPor} />)}
+                    </section>
+                )}
                 <DivulgarClient cultos={cultos} />
             </main>
         </div>

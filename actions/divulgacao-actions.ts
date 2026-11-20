@@ -105,13 +105,13 @@ export async function retirarPublicacao(eventoId: number): Promise<R> {
     }
 }
 
-/** "Usar como padrão da igreja": os kits novos começam com este estilo, cores, redes e fundo. */
+/** "Usar como padrão da igreja": os kits novos começam com este estilo, cores, redes, fundo e dados da oferta. */
 export async function guardarPadraoDivulgacao(receita: unknown): Promise<R> {
     try {
         const sessao = await requireAuth()
         if (!(await podeFazerAgenda(sessao))) return { ok: false, error: 'Só a Mídia e a administração.' }
         const r = normalizarReceita(receita)
-        const padrao = { estilo: r.estilo, paleta: r.paleta, redes: r.redes, fundo: r.fundo, tinta: r.tinta, modeloRedes: r.modeloRedes, cantina: r.cantina }
+        const padrao = { estilo: r.estilo, paleta: r.paleta, redes: r.redes, fundo: r.fundo, tinta: r.tinta, modeloRedes: r.modeloRedes, cantina: r.cantina, iban: r.iban, mbway: r.mbway, titular: r.titular, qrOferta: r.qrOferta }
         await prisma.tenant.update({ where: { id: sessao.tenantId }, data: { divulgacao_padrao: padrao } })
         revalidatePath('/midia/divulgacao')
         return { ok: true }

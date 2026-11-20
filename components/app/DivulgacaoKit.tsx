@@ -1,20 +1,29 @@
 'use client'
 
-// Kit de artes de um culto: escolher estilo + cores, marcar as artes do telão e das redes, pôr a foto do preletor,
-// ver, guardar e descarregar, e copiar a legenda e a mensagem de WhatsApp.
+// Kit de artes de um culto em 5 PASSOS (?passo=N): 1 Estilo e cores · 2 Imagem de fundo · 3 Escrever nas artes · 4 Preletor e prévia · 5 Resumo
+// (no 5, os separadores Telão · Redes · YouTube, ?aba=). "Como vai ficar" flutuante nos passos 1–3; nos 4 e 5 as prévias estão na página.
+// Guardar, descarregar (ZIP), publicar, copiar a legenda e a mensagem de WhatsApp, a capa e as lives do YouTube.
 // As imagens vêm de /api/divulgacao/imagem (geradas na hora; a pré-visualização é uma versão pequena); o que fica guardado é só a receita.
-import { useEffect, useMemo, useState, useTransition } from 'react'
-import { Check, ChevronDown, Copy, Download, Eraser, ImagePlus, Layers, Megaphone, Save, Share2, Trash2, Send } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { Check, ChevronLeft, ChevronRight, Copy, Download, Eraser, ImagePlus, Layers, Megaphone, Save, Settings, Share2, Trash2, Send } from 'lucide-react'
 import { concluirPublicacao, guardarKitDivulgacao, guardarPadraoDivulgacao, retirarPublicacao } from '@/actions/divulgacao-actions'
-import { ALVOS, ESTILOS, FUNDOS_PRONTOS, MODELOS_REDES, PALETAS, PECAS, REDES, redesDoEstilo, type EstiloId, type PecaId, type RedeId } from '@/lib/divulgacao'
+import { ALVOS, FUNDOS_PRONTOS, MODELOS_REDES, PALETAS, PECAS, REDES, redesDoEstilo, type EstiloId, type PecaId, type RedeId } from '@/lib/divulgacao'
+import { nomeDoEstilo, padraoPorId } from '@/lib/divulgacao-padroes'
 import { ibanValido } from '@/lib/oferta'
-import { FORMATOS_TEXTO, LIMITES_TEXTO, modeloDasRedes, nomeDaPeca, nomeDaRede, paramsDaPeca, paramsDaRede, quandoDoEvento, semDestaque, type CamposTexto, type FormatoTexto, type FotoKit, type Receita, type TextosAfinados } from '@/lib/divulgacao-kit'
+import { LIMITES_TEXTO, REDES_DAS_ARTES, modeloDasRedes, nomeDaPeca, nomeDaRede, paramsDaPeca, paramsDaRede, quandoDoEvento, redesAtivas, semDestaque, type AbaDivulgacao, type CamposTexto, type FormatoTexto, type FotoKit, type Receita, type TextosAfinados } from '@/lib/divulgacao-kit'
 import { textosDoCulto } from '@/lib/divulgacao-textos'
 import { linkWhatsApp } from '@/lib/whatsapp'
 import { enviarImagem } from './enviar-imagem'
 import { AVISO_PARTILHA, partilharArte } from '@/lib/partilhar-arte'
 import { criarZip } from '@/lib/zip'
 import AjustarFoto from './AjustarFoto'
+import EstiloECores from './DivulgacaoEstilo'
+import Gaveta from './Gaveta'
+import JanelaGrande from './JanelaGrande'
+import { JanelaDaArte, PreviaFlutuante, type ItemPrevia } from './DivulgacaoPrevia'
+import LivesDaSemana from '@/components/midia/LivesDaSemana'
+import { enderecoDaCapa } from '@/lib/youtube-capa-dados'
+import YoutubeCapa, { HistoricoCapa, NOME_LIVE, useCapaYoutube, type CapaYoutube } from '@/components/midia/YoutubeLivePainel'
 import CampoPreletor from '@/components/midia/CampoPreletor'
 import BancoDeFundos from '@/components/midia/EscolherFundo'
 import type { CategoriaFundo } from '@/lib/fundos'
@@ -32,19 +41,21 @@ type Props = {
     publicadoEm: string | null                    // quando foi publicado para a igreja (ISO) ou null
     publicadoJson: string                         // a receita desse momento (para saber se mudou depois)
     padrao: string                                // a receita-padrão da igreja (JSON) ou ''
+    abaInicial?: AbaDivulgacao                    // o separador do endereço (?aba=)
+    passoInicial?: number | null                  // o passo do endereço (?passo=) ou, com ?aba=, o 5; null = decidir aqui
+    padraoAuto?: string | null                    // o padrão que o nome do culto escolheu sozinho (kit ainda sem escolha guardada)
 }
 
 const campo = 'a-foco min-h-[48px] w-full rounded-[14px] border px-3 text-[16px]'
 const estiloCampo = { background: 'var(--a-card)', borderColor: 'var(--a-borda)', color: 'var(--a-texto)' }
-const miniatura = 'block cursor-pointer overflow-hidden rounded-[14px] border text-left'
-const chip = 'flex min-h-[48px] cursor-pointer items-center gap-2 rounded-[14px] border px-3 text-[15px] has-[:checked]:ring-2 has-[:checked]:ring-[var(--a-acento,#f5a524)]'
+const chip = 'relative flex min-h-[48px] cursor-pointer items-center gap-2 rounded-[14px] border px-3 text-[15px] has-[:checked]:ring-2 has-[:checked]:ring-[var(--a-acento,#f5a524)]'
 
-// Texto que só conta quando se sai do campo (cada mudança volta a desenhar as imagens)
-function CampoTexto({ valor, onCommit, ...resto }: { valor: string; onCommit: (v: string) => void } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'onBlur'>) {
+// Texto que conta enquanto se escreve (as miniaturas esperam um instante); com vivo={false} só conta ao sair do campo ou com Enter
+function CampoTexto({ valor, onCommit, vivo = true, ...resto }: { valor: string; onCommit: (v: string) => void; vivo?: boolean } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'onBlur'>) {
     const [v, setV] = useState(valor)
     useEffect(() => setV(valor), [valor])
     return (
-        <input {...resto} value={v} onChange={(e) => setV(e.target.value)} onBlur={() => v !== valor && onCommit(v)}
+        <input {...resto} value={v} onChange={(e) => { setV(e.target.value); if (vivo) onCommit(e.target.value) }} onBlur={() => v !== valor && onCommit(v)}
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (v !== valor) onCommit(v) } }}
             className={campo} style={estiloCampo} />
     )
@@ -168,7 +179,7 @@ function EscolherFundo({ valor, onChange, nomeCulto = '' }: { valor: string; onC
     }
     return (
         <fieldset className="space-y-2">
-            <legend className="text-[17px] font-bold">Imagem de fundo</legend>
+            <legend className="sr-only">Imagem de fundo</legend>
             <p className="text-[14px] a-suave">No telão aparece no estilo &quot;Foto de fundo&quot;; nas redes fica atrás do preletor.</p>
             <div className="flex flex-wrap items-center gap-2">
                 <label className={chip} style={estiloCampo}>
@@ -213,7 +224,7 @@ function CaixaTexto({ titulo, valor, onChange, onRefazer, whatsapp }: { titulo: 
         <div className="space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-[16px] font-semibold">{titulo}</span>
-                <span className="flex gap-2">
+                <span className="flex flex-wrap gap-2">
                     <button type="button" onClick={onRefazer} className="a-botao a-botao-secundario !min-h-[40px] !px-3 text-[14px]">Refazer</button>
                     <button type="button" onClick={async () => { await navigator.clipboard?.writeText(valor); setCopiado(true); setTimeout(() => setCopiado(false), 2000) }} className="a-botao a-botao-secundario !min-h-[40px] !px-3 text-[14px]">
                         <Copy size={16} aria-hidden /> {copiado ? 'Copiado' : 'Copiar'}
@@ -221,27 +232,22 @@ function CaixaTexto({ titulo, valor, onChange, onRefazer, whatsapp }: { titulo: 
                     {whatsapp && <a href={linkWhatsApp(valor)} target="_blank" rel="noopener noreferrer" className="a-botao a-botao-principal !min-h-[40px] !px-3 text-[14px]"><Send size={16} aria-hidden /> Enviar no WhatsApp</a>}
                 </span>
             </div>
-            <textarea value={valor} onChange={(e) => onChange(e.target.value)} rows={12} aria-label={titulo} className="a-foco w-full rounded-[14px] border p-3 text-[16px] leading-relaxed" style={estiloCampo} />
+            <textarea value={valor} onChange={(e) => onChange(e.target.value)} rows={8} aria-label={titulo} className="a-foco w-full rounded-[14px] border p-3 text-[16px] leading-relaxed" style={estiloCampo} />
         </div>
     )
 }
 
-const PADRAO_CAMPOS = ['estilo', 'paleta', 'redes', 'fundo', 'tinta', 'modeloRedes', 'estilosSeparados', 'cantina'] as const
+const PADRAO_CAMPOS = ['estilo', 'paleta', 'redes', 'fundo', 'tinta', 'modeloRedes', 'estilosSeparados', 'cantina', 'iban', 'mbway', 'titular', 'qrOferta'] as const
 const doPadrao = (x: Partial<Receita>) => JSON.stringify(PADRAO_CAMPOS.map((k) => x[k]))
 
-// O padrão de publicação da ADMVC: as cores e as letras das artes, as regras de desenho, e o botão para o fixar como início de cada kit
+// "Definições da Igreja" (janela aberta pelo botão no topo): as cores e as letras das artes, as regras de desenho, e o botão para fixar este kit como início dos kits novos
 function PadraoAdmvc({ r, padraoJson, onGuardar, aGuardar }: { r: Receita; padraoJson: string; onGuardar: () => void; aGuardar: boolean }) {
     const p = PALETAS.find((x) => x.id === r.paleta) ?? PALETAS[0]
     const [copiada, setCopiada] = useState('')
     const eOPadrao = !!padraoJson && doPadrao(JSON.parse(padraoJson)) === doPadrao(r)
     const cores: [string, string][] = [['Fundo', p.fundo], ['Cor 1', p.c1], ['Cor 2', p.c2], ['Texto', p.texto], ['Destaque', p.acento]]
     return (
-        <details className="rounded-[14px] border" style={{ borderColor: 'var(--a-borda)' }}>
-            <summary className="a-foco flex min-h-[52px] cursor-pointer list-none items-center justify-between gap-2 px-3 py-2">
-                <span className="min-w-0"><span className="block text-[16px] font-bold">Padrão da ADMVC</span><span className="block truncate text-[14px] a-suave">Cores, letras e regras das artes</span></span>
-                <ChevronDown size={20} className="shrink-0 a-suave" aria-hidden />
-            </summary>
-            <div className="space-y-3 border-t p-3" style={{ borderColor: 'var(--a-borda)' }}>
+        <div className="space-y-3">
                 <div>
                     <p className="mb-1 text-[15px] font-semibold">Cores · {p.nome} <span className="font-normal a-suave">(toque para copiar o código)</span></p>
                     <div className="flex flex-wrap gap-2">
@@ -268,10 +274,9 @@ function PadraoAdmvc({ r, padraoJson, onGuardar, aGuardar }: { r: Receita; padra
                     <button type="button" onClick={onGuardar} disabled={aGuardar || eOPadrao} className="a-botao a-botao-secundario !min-h-[44px]">
                         {aGuardar ? 'A guardar…' : eOPadrao ? '✓ É o padrão da igreja' : 'Usar como padrão da igreja'}
                     </button>
-                    <span className="text-[14px] a-suave">Os kits novos começam com este estilo, estas cores, as redes e o fundo.</span>
+                    <span className="text-[14px] a-suave">Os kits novos começam com este estilo, estas cores, as redes, o fundo e os dados da oferta (IBAN, MB WAY, QR).</span>
                 </div>
-            </div>
-        </details>
+        </div>
     )
 }
 
@@ -299,170 +304,386 @@ function CampoLinha({ id, rotulo, ajuda, valor, onChange, max, placeholder, mult
 }
 
 type FormatoTab = FormatoTexto
+const NOME_FORMATO: Record<FormatoTab, string> = { telao: 'Telão', post: 'Post 4:5', story: 'Story 9:16', youtube: 'Capa YouTube' }
+const COLUNAS_AFINAR: { k: CamposTexto; nome: string }[] = [
+    { k: 'titulo', nome: 'Título' }, { k: 'quando', nome: 'Data e hora' }, { k: 'tema', nome: 'Tema' }, { k: 'subtitulo', nome: 'Linha de cima' },
+]
+const PECAS_COM_DADOS: PecaId[] = ['oracao-dirigida', 'palavra', 'oferta', 'cantina', 'boas-vindas']
 
-// "Escrever nas artes": os campos ao lado de UMA arte ao vivo. O que se escreve vale para o telão e para as redes;
-// "Só para este formato" afina um texto num formato (o resto continua igual).
-function EditorTextos({ r, rv, mudar, ev, dia, meuVerso, setMeuVerso, ativo }: {
-    ativo: boolean; r: Receita; rv: Receita; mudar: (p: Partial<Receita>) => void; ev: { nome: string; data: Date }; dia: string; meuVerso: boolean; setMeuVerso: (v: boolean) => void
-}) {
-    const tabs: FormatoTab[] = ['telao', ...r.redes]
-    const [formato, setFormato] = useState<FormatoTab>(r.redes[0] ?? 'telao')
-    const atual: FormatoTab = tabs.includes(formato) ? formato : 'telao'
-    const [afinandoEm, setAfinandoEm] = useState<Partial<Record<FormatoTab, boolean>>>({})
-    const afinando = afinandoEm[atual] ?? !!r.afinar[atual]
-    const nomeFormato = FORMATOS_TEXTO.find((f) => f.id === atual)?.nome ?? ''
-
-    const geral = (k: CamposTexto) => (k === 'quando' ? r.quandoTexto : k === 'livre' ? r.textoLivre : r[k])
-    const valor = (k: CamposTexto) => (afinando ? r.afinar[atual]?.[k] ?? '' : geral(k))
-    function gravar(k: CamposTexto, v: string) {
-        if (afinando) {
-            const f: TextosAfinados = { ...(r.afinar[atual] ?? {}), [k]: v }
-            if (!v) delete f[k]
-            const afinar = { ...r.afinar }
-            if (Object.keys(f).length) afinar[atual] = f; else delete afinar[atual]
-            mudar({ afinar })
-        } else mudar(k === 'quando' ? { quandoTexto: v } : k === 'livre' ? { textoLivre: v } : { [k]: v } as Partial<Receita>)
+// "Escrever nas artes": um formulário que não muda de sítio.
+// A: os dados do culto (valem para todas as artes) · B: os dados próprios das artes do telão marcadas (todos visíveis, em lista)
+// · C: texto diferente numa arte (opcional, fechado). Cada mudança vale logo na receita (r.afinar guarda os textos por formato).
+/** Oferta (20/11): cada forma de dar liga-se com uma caixa; os campos só aparecem quando ligada. */
+function OfertaCompacta({ r, mudar, contas, titulo }: { r: Receita; mudar: (p: Partial<Receita>) => void; contas: { nome: string; iban: string }[]; titulo: React.ReactNode }) {
+    const [usaIban, setUsaIban] = useState(!!r.iban)
+    const [usaMb, setUsaMb] = useState(!!r.mbway)
+    const [guardado, setGuardado] = useState({ iban: r.iban, mbway: r.mbway })   // desligar e voltar a ligar não perde o que estava
+    const conta = contas.find((c) => c.iban === r.iban)
+    const [outro, setOutro] = useState(!!r.iban && !conta)
+    const caixa = 'flex min-h-[44px] cursor-pointer items-center gap-2 text-[15px] font-semibold'
+    function ligarIban(v: boolean) {
+        setUsaIban(v)
+        if (v) mudar({ iban: guardado.iban || contas[0]?.iban || '' })
+        else { setGuardado((g) => ({ ...g, iban: r.iban })); mudar({ iban: '', qrOferta: 'nenhum' }) }
     }
-    function alternarAfinar(ligar: boolean) {
-        setAfinandoEm((x) => ({ ...x, [atual]: ligar }))
-        if (!ligar && r.afinar[atual]) { const afinar = { ...r.afinar }; delete afinar[atual]; mudar({ afinar }) }
+    function ligarMb(v: boolean) {
+        setUsaMb(v)
+        if (v) mudar({ mbway: guardado.mbway })
+        else { setGuardado((g) => ({ ...g, mbway: r.mbway })); mudar({ mbway: '' }) }
     }
-    const auto = quandoDoEvento(ev.data)
-    const marca = (k: CamposTexto, auto: string) => (afinando && geral(k) ? `Igual ao geral: ${geral(k)}` : auto)
-    const q = atual === 'telao' ? paramsDaPeca(rv, 'capa', dia, ev) : paramsDaRede(rv, atual, ev)
-    const vertical = atual === 'post' || atual === 'story'
-
+    const QR: [Receita['qrOferta'], string][] = [['nenhum', 'Sem QR'], ['banco', 'QR do banco'], ['pagina', 'QR para página']]
     return (
-        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(260px,380px)]">
-            <div className="order-2 space-y-4 md:order-1">
-                <p className="text-[15px] a-suave">O que escrever aqui vale para o telão e para as redes. Veja o resultado ao lado.</p>
-                <label className="a-foco flex min-h-[48px] cursor-pointer items-start gap-3 rounded-[14px] border px-3 py-2 text-[15px]" style={estiloCampo}>
-                    <input type="checkbox" checked={afinando} onChange={(e) => alternarAfinar(e.target.checked)} className="mt-1 h-5 w-5 shrink-0" />
-                    <span><strong>Só para {atual === 'telao' ? 'o telão' : `o ${nomeFormato}`}</strong><span className="block text-[13px] a-suave">{afinando ? 'O que escrever fica só nesta arte; o resto segue o texto geral. Desligar volta ao geral.' : 'Ligue para este formato ter textos diferentes.'}</span></span>
-                </label>
-
-                <CampoLinha id="t-titulo" rotulo="Título" valor={valor('titulo')} onChange={(v) => gravar('titulo', v)} max={LIMITES_TEXTO.titulo}
-                    placeholder={marca('titulo', ev.nome)} ajuda="O nome do culto. Pode usar | para mudar de linha." />
-                <CampoLinha id="t-sub" rotulo="Linha de cima" valor={valor('subtitulo')} onChange={(v) => gravar('subtitulo', v)} max={LIMITES_TEXTO.subtitulo}
-                    placeholder={marca('subtitulo', 'Ex.: Jovens & Gerações')} ajuda="Uma frase pequena por cima do título." />
-                <CampoLinha id="t-tema" rotulo="Tema da mensagem" valor={valor('tema')} onChange={(v) => gravar('tema', v)} max={LIMITES_TEXTO.tema}
-                    placeholder={marca('tema', 'Ex.: O fruto do Espírito')} ajuda="Ponha entre *asteriscos* a parte a destacar. Vazio = o título é o texto grande." />
-                <CampoLinha id="t-quando" rotulo="Data e hora" valor={valor('quando')} onChange={(v) => gravar('quando', v)} max={LIMITES_TEXTO.quando}
-                    placeholder={marca('quando', `${auto.quando} · ${auto.hora}`)} ajuda="Vazio = a data e a hora do culto. Separe com um ponto: Sábado, 14 nov · 19h30." />
-                <CampoLinha id="t-livre" rotulo="Texto livre" multi valor={valor('livre')} onChange={(v) => gravar('livre', v)} max={LIMITES_TEXTO.livre}
-                    placeholder={marca('livre', 'Ex.: Traz um amigo!')} ajuda="Uma frase a mais (convite, aviso…). Vazio = não aparece." />
-                {(r.textoLivre || r.afinar[atual]?.livre) && (
-                    <fieldset className="space-y-1">
-                        <legend className="text-[15px] font-semibold">Tamanho do texto livre</legend>
-                        <div className="flex gap-2">
-                            {([['p', 'Pequeno'], ['m', 'Normal'], ['g', 'Grande']] as const).map(([id, nome]) => (
-                                <label key={id} className={`${chip} flex-1 justify-center`} style={estiloCampo}>
-                                    <input type="radio" name="livre-tam" checked={r.textoLivreTam === id} onChange={() => mudar({ textoLivreTam: id })} className="sr-only" />{nome}
-                                </label>
-                            ))}
-                        </div>
-                    </fieldset>
+        <div className="space-y-2 rounded-[14px] border p-3" style={{ borderColor: 'var(--a-borda)' }}>
+            {titulo}
+            <div className="grid items-center gap-2 md:grid-cols-[150px_minmax(0,1fr)]">
+                <label className={caixa}><input type="checkbox" checked={usaIban} onChange={(e) => ligarIban(e.target.checked)} className="h-5 w-5" /> IBAN</label>
+                {usaIban && (
+                    <div className="min-w-0 space-y-1">
+                        {contas.length > 0 && !outro ? (
+                            <select aria-label="Conta da igreja" value={conta?.iban ?? ''} onChange={(e) => (e.target.value === '__outro' ? setOutro(true) : mudar({ iban: e.target.value }))} className={campo} style={estiloCampo}>
+                                {!conta && <option value="">Escolher uma conta…</option>}
+                                {contas.map((c) => <option key={c.iban} value={c.iban}>{c.nome} · {c.iban.replace(/\s/g, '').slice(-4)}</option>)}
+                                <option value="__outro">Outro IBAN…</option>
+                            </select>
+                        ) : (
+                            <CampoTexto aria-label="IBAN" valor={r.iban} onCommit={(v) => mudar({ iban: v })} placeholder="PT50 0000 0000 0000 0000 0000 0" maxLength={40} />
+                        )}
+                        {r.iban && !ibanValido(r.iban) && <p className="text-[13px] font-semibold" style={{ color: 'var(--a-erro)' }}>Este IBAN não parece certo (confira os números).</p>}
+                    </div>
                 )}
-
-                <div className="space-y-1">
-                    <label htmlFor="t-preletor" className="block text-[15px] font-semibold">Preletor</label>
-                    <CampoPreletor id="t-preletor" value={r.preletor} maxLength={60} placeholder="Escreva o nome (vazio se ainda não sabe)" onChange={(t) => mudar({ preletor: t })} />
-                </div>
-
-                <fieldset className="space-y-2">
-                    <legend className="text-[15px] font-semibold">Versículo no rodapé do telão</legend>
-                    <select value={r.semVersiculo ? 'sem' : meuVerso ? 'meu' : 'auto'} aria-label="Versículo no rodapé do telão"
-                        onChange={(e) => {
-                            const v = e.target.value
-                            setMeuVerso(v === 'meu')
-                            mudar(v === 'sem' ? { semVersiculo: true } : v === 'meu' ? { semVersiculo: false } : { semVersiculo: false, verso: '', versoRef: '' })
-                        }}
-                        className={campo} style={estiloCampo}>
-                        <option value="auto">Um da lista (muda de culto para culto)</option>
-                        <option value="meu">Escolher eu</option>
-                        <option value="sem">Sem versículo</option>
-                    </select>
-                    {!r.semVersiculo && meuVerso && (
-                        <>
-                            <CampoLinha id="t-verso" rotulo="Texto do versículo" multi valor={r.verso} onChange={(v) => mudar({ verso: v })} max={220} placeholder="Ex.: O Senhor é o meu pastor; nada me faltará." />
-                            <CampoLinha id="t-verso-ref" rotulo="Referência" valor={r.versoRef} onChange={(v) => mudar({ versoRef: v })} max={60} placeholder="Ex.: Salmos 23:1" />
-                        </>
-                    )}
-                </fieldset>
+                <label className={caixa}><input type="checkbox" checked={usaMb} onChange={(e) => ligarMb(e.target.checked)} className="h-5 w-5" /> MB WAY</label>
+                {usaMb && <CampoTexto aria-label="Número MB WAY" valor={r.mbway} onCommit={(v) => mudar({ mbway: v })} placeholder="+351 912 345 678 (aparece escrito)" maxLength={20} inputMode="tel" />}
             </div>
-
-            <div className="order-1 md:order-2">
-                <div className="space-y-2 md:sticky md:top-4">
-                    <div role="tablist" aria-label="Formato da pré-visualização" className="flex gap-1 overflow-x-auto">
-                        {tabs.map((id) => (
-                            <button key={id} type="button" role="tab" aria-selected={id === atual} onClick={() => setFormato(id)}
-                                className="a-foco min-h-[44px] shrink-0 rounded-full border px-4 text-[15px] font-semibold aria-selected:ring-2 aria-selected:ring-[var(--a-acento,#f5a524)]" style={estiloCampo}>
-                                {FORMATOS_TEXTO.find((f) => f.id === id)?.nome}{r.afinar[id] ? ' ✎' : ''}
-                            </button>
-                        ))}
-                    </div>
-                    <div className="flex justify-center rounded-[14px] border p-2" style={{ borderColor: 'var(--a-borda)', background: 'var(--a-card)' }}>
-                        {/* só desenha quando este bloco está aberto */}
-                        {ativo && /* eslint-disable-next-line @next/next/no-img-element */
-                        <img key={atual} src={`/api/divulgacao/imagem?${q}&previa=1`} alt={`Pré-visualização: ${nomeFormato}`} className={`rounded-lg ${vertical ? 'h-[min(46vh,420px)] w-auto' : 'w-full'}`}
-                            style={{ aspectRatio: atual === 'post' ? '4 / 5' : atual === 'story' ? '9 / 16' : '16 / 9' }} />}
-                    </div>
-                    <p className="text-[13px] a-suave">{atual === 'telao' ? 'Mostra a capa do culto no telão.' : `Mostra o ${nomeFormato} das redes.`} Atualiza uns instantes depois de parar de escrever.</p>
+            {usaIban && (
+                <div className="flex flex-wrap items-center gap-2 pt-1" role="radiogroup" aria-label="QR na oferta">
+                    {QR.map(([v, nome]) => (
+                        <button key={v} type="button" role="radio" aria-checked={r.qrOferta === v} onClick={() => mudar({ qrOferta: v })}
+                            className="a-foco min-h-[40px] rounded-full border px-3 text-[14px] font-semibold aria-checked:ring-2 aria-checked:ring-[var(--a-destaque)]" style={estiloCampo}>{nome}</button>
+                    ))}
+                    {r.qrOferta === 'banco' && <CampoTexto aria-label="Titular da conta" valor={r.titular} onCommit={(v) => mudar({ titular: v })} placeholder="Titular, como no banco" maxLength={70} />}
                 </div>
-            </div>
+            )}
+            {r.qrOferta === 'banco' && usaIban && <p className="text-[13px] a-suave">Teste com 2 ou 3 apps de bancos antes de pôr no telão; se alguma falhar, use o QR para página.</p>}
+            <p className="text-[13px] a-suave">As contas vêm de Financeiro → Reconciliação. Para não escrever todas as vezes: Definições da Igreja → guardar como padrão.</p>
         </div>
     )
 }
 
-type BlocoId = 'estilo' | 'escrita' | 'artes' | 'fotos' | 'textos'
-type Escopo = 'tudo' | 'telao' | 'redes'
+function EditorArtes({ r, mudar, ev, meuVerso, setMeuVerso, contas, redesOk }: {
+    r: Receita; mudar: (p: Partial<Receita>) => void; ev: { nome: string; data: Date }; meuVerso: boolean; setMeuVerso: (v: boolean) => void
+    contas: { nome: string; iban: string }[]; redesOk: RedeId[]
+}) {
+    const geral = (k: CamposTexto) => (k === 'quando' ? r.quandoTexto : k === 'livre' ? r.textoLivre : r[k])
+    const gravarGeral = (k: CamposTexto, v: string) => mudar(k === 'quando' ? { quandoTexto: v } : k === 'livre' ? { textoLivre: v } : { [k]: v } as Partial<Receita>)
+    function gravarAfinado(formato: FormatoTab, k: CamposTexto, v: string) {
+        const f: TextosAfinados = { ...(r.afinar[formato] ?? {}), [k]: v }
+        if (!v) delete f[k]
+        const afinar = { ...r.afinar }
+        if (Object.keys(f).length) afinar[formato] = f; else delete afinar[formato]
+        mudar({ afinar })
+    }
+    const auto = quandoDoEvento(ev.data)
+    const autoDe: Record<CamposTexto, string> = { titulo: ev.nome, quando: `${auto.quando} · ${auto.hora}`, tema: 'Ex.: O fruto do Espírito', subtitulo: 'Ex.: Jovens & Gerações', livre: '' }
+    const formatos: FormatoTab[] = [...(r.pecas.length ? ['telao' as const] : []), ...redesOk, 'youtube']
+    const emUso = formatos.filter((f) => r.afinar[f] && Object.keys(r.afinar[f]!).length).length
+    const peca = (id: PecaId) => r.pecas.includes(id)
+    const temB = PECAS_COM_DADOS.some(peca)
+    const titulo = (t: string) => <h4 className="text-[15px] font-bold">{t}</h4>
 
-// Bloco que abre e fecha (só um aberto de cada vez); o conteúdo fica montado para não perder o que se escreveu
-function Bloco({ id, titulo, resumo, aberto, abrir, children }: { id: BlocoId; titulo: string; resumo: string; aberto: BlocoId | null; abrir: (id: BlocoId | null) => void; children: React.ReactNode }) {
-    const ligado = aberto === id
     return (
-        <section className="a-card overflow-hidden">
-            <button type="button" onClick={() => abrir(ligado ? null : id)} aria-expanded={ligado} aria-controls={`bloco-${id}`} className="a-foco flex min-h-[60px] w-full items-center gap-3 px-4 py-2 text-left">
-                <span className="min-w-0 flex-1">
-                    <span className="block text-[18px] font-bold">{titulo}</span>
-                    <span className="block truncate text-[14px] a-suave">{resumo}</span>
-                </span>
-                <ChevronDown size={22} className={`shrink-0 a-suave transition-transform ${ligado ? 'rotate-180' : ''}`} aria-hidden />
-            </button>
-            <div id={`bloco-${id}`} hidden={!ligado} className="space-y-4 border-t p-4" style={{ borderColor: 'var(--a-borda)' }}>{children}</div>
-        </section>
+        <div className="space-y-5">
+            {/* A. Dados do culto */}
+            <section aria-labelledby="ed-comum" className="space-y-3">
+                <h3 id="ed-comum" className="text-[17px] font-bold">Dados do culto <span className="text-[14px] font-normal a-suave">· valem para todas as artes</span></h3>
+                <div className="grid gap-x-4 gap-y-3 md:grid-cols-2">
+                    <CampoLinha id="t-titulo" rotulo="Título" valor={r.titulo} onChange={(v) => gravarGeral('titulo', v)} max={LIMITES_TEXTO.titulo}
+                        placeholder={autoDe.titulo} ajuda="Vazio = o nome do culto. Use | para mudar de linha." />
+                    <CampoLinha id="t-quando" rotulo="Data e hora" valor={r.quandoTexto} onChange={(v) => gravarGeral('quando', v)} max={LIMITES_TEXTO.quando}
+                        placeholder={autoDe.quando} ajuda="Vazio = a data e a hora do culto. Ex.: Sábado, 14 nov · 19h30." />
+                    <CampoLinha id="t-tema" rotulo="Tema" valor={r.tema} onChange={(v) => gravarGeral('tema', v)} max={LIMITES_TEXTO.tema}
+                        placeholder={autoDe.tema} ajuda="Ponha entre *asteriscos* a parte a destacar." />
+                    <div className="space-y-1">
+                        <label htmlFor="t-preletor" className="block text-[15px] font-semibold">Preletor</label>
+                        <CampoPreletor id="t-preletor" value={r.preletor} maxLength={60} placeholder="Ex.: Pastor João Silva (vazio se ainda não sabe)" onChange={(t) => mudar({ preletor: t })} />
+                    </div>
+                    <div className="md:col-span-2">
+                        <CampoLinha id="t-sub" rotulo="Linha de cima" valor={r.subtitulo} onChange={(v) => gravarGeral('subtitulo', v)} max={LIMITES_TEXTO.subtitulo}
+                            placeholder={autoDe.subtitulo} ajuda="Uma frase pequena por cima do título." />
+                    </div>
+                </div>
+                <div className="grid gap-x-4 gap-y-3 md:grid-cols-2">
+                    <div className="space-y-2">
+                        <CampoLinha id="t-livre" rotulo="Texto livre (opcional)" multi valor={r.textoLivre} onChange={(v) => gravarGeral('livre', v)} max={LIMITES_TEXTO.livre}
+                            placeholder="Ex.: Traz um amigo!" ajuda="Uma frase a mais (convite, aviso…). Vazio = não aparece." />
+                        {r.textoLivre && (
+                            <fieldset className="space-y-1">
+                                <legend className="text-[15px] font-semibold">Tamanho do texto livre</legend>
+                                <div className="flex gap-2">
+                                    {([['p', 'Pequeno'], ['m', 'Normal'], ['g', 'Grande']] as const).map(([i, nome]) => (
+                                        <label key={i} className={`${chip} flex-1 justify-center`} style={estiloCampo}>
+                                            <input type="radio" name="livre-tam" checked={r.textoLivreTam === i} onChange={() => mudar({ textoLivreTam: i })} className="sr-only" />{nome}
+                                        </label>
+                                    ))}
+                                </div>
+                            </fieldset>
+                        )}
+                    </div>
+                    {r.pecas.length > 0 && (
+                        <fieldset className="space-y-2">
+                            <legend className="text-[15px] font-semibold">Versículo no rodapé do telão</legend>
+                            <select value={r.semVersiculo ? 'sem' : meuVerso ? 'meu' : 'auto'} aria-label="Versículo no rodapé do telão"
+                                onChange={(e) => {
+                                    const v = e.target.value
+                                    setMeuVerso(v === 'meu')
+                                    mudar(v === 'sem' ? { semVersiculo: true } : v === 'meu' ? { semVersiculo: false } : { semVersiculo: false, verso: '', versoRef: '' })
+                                }}
+                                className={campo} style={estiloCampo}>
+                                <option value="auto">Um da lista (muda de culto para culto)</option>
+                                <option value="meu">Escolher eu</option>
+                                <option value="sem">Sem versículo</option>
+                            </select>
+                            {!r.semVersiculo && meuVerso && (
+                                <div className="space-y-3">
+                                    <CampoLinha id="t-verso" rotulo="Texto do versículo" multi valor={r.verso} onChange={(v) => mudar({ verso: v })} max={220} placeholder="Ex.: O Senhor é o meu pastor; nada me faltará." />
+                                    <CampoLinha id="t-verso-ref" rotulo="Referência" valor={r.versoRef} onChange={(v) => mudar({ versoRef: v })} max={60} placeholder="Ex.: Salmos 23:1" />
+                                </div>
+                            )}
+                        </fieldset>
+                    )}
+                </div>
+            </section>
+
+            {/* B. Dados das artes do telão (só as marcadas que precisam) */}
+            {temB && (
+                <section aria-labelledby="ed-telao" className="space-y-4 border-t pt-4" style={{ borderColor: 'var(--a-borda)' }}>
+                    <h3 id="ed-telao" className="text-[17px] font-bold">Dados de artes do telão <span className="text-[14px] font-normal a-suave">· só das artes marcadas</span></h3>
+
+                    {peca('palavra') && (
+                        <div className="space-y-2 rounded-[14px] border p-3" style={{ borderColor: 'var(--a-borda)' }}>
+                            {titulo('Palavra')}
+                            <div className="space-y-1">
+                                <label htmlFor="ed-ref" className="block text-[15px] font-semibold">Texto bíblico</label>
+                                <CampoTexto id="ed-ref" valor={r.ref} onCommit={(v) => mudar({ ref: v })} placeholder="Ex.: 1 Samuel 17:22-26" maxLength={80} />
+                            </div>
+                            {(r.fotoV ?? r.fotoH)?.recorte && (
+                                <label className="flex min-h-[44px] items-center gap-2 text-[15px]">
+                                    <input type="checkbox" checked={r.palavraComFoto} onChange={(e) => mudar({ palavraComFoto: e.target.checked })} className="h-5 w-5" />
+                                    Pôr o preletor (recorte) ao lado do tema
+                                </label>
+                            )}
+                        </div>
+                    )}
+
+                    {peca('oracao-dirigida') && (
+                        <div className="space-y-1 rounded-[14px] border p-3" style={{ borderColor: 'var(--a-borda)' }}>
+                            {titulo('Oração por…')}
+                            <label htmlFor="ed-alvo" className="sr-only">Oração por…</label>
+                            <select id="ed-alvo" value={r.alvoTexto ? '' : r.alvo} onChange={(e) => mudar({ alvo: e.target.value, alvoTexto: '' })} className={campo} style={estiloCampo}>
+                                {Object.entries(ALVOS).map(([i, [, nome]]) => <option key={i} value={i}>{nome}</option>)}
+                                {r.alvoTexto && <option value="">Outro: {r.alvoTexto}</option>}
+                            </select>
+                            <CampoTexto valor={r.alvoTexto} onCommit={(v) => mudar({ alvoTexto: v })} placeholder="Ou escreva outro (ex.: Enfermos)" maxLength={40} aria-label="Outra oração por…" />
+                        </div>
+                    )}
+
+                    {peca('oferta') && <OfertaCompacta r={r} mudar={mudar} contas={contas} titulo={titulo('Oferta')} />}
+
+                    {peca('cantina') && (
+                        <div className="space-y-2 rounded-[14px] border p-3" style={{ borderColor: 'var(--a-borda)' }}>
+                            {titulo('Cantina')}
+                            <div className="grid gap-2 md:grid-cols-2">
+                                <div className="space-y-1">
+                                    <label htmlFor="ed-ct" className="block text-[15px] font-semibold">Título</label>
+                                    <CampoTexto id="ed-ct" valor={r.cantina.titulo} onCommit={(v) => mudar({ cantina: { ...r.cantina, titulo: v } })} placeholder="Ex.: Cantina" maxLength={40} />
+                                </div>
+                                <div className="space-y-1">
+                                    <label htmlFor="ed-cs" className="block text-[15px] font-semibold">Linha por baixo</label>
+                                    <CampoTexto id="ed-cs" valor={r.cantina.subtitulo} onCommit={(v) => mudar({ cantina: { ...r.cantina, subtitulo: v } })} placeholder="Ex.: Aberta depois do culto" maxLength={60} />
+                                </div>
+                            </div>
+                            <span className="block text-[15px] font-semibold">Menu <span className="font-normal a-suave">(até 4 linhas; com preço no fim fica um prato do menu, ex.: Sopa do dia 1€)</span></span>
+                            {r.cantina.textos.map((t, i) => (
+                                <div key={i} className="flex items-center gap-2">
+                                    <div className="min-w-0 flex-1">
+                                        <CampoTexto valor={t} maxLength={90} placeholder="Ex.: Bifana no pão 3,50€" aria-label={`Linha do menu ${i + 1}`}
+                                            onCommit={(v) => mudar({ cantina: { ...r.cantina, textos: r.cantina.textos.map((x, j) => (j === i ? v : x)).filter((x) => x.trim()) } })} />
+                                    </div>
+                                    <button type="button" aria-label="Tirar este texto" className="a-botao a-botao-secundario !min-h-[48px] !px-3"
+                                        onClick={() => mudar({ cantina: { ...r.cantina, textos: r.cantina.textos.filter((_, j) => j !== i) } })}>
+                                        <Trash2 size={18} aria-hidden />
+                                    </button>
+                                </div>
+                            ))}
+                            {r.cantina.textos.length < 4 && (
+                                <CampoTexto key={`novo-${r.cantina.textos.length}`} vivo={false} valor="" maxLength={90} placeholder="Escreva e prima Enter (ex.: Bolo caseiro 2€ ou Contém glúten)" aria-label="Nova linha do menu"
+                                    onCommit={(v) => v.trim() && mudar({ cantina: { ...r.cantina, textos: [...r.cantina.textos, v.trim()] } })} />
+                            )}
+                            <CampoFoto titulo="Foto da Cantina (opcional)" ajuda="Aparece num círculo ao lado do título. Clique na parte da foto que deve ficar no centro."
+                                foto={r.cantina.foto} onChange={(f) => mudar({ cantina: { ...r.cantina, foto: f } })} />
+                        </div>
+                    )}
+
+                    {peca('boas-vindas') && (
+                        <div className="space-y-1 rounded-[14px] border p-3" style={{ borderColor: 'var(--a-borda)' }}>
+                            {titulo('Boas-vindas')}
+                            <label htmlFor="ed-qr" className="block text-[15px] font-semibold">Endereço do QR</label>
+                            <CampoTexto id="ed-qr" valor={r.qr} onCommit={(v) => mudar({ qr: v })} maxLength={300} inputMode="url" placeholder="Ex.: https://www.igrejaadmvc.org/boasvindas" />
+                        </div>
+                    )}
+                </section>
+            )}
+
+            {/* C. Texto diferente numa arte */}
+            <details className="rounded-[14px] border" style={{ borderColor: 'var(--a-borda)' }}>
+                <summary className="a-foco flex min-h-[48px] cursor-pointer items-center px-3 text-[15px] font-semibold">Texto diferente numa arte (opcional){emUso ? ` · ${emUso} em uso` : ''}</summary>
+                <div className="space-y-3 border-t p-3" style={{ borderColor: 'var(--a-borda)' }}>
+                    <p className="text-[14px] a-suave">Em branco = a arte usa o texto de cima. O que escrever aqui vale só para essa arte.</p>
+                    <div className="hidden md:block">
+                        <table className="w-full border-collapse text-left text-[14px]">
+                            <thead>
+                                <tr>
+                                    <th scope="col" className="p-1 font-semibold a-suave">Arte</th>
+                                    {COLUNAS_AFINAR.map((c) => <th key={c.k} scope="col" className="p-1 font-semibold a-suave">{c.nome}</th>)}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {formatos.map((f) => (
+                                    <tr key={f} className="border-t" style={{ borderColor: 'var(--a-borda)' }}>
+                                        <th scope="row" className="whitespace-nowrap p-1 pr-2 font-semibold">{NOME_FORMATO[f]}</th>
+                                        {COLUNAS_AFINAR.map((c) => (
+                                            <td key={c.k} className="p-1">
+                                                <input value={r.afinar[f]?.[c.k] ?? ''} maxLength={LIMITES_TEXTO[c.k]} aria-label={`${c.nome} — ${NOME_FORMATO[f]}`}
+                                                    placeholder={geral(c.k) || autoDe[c.k]} onChange={(e) => gravarAfinado(f, c.k, e.target.value)}
+                                                    className="a-foco min-h-[44px] w-full min-w-0 rounded-[12px] border px-2 text-[15px]" style={estiloCampo} />
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="space-y-3 md:hidden">
+                        {formatos.map((f) => (
+                            <fieldset key={f} className="space-y-2 rounded-[12px] border p-3" style={{ borderColor: 'var(--a-borda)' }}>
+                                <legend className="px-1 text-[15px] font-bold">{NOME_FORMATO[f]}</legend>
+                                {COLUNAS_AFINAR.map((c) => (
+                                    <label key={c.k} className="block space-y-1">
+                                        <span className="block text-[14px] font-semibold">{c.nome}</span>
+                                        <input value={r.afinar[f]?.[c.k] ?? ''} maxLength={LIMITES_TEXTO[c.k]} placeholder={geral(c.k) || autoDe[c.k]}
+                                            onChange={(e) => gravarAfinado(f, c.k, e.target.value)} className={campo} style={estiloCampo} />
+                                    </label>
+                                ))}
+                            </fieldset>
+                        ))}
+                    </div>
+                </div>
+            </details>
+        </div>
     )
 }
 
-// Faixa que desliza de lado (uma arte por ecrã no telemóvel)
-function Carrossel({ children }: { children: React.ReactNode }) {
-    return <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-4 px-4 pb-2 md:mx-0 md:px-0">{children}</div>
-}
-
-// O valor só "assenta" depois de uns instantes sem mudar (evita desenhar 9 imagens a cada clique)
-function useAssente<T>(valor: T, ms = 600): T {
+// O valor só "assenta" depois de uns instantes sem mudar (evita desenhar as imagens a cada tecla)
+function useAssente<T>(valor: T, ms = 250): T {
     const [v, setV] = useState(valor)
     useEffect(() => { const t = setTimeout(() => setV(valor), ms); return () => clearTimeout(t) }, [valor, ms])
     return v
 }
 
-export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, local, receitaInicial, guardado, contas, publicadoEm: publicadoEmInicial, publicadoJson: publicadoJsonInicial, padrao: padraoInicial }: Props) {
+const PASSOS = ['Estilo e cores', 'Imagem de fundo', 'Escrever nas artes', 'Preletor e prévia', 'Resumo'] as const
+
+const ABAS: { id: AbaDivulgacao; nome: string }[] = [{ id: 'telao', nome: 'Telão' }, { id: 'redes', nome: 'Redes' }, { id: 'youtube', nome: 'YouTube' }]
+
+/** Linha de estado no topo: publicado ou não · live · capa. */
+function LinhaEstado({ publicadoEm, emDia, yt, ocupado, retirar }: { publicadoEm: string | null; emDia: boolean; yt: CapaYoutube; ocupado: boolean; retirar: () => void }) {
+    const Ponto = ({ cor }: { cor: string }) => <span aria-hidden className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: cor }} />
+    const OK = 'var(--a-ok, #16a34a)', AVISO = 'var(--a-aviso, #b45309)', NEUTRO = 'var(--a-borda)'
+    const ver = yt.dados?.ver
+    const ligado = !!ver && ver.ligado
+    const live = ver && ver.ligado ? ver.live : null
+    const ultima = yt.registos.find((x) => x.ok)
+    const quandoCapa = ultima ? new Date(ultima.quando).toLocaleString('pt-PT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''
+    const itens: { cor: string; texto: React.ReactNode }[] = [
+        !publicadoEm ? { cor: NEUTRO, texto: 'Não publicado' }
+            : emDia ? { cor: OK, texto: <span suppressHydrationWarning>Publicado a {new Date(publicadoEm).toLocaleString('pt-PT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span> }
+                : { cor: AVISO, texto: <strong>Mudou depois de publicar</strong> },
+    ]
+    if (!yt.dados && !yt.erro) itens.push({ cor: NEUTRO, texto: 'YouTube: a ver…' })
+    else if (yt.erro && !yt.dados) itens.push({ cor: AVISO, texto: 'YouTube: não consegui ver agora' })
+    else if (!ligado) itens.push({ cor: NEUTRO, texto: 'YouTube por ligar' })
+    else {
+        itens.push(live ? { cor: live.estado === 'direto' ? '#c0392b' : OK, texto: `Live ${NOME_LIVE[live.estado].toLowerCase()}` } : { cor: AVISO, texto: 'Live por criar' })
+        itens.push(ultima ? { cor: OK, texto: <span suppressHydrationWarning>Capa aplicada · {quandoCapa}</span> } : { cor: NEUTRO, texto: 'Capa por aplicar' })
+    }
+    return (
+        <div role="status" className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px]">
+            {itens.map((i, n) => <span key={n} className="inline-flex items-center gap-1.5"><Ponto cor={i.cor} />{i.texto}</span>)}
+            {publicadoEm && (
+                <span className="inline-flex items-center gap-3">
+                    <a href="/divulgar" target="_blank" rel="noopener noreferrer" className="a-foco inline-flex min-h-[32px] items-center underline" style={{ color: 'var(--a-destaque)' }}>Ver a página Divulgar</a>
+                    <button type="button" onClick={retirar} disabled={ocupado} className="a-foco inline-flex min-h-[32px] items-center underline a-suave">Retirar</button>
+                </span>
+            )}
+        </div>
+    )
+}
+
+export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, local, receitaInicial, guardado, contas, publicadoEm: publicadoEmInicial, publicadoJson: publicadoJsonInicial, padrao: padraoInicial, abaInicial = 'telao', passoInicial = null, padraoAuto = null }: Props) {
     const [r, setR] = useState<Receita>(receitaInicial)
     const [guardadoJson, setGuardadoJson] = useState(guardado ? JSON.stringify(receitaInicial) : '')
     const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null)
     const [meuVerso, setMeuVerso] = useState(!!receitaInicial.verso)   // "Escolher eu": os campos aparecem antes de haver texto
     const [aGuardar, iniciar] = useTransition()
     const [editado, setEditado] = useState<{ legenda?: string; whatsapp?: string }>({})
-    const [aberto, setAberto] = useState<BlocoId | null>(guardado ? null : 'estilo')
+    const [passo, setPasso] = useState(() => (passoInicial && passoInicial >= 1 && passoInicial <= 5 ? passoInicial : guardado ? 5 : 1))
+    const [visitados, setVisitados] = useState<number[]>([])
+    const [definicoes, setDefinicoes] = useState(false)
+    const topoRef = useRef<HTMLDivElement>(null)
+    const passoAnt = useRef(passo)
     const [aPreparar, setAPreparar] = useState(false)
     const [progresso, setProgresso] = useState('')
     const [publicadoEm, setPublicadoEm] = useState(publicadoEmInicial)
     const [publicadoJson, setPublicadoJson] = useState(publicadoJsonInicial)
     const [aPublicar, setAPublicar] = useState(false)
-    // O grupo "Telão" começa fechado (só a capa); abre-se para ver as outras artes. Fica lembrado neste aparelho.
-    const [telaoAberto, setTelaoAberto] = useState(false)
-    useEffect(() => { try { setTelaoAberto(localStorage.getItem('admvc-divulgacao-telao') === '1') } catch { /* sem armazenamento */ } }, [])
-    const alternarTelao = () => setTelaoAberto((v) => { const n = !v; try { localStorage.setItem('admvc-divulgacao-telao', n ? '1' : '0') } catch { /* sem armazenamento */ } return n })
+    const [aba, setAba] = useState<AbaDivulgacao>(abaInicial)
+    const [ytVisto, setYtVisto] = useState(abaInicial === 'youtube')   // o separador YouTube só se monta quando se abre (não chama o YouTube à toa)
+    const [grande, setGrande] = useState<string | null>(null)
+    const yt = useCapaYoutube(eventoId)
+
+    // passo no endereço (?passo=3), sem recarregar a página nem saltar; ao mudar, volta ao topo do assistente
+    function irParaPasso(n: number) {
+        if (n < 1 || n > 5 || n === passo) return
+        setVisitados((v) => (v.includes(passo) ? v : [...v, passo]))
+        setPasso(n)
+        try {
+            const u = new URL(window.location.href)
+            u.searchParams.set('passo', String(n))
+            window.history.replaceState(null, '', u)
+        } catch { /* sem endereço */ }
+    }
+    useEffect(() => {
+        if (passoAnt.current === passo) return
+        passoAnt.current = passo
+        topoRef.current?.scrollIntoView({ block: 'start' })
+    }, [passo])
+
+    // separador na endereço (?aba=redes), sem recarregar a página
+    function irParaAba(a: AbaDivulgacao) {
+        setAba(a)
+        if (a === 'youtube') setYtVisto(true)
+        try {
+            const u = new URL(window.location.href)
+            if (a === 'telao') u.searchParams.delete('aba'); else u.searchParams.set('aba', a)
+            window.history.replaceState(null, '', u)
+        } catch { /* sem endereço */ }
+    }
+    function teclasDasAbas(e: React.KeyboardEvent) {
+        const i = ABAS.findIndex((x) => x.id === aba)
+        const n = e.key === 'ArrowRight' ? (i + 1) % ABAS.length : e.key === 'ArrowLeft' ? (i + ABAS.length - 1) % ABAS.length : e.key === 'Home' ? 0 : e.key === 'End' ? ABAS.length - 1 : -1
+        if (n < 0) return
+        e.preventDefault()
+        irParaAba(ABAS[n].id)
+        document.getElementById(`aba-${ABAS[n].id}`)?.focus()
+    }
 
     const atual = JSON.stringify(r)
     const alterado = atual !== guardadoJson
@@ -471,23 +692,34 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
     // Escolher o estilo muda o telão e as redes (a não ser que estejam separados)
     const escolherEstilo = (id: EstiloId) => mudar(r.estilosSeparados ? { estilo: id } : { estilo: id, modeloRedes: redesDoEstilo(id) })
     const alternarPeca = (id: PecaId) => mudar({ pecas: PECAS.map((p) => p.id).filter((x) => (x === id ? !r.pecas.includes(x) : r.pecas.includes(x))) })
+    // As redes que se fazem aqui são só o post e o story (a capa 16:9 vive no separador YouTube)
+    const redesOk = redesAtivas(r)
     const alternarRede = (id: RedeId) => mudar({ redes: REDES.map((p) => p.id).filter((x) => (x === id ? !r.redes.includes(x) : r.redes.includes(x))) })
 
     const gravar = async (): Promise<boolean> => {
         const res = await guardarKitDivulgacao(eventoId, r)
-        if (res.ok) { setGuardadoJson(atual); setMsg({ ok: true, texto: 'Artes guardadas.' }); return true }
+        if (res.ok) { setGuardadoJson(atual); setMsg({ ok: true, texto: 'Artes guardadas.' }); yt.atualizarCapas(); void yt.recarregar(); return true }
         setMsg({ ok: false, texto: 'error' in res ? res.error : 'Não foi possível guardar.' })
         return false
     }
     const guardar = () => iniciar(async () => { await gravar() })
-    const semArtes = r.pecas.length === 0 && r.redes.length === 0
+    const semArtes = r.pecas.length === 0 && redesOk.length === 0
 
     const paleta = PALETAS.find((p) => p.id === r.paleta) ?? PALETAS[0]
     const dia = dataISO.slice(0, 10)
     const rv = useAssente(r)   // as pré-visualizações seguem a receita só depois de um instante sem mexer
+    const aAtualizar = atual !== JSON.stringify(rv)
     const ev = { nome: eventoNome, data }
     const lista = rv.pecas.map((id, i) => ({ id, n: i + 1, q: paramsDaPeca(rv, id, dia, ev) }))
     const nomeRede = (id: RedeId) => REDES.find((x) => x.id === id)?.nome ?? id
+    const srcDe = (q: URLSearchParams) => `/api/divulgacao/imagem?${q}&previa=1&w=400`
+    const itensPrevia: ItemPrevia[] = [
+        { id: 'telao', nome: 'Telão', src: srcDe(paramsDaPeca(rv, 'capa', dia, ev)), aspecto: '16 / 9' },
+        { id: 'youtube', nome: 'Capa YouTube', src: enderecoDaCapa(eventoId, rv, yt.estado, { w: 400 }), aspecto: '16 / 9' },
+        { id: 'post', nome: 'Post 4:5', src: srcDe(paramsDaRede(rv, 'post', ev)), aspecto: '4 / 5' },
+        { id: 'story', nome: 'Story 9:16', src: srcDe(paramsDaRede(rv, 'story', ev)), aspecto: '9 / 16' },
+    ]
+    const itemGrande = itensPrevia.find((i) => i.id === grande) ?? null
 
     // Publicar para a igreja: grava se preciso, desenha cada arte inteira no servidor (uma de cada vez) e junta a lista
     async function publicar() {
@@ -496,7 +728,7 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
         setAPublicar(true)
         try {
             const lote = String(Date.now())
-            const itens = [...r.pecas.map((id) => ({ tipo: 'peca', id })), ...r.redes.map((id) => ({ tipo: 'rede', id }))]
+            const itens = [...r.pecas.map((id) => ({ tipo: 'peca', id })), ...redesOk.map((id) => ({ tipo: 'rede', id }))]
             const feitos: { tipo: string; id: string; url: string }[] = []
             for (const [i, it] of itens.entries()) {
                 setProgresso(`A publicar ${i + 1} de ${itens.length}…`)
@@ -510,7 +742,7 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
             const fim = await concluirPublicacao(eventoId, lote, feitos, { legenda: editado.legenda ?? neutros.legenda, whatsapp: editado.whatsapp ?? neutros.whatsapp })
             if ('error' in fim) throw new Error(fim.error)
             setPublicadoEm(new Date().toISOString()); setPublicadoJson(atual)
-            setMsg(null)   // o cartão "Página Divulgar e Holyrics" já diz "Publicado a …"
+            setMsg(null)   // a linha de estado já diz "Publicado a …"
         } catch (e) {
             setMsg({ ok: false, texto: e instanceof Error ? e.message : 'Não foi possível publicar.' })
         } finally {
@@ -554,14 +786,14 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
     }
 
     // Descarregar tudo: grava se preciso, pede cada imagem inteira (uma de cada vez, sem limite de tempo) e monta o ZIP aqui
-    async function descarregarTudo(escopo: Escopo = 'tudo') {
+    async function descarregarTudo(escopo: 'tudo' | 'telao' | 'redes' = 'tudo') {
         setMsg(null)
         if (alterado && !(await gravar())) return
         setAPreparar(true)
         try {
             const itens = [
                 ...(escopo !== 'redes' ? r.pecas.map((id, i) => ({ nome: nomeDaPeca(r, id, i + 1), q: paramsDaPeca(r, id, dia, ev) })) : []),
-                ...(escopo !== 'telao' ? r.redes.map((id) => ({ nome: nomeDaRede(id), q: paramsDaRede(r, id, ev) })) : []),
+                ...(escopo !== 'telao' ? redesOk.map((id) => ({ nome: nomeDaRede(id), q: paramsDaRede(r, id, ev) })) : []),
             ]
             const ficheiros: { nome: string; dados: Uint8Array }[] = []
             for (const [i, it] of itens.entries()) {
@@ -585,328 +817,286 @@ export default function DivulgacaoKit({ eventoId, eventoNome, dataISO, hojeISO, 
 
     // Legenda e WhatsApp: saem do culto e do preletor; podem editar-se (a edição fica até carregar em "Refazer")
     const gerados = useMemo(() => textosDoCulto({ nome: semDestaque(r.titulo) || eventoNome, data, preletor: r.preletor, local, hoje: new Date(hojeISO) }), [r.titulo, r.preletor, eventoNome, data, local, hojeISO])
+    const auto = padraoPorId(padraoAuto)
+    const botaoZip = (escopo: 'telao' | 'redes') => (
+        <button type="button" onClick={() => descarregarTudo(escopo)} disabled={ocupado} className="a-foco inline-flex min-h-[44px] shrink-0 items-center gap-1 rounded-full px-3 text-[14px] font-semibold disabled:opacity-50" style={{ background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }}><Download size={16} aria-hidden /> ZIP</button>
+    )
+
+    const itemDe = (id: string) => itensPrevia.find((i) => i.id === id)!
+    const nomeFundo = r.fundo ? (r.fundo.startsWith('https://') ? 'O meu fundo' : FUNDOS_PRONTOS.find((f) => f.id === r.fundo)?.nome ?? 'Com imagem') : 'Só cores'
+    const cartoes: { passo: number; rotulo: string; valor: string; extra?: string }[] = [
+        { passo: 1, rotulo: 'Estilo', valor: `${nomeDoEstilo(r.estilo)}${r.estilosSeparados ? ` · redes: ${MODELOS_REDES.find((m) => m.id === r.modeloRedes)?.nome}` : ''}`, extra: paleta.nome },
+        { passo: 2, rotulo: 'Fundo', valor: nomeFundo },
+        { passo: 3, rotulo: 'Texto', valor: r.titulo || eventoNome, extra: r.tema ? r.tema.replace(/[*|]/g, '') : undefined },
+        { passo: 4, rotulo: 'Preletor', valor: r.preletor || 'Sem nome', extra: r.fotoV || r.fotoH ? 'Com foto' : 'Sem foto' },
+    ]
+    const textoMsg = msg && <p role="status" className="text-[15px]" style={{ color: msg.ok ? 'var(--a-ok, #16a34a)' : 'var(--a-erro, #dc2626)' }}>{msg.texto}</p>
 
     return (
-        <div className="space-y-4 pb-24 md:pb-0">
-            <Bloco id="estilo" titulo="Estilo e cores" resumo={`${ESTILOS.find((e) => e.id === r.estilo)?.nome}${r.estilosSeparados ? ` · redes: ${MODELOS_REDES.find((m) => m.id === r.modeloRedes)?.nome}` : ''} · ${paleta.nome}`} aberto={aberto} abrir={setAberto}>
-                <PadraoAdmvc r={r} padraoJson={padraoJson} onGuardar={usarComoPadrao} aGuardar={aGuardarPadrao} />
-                <fieldset className="space-y-2">
-                    <legend className="text-[17px] font-bold">Estilo {r.estilosSeparados ? 'do telão' : '(telão e redes)'}</legend>
-                    {!r.estilosSeparados && <p className="text-[14px] a-suave">Cada estilo tem a versão do telão e a das redes (o quadradinho no canto): escolher um muda as duas.</p>}
-                    <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-                        {ESTILOS.map((e) => (
-                            <label key={e.id} className={`${miniatura} ${r.estilo === e.id ? 'ring-2 ring-[var(--a-acento,#f5a524)]' : ''}`} style={estiloCampo}>
-                                <input type="radio" name="estilo" checked={r.estilo === e.id} onChange={() => escolherEstilo(e.id)} className="sr-only" />
-                                <span className="relative block">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={`/images/divulgacao/amostras/${e.id}-${r.paleta}.jpg`} alt="" loading="lazy" className="block w-full" style={{ aspectRatio: '16 / 9', background: 'var(--a-borda)' }} />
-                                    {!r.estilosSeparados && (
-                                        // eslint-disable-next-line @next/next/no-img-element
-                                        <img src={`/images/divulgacao/amostras/redes-${e.redes}.jpg`} alt="" loading="lazy" className="absolute bottom-1 right-1 w-[36%] rounded border-2 border-white shadow" style={{ aspectRatio: '16 / 9', objectFit: 'cover', background: 'var(--a-borda)' }} />
-                                    )}
-                                </span>
-                                <span className="block px-2 py-1.5 text-[14px] font-semibold">{e.nome}</span>
-                            </label>
-                        ))}
-                    </div>
-                </fieldset>
+        <div className="space-y-3 pb-[176px] md:pb-4">
+            <PreviaFlutuante itens={itensPrevia} aAtualizar={aAtualizar} onAbrir={setGrande} recolher={passo === 3} esconder={passo >= 4} />
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                <LinhaEstado publicadoEm={publicadoEm} emDia={publicadoEmDia} yt={yt} ocupado={ocupado} retirar={retirar} />
+                <button type="button" onClick={() => setDefinicoes(true)} aria-haspopup="dialog" className="a-botao a-botao-secundario !min-h-[44px] shrink-0 !px-3 text-[14px]">
+                    <Settings size={18} aria-hidden /> Definições da Igreja
+                </button>
+            </div>
 
-                <label className="a-foco flex min-h-[48px] cursor-pointer items-center gap-3 rounded-[14px] border px-3 py-2 text-[15px]" style={estiloCampo}>
-                    <input type="checkbox" checked={r.estilosSeparados} className="h-5 w-5 shrink-0"
-                        onChange={(e) => mudar(e.target.checked ? { estilosSeparados: true } : { estilosSeparados: false, modeloRedes: redesDoEstilo(r.estilo) })} />
-                    <span><strong>Estilos diferentes no telão e nas redes</strong><span className="block text-[13px] a-suave">Desligado: o mesmo estilo nos dois.</span></span>
-                </label>
+            <div ref={topoRef} className="scroll-mt-20 space-y-3 md:scroll-mt-4">
+                {/* Barra de passos: clicável sempre */}
+                <nav aria-label="Passos" className="space-y-1">
+                    <ol className="grid grid-cols-5 gap-1.5 md:gap-2">
+                        {PASSOS.map((nome, i) => {
+                            const n = i + 1
+                            const atual = n === passo
+                            const feito = !atual && visitados.includes(n)
+                            return (
+                                <li key={nome} className="min-w-0">
+                                    <button type="button" onClick={() => irParaPasso(n)} aria-current={atual ? 'step' : undefined} aria-label={`Passo ${n}: ${nome}${feito ? ' (visto)' : ''}`}
+                                        className="a-foco flex min-h-[52px] w-full flex-col items-start justify-center rounded-[12px] border px-2 py-1 text-left aria-[current=step]:ring-2 aria-[current=step]:ring-[var(--a-acento,#f5a524)] md:px-3" style={estiloCampo}>
+                                        <span className="text-[12px] font-semibold a-suave" aria-hidden>Passo {n}{feito && <span className="ml-1" style={{ color: 'var(--a-ok, #16a34a)' }}>✓</span>}</span>
+                                        <span className="hidden w-full truncate text-[14px] font-bold md:block" aria-hidden>{nome}</span>
+                                    </button>
+                                </li>
+                            )
+                        })}
+                    </ol>
+                </nav>
 
-                {r.estilosSeparados && (
-                    <fieldset className="space-y-2">
-                        <legend className="text-[17px] font-bold">Estilo das redes</legend>
-                        <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-                            {MODELOS_REDES.map((m) => (
-                                <label key={m.id} className={`${miniatura} ${r.modeloRedes === m.id ? 'ring-2 ring-[var(--a-acento,#f5a524)]' : ''}`} style={estiloCampo}>
-                                    <input type="radio" name="modeloRedes" checked={r.modeloRedes === m.id} onChange={() => mudar({ modeloRedes: m.id })} className="sr-only" />
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={`/images/divulgacao/amostras/redes-${m.id}.jpg`} alt="" loading="lazy" className="block w-full" style={{ aspectRatio: '16 / 9', background: 'var(--a-borda)', objectFit: 'cover' }} />
-                                    <span className="block px-2 py-1.5 text-[14px] font-semibold">{m.nome}</span>
-                                </label>
-                            ))}
-                        </div>
-                    </fieldset>
+                {passo === 1 && (
+                    <section className="a-card space-y-3 p-4" aria-labelledby="h-passo">
+                        <h2 id="h-passo" className="text-[18px] font-bold">1. Estilo e cores</h2>
+                        <EstiloECores r={r} rv={rv} mudar={mudar} escolherEstilo={escolherEstilo} escolhidoAuto={!guardado ? auto : null} dia={dia} ev={ev} />
+                    </section>
                 )}
 
-                <fieldset className="space-y-2">
-                    <legend className="text-[17px] font-bold">Cores · {paleta.nome}</legend>
-                    <div className="grid grid-cols-3 gap-2 md:grid-cols-6">
-                        {PALETAS.map((p) => (
-                            <label key={p.id} title={p.nome} className={`${miniatura} ${r.paleta === p.id ? 'ring-2 ring-[var(--a-acento,#f5a524)]' : ''}`} style={estiloCampo}>
-                                <input type="radio" name="paleta" checked={r.paleta === p.id} onChange={() => mudar({ paleta: p.id })} className="sr-only" />
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={`/images/divulgacao/amostras/${r.estilo}-${p.id}.jpg`} alt="" loading="lazy" className="block w-full" style={{ aspectRatio: '16 / 9', background: p.fundo }} />
-                                <span className="block truncate px-1.5 py-1 text-[12px] font-semibold">{p.nome}</span>
-                            </label>
-                        ))}
-                    </div>
-                </fieldset>
+                {passo === 2 && (
+                    <section className="a-card space-y-3 p-4" aria-labelledby="h-passo">
+                        <h2 id="h-passo" className="text-[18px] font-bold">2. Imagem de fundo</h2>
+                        <EscolherFundo nomeCulto={eventoNome} valor={r.fundo} onChange={(v) => mudar(v ? { fundo: v, estilo: 'foto', ...(r.estilosSeparados ? {} : { modeloRedes: redesDoEstilo('foto') }) } : { fundo: '' })} />
+                        <p className="text-[14px] a-suave">As cores escolhem-se no passo 1 (<button type="button" onClick={() => irParaPasso(1)} className="a-foco underline" style={{ color: 'var(--a-destaque)' }}>ir para as cores</button>).</p>
+                    </section>
+                )}
 
-                <EscolherFundo nomeCulto={eventoNome} valor={r.fundo} onChange={(v) => mudar(v ? { fundo: v, estilo: 'foto', ...(r.estilosSeparados ? {} : { modeloRedes: redesDoEstilo('foto') }) } : { fundo: '' })} />
-            </Bloco>
+                {passo === 3 && (
+                    <section className="a-card space-y-3 p-4" aria-labelledby="h-passo">
+                        <h2 id="h-passo" className="text-[18px] font-bold">3. Escrever nas artes</h2>
+                        <EditorArtes r={r} mudar={mudar} ev={ev} meuVerso={meuVerso} setMeuVerso={setMeuVerso} contas={contas} redesOk={redesOk} />
+                    </section>
+                )}
 
-            <Bloco id="escrita" titulo="Escrever nas artes" resumo={`${r.titulo || eventoNome}${r.textoLivre ? ' · com texto livre' : ''}`} aberto={aberto} abrir={setAberto}>
-                <EditorTextos ativo={aberto === 'escrita'} r={r} rv={rv} mudar={mudar} ev={ev} dia={dia} meuVerso={meuVerso} setMeuVerso={setMeuVerso} />
-            </Bloco>
-
-            <Bloco id="artes" titulo="Artes" resumo={`${r.pecas.length} no telão · ${r.redes.length} nas redes`} aberto={aberto} abrir={setAberto}>
-                <fieldset className="space-y-2">
-                    <legend className="text-[17px] font-bold">Artes para o telão</legend>
-                    <div className="flex flex-wrap gap-2">
-                        {PECAS.map((p) => {
-                            const ligada = r.pecas.includes(p.id)
-                            return (
-                                <label key={p.id} className={chip} style={estiloCampo}>
-                                    <input type="checkbox" checked={ligada} onChange={() => alternarPeca(p.id)} className="sr-only" />
-                                    <span aria-hidden className="flex h-5 w-5 items-center justify-center rounded border" style={{ borderColor: 'var(--a-borda)' }}>{ligada && <Check size={14} />}</span>
-                                    {p.nome}
-                                </label>
-                            )
-                        })}
-                    </div>
-                </fieldset>
-
-                <fieldset className="space-y-2">
-                    <legend className="text-[17px] font-bold">Artes para as redes sociais</legend>
-                    <div className="flex flex-wrap gap-2">
-                        {REDES.map((p) => {
-                            const ligada = r.redes.includes(p.id)
-                            return (
-                                <label key={p.id} className={chip} style={estiloCampo}>
-                                    <input type="checkbox" checked={ligada} onChange={() => alternarRede(p.id)} className="sr-only" />
-                                    <span aria-hidden className="flex h-5 w-5 items-center justify-center rounded border" style={{ borderColor: 'var(--a-borda)' }}>{ligada && <Check size={14} />}</span>
-                                    {p.nome}
-                                </label>
-                            )
-                        })}
-                    </div>
-                </fieldset>
-
-                <div className="grid gap-3 md:grid-cols-2">
-                    {r.redes.length === 0 && r.pecas.length === 0 && <p className="a-suave md:col-span-2">Marque pelo menos uma arte.</p>}
-                    {r.pecas.includes('oracao-dirigida') && (
-                        <div className="space-y-1">
-                            <span className="block text-[15px] font-semibold">Oração por…</span>
-                            <select value={r.alvoTexto ? '' : r.alvo} onChange={(e) => mudar({ alvo: e.target.value, alvoTexto: '' })} className={campo} style={estiloCampo}>
-                                {Object.entries(ALVOS).map(([id, [, nome]]) => <option key={id} value={id}>{nome}</option>)}
-                                {r.alvoTexto && <option value="">Outro: {r.alvoTexto}</option>}
-                            </select>
-                            <CampoTexto valor={r.alvoTexto} onCommit={(v) => mudar({ alvoTexto: v })} placeholder="Ou escreva outro (ex.: Enfermos)" maxLength={40} />
-                        </div>
-                    )}
-                    {r.pecas.includes('palavra') && (
-                        <div className="space-y-1">
-                            <span className="block text-[15px] font-semibold">Palavra no telão (o tema escreve-se em &quot;Escrever nas artes&quot;)</span>
-                            <CampoTexto valor={r.ref} onCommit={(v) => mudar({ ref: v })} placeholder="Texto bíblico (ex.: 1 Samuel 17:22-26)" maxLength={80} />
-                            {(r.fotoV ?? r.fotoH)?.recorte && (
-                                <label className="flex min-h-[44px] items-center gap-2 text-[15px]">
-                                    <input type="checkbox" checked={r.palavraComFoto} onChange={(e) => mudar({ palavraComFoto: e.target.checked })} className="h-5 w-5" />
-                                    Pôr o preletor (recorte) ao lado do tema
-                                </label>
-                            )}
-                        </div>
-                    )}
-                    {r.pecas.includes('oferta') && (
-                        <div className="space-y-1">
-                            <span className="block text-[15px] font-semibold">IBAN da oferta</span>
-                            {contas.length > 0 && (
-                                <select value={contas.find((c) => c.iban === r.iban)?.iban ?? ''} onChange={(e) => e.target.value && mudar({ iban: e.target.value })} className={campo} style={estiloCampo}>
-                                    <option value="">Escolher uma conta da igreja…</option>
-                                    {contas.map((c) => <option key={c.iban} value={c.iban}>{c.nome}</option>)}
-                                </select>
-                            )}
-                            <CampoTexto valor={r.iban} onCommit={(v) => mudar({ iban: v })} placeholder="PT50 0000 0000 0000 0000 0000 0" maxLength={40} />
-                            {r.iban && !ibanValido(r.iban) && <p className="text-[14px] font-semibold" style={{ color: 'var(--a-erro)' }}>Este IBAN não parece certo (confira os números).</p>}
-                            <span className="block pt-1 text-[15px] font-semibold">MB WAY (só aparece escrito, não há QR para MB WAY)</span>
-                            <CampoTexto valor={r.mbway} onCommit={(v) => mudar({ mbway: v })} placeholder="+351 9xx xxx xxx" maxLength={20} inputMode="tel" />
-                            <span className="block pt-1 text-[15px] font-semibold">QR na oferta</span>
-                            <select value={r.qrOferta} onChange={(e) => mudar({ qrOferta: e.target.value as typeof r.qrOferta })} className={campo} style={estiloCampo}>
-                                <option value="nenhum">Sem QR</option>
-                                <option value="banco">QR de transferência (a app do banco preenche o IBAN)</option>
-                                <option value="pagina">QR para uma página com o IBAN e o botão Copiar</option>
-                            </select>
-                            {r.qrOferta === 'banco' && (
-                                <>
-                                    <CampoTexto valor={r.titular} onCommit={(v) => mudar({ titular: v })} placeholder="Nome do titular da conta (como no banco)" maxLength={70} />
-                                    <p className="text-[13px] a-suave">Teste com a app de 2 ou 3 bancos antes de pôr no telão: nem todas leem este QR. Se alguma falhar, use a página com o botão Copiar.</p>
-                                </>
-                            )}
-                        </div>
-                    )}
-                    {r.pecas.includes('cantina') && (
-                        <div className="space-y-2 md:col-span-2">
-                            <span className="block text-[15px] font-semibold">Capa da Cantina</span>
-                            <div className="grid gap-2 md:grid-cols-2">
-                                <CampoTexto valor={r.cantina.titulo} onCommit={(v) => mudar({ cantina: { ...r.cantina, titulo: v } })} placeholder="Título (ex.: Cantina)" maxLength={40} />
-                                <CampoTexto valor={r.cantina.subtitulo} onCommit={(v) => mudar({ cantina: { ...r.cantina, subtitulo: v } })} placeholder="Linha por baixo (ex.: Aberta depois do culto)" maxLength={60} />
-                            </div>
-                            <span className="block text-[15px] font-semibold">Textos legais (até 4, pequenos em baixo da arte)</span>
-                            {r.cantina.textos.map((t, i) => (
-                                <div key={i} className="flex items-center gap-2">
-                                    <div className="min-w-0 flex-1">
-                                        <CampoTexto valor={t} maxLength={90} placeholder="Ex.: Preços com IVA incluído"
-                                            onCommit={(v) => mudar({ cantina: { ...r.cantina, textos: r.cantina.textos.map((x, j) => (j === i ? v : x)).filter((x) => x.trim()) } })} />
-                                    </div>
-                                    <button type="button" aria-label="Tirar este texto" className="a-botao a-botao-secundario !min-h-[48px] !px-3"
-                                        onClick={() => mudar({ cantina: { ...r.cantina, textos: r.cantina.textos.filter((_, j) => j !== i) } })}>
-                                        <Trash2 size={18} aria-hidden />
-                                    </button>
-                                </div>
-                            ))}
-                            {r.cantina.textos.length < 4 && (
-                                <CampoTexto key={`novo-${r.cantina.textos.length}`} valor="" maxLength={90} placeholder="Escreva um texto e prima Enter (ex.: Contém glúten e lactose)"
-                                    onCommit={(v) => v.trim() && mudar({ cantina: { ...r.cantina, textos: [...r.cantina.textos, v.trim()] } })} />
-                            )}
-                            <CampoFoto titulo="Foto da Cantina (opcional)" ajuda="Aparece num círculo ao lado do título. Clique na parte da foto que deve ficar no centro."
-                                foto={r.cantina.foto} onChange={(f) => mudar({ cantina: { ...r.cantina, foto: f } })} />
-                            <p className="text-[13px] a-suave">Dica: carregue em &quot;Usar como padrão da igreja&quot; para a Cantina sair igual em todos os cultos.</p>
-                        </div>
-                    )}
-                    {r.pecas.includes('boas-vindas') && (
-                        <div className="space-y-1">
-                            <span className="block text-[15px] font-semibold">Endereço do QR (boas-vindas)</span>
-                            <CampoTexto valor={r.qr} onCommit={(v) => mudar({ qr: v })} maxLength={300} inputMode="url" />
-                        </div>
-                    )}
-                </div>
-            </Bloco>
-
-            {r.redes.length > 0 && (
-                <Bloco id="fotos" titulo="Foto do preletor" resumo={r.fotoV || r.fotoH ? "Com foto" : "Sem foto"} aberto={aberto} abrir={setAberto}>
-                        <p className="text-[14px] a-suave">Uma foto recortada (PNG com fundo transparente, do remove.bg ou do Canva) fica muito melhor: o preletor aparece de pé sobre o fundo, e também na Palavra do telão.</p>
-                        <div className="grid gap-4 md:grid-cols-2">
+                {passo === 4 && (
+                    <div className="grid gap-4 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
+                        <section className="a-card space-y-4 p-4" aria-labelledby="h-passo">
+                            <h2 id="h-passo" className="text-[18px] font-bold">4. Preletor</h2>
+                            <p className="text-[14px] a-suave">Uma foto recortada (PNG com fundo transparente, do remove.bg ou do Canva) fica muito melhor: o preletor aparece de pé sobre o fundo, e também na Palavra do telão. Sem foto, as artes ficam sem retrato.</p>
                             <CampoFoto titulo="Foto ao alto (post e story)" ajuda="Uma foto em pé, do preletor da cintura para cima, funciona melhor." foto={r.fotoV} onChange={(f) => mudar({ fotoV: f })} />
                             <CampoFoto titulo="Foto deitada (capa da live)" ajuda="Opcional: sem ela, a capa usa a foto ao alto." foto={r.fotoH} onChange={(f) => mudar({ fotoH: f })} />
-                        </div>
-                        {(r.fotoH || r.fotoV) && (
-                            <label className="block max-w-xs space-y-1">
-                                <span className="block text-[15px] font-semibold">Véu de cor sobre a foto</span>
-                                <select value={String(r.tinta)} onChange={(e) => mudar({ tinta: Number(e.target.value) })} className={campo} style={estiloCampo}>
-                                    <option value="0">Nenhum</option><option value="0.15">Leve</option><option value="0.25">Médio</option><option value="0.4">Forte (camisas de cor que destoam)</option>
-                                </select>
-                            </label>
-                        )}
-                </Bloco>
-            )}
+                            {(r.fotoH || r.fotoV) && (
+                                <label className="block max-w-xs space-y-1">
+                                    <span className="block text-[15px] font-semibold">Véu de cor sobre a foto</span>
+                                    <select value={String(r.tinta)} onChange={(e) => mudar({ tinta: Number(e.target.value) })} className={campo} style={estiloCampo}>
+                                        <option value="0">Nenhum</option><option value="0.15">Leve</option><option value="0.25">Médio</option><option value="0.4">Forte (camisas de cor que destoam)</option>
+                                    </select>
+                                </label>
+                            )}
+                        </section>
+                        <section className="a-card min-w-0 space-y-3 p-4" aria-labelledby="h-previas">
+                            <div className="flex items-baseline justify-between gap-2">
+                                <h2 id="h-previas" className="text-[18px] font-bold">Como fica nas redes e no YouTube</h2>
+                                <span className="text-[12px] a-suave" role="status">{aAtualizar ? 'A atualizar…' : ''}</span>
+                            </div>
+                            <p className="text-[14px] a-suave">Toque numa arte para a ver em grande.</p>
+                            <div className="grid grid-cols-2 items-start gap-3 md:grid-cols-[4fr_2.6fr_7fr] md:gap-4">
+                                {(['post', 'story', 'youtube'] as const).map((id) => {
+                                    const it = itemDe(id)
+                                    return (
+                                        <button key={id} type="button" onClick={() => setGrande(id)} aria-label={`${it.nome}: ver em grande`}
+                                            className={`a-foco block min-w-0 text-left ${id === 'youtube' ? 'col-span-2 md:col-span-1' : ''}`}>
+                                            <span className="mb-1 block truncate text-[13px] font-semibold a-suave">{it.nome}</span>
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img src={it.src} alt="" decoding="async" className={`block w-full rounded-[10px] border transition-opacity ${aAtualizar ? 'opacity-60' : ''}`}
+                                                style={{ aspectRatio: it.aspecto, borderColor: 'var(--a-borda)', background: 'var(--a-card)', objectFit: 'cover' }} />
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                        </section>
+                    </div>
+                )}
 
-            <section className="a-card flex items-start gap-3 p-4" aria-labelledby="h-publicar">
-                <Megaphone size={22} className="mt-0.5 shrink-0" aria-hidden style={{ color: 'var(--a-destaque)' }} />
-                <div className="min-w-0 flex-1 space-y-0.5">
-                    <h2 id="h-publicar" className="text-[17px] font-bold">Página Divulgar e Holyrics</h2>
-                    <p className="text-[15px]" role="status">
-                        {!publicadoEm ? <span className="a-suave">Ainda não publicado. &quot;Publicar&quot; põe as artes das redes na página Divulgar (para os irmãos partilharem) e as do telão no Holyrics.</span>
-                            : publicadoEmDia
-                                ? <span suppressHydrationWarning>✓ Publicado a {new Date(publicadoEm).toLocaleString('pt-PT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}, em dia.</span>
-                                : <strong style={{ color: 'var(--a-aviso, #b45309)' }}>Mudou depois de publicar: carregue em &quot;Publicar&quot; outra vez.</strong>}
-                    </p>
-                    {publicadoEm && (
-                        <p className="flex flex-wrap gap-x-4 text-[14px]">
-                            <a href="/divulgar" target="_blank" rel="noopener noreferrer" className="a-foco underline" style={{ color: 'var(--a-destaque)' }}>Ver a página Divulgar</a>
-                            <button type="button" onClick={retirar} disabled={ocupado} className="a-foco underline a-suave">Retirar</button>
-                        </p>
+                {passo === 5 && (
+                    <div className="space-y-3">
+                        <section className="a-card space-y-3 p-4" aria-labelledby="h-passo">
+                            <h2 id="h-passo" className="text-[18px] font-bold">5. Resumo</h2>
+                            <ul className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+                                {cartoes.map((c) => (
+                                    <li key={c.rotulo} className="flex min-w-0 flex-col rounded-[12px] border p-3" style={estiloCampo}>
+                                        <span className="text-[12px] font-semibold a-suave">{c.rotulo}</span>
+                                        <span className="truncate text-[15px] font-bold">{c.valor}</span>
+                                        <span className="truncate text-[13px] a-suave">{c.extra ?? ' '}</span>
+                                        <button type="button" onClick={() => irParaPasso(c.passo)} className="a-foco mt-1 inline-flex min-h-[44px] items-center self-start text-[14px] font-semibold underline" style={{ color: 'var(--a-destaque)' }}>Mudar</button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+
+                    {/* Separadores */}
+                    <div role="tablist" aria-label="Onde vai ser usado" onKeyDown={teclasDasAbas} className="flex gap-1 border-b" style={{ borderColor: 'var(--a-borda)' }}>
+                        {ABAS.map((a) => (
+                            <button key={a.id} id={`aba-${a.id}`} type="button" role="tab" aria-selected={aba === a.id} aria-controls={`painel-${a.id}`} tabIndex={aba === a.id ? 0 : -1} onClick={() => irParaAba(a.id)}
+                                className="a-foco -mb-px min-h-[48px] flex-1 border-b-[3px] border-transparent px-3 text-[16px] font-semibold aria-selected:border-[var(--a-destaque)] aria-selected:font-bold md:flex-none md:px-6"
+                                style={{ color: aba === a.id ? 'var(--a-texto)' : 'var(--a-suave)' }}>{a.nome}</button>
+                        ))}
+                    </div>
+
+                    {/* TELÃO */}
+                    <div role="tabpanel" id="painel-telao" aria-labelledby="aba-telao" hidden={aba !== 'telao'} className="space-y-3">
+                        <fieldset className="space-y-2">
+                            <div className="flex items-center justify-between gap-2">
+                                <legend className="text-[16px] font-bold">Artes do telão <span className="font-normal a-suave">· {lista.length}</span></legend>
+                                {botaoZip('telao')}
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {PECAS.map((p) => {
+                                    const ligada = r.pecas.includes(p.id)
+                                    return (
+                                        <label key={p.id} className={chip} style={estiloCampo}>
+                                            <input type="checkbox" checked={ligada} onChange={() => alternarPeca(p.id)} className="sr-only" />
+                                            <span aria-hidden className="flex h-5 w-5 items-center justify-center rounded border" style={{ borderColor: 'var(--a-borda)' }}>{ligada && <Check size={14} />}</span>
+                                            {p.nome}
+                                        </label>
+                                    )
+                                })}
+                            </div>
+                        </fieldset>
+
+                        {lista.length === 0 && <p className="a-suave">Marque pelo menos uma arte.</p>}
+                        <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0">
+                            {lista.map(({ id, n, q }) => (
+                                <li key={id} className="w-[62%] shrink-0 snap-center space-y-1 md:w-auto">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src={`/api/divulgacao/imagem?${q}&previa=1&w=400`} alt={PECAS.find((p) => p.id === id)?.nome} loading="lazy" decoding="async" fetchPriority="low" className={`w-full rounded-[10px] border transition-opacity ${aAtualizar ? 'opacity-60' : ''}`} style={{ borderColor: 'var(--a-borda)', aspectRatio: '16 / 9', background: 'var(--a-card)' }} />
+                                    <div className="flex items-center justify-between gap-1">
+                                        <span className="min-w-0 truncate text-[14px] font-semibold">{PECAS.find((p) => p.id === id)?.nome}</span>
+                                        <a href={`/api/divulgacao/imagem?${q}&download=1`} download={nomeDaPeca(rv, id, n)} aria-label={`Descarregar ${PECAS.find((p) => p.id === id)?.nome} (1920×1080)`} className="a-foco flex h-11 w-11 shrink-0 items-center justify-center rounded-full"><Download size={18} aria-hidden /></a>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+
+                    </div>
+
+                    {/* REDES */}
+                    <div role="tabpanel" id="painel-redes" aria-labelledby="aba-redes" hidden={aba !== 'redes'} className="space-y-3">
+                        <fieldset className="space-y-2">
+                            <div className="flex items-center justify-between gap-2">
+                                <legend className="text-[16px] font-bold">Artes para as redes sociais</legend>
+                                {botaoZip('redes')}
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {REDES_DAS_ARTES.map((id) => {
+                                    const ligada = r.redes.includes(id)
+                                    return (
+                                        <label key={id} className={chip} style={estiloCampo}>
+                                            <input type="checkbox" checked={ligada} onChange={() => alternarRede(id)} className="sr-only" />
+                                            <span aria-hidden className="flex h-5 w-5 items-center justify-center rounded border" style={{ borderColor: 'var(--a-borda)' }}>{ligada && <Check size={14} />}</span>
+                                            {nomeRede(id)}
+                                        </label>
+                                    )
+                                })}
+                            </div>
+                        </fieldset>
+                        {redesOk.length === 0 && <p className="a-suave">Marque o post ou o story.</p>}
+                        <div className="grid grid-cols-2 items-start gap-4">
+                            {redesOk.map((id) => {
+                                const q = paramsDaRede(rv, id, ev)
+                                return (
+                                    <figure key={id} className="min-w-0 space-y-2">
+                                        <figcaption className="text-[15px] font-semibold">{nomeRede(id)}</figcaption>
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={`/api/divulgacao/imagem?${q}&previa=1&w=400`} alt={nomeRede(id)} loading="lazy" decoding="async" fetchPriority="low" className={`mx-auto w-auto max-w-full rounded-[10px] border transition-opacity ${aAtualizar ? 'opacity-60' : ''}`}
+                                            style={{ borderColor: 'var(--a-borda)', aspectRatio: id === 'post' ? '4 / 5' : '9 / 16', maxHeight: 280, background: 'var(--a-card)' }} />
+                                        <div className="flex flex-col gap-2">
+                                            <button type="button" onClick={() => partilharRede(id, paramsDaRede(r, id, ev))} disabled={aPartilhar === id} className="a-botao a-botao-principal !min-h-[44px] !px-3"><Share2 size={18} className="shrink-0" aria-hidden /> {aPartilhar === id ? 'A abrir…' : 'WhatsApp'}</button>
+                                            <div className="flex gap-2">
+                                                {fotoDa(id) && <button type="button" onClick={() => setAjustando(id)} className="a-botao a-botao-secundario !min-h-[44px] flex-1 !px-3 text-[14px]">{r.ajustes[id] && r.ajustes[id]!.url === fotoDa(id)!.url ? 'Foto ✓' : 'Ajustar foto'}</button>}
+                                                <a href={`/api/divulgacao/imagem?${paramsDaRede(r, id, ev)}&download=1`} download={nomeDaRede(id)} aria-label={`Descarregar ${nomeRede(id)}`} className="a-botao a-botao-secundario !min-h-[44px] flex-1 !px-3"><Download size={18} aria-hidden /> <span className="text-[14px]">Descarregar</span></a>
+                                            </div>
+                                        </div>
+                                    </figure>
+                                )
+                            })}
+                        </div>
+
+                        <section className="a-card space-y-3 p-4" aria-labelledby="h-textos">
+                            <h2 id="h-textos" className="text-[17px] font-bold">Textos para publicar</h2>
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <CaixaTexto titulo="Legenda Instagram / Facebook" valor={editado.legenda ?? gerados.legenda} onChange={(v) => setEditado((x) => ({ ...x, legenda: v }))} onRefazer={() => setEditado((x) => ({ ...x, legenda: undefined }))} />
+                                <CaixaTexto whatsapp titulo="Mensagem de WhatsApp" valor={editado.whatsapp ?? gerados.whatsapp} onChange={(v) => setEditado((x) => ({ ...x, whatsapp: v }))} onRefazer={() => setEditado((x) => ({ ...x, whatsapp: undefined }))} />
+                            </div>
+                        </section>
+                    </div>
+
+                    {/* YOUTUBE */}
+                    <div role="tabpanel" id="painel-youtube" aria-labelledby="aba-youtube" hidden={aba !== 'youtube'} className="space-y-3">
+                        {ytVisto && (
+                            <>
+                                <YoutubeCapa eventoId={eventoId} yt={yt} guardado={!alterado} r={r} rv={rv} mudar={mudar} eventoNome={eventoNome} dataISO={dataISO} aAtualizar={aAtualizar} garantirGuardado={async () => (alterado ? gravar() : true)} />
+                                <LivesDaSemana />
+                                <Gaveta titulo="Histórico" resumo={yt.registos.length ? `${yt.registos.length} ${yt.registos.length === 1 ? 'capa aplicada' : 'capas aplicadas'} neste culto` : 'Ainda nada aplicado neste culto'}>
+                                    <HistoricoCapa registos={yt.registos} />
+                                </Gaveta>
+                            </>
+                        )}
+                    </div>
+
+                    </div>
+                )}
+            </div>
+
+            {textoMsg}
+
+            {/* BARRA: fixa em baixo no telemóvel (por cima da barra do menu; a página tem espaço no fim), colada ao fundo da coluna no computador */}
+            <div className="fixed inset-x-0 bottom-[calc(72px+env(safe-area-inset-bottom))] z-40 px-3 md:sticky md:inset-x-auto md:bottom-3 md:z-20 md:px-0">
+                <div className="a-card flex items-center gap-1.5 p-2 shadow-lg md:gap-2">
+                    <button type="button" onClick={() => irParaPasso(passo - 1)} disabled={passo === 1} aria-label="Voltar ao passo anterior" className="a-botao a-botao-secundario !min-h-[48px] !px-3 shrink-0">
+                        <ChevronLeft size={18} aria-hidden /> <span className="hidden md:inline">Voltar</span>
+                    </button>
+                    <button type="button" onClick={guardar} disabled={ocupado || !alterado || semArtes} aria-label={aGuardar ? 'A guardar…' : alterado ? 'Guardar' : 'Guardado'} className="a-botao a-botao-secundario relative !min-h-[48px] !px-3 shrink-0">
+                        <Save size={18} aria-hidden />
+                        <span className="hidden sm:inline">{aGuardar ? 'A guardar…' : alterado ? 'Guardar' : 'Guardado'}</span>
+                        {alterado && !aGuardar && <span aria-hidden className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full sm:hidden" style={{ background: 'var(--a-aviso, #b45309)' }} />}
+                    </button>
+                    <button type="button" onClick={() => descarregarTudo()} disabled={ocupado || semArtes} aria-label="Descarregar todas as artes (ZIP)" className="a-botao a-botao-secundario !min-h-[48px] !px-3 shrink-0">
+                        <Download size={18} aria-hidden /> <span className="hidden sm:inline">ZIP</span>
+                    </button>
+                    <button type="button" onClick={publicar} disabled={ocupado || semArtes || publicadoEmDia} aria-label={progresso || (publicadoEmDia ? 'Publicado' : publicadoEm ? 'Publicar outra vez' : 'Publicar')}
+                        className={`a-botao a-botao-principal !min-h-[48px] !px-3 min-w-0 ${passo === 5 ? 'flex-1' : 'shrink-0'}`}>
+                        <Megaphone size={18} className="shrink-0" aria-hidden />
+                        <span className={`truncate ${passo === 5 ? '' : 'hidden md:inline'}`}>{progresso || (publicadoEmDia ? 'Publicado' : publicadoEm ? 'Publicar outra vez' : 'Publicar')}</span>
+                    </button>
+                    {passo < 5 && (
+                        <button type="button" onClick={() => irParaPasso(passo + 1)} className="a-botao a-botao-principal !min-h-[48px] min-w-0 flex-1 !px-3 font-bold">
+                            <span className="truncate">AVANÇAR</span> <ChevronRight size={18} className="shrink-0" aria-hidden />
+                        </button>
                     )}
                 </div>
-            </section>
+            </div>
 
-            {msg && <p role="status" className="text-[15px]" style={{ color: msg.ok ? 'var(--a-ok, #16a34a)' : 'var(--a-erro, #dc2626)' }}>{msg.texto}</p>}
-
-            {lista.length > 0 && (() => {
-                const capa = lista.find((x) => x.id === 'capa') ?? lista[0]
-                return (
-                    <section className="space-y-2" aria-labelledby="h-telao">
-                        <div className="flex items-center justify-between gap-2">
-                            <button type="button" onClick={alternarTelao} aria-expanded={telaoAberto} aria-controls="telao-artes" className="a-foco flex min-h-[48px] min-w-0 flex-1 items-center gap-2 text-left">
-                                <ChevronDown size={22} className={`shrink-0 a-suave transition-transform ${telaoAberto ? 'rotate-180' : '-rotate-90'}`} aria-hidden />
-                                <h2 id="h-telao" className="text-[19px] font-bold">Telão <span className="text-[15px] font-normal a-suave">· {lista.length} {lista.length === 1 ? 'arte' : 'artes'}</span></h2>
-                            </button>
-                            <button type="button" onClick={() => descarregarTudo('telao')} disabled={ocupado} className="a-foco inline-flex min-h-[44px] shrink-0 items-center gap-1 rounded-full px-3 text-[14px] font-semibold disabled:opacity-50" style={{ background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }}><Download size={16} aria-hidden /> ZIP</button>
-                        </div>
-                        <div id="telao-artes">
-                            {!telaoAberto ? (
-                                <button type="button" onClick={alternarTelao} className="a-foco flex w-full max-w-md items-center gap-3 rounded-[14px] border p-2 text-left" style={{ borderColor: 'var(--a-borda)', background: 'var(--a-card)' }}>
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={`/api/divulgacao/imagem?${capa.q}&previa=1`} alt={`${PECAS.find((p) => p.id === capa.id)?.nome} (pré-visualização)`} className="w-[46%] shrink-0 rounded-lg border" style={{ borderColor: 'var(--a-borda)', aspectRatio: '16 / 9', background: 'var(--a-card)' }} />
-                                    <span className="min-w-0 text-[15px]"><strong className="block">{PECAS.find((p) => p.id === capa.id)?.nome}</strong><span className="a-suave">Toque para ver as {lista.length} artes.</span></span>
-                                </button>
-                            ) : (
-                                <Carrossel>
-                                    {lista.map(({ id, n, q }) => (
-                                        <figure key={id} className="w-[85%] shrink-0 snap-center space-y-2 md:w-[calc(50%-8px)]">
-                                            <figcaption className="text-[16px] font-semibold">{PECAS.find((p) => p.id === id)?.nome}</figcaption>
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src={`/api/divulgacao/imagem?${q}&previa=1`} alt={PECAS.find((p) => p.id === id)?.nome} loading="lazy" className="w-full rounded-xl border" style={{ borderColor: 'var(--a-borda)', aspectRatio: '16 / 9', background: 'var(--a-card)' }} />
-                                            <a href={`/api/divulgacao/imagem?${q}&download=1`} download={nomeDaPeca(rv, id, n)} className="a-botao a-botao-secundario !min-h-[44px]"><Download size={18} aria-hidden /> Descarregar (1920×1080)</a>
-                                        </figure>
-                                    ))}
-                                </Carrossel>
-                            )}
-                        </div>
-                    </section>
-                )
-            })()}
-
-            {rv.redes.length > 0 && (
-                <section className="space-y-2" aria-labelledby="h-redes">
-                    <div className="flex items-center justify-between gap-2">
-                        <h2 id="h-redes" className="text-[19px] font-bold">Redes sociais</h2>
-                        <button type="button" onClick={() => descarregarTudo('redes')} disabled={ocupado} className="a-foco inline-flex min-h-[40px] shrink-0 items-center gap-1 rounded-full px-3 text-[14px] font-semibold disabled:opacity-50" style={{ background: 'var(--a-destaque-suave)', color: 'var(--a-destaque)' }}><Download size={16} aria-hidden /> ZIP</button>
-                    </div>
-                    <Carrossel>
-                        {rv.redes.map((id) => {
-                            const q = paramsDaRede(rv, id, ev)
-                            return (
-                                <figure key={id} className={`shrink-0 snap-center space-y-2 ${id === 'youtube' ? 'w-[85%] md:w-[calc(50%-8px)]' : 'w-[62%] md:w-[calc(25%-10px)]'}`}>
-                                    <figcaption className="text-[16px] font-semibold">{nomeRede(id)}</figcaption>
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={`/api/divulgacao/imagem?${q}&previa=1`} alt={nomeRede(id)} loading="lazy" className="w-full rounded-xl border"
-                                        style={{ borderColor: 'var(--a-borda)', aspectRatio: id === 'post' ? '4 / 5' : id === 'story' ? '9 / 16' : '16 / 9', background: 'var(--a-card)' }} />
-                                    <div className="flex gap-2">
-                                        {fotoDa(id) && <button type="button" onClick={() => setAjustando(id)} className="a-botao a-botao-secundario !min-h-[44px] !px-3 text-[14px]">{r.ajustes[id] && r.ajustes[id]!.url === fotoDa(id)!.url ? 'Foto ✓' : 'Foto'}</button>}
-                                        <button type="button" onClick={() => partilharRede(id, q)} disabled={aPartilhar === id} className="a-botao a-botao-principal !min-h-[44px] min-w-0 flex-1 !px-3"><Share2 size={18} className="shrink-0" aria-hidden /> {aPartilhar === id ? 'A abrir…' : 'WhatsApp'}</button>
-                                        <a href={`/api/divulgacao/imagem?${q}&download=1`} download={nomeDaRede(id)} aria-label={`Descarregar ${nomeRede(id)}`} className="a-botao a-botao-secundario !min-h-[44px] !px-3"><Download size={18} aria-hidden /></a>
-                                    </div>
-                                </figure>
-                            )
-                        })}
-                    </Carrossel>
-                </section>
+            {definicoes && (
+                <JanelaGrande titulo="Definições da Igreja" onFechar={() => setDefinicoes(false)}>
+                    <PadraoAdmvc r={r} padraoJson={padraoJson} onGuardar={usarComoPadrao} aGuardar={aGuardarPadrao} />
+                </JanelaGrande>
             )}
 
-            {r.redes.length > 0 && (
-                <Bloco id="textos" titulo="Textos para publicar" resumo="Legenda e WhatsApp" aberto={aberto} abrir={setAberto}>
-                    <div className="grid gap-4 md:grid-cols-2">
-                        <CaixaTexto titulo="Legenda Instagram / Facebook" valor={editado.legenda ?? gerados.legenda} onChange={(v) => setEditado((x) => ({ ...x, legenda: v }))} onRefazer={() => setEditado((x) => ({ ...x, legenda: undefined }))} />
-                        <CaixaTexto whatsapp titulo="Mensagem de WhatsApp" valor={editado.whatsapp ?? gerados.whatsapp} onChange={(v) => setEditado((x) => ({ ...x, whatsapp: v }))} onRefazer={() => setEditado((x) => ({ ...x, whatsapp: undefined }))} />
-                    </div>
-                </Bloco>
-            )}
+            {itemGrande && <JanelaDaArte item={itemGrande} srcGrande={itemGrande.src.replace('&previa=1&w=400', '')} onFechar={() => setGrande(null)} />}
 
             {ajustando && fotoDa(ajustando) && (
                 <AjustarFoto formato={ajustando} modelo={modeloDasRedes(r)} foto={fotoDa(ajustando)!} paleta={paleta}
                     inicial={r.ajustes[ajustando] && r.ajustes[ajustando]!.url === fotoDa(ajustando)!.url ? r.ajustes[ajustando]! : null}
                     onFeito={(a) => guardarAjuste(ajustando, a)} onFechar={() => setAjustando(null)} />
             )}
-
-            {/* BARRA: fixa em baixo no telemóvel (por cima da barra do menu), no fim da página no computador */}
-            <div className="fixed inset-x-0 z-40 px-3 bottom-[calc(72px+env(safe-area-inset-bottom))] md:static md:px-0">
-                <div className="a-card flex items-center gap-2 p-2 shadow-lg md:shadow-none">
-                    <button type="button" onClick={guardar} disabled={ocupado || !alterado || semArtes} className="a-botao a-botao-secundario !min-h-[48px] !px-3 shrink-0">
-                        <Save size={18} aria-hidden /> {aGuardar ? 'A guardar…' : alterado ? 'Guardar' : 'Guardado'}
-                    </button>
-                    <button type="button" onClick={() => descarregarTudo()} disabled={ocupado || semArtes} aria-label="Descarregar todas as artes (ZIP)" className="a-botao a-botao-secundario !min-h-[48px] !px-3 shrink-0">
-                        <Download size={18} aria-hidden /> ZIP
-                    </button>
-                    <button type="button" onClick={publicar} disabled={ocupado || semArtes || publicadoEmDia} className="a-botao a-botao-principal !min-h-[48px] !px-3 min-w-0 flex-1">
-                        <Megaphone size={18} className="shrink-0" aria-hidden />
-                        <span className="truncate">{progresso || (publicadoEmDia ? 'Publicado' : publicadoEm ? 'Publicar outra vez' : 'Publicar')}</span>
-                    </button>
-                </div>
-            </div>
         </div>
     )
 }

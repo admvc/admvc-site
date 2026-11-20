@@ -148,3 +148,21 @@ segundos. Procura o `ADMVC Media Studio.exe` nos sítios habituais (Programas, A
 
 ## Capa na live do YouTube (V|8)
 Botao "Capa na live do YouTube" (e clique direito na pasta de imagens): escolhe o culto e o estado (Agendada / Em direto / Arquivo / Reserva; vem pre-escolhido), mostra a live encontrada e o titulo que vai ficar, e so troca depois de confirmares. Precisa do FotosCulto.exe versao 8 e da mesma chave de Media -> Holyrics. O Holyrics nao tem credenciais do Google: quem fala com o YouTube e o portal.
+
+## Iniciar o culto (V|9)
+Botão **"Iniciar o culto"** no módulo (e clique direito na pasta de imagens). Faz, por ordem, e cada passo é independente (se um falha, os outros continuam):
+1. **Artes do culto**: descarrega as artes do telão se a Mídia as publicou; senão avisa "As artes deste culto ainda não foram publicadas" e segue.
+2. **Luz pré-culto**: corre o botão/ação da Lumikit que já tem no Holyrics (pelo id). Sem id, salta.
+3. **Música de fundo**: toca o ficheiro escolhido, em repetição.
+4. **Papel de parede**: a arte "Fundo sem texto" do culto (senão a capa).
+5. **Vídeo de pré-início**: não toca sozinho (o Holyrics só tem um leitor de media). Aparece o aviso **"▶ Vídeo de pré-início"**: carregue quando quiser (para a música e toca o vídeo).
+6. **Capa da live**: põe a capa "Agendada" no YouTube e diz se a live foi encontrada.
+7. Relatório **"Culto pronto"** (✓ feito, ✗ falhou, – saltado) com a bênção do dia.
+8. Regista o resultado no portal (quem carregou e que passos falharam).
+
+**Configurar (uma vez):** no portal, **Mídia → Rotina do culto**: ficheiro da música e do vídeo, tipo e id da ação da Lumikit (`ApiAction` ou `ScriptAction`),
+bênção. No Holyrics: a mesma chave de Mídia → Holyrics, o `FotosCulto.exe` **versão 9** nos arquivos permitidos e, se quiser, o **Operador**
+nas definições do módulo (nome que fica no registo; vazio = "Holyrics"). Se o exe for antigo, o botão avisa.
+O id da ação da Lumikit é o do botão "Lumikit WebService" que já existe no Holyrics (pré-culto).
+Comandos do exe (à mão): `--rotina-ver [--evento N]` e `--rotina-registar <ficheiro.json | b64:…>` (com `--portal` e `--chave`).
+Ainda por confirmar num ensaio real: os nomes/parâmetros das chamadas ao Holyrics (`ApiAction`/`ScriptAction`, `PlayAudio`, `SetWallpaperSettings`, `PlayVideo`) e a forma do `h.ok`.
